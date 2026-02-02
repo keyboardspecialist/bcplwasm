@@ -110,7 +110,16 @@ cintcode/STATS
 cintcode/TEMPFILE
 cintcode/TSTRAST
 cintcode/a.out
-cintcode allcompiled64
+cintcode/allcompiled64
+cintcode/DUMP.mem
+cintcode/bcplfediffs
+cintcode/bcplready*
+cintcode/bin
+cintcode/bugbcplferesults.txt
+cintcode/bwv784.wav
+cintcode/bwv.wav
+
+
 
 
 
