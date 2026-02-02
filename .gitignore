@@ -90,6 +90,33 @@ cintcode/enderlit*
 cintcode/enderbig*
 cintcode/cmpltest.*
 cintcode/cin*
+cintcode/ANALYSIS
+cintcode/ASOUND.txt
+cintcode/BASHDATE
+cintcode/BASHRC-RUN
+cintcode/EDITBACKUP
+cintcode/GLlibs.txt
+cintcode/JUNK
+cintcode/MCODE
+cintcode/MINTCODE
+cintcode/OCODE$$
+cintcode/PROFILE
+cintcode/RASTER.*
+cintcode/SDL2cflags.txt
+cintcode/SDL2libs.txt
+cintcode/SDLcflags.txt
+cintcode/SDLlibs.txt
+cintcode/STATS
+cintcode/TEMPFILE
+cintcode/TSTRAST
+cintcode/a.out
+cintcode allcompiled64
+
+
+
+
+
+
 
 
 
