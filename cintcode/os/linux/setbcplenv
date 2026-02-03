@@ -12,15 +12,15 @@
 
 # The following are for 32 bit BCPL
 export BCPLROOT=$HOME/distribution/BCPL/cintcode
-# export BCPLPATH=$BCPLROOT/cin
-# export BCPLHDRS=$BCPLROOT/g
-# export BCPLSCRIPTS=$BCPLROOT/s
+export BCPLPATH=$BCPLROOT/cin
+export BCPLHDRS=$BCPLROOT/g
+export BCPLSCRIPTS=$BCPLROOT/s
 
 # The following are for 64 bit BCPL
 export BCPL64ROOT=$HOME/distribution/BCPL/cintcode
-# export BCPL64PATH=$BCPL64ROOT/cin64
-# export BCPL64HDRS=$BCPL64ROOT/g
-# export BCPL64SCRIPTS=$BCPL64ROOT/s
+export BCPL64PATH=$BCPL64ROOT/cin64
+export BCPL64HDRS=$BCPL64ROOT/g
+export BCPL64SCRIPTS=$BCPL64ROOT/s
 
 # The following are for 32 bit Cintpos
 export POSROOT=$HOME/distribution/Cintpos/cintpos

@@ -1549,7 +1549,8 @@ BCPLWORD loadsegfp(FILEPT fp)
 } 		 
 
 BCPLWORD loadseg(const char *file)
-{ BCPLWORD list  = 0;
+{ // file is a C (zero terminated string)
+  BCPLWORD list  = 0;
 
   //printf("loadseg: attempting to load file %s\n", file);
 
@@ -1832,19 +1833,20 @@ FILEPT pathinput(const char *name, const char *pathname)
    If pathname is null, name is looked up in the current directory,
    otherwise name is looked up in the directories that the environment
    variable pathname specifies. These directories should now be separated 
-   by ';' (nor ':') even under Linux or Cygwin.
+   by ';' (not ':') even under Linux or Cygwin.
 */
 { FILEPT fp = 0;
 
   if ( pathname==0 || !relfilename(name)) {
     /* If no pathname given or name is absolute just search
        the current directory */
-    //printf("pathinput: pathname=0\n");
+    //printf("pathinput: Either pathname=0 or %s is an absolute name\n",
+    //        name);
     fp = fopen(osfname(name, chbuf4), "rb");
     if(filetracing)
-    { printf("Trying: %s in the current directory - ", name);
-      if(fp) {
-        printf("found\n");
+      { printf("Trying: %s in the current directory - ", name);
+        if(fp) {
+          printf("found\n");
       } else {
         printf("not found\n");
       }
@@ -1856,15 +1858,16 @@ FILEPT pathinput(const char *name, const char *pathname)
 
   /* Look through the PATH directories if pathname is given. */
   { char *path = getenv(pathname);
+    //printf("pathname value %s\n", path);
  
     if(filetracing) {
-      printf("pathinput: attempting to open %s", name);
-      printf(" using\n  %s", pathname);
-      printf(" = %s\n", path);
+      printf("pathinput: attempting to open %s\n", name);
+      if(pathname) printf("using environment pathname  %s\n", pathname);
+      if(path) printf("with value %s\n", path);
     }
 
     /* Try prefixing with each directory in the path until the
-       file can be openned successfully */
+       file can be opened successfully */
     while(path)
     { char str[256];
       char *filename = &str[0];

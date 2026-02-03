@@ -5,6 +5,18 @@
 
 /* Change history
 
+15/01/2026
+
+Modified performget to include an attempt to open a GET stream by
+prefixing the GET filename with g/ and looking it up in the BCPL root
+directory. This will mean that BCPLHDRS is only necessary when the
+header files are not in the standard place relative to the root
+directory. Similar changes in sysc/cintmain.c and com/c.b have made
+BCPLPATH and BCPLSCRIPTS unnecessary.
+
+The standard BCPL distribution now uses git but is still rooted in
+directory BCPL.
+
 15/09/2025
 Made change to disallow spaces between # and operators like
 +, -, MOD, -> etc. The must be written as #+, #-, #MOD and #->.
@@ -39,7 +51,7 @@ Added the command SKIP it was already available as {}.
 
 24/10/2021
 Syn and Trn have been separated into two sections with sources
-bcplsyn.b and bcpltrn.b with a suitable change in bcpl.b. This was
+bcplsyn.b and bcpltrn.b with suitable changes in bcpl.b. This was
 done because the front end was becoming too large for Cintcode
 
 29/09/2021
@@ -371,8 +383,7 @@ decval; fltval; exponent; getstreams; charv
 hdrs  // MR 10/7/04
 workvec
 readdecimal; readnumber; rdstrch
-token; wordnode
-ch
+token; wordnode; ch
 rdtag; performget
 lex; dsw; declsyswords; nlpending
 lookupword; eqlookupword; rch; unrch
@@ -516,7 +527,7 @@ LET start() = VALOF
   // ON64 is defined in libhdr.h. Previously called c64.
 
   t64 := ON64 // Set the default target word length
-              // 64 bit compiler hasa 64 bit target by default
+              // 64 bit compiler has a 64 bit target by default
   IF rdargs(argform, argv, 50)=0 DO { writes("Bad arguments*n")
                                       errcount := 1
                                       GOTO fin
@@ -550,7 +561,7 @@ LET start() = VALOF
   { t32, t64, wordbytelen, wordbitlen :=  FALSE, TRUE, 8, 64
   }
 
-  writef("*n%n bit BCPL (18 Jul 2022) with pattern matching, %n bit target*n",
+  writef("*n%n bit BCPL (3 Jan 2026), %n bit target*n",
           bitsperword, wordbitlen)
 
   IF argv!21 DO                           // OPT/K
@@ -1426,7 +1437,8 @@ LET eqlookupword(word) = VALOF
 AND dsw(word, sym) BE { lookupword(word); h1!wordnode := sym  }
  
 AND declsyswords() BE
-{ dsw("AND", s_and) // Added old 1980s style reserved word for historic reasons.
+{ // Added some old 1980s style reserved words for historic reasons.
+  dsw("AND", s_and)
   dsw("ABS", s_abs)
   dsw("BE", s_be)
   dsw("BITSPERBCPLWORD", s_bitsperbcplword)
@@ -1662,13 +1674,16 @@ AND performget() BE
   // Then try the headers directories
   //UNLESS stream DO sawritef("Searching for *"%s*" in %s*n", charv, hdrs)
   // The value of hdrs is typically: ...../BCPL/cintcode/g
-  UNLESS stream DO stream := pathfindinput(charv, hdrs)
+  UNLESS stream DO
+  { //sawritef("Trying %s in directories specified by %s*n", charv, hdrs)
+    stream := pathfindinput(charv, hdrs)
+  }
 
   UNLESS stream DO
   { LET fstr = VEC 245/bytesperword
     copystring("g/", fstr)
     catstr(fstr, charv) // Append charv onto the end of fstr
-    //writef("Looking up get file %s in the BCPL root directory*n", fstr)
+    //sawritef("Looking up get file %s in the BCPL root directory*n", fstr)
     stream := pathfindinput(fstr, rtn_rootvar)
   }
   

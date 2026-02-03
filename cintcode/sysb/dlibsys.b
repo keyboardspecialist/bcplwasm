@@ -22,7 +22,7 @@ MANIFEST {
 
 LET findstream(name, id, path) = VALOF // MR 8/5/03
 { LET console  = compstring("**", name)=0  // STDIN and STDOUT
-  LET isstderr =  compstring("#", name)=0  // STDERR
+  LET isstderr = compstring("#",  name)=0  // STDERR
   LET scb = ?
   LET res = 0
   LET prefix = VEC 31
@@ -417,7 +417,7 @@ AND fh0findinoutput(scb, name) = VALOF
   }
 
   filesize :=sys(Sys_filesize, @fp)
-//sawritef("BLIB: filesize=%n*n", filesize)
+//sawritef("DLIB: filesize=%n*n", filesize)
 
   // allocate a buffer
   buf := getvec(buflen/bytesperword)
