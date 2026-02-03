@@ -1,7 +1,24 @@
-BCPL CINTCODE DISTRIBUTION   (Revised 30 sep 2023)
+BCPL CINTCODE DISTRIBUTION   (Revised 2 Feb 2026)
 
 (This README file comes from the directory BCPL/cintcode/doc of
 the standard BCPL distribution bcpl.tgz)
+
+02/02/2026
+I have ust started to use the git system to control the development
+of BCPL. The directory distribution/BCPL/ is more or less  how it has
+always been but is now a git repository making it easier to see the
+recent changes to the BCPL distribution. It is available from my
+home page as the usual file bcpl.tgz, but when expanded it can be
+inpected using git. But this system can still be installed in the
+standard way using make and various Makefiles. The current version
+represents BCPL as it was a few months ago but will soon be brought
+up to date with several minor changes that I have already tested.
+
+The source of the BCPL/Cintpos manual will also soon be available
+as the file bcplman.tgz also as git repository.
+
+I am a complete beginner with git so the setup may change as I learn
+more about how git works.
 
 31/102023
 The BCPL Cintcode system can now be built for Pentium machines and

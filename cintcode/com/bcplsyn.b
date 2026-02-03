@@ -1615,14 +1615,15 @@ AND rdtag(ch1) = VALOF
 }
 
 AND catstr(s1, s2) = VALOF
-// Concatenate strings s2 on the end of string s2 leaving the result
+// Append strings s2 onto the end of string s1 leaving the result
 // in s1. It is assumed that s1 is able to hold a string of length 255.
 // The resulting string is truncated to length 255, if necessary. 
-{ LET len = s1%0
-  LET n = len
-  FOR i = 1 TO s2%0 DO
-  { n := n+1
-    IF n>255 BREAK
+{ LET lens1 = s1%0
+  LET lens2 = s2%0
+  LET n = lens1
+  FOR i = 1 TO lens2 DO
+  { IF n>=255 BREAK
+    n := n+1
     s1%n := s2%i
   }
   s1%0 := n
