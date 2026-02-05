@@ -5,8 +5,11 @@
 
 /* Change history
 
-15/01/2026
+05/02/2026
+Implemented the expression escape commands:
+BREAK, LOOP, NEXT, EXIT, ENDCASE, RETURN and RESULTIS
 
+15/01/2026
 Modified performget to include an attempt to open a GET stream by
 prefixing the GET filename with g/ and looking it up in the BCPL root
 directory. This will mean that BCPLHDRS is only necessary when the
@@ -1162,11 +1165,11 @@ checkass:       UNLESS ch=':' RETURN
                 token := assop
                 BREAK
  
-      CASE '!': token, assop := s_vecap, s_assvecap;   GOTO checkassx // !:= or !
-      CASE '**':token, assop := s_mul, s_assmul;       GOTO checkassx // *:= or *
-      CASE '+': token, assop := s_add, s_assadd;       GOTO checkassx // +:= or +
-      CASE '&': token, assop := s_logand, s_asslogand; GOTO checkassx // &:= or &
-      CASE '|': token, assop := s_logor, s_asslogor;   GOTO checkassx // |:= or |
+      CASE '!': token, assop := s_vecap, s_assvecap;   GOTO checkassx
+      CASE '**':token, assop := s_mul, s_assmul;       GOTO checkassx
+      CASE '+': token, assop := s_add, s_assadd;       GOTO checkassx
+      CASE '&': token, assop := s_logand, s_asslogand; GOTO checkassx
+      CASE '|': token, assop := s_logor, s_asslogor;   GOTO checkassx
  
       CASE '/':
               rch()
@@ -2378,6 +2381,7 @@ LET rbexp() = VALOF
     CASE s_next:
     CASE s_exit:
     CASE s_return:
+    CASE s_resultis:
       RESULTIS rbcom()
 	
     CASE s_number:
@@ -2872,6 +2876,7 @@ AND rspat() = VALOF
     CASE s_next:
     CASE s_exit:
     CASE s_return:
+    CASE s_resultis:
       RESULTIS rbcom()
 
     CASE s_lparen:

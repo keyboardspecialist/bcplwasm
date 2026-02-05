@@ -6,6 +6,10 @@
 
 Change history
 
+05/02/2026
+Implemented the expression escape commands:
+BREAK, LOOP, NEXT, EXIT, ENDCASE, RETURN and RESULTIS
+
 10/12/2023 
 Ensured that LFLT and ITEMFLT are compiled correctly.  When loading a
 floating point constant LFLT is used instead of LN. This allows the
@@ -2743,9 +2747,11 @@ LET load(x, ff) BE
     CASE s_next:
     CASE s_exit:
     CASE s_return:
+    CASE s_resultis:
            trans(x, 0)
-	   ssp := ssp+1       // Because every expression 'loads'
-	   out2(s_stack, ssp) // one value on the stack.
+	   out2(s_ln, 0)      // Because every expression 'loads'
+	   ssp := ssp+1       // one value on the stack.
+	   out2(s_stack, ssp)
 	   RETURN
 	   
     CASE s_of:
