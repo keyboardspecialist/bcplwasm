@@ -8,7 +8,7 @@ Change history
 
 05/02/2026
 Implemented the expression escape commands:
-BREAK, LOOP, NEXT, EXIT, ENDCASE, RETURN and RESULTIS
+BREAK, LOOP, NEXT, EXIT, ENDCASE, RETURN, RESULTIS and GOTO
 
 10/12/2023 
 Ensured that LFLT and ITEMFLT are compiled correctly.  When loading a
@@ -749,75 +749,96 @@ LET trans(x, next) BE
  
     CASE s_while: sw := TRUE
     CASE s_until:
-    { // If next>0, The WHILE or UNTIL command is followed by code
+    { // Updated for new rules about BREAK and LOOP 5 Feb 2026
+    
+      // If next>0, The WHILE or UNTIL command is followed by code
       //            to jump to label next.
       // If next=-1 The WHILE or UNTIL command is followed by code
       //            to return from the current function or routine.
       // If next=0  Compile nothing after the WHILE or UNTIL command.
-      LET prevbreaklab, prevlooplab = breaklab, looplab
+
+      // Modified to only allow BREAK and LOOP inside the body. 5feb2027
+      
       LET bodylab = genlab()  // Label for start of the body
+      LET testlab = 0
+      LET donelab = 0
+      
       context, comline := x, h4!x
-      looplab := genlab()  // This labels the point where the condition
-                           // is tested. LOOP jumps to this point.
-      TEST next=0
-      THEN breaklab := genlab()
-      ELSE breaklab := next
+
+      //TEST next=0
+      //THEN breaklab := genlab()
+      //ELSE breaklab := next
 //outcomment("while: next=%n breaklab=%n looplab=%n", next, breaklab, looplab) 
 
       // breaklab is >0 or =-1
       // Before entering the loop test the condition.
-      TEST breaklab<0
-      THEN { jumpcond(h2!x, sw, bodylab)   // sw=FALSE if compiling UNTIL E DO C
-             transreturn()
-	   }
-      ELSE { // breaklab is >0
-             jumpcond(h2!x, ~sw, breaklab) // ~sw=TRUE if compiling UNTIL E DO C
-           }
+      //TEST breaklab<0
+      //THEN { jumpcond(h2!x, sw, bodylab)   // sw=FALSE if compiling UNTIL E DO C
+      //       transreturn()
+      //   }
+      //ELSE { // breaklab is >0
+      //       jumpcond(h2!x, ~sw, breaklab) // ~sw=TRUE if compiling UNTIL E DO C
+      //     }
+
+      // Not yet optimized
+      testlab := genlab()
+      out2(s_jump, testlab)
       
       out2(s_lab, bodylab) // Label the start of the body
-      trans(h3!x, 0)       // Zero because the body will be followed by
-                           // the conditional jump code.
-
-      context, comline := x, h4!x
-      IF looplab DO out2(s_lab, looplab) // Only compiled if LOOP occurred.
       
+      { // Compile the repetitive body
+        LET prevbreaklab, prevlooplab = breaklab, looplab
+        breaklab, looplab := genlab(), genlab()
+        trans(h3!x, 0)       // Zero because the body will be followed by
+                             // the conditional jump code.
+        IF looplab DO out2(s_lab, looplab) // Only compiled if LOOP occurred.
+        donelab := breaklab  // Remember the value of breaklab
+        breaklab, looplab := prevbreaklab, prevlooplab
+      }
+
+      IF testlab DO out2(s_lab, testlab) // Only if needed
+      // Compile the test code
+      context, comline := x, h4!x
       jumpcond(h2!x, sw, bodylab) // Compile the conditional jump.
  
-      IF next=0 & breaklab>0 DO out2(s_lab, breaklab) // A BREAK command
+      //IF next=0 & breaklab>0 DO out2(s_lab, breaklab) // A BREAK command
                                                       // jumps to breaklab
+      IF donelab DO out2(s_lab, donelab)
       trnext(next) // Possibly compile a jump or a return from
                    // a function or routine.
-      breaklab, looplab := prevbreaklab, prevlooplab
       RETURN
     }
  
     CASE s_repeatwhile: sw := TRUE
     CASE s_repeatuntil:
-    { LET L = genlab()
-      LET prevbreaklab, prevlooplab = breaklab, looplab
-      context, comline := x, h4!x
-      breaklab := genlab() // Cause BREAK to compile a jump or a return
-                           // from the current function or routine.
-                           // If next=0 breaklab will be given a newly
-		           // allocated label.
-		           // If next=-1 the code will depend on
-		           // proccontext.
-      looplab := genlab()  // Allocated by the first LOOP, if any.
+    { // Implemented the new meaning of BREAK and LOOP  5 Feb 2026
+    
+      LET bodylab = genlab()
+      LET donelab = 0
 
-      out2(s_lab, L)       // Label start of body
-      trans(h2!x, 0)       // Zero because it is followed by the
-                           // conditional jump
-      // Compile the destination label for LOOP if necessary.
-      out2(s_lab, looplab)
       context, comline := x, h4!x
-      jumpcond(h3!x, sw, L)
+
+      out2(s_lab, bodylab) // Label start of body
+
+      { LET prevbreaklab, prevlooplab = breaklab, looplab
+        breaklab, looplab := genlab(), genlab()
+
+        trans(h2!x, 0)       // Zero because it is followed by the
+                             // conditional jump
+        donelab := breaklab
+        // Compile the destination label for LOOP if necessary.
+        out2(s_lab, looplab)
+        breaklab, looplab := prevbreaklab, prevlooplab
+      }
+
+      context, comline := x, h4!x
+      jumpcond(h3!x, sw, bodylab)
 
       // Compile the destination label for BREAK, if necessary.
-      //IF breaklab>0 UNLESS breaklab=next DO out2(s_lab, breaklab)
-      IF breaklab>0 DO out2(s_lab, breaklab)
+
+      IF donelab>0 DO out2(s_lab, donelab)
 
       trnext(next) // Compile a jump, a return or nothing
-      breaklab, looplab := prevbreaklab, prevlooplab
       RETURN
     }
  
@@ -1395,6 +1416,8 @@ AND condbreak(x, b, next) BE
 AND transloop() BE
 { // Compile the LOOP command.
 
+  UNLESS looplab DO looplab := genlab()
+  
   // looplab=-2   LOOP is illegal.
   // looplab> 0   Compile a jump to looplab.
 
@@ -1413,6 +1436,7 @@ AND condloop(x, b, next) BE
 { // When b is TRUE  compile: IF E LOOP
   // When b is FALSE compile: UNLESS E LOOP
 
+  IF looplab=0 DO looplab := genlab()
   IF looplab>0 DO
   { jumpcond(x, b, looplab)
     trnext(next)
@@ -2748,6 +2772,7 @@ LET load(x, ff) BE
     CASE s_exit:
     CASE s_return:
     CASE s_resultis:
+    CASE s_goto:
            trans(x, 0)
 	   out2(s_ln, 0)      // Because every expression 'loads'
 	   ssp := ssp+1       // one value on the stack.

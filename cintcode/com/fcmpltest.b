@@ -122,7 +122,7 @@ LET t(x, y) = VALOF
 LET ft(FLT fx, FLT fy) = VALOF
 { testcount := testcount + 1
   wrd(testno, 4)
-  sawritef("  fx=%16x %13e fy=%16x %13e*n", fx, fx, fy, fy)
+  //sawritef("  fx=%16x %13e fy=%16x %13e*n", fx, fx, fy, fy)
   wrc(' ')
   wrx(fx, 16)
   wrc(' ')

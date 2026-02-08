@@ -7,7 +7,7 @@
 
 05/02/2026
 Implemented the expression escape commands:
-BREAK, LOOP, NEXT, EXIT, ENDCASE, RETURN and RESULTIS
+BREAK, LOOP, NEXT, EXIT, ENDCASE, RETURN, RESULTIS and GOTO
 
 15/01/2026
 Modified performget to include an attempt to open a GET stream by
@@ -2382,6 +2382,7 @@ LET rbexp() = VALOF
     CASE s_exit:
     CASE s_return:
     CASE s_resultis:
+    CASE s_goto:
       RESULTIS rbcom()
 	
     CASE s_number:
