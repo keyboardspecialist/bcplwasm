@@ -1,5 +1,5 @@
-# This makefile is used to create .tgz .zip versions
-# of the BCPL distribution.
+# This makefile is used to create .tgz versions
+# of the bcplman distribution.
 
 PUB = /homes/mr/public_html
 
@@ -10,16 +10,16 @@ SSHPUB = mr10@ely.cl.cam.ac.uk:public_html
 
 help:
 	@echo
-	@echo "make all          Construct files: bcpl.tgz and bcpl.zip"
+	@echo "make all          Construct: bcpl.tgz"
 	@echo "                  leaving them in distribution/"
 	@echo "make sshpube      Put them in /dose and my home page using scp"
 	@echo
-	@echo "make allnew       Construct files: bcplnew.tgz and bcplnew.zip"
+	@echo "make allnew       Construct: bcplnew.tgz"
 	@echo "make dosenew      Put them in my E drive"
 	@echo "make sshpubenew   Put them in /dose and my home page using scp"
 	@echo
-	@echo "make copytoprev   Copy bcpl.tgz, bcpl.zip and FILES to" 
-	@echo "                  bcplprev.tgz, bcplprev.zip and FILESPREV" 
+	@echo "make copytoprev   Copy bcpl.tgz and FILES to" 
+	@echo "                  bcplprev.tgz and FILESPREV" 
 	@echo "                  on my homepage" 
 	@echo 
 
@@ -33,10 +33,9 @@ all:
 	(cd cintcode; make vclean)
 	(cd natbcpl; make clean)
 	(cd bcplprogs; make vclean)
-	(cd ..; tar cvzf bcpl.tgz BCPL)
-	(cd ..; rm -f bcpl.zip)
-	(cd ..;  zip -rv9 bcpl.zip BCPL)
-	ls -l ../bcpl.tgz ../bcpl.zip >TGZFILES
+	chmod 664 .git/objects/*/*
+	(cd ..; tar czf bcpl.tgz BCPL)
+	ls -l ../bcpl.tgz >TGZFILES
 
 allnew:
 	rm -f *~ */*~
@@ -47,13 +46,11 @@ allnew:
 	(cd cintcode; make vclean)
 	(cd natbcpl; make clean)
 	(cd bcplprogs; make vclean)
-	(cd ..; tar cvzf bcplnew.tgz BCPL)
-	(cd ..; rm -f bcplnew.zip)
-	(cd ..;  zip -rv9 bcplnew.zip BCPL)
-	ls -l ../bcplnew.tgz ../bcplnew.zip >TGZFILES
+	(cd ..; tar czf bcplnew.tgz BCPL)
+	ls -l ../bcplnew.tgz >TGZFILES
 
 sshpube:	dose
-	scp README TGZFILES ../bcpl.tgz ../bcpl.zip $(SSHPUB)/BCPL
+	scp README TGZFILES ../bcpl.tgz $(SSHPUB)/BCPL
 	cp TGZDATE PUBDATE
 	cp TGZDATE cintcode/PUBDATE
 	cp TGZFILES PUBFILES
@@ -61,7 +58,7 @@ sshpube:	dose
 	@cat TGZDATE
 
 sshpubenew:	dosenew
-	scp README TGZFILESNEW ../bcplnew.tgz ../bcplnew.zip $(SSHPUB)/BCPL
+	scp README TGZFILESNEW ../bcplnew.tgz $(SSHPUB)/BCPL
 	cp TGZDATENEW PUBDATENEW
 	cp TGZDATENW cintcode/PUBDATENEW
 	cp TGZFILESNEW PUBFILESNEW
@@ -71,13 +68,12 @@ sshpubenew:	dosenew
 copytoprev:
 	scp $(SSHPUB)/BCPL/TGZFILES $(SSHPUB)/BCPL/TGZFILESPREV
 	scp $(SSHPUB)/BCPL/bcpl.tgz $(SSHPUB)/BCPL/bcplprev.tgz
-	scp $(SSHPUB)/BCPL/bcpl.zip $(SSHPUB)/BCPL/bcplprev.zip
-	@echo "bcplprev.tgz bcplprev.zipand TGZFILESPREV updated"
+	@echo "bcplprev.tgz TGZFILESPREV updated"
 	@echo
 
 
 dose:	all
-	cp ../bcpl.tgz ../bcpl.zip /dose
+	cp ../bcpl.tgz /dose
 
 dosenew:	allnew
-	cp ../bcplnew.tgz ../bcplnew.zip /dose
+	cp ../bcplnew.tgz /dose

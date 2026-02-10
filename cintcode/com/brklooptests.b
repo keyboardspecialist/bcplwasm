@@ -5,12 +5,15 @@ GLOBAL {
   errcount
 }
 LET start() = VALOF
-{ testno := 8001
+{ testno := 1
   errcount := 0
   newline()
-  tst(tstf1(10), 55)
-  tst(tstf2(10), 43)
-  tst(tstf3(10), 6)
+writef("Repetition tests*n*n")
+
+  tst(tstf1(10), 1064)
+  tst(tstf2(10), 1064)
+  tst(tstf3(10), 1064)
+/*
   tst(tstf4(10), 43)
   tst(tstf5(10), 24)
   tst(tstf6(10), 24)
@@ -51,7 +54,7 @@ LET start() = VALOF
   writef("*nNew version of BREAK and LOOP*n")
   tst(tstk1(10), 99)
   tst(tstk2(10), 101)
-
+*/
   writef("*nError count = %n*n", errcount)
   RESULTIS 0
 }
@@ -64,37 +67,74 @@ AND tst(x, y) BE
 }
 
 AND tstf1(n) = VALOF
-{ LET i, x = 0, 0
-  WHILE i < n DO
-  { i := i+1
-    x := x+i
+{ LET res = 0
+
+  FOR i = 1 TO 10 DO
+  { LET j = 1
+    writef("i=%i2 res=%i4*n", i, res)
+
+    WHILE j <= 8 DO
+    {
+      writef("     j=%i2 res=%i4*n", j, res)
+      j := j+1
+      IF i=3 LOOP
+      IF i=5 BREAK
+      res := res+1 // Obeyed 64 times,
+                   // ie Incremented by 8 for all i except 3 and 5
+    }
+
+    res := res+100 // Obeyed 10 times
   }
 
-  RESULTIS x
+  RESULTIS res     // Should be 1064
 }
 
 AND tstf2(n) = VALOF
-{ LET i, x = 0, 0
-  WHILE i < n DO
-  { i := i+1
-    IF i=4 | i=8 LOOP
-    x := x+i
+{ LET res = 0
+
+  FOR i = n-9 TO n DO // ie 1 to 10
+  { LET j = 1
+    //writef("i=%i2 res=%i4*n", i, res)
+
+    WHILE j <= 8 DO
+    {
+      //writef("     j=%i2 res=%i4*n", j, res)
+      j := j+1
+      IF i=3 LOOP
+      IF i=5 BREAK
+      res := res+1 // Obeyed 64 times,
+                   // ie Incremented by 8 for all i except 3 and 5
+    }
+
+    res := res+100 // Obeyed 10 times
   }
 
-  RESULTIS x
+  RESULTIS res     // Should be 1064
 }
 
 AND tstf3(n) = VALOF
-{ LET i, x = 0, 0
-  WHILE i < n DO
-  { i := i+1
-    IF i=4 | i=8 BREAK
-    x := x+i
+{ LET res = 0
+
+  FOR i = 1 TO 10 DO // ie 1 to 10
+  { LET j = 1
+    //writef("i=%i2 res=%i4*n", i, res)
+
+    WHILE 1 <= 8 DO
+    { IF j>8 BREAK
+      //writef("     j=%i2 res=%i4*n", j, res)
+      j := j+1
+      IF i=3 LOOP
+      IF i=5 BREAK
+      res := res+1 // Obeyed 64 times,
+                   // ie Incremented by 8 for all i except 3 and 5
+    }
+
+    res := res+100 // Obeyed 10 times
   }
 
-  RESULTIS x
+  RESULTIS res     // Should be 1064
 }
-
+/*
 AND tstf4(n) = VALOF
 { LET i, x = 0, 0
 
@@ -336,7 +376,7 @@ AND tsth5(n) = VALOF
     WHILE i > 5 | GOTO L DO
     { res := res+1
       IF i=3 LOOP
-      res := ress+10
+      res := res+10
     }
     RESULTIS res
   }
@@ -354,7 +394,7 @@ AND tstk1(n) = VALOF
   { WHILE i < 5 | BREAK DO
     { res := res+1
       IF i=4 LOOP
-      resr := resr+10
+      res := res+10
     }
   }
 
@@ -376,6 +416,7 @@ AND tstk2(n) = VALOF
 
   RESULTIS res
 }
+*/
 
 
 

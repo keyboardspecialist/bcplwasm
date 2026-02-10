@@ -301,8 +301,11 @@ AND translate(x) = VALOF
 
 LET trnext(next) BE
 { // Compile code to follow a command
-  // next is >0, =0 or =-1
-//outcomment("trnext: next=%n*n", next)
+  // next >0  Compile a jump to next
+  // next =0  Compile nothing
+  // next=-1  Compile rtrn or fnrn
+  //outcomment("trnext: next=%n*n", next)
+
   IF next=0 RETURN // No code to compile.
   
   IF next>0 DO
@@ -2595,19 +2598,27 @@ AND transswitch(x, next) BE
 }
  
 AND transfor(x, next) BE
-{ // x -> [s_for, N, initval, lim, step, c, ln]
-  LET e, m, blab = dvece, genlab(), genlab()
-  LET bl, ll = breaklab, looplab
-  // Note: ENDCASE is allowed in FOR commands
-  LET cc = casecount
-  LET k, n, step = 0, 0, 1
-  LET s = ssp
-  LET name = h2!x
+{ // x -> [s_for, name, initvalE, limE, stepE, body, ln]
+  LET name                  = h2!x
+  LET initvalE, limE, stepE = h3!x, h4!x, h5!x
+  LET body, ln              = h6!x, h7!x
 
-  casecount := -1  // Disallow CASE and DEFAULT labels.   
-  breaklab, looplab := genlab(), genlab()
+  LET prevdvece     = dvece
+  LET prevcasecount = casecount
+  LET k, n = 0, 0   // Typically the instruction to load the limit
+  LET stepvalue = 1 // The default step value
+  LET s = ssp
+
+  LET bodylab = genlab() // This labels the start of the body
+  LET blab    = 0        // If needed this labels the point just after
+                         // the repetition test at the end of the body.
+  LET testlab = 0        // This is used, if needed, to label the
+                         // repetition test at the end of the body.
+
+  casecount := -1  // Disallow CASE and DEFAULT labels,
+                   // but ENDCASE is still alloed.
    
-  context, comline := x, h7!x
+  context, comline := x, ln
  
   IF h1!name=s_flt DO
   { trnerr("FOR loop control variable must not have the FLT tag")
@@ -2615,78 +2626,165 @@ AND transfor(x, next) BE
     h2!x := name
   }
 
+  // Declare the control variable.
   addname(name, s_local, s, 0)
-  load(h3!x, FALSE)       // The initial value
+  load(initvalE, FALSE) // Load initial value in non FLT mode
 
-  // Set k, n to be the instruction to load the end limit, if there is one
-  // k is zero if no end limit was specified.???
-  IF h4!x TEST h1!(h4!x)=s_number
-          THEN   k, n := s_ln, h2!(h4!x)
+  // Set k, n to be the instruction to load the end limit value.
+  // k and n are both zero if no end limit was specified.
+  IF limE TEST isconst(limE)
+          THEN { k, n := s_ln, evalconst(limE, FALSE)
+	       }
           ELSE { k, n := s_lp, ssp
-                 load(h4!x, FALSE) // Place the end limit in the stack
+                 load(limE, FALSE) // Place the end limit in the stack
                }
-  // k=0 if there is no TO expression
+	      
+  // Note: k=0 if no limit was given.
   
-  IF h5!x DO step := evalconst(h5!x, FALSE) // Set step if BY given
- 
-  out1(s_store)  // Ensure the control variable and possible end limit
-                 // is stored in memory
+  out1(s_store)  // Ensure the control variable and possibly
+                 // the end limit values are stored in memory.
    
-  TEST k=s_ln & h1!(h3!x)=s_number  // check for constant limit expression
-  THEN { // The initial and limit values are both constants 
-         LET initval = h2!(h3!x)
-         IF step>=0 & initval>n | step<0 & initval<n DO
-         { // The body of this FOR loop will not be executed
-	   TEST next<0
-           THEN out1(s_rtrn)
-           ELSE TEST next>0
-                THEN out2(s_jump, next)
-                ELSE { //blab := breaklab>0 -> breaklab, genlab()
-                       out2(s_jump, blab)
-                     }
+  IF stepE DO stepvalue := evalconst(stepE, FALSE)
+ 
+  TEST k=s_ln & isconst(initvalE)
+  THEN { // Optimize the case when both the initial and limit
+         // values are constants. 
+         LET initvalue = evalconst(initvalE, FALSE)
+	 // Note: n is the limit value
+         IF stepvalue>=0 & initvalue>n |
+	    stepvalue< 0 & initvalue<n DO
+         { // The initial conditions indicate that the body
+	   // will not be executed even once.
+	   // But it must still be compiled.
+	   TEST next=0
+	   THEN { blab := genlab()
+	          trnext(blab) // Jump around the FOR loop code.
+		}
+	   ELSE { trnext(next)
+		}
          }
+	 // Otherwise fall through to the start of the body.
        }
-  ELSE { //IF next<=0 DO blab := genlab()
-         // Only perform a conditional jump if the TO expression was given.
+  ELSE { // The initial and limit values are not both constants
+         // and so must be tested before executing the body.
+         // But if no limit is given no test is needed, we just
+	 // fall through to the start of the body.
 	 IF k DO
-         { out2(s_lp, s)
-           out2(k, n)
-           out1(step>=0 -> s_gr, s_ls)
-           out2(s_jt, next>0 -> next, blab)
+         { // An end limit was given so a test is required.
+	   // It can be compiled here but it is only worth
+	   // doing so if the limit expression is simple enough
+	   // and next is either a label or zero.
+	   TEST smallexp(limE, 2) & next>=0
+	   THEN { // Since the limit expression is simple and
+	          // the conditional jump is to a label, it is
+		  // worth testing the condition at this point.
+	          out2(s_lp, s)
+                  out2(k, n)
+                  out1(stepvalue>=0 -> s_gr, s_ls)
+		  TEST next=0
+		  THEN { // Allocate a label for the conditional
+		         // jump, if needed.
+			 UNLESS blab DO blab := genlab()
+		         out2(s_jt, blab)
+		       }
+		  ELSE { out2(s_jt, next)
+		       }
+		  // If Jt fails fall into the start of
+		  // the body to execute it for the first time..
+	        }
+	   ELSE { // Otherwise compile jump to where the repetition
+		  // condition is tested after the body.
+		  testlab := genlab()
+	          out2(s_jump, testlab)
+	        }
 	 }
        }
 
-  //IF breaklab=0 & blab>0 DO breaklab := blab
-   
-  context, comline := x, h7!x
-  out2(s_lab, m)
-  decllabels(h6!x)
-  trans(h6!x, 0)   // Translate the body of the for loop.
+  { // Compile the FOR loop body
+    // preserve the BREAK/LOOP environment.
+    LET prevbreaklab, prevlooplab = breaklab, looplab
+    looplab := 0
+    breaklab := next>0 -> next, blab
+    // Note: breaklab is now >=0, either next, blab or zero
+    
+    context, comline := x, ln
 
-  out2(s_lab, looplab)
+    out2(s_lab, bodylab)
+    decllabels(body)
+    trans(body, 0)
 
+    // It is possible that blab is zero and breaklab is not.
+    // This can only happen if BREAK occured in the body.
+    blab := breaklab
+
+    IF looplab DO out2(s_lab, looplab)
+
+    // Restore the previous BREAK/LOOP environment
+    breaklab, looplab := prevbreaklab, prevlooplab
+  }
+  
   // Compile code to increment the control variable
-  out2(s_lp, s); out2(s_ln, step); out1(s_add); out2(s_sp, s)
+  out2(s_lp, s); out2(s_ln, stepvalue); out1(s_add); out2(s_sp, s)
+
+  // Compile the test label if needed.
+  IF testlab DO out2(s_lab, testlab)
+
+  // If an end limit was given compile a conditioal jump
+  // to the start of the body.
   TEST k
-  THEN { // If the TO expression is given compile the conditional jump.
-         out2(s_lp,s); out2(k,n); out1(step>=0 -> s_le, s_ge)
-         out2(s_jt, m)
+  THEN { out2(s_lp,s); out2(k,n)
+         out1(stepvalue>=0 -> s_le, s_ge)
+         out2(s_jt, bodylab)
        }
-  ELSE { // No TO expression given so compile an unconditional jump
-         out2(s_jump, m)
+  ELSE { // No limit was given so compile an unconditional jump
+         // to the start of the body.
+         out2(s_jump, bodylab)
        }
- 
-  //IF next<=0 TEST blab>0 
-  //           THEN                  out2(s_lab, blab)
-  //           ELSE IF breaklab>0 DO out2(s_lab, breaklab)
-  IF breaklab>0 DO out2(s_lab, breaklab)
+  // Compile a label for BREAK, if necessary.
   IF blab>0 DO out2(s_lab, blab)
+
+  // Compile a jump, a return or nothing.
   trnext(next)
-  casecount := cc
-  breaklab, looplab, ssp := bl, ll, s
+  
+  casecount := prevcasecount
+  ssp := s
   out2(s_stack, ssp)
-  undeclare(e)
+  undeclare(prevdvece)
 }
+
+AND smallexp(x, d) = VALOF
+{ // Return TRUE if x in non null and small
+  IF isconst(x) RESULTIS TRUE
+
+  IF x & d>0 SWITCHON h1!x INTO
+  { DEFAULT:
+      RESULTIS FALSE
+
+    CASE s_name:
+    CASE s_number:
+    CASE s_true:
+    CASE s_false:
+      RESULTIS TRUE
+    
+    CASE s_pos:
+    CASE s_neg:
+      IF smallexp(h2!x, d-1) RESULTIS TRUE
+      RESULTIS FALSE
+
+    CASE s_mul:
+    CASE s_div:
+    CASE s_mod:
+    CASE s_add:
+    CASE s_sub:
+    CASE s_logand:
+    CASE s_logor:
+      IF smallexp(h2!x, d-1) &
+         smallexp(h3!x, d-1) RESULTIS TRUE
+      RESULTIS FALSE
+  }
+  RESULTIS FALSE
+}
+
 
 LET isflt(x) = x=0 -> FALSE, VALOF
 { // Return TRUE if expression x has the FLT tag, Such an expression
