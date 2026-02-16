@@ -564,7 +564,7 @@ LET start() = VALOF
   { t32, t64, wordbytelen, wordbitlen :=  FALSE, TRUE, 8, 64
   }
 
-  writef("*n%n bit BCPL (3 Jan 2026), %n bit target*n",
+  writef("*n%n bit BCPL dev (16 Feb 2026), %n bit target*n",
           bitsperword, wordbitlen)
 
   IF argv!21 DO                           // OPT/K
