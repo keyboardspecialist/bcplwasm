@@ -11,9 +11,8 @@ LET start() = VALOF
 writef("Repetition tests*n*n")
 
   tst(tstf1(10), 1064)
-  //
   tst(tstf2(10), 1064)
-  tst(tstf3(10), 1064)
+  tst(tstf3(10), 1000)
   tst(tstf4(10), 1064)
   tst(tstf5(10), 1064)
   tst(tstf6(10), 1064)
@@ -36,11 +35,20 @@ writef("Repetition tests*n*n")
   testno := 2000
 
   tst(tsth1(10), 36)
-  tst(tsth2(10), 26)
+  tst(tsth2(10), 36)
   tst(tsth3(10), 288)
   tst(tsth4(10), 288)
   tst(tsth5(10), 50)
   tst(tsth6(10), 0)
+
+  testno := 3000
+  tst(tstk1(10), 1)
+  tst(tstk2(10), 1)
+  tst(tstk3(10), 37)
+  tst(tstk4(10), 0)
+  tst(tstk5(10), 66)
+  tst(tstk6(10), 66)
+  tst(tstk7(10), 66)
 
 fin:
   writef("*nError count = %n*n", errcount)
@@ -497,21 +505,22 @@ AND tsth1(n) = VALOF
 
 AND tsth2(n) = VALOF
 { LET res = 0
-  writef("tsth2*n")
+  //writef("tsth2*n")
   
   FOR i = 1 TO 10 DO
   { LET j = 0
-    writef("     i=%i2 res=%i4*n", i, res)
-    WHILE (j=8 & (abort(1001) & GOTO L)) | TRUE DO
+    //writef("     i=%i2 res=%i4*n", i, res)
+    WHILE (j=8 & GOTO L) | TRUE DO
     { j := j+1
-      writef("     i=%i2 j=%i2 res=%i4*n", i, j, res)
+      //writef("     i=%i2 j=%i2 res=%i4*n", i, j, res)
       IF i=4 | i=8 LOOP
       res := res+j
     }
   }
 L:// Desitnation of BREAK
 
-  writef("res=%i4*n", res)
+  //writef("res=%i4*n", res)
+  //abort(1002)
   RESULTIS res
 }
 
@@ -580,7 +589,7 @@ AND tsth5(n) = VALOF
 
 AND tsth6(n) = VALOF
 { LET res = 0
-  //writef("tsth5*n")
+  //writef("tsth6*n")
   
   FOR i = 1 TO 10 DO
   { LET j = 0
@@ -596,6 +605,124 @@ AND tsth6(n) = VALOF
 
   RESULTIS res
 }
+
+AND tstk1(n) = VALOF
+{ LET res = 0
+  LET i = 0
+  //writef("tstk1*n")
+  
+  WHILE FALSE DO
+  { //writef("    i=%i2 res=%i5*n", i, res)
+    i := i+1
+    IF i>8 LOOP
+    res := res+i
+  }
+
+  //writef("res=%i5*n", res)
+
+  RESULTIS res
+}
+
+AND tstk2(n) = VALOF
+{ LET res = 0
+  LET i = 0
+  //writef("tstk2*n")
+  
+  WHILE FALSE DO
+  { //writef("    i=%i2 res=%i5*n", i, res)
+    i := i+1
+    IF i>8 LOOP
+    res := res+i
+  }
+
+  //writef("res=%i5*n", res)
+
+  RESULTIS res
+}
+
+AND tstk3(n) = VALOF
+{ LET res = 0
+  LET i = 0
+  //writef("tstk3*n")
+  
+  WHILE TRUE & n=n+0 DO
+  { //writef("    i=%i2 res=%i5*n", i, res)
+    i := i+1
+    IF i=8 LOOP
+    IF i>9 BREAK
+    res := res+i
+  }
+
+  //writef("res=%i5*n", res)
+
+  RESULTIS res
+}
+
+AND tstk4(n) = VALOF
+{ LET res = 0
+  LET i = 0
+  //writef("tstk4*n")
+  
+  WHILE FALSE & n=n+0 DO
+  { //writef("    i=%i2 res=%i5*n", i, res)
+    i := i+1
+    IF i=8 LOOP
+    res := res+i
+  }
+
+  //writef("res=%i5*n", res)
+
+  RESULTIS res
+}
+
+AND tstk5(n) = VALOF
+{ LET res = 0
+  LET i = 0
+  //writef("tstk5*n")
+  
+  WHILE i<=n DO
+  { //writef("    i=%i2 res=%i5*n", i, res)
+    i := i+1
+    res := res+i
+  }
+
+  //writef("res=%i5*n", res)
+
+  RESULTIS res
+}
+
+AND tstk6(n) = VALOF
+{ LET res = 0
+  LET i = 0
+  //writef("tstk6*n")
+  
+  WHILE i<=n+0 DO
+  { //writef("    i=%i2 res=%i5*n", i, res)
+    i := i+1
+    res := res+i
+  }
+
+  //writef("res=%i5*n", res)
+
+  RESULTIS res
+}
+
+AND tstk7(n) = VALOF
+{ LET res = 0
+  LET i = 0
+  //writef("tstk7*n")
+  
+  WHILE i<=n+0 DO
+  { //writef("    i=%i2 res=%i5*n", i, res)
+    i := i+1
+    res := res+i
+  }
+
+  //writef("res=%i5*n", res)
+
+  RESULTIS res
+}
+
 
 
 

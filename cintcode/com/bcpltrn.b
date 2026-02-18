@@ -103,7 +103,8 @@ decllabels; undeclare
 jumpcond; transswitch; transfor
 assop2op; op2sfop; cv2flt; rel2patrel; patrel2rel
 assign; load; fnbody; loadlv; loadlist
-isflt; isconst; iszero; evalconst; transname; xref
+isflt; isconst; iszero; evalconst; smallexp
+transname; xref
 genlab; labnumber
 newblk
 dvec; dvece; dvecp; dvect
@@ -750,10 +751,13 @@ LET trans(x, next) BE
       ssp := ssp - 1
       RETURN
  
-    CASE s_while: sw := TRUE
-    CASE s_until:
-    { // Updated for new rules about BREAK and LOOP 5 Feb 2026
-    
+    CASE s_while: sw := TRUE // x -> [op, E, C,ln]
+    CASE s_until:            // where op = While or Until
+                             // sw=-1 if While, =0 otherwise
+    { LET E  = h2!x
+      LET C  = h3!x // The body
+      LET ln = h4!x
+
       // If next>0, The WHILE or UNTIL command is followed by code
       //            to jump to label next.
       // If next=-1 The WHILE or UNTIL command is followed by code
@@ -764,49 +768,92 @@ LET trans(x, next) BE
       
       LET bodylab = genlab()  // Label for start of the body
       LET testlab = 0
+      LET blab    = 0   // The destination of BREAK if it occurs
+                        // in the body.
       LET donelab = 0
-      
-      context, comline := x, h4!x
 
-      //TEST next=0
-      //THEN breaklab := genlab()
-      //ELSE breaklab := next
-//outcomment("while: next=%n breaklab=%n looplab=%n", next, breaklab, looplab) 
+      // If E is simple enough compile code to check whether the
+      // body should be executed before the body is compiled.
+      LET const = isconst(E)
+      LET constval = 0
+      LET smallE = smallexp(E, 1)
 
-      // breaklab is >0 or =-1
-      // Before entering the loop test the condition.
-      //TEST breaklab<0
-      //THEN { jumpcond(h2!x, sw, bodylab)   // sw=FALSE if compiling UNTIL E DO C
-      //       transreturn()
-      //   }
-      //ELSE { // breaklab is >0
-      //       jumpcond(h2!x, ~sw, breaklab) // ~sw=TRUE if compiling UNTIL E DO C
-      //     }
+      TEST const | smallE
+      THEN { TEST const
+             THEN { // E is a manifest contant expression
+	            constval := evalconst(E, FALSE)
+		    // If constval=0 compile nothing causing
+		    // control to fall into the start of the body.
+		    // Othewise compile code based on the value
+		    // of next. But if next is zero donelab must
+		    // be allocated and Jump Ldonelab must be
+		    // compiled.
+		    UNLESS constval=0 & sw DO
+		    { // constval is FALSE and op=While or
+		      // constval is TRUE  and op=Until so
+		      // compile a jump around the body.
+		      donelab := genlab()
+		      out2(s_jump, donelab)
+		    }
+	          }
+             ELSE { // E is simple but not a manifest constant,
+	            // so if next=0 allocate donelab and compile
+		    // a suitable conditional jump on E to donelab.
+		    // otherwise compile a suitable conditional
+		    // jump on E to next.
+		    TEST next<=0
+		    THEN { donelab := genlab()
+		           jumpcond(E, ~sw, donelab)
+			 }
+		    ELSE { jumpcond(E, ~sw, next)
+		         }
+	          }
+	     // Note that if donelab is non zero, it is necessary
+	     // to compile donelab after compiling the body and
+	     // if next=-1 then compile a retrun from the current
+	     // function or routine.
+           }
+      ELSE { // E is neither a constant nor simple, so allocate
+             // testlab and compile an uncoditional jump to it.
+	     testlab := genlab()
+	     out2(s_jump, testlab)
+           }
 
-      // Not yet optimized
-      testlab := genlab()
-      out2(s_jump, testlab)
+
+      // Now compile the body (C)
       
       out2(s_lab, bodylab) // Label the start of the body
       
-      { // Compile the repetitive body
+      { // Save the BREAK/LOOP environment.
         LET prevbreaklab, prevlooplab = breaklab, looplab
-        breaklab, looplab := genlab(), genlab()
-        trans(h3!x, 0)       // Zero because the body will be followed by
-                             // the conditional jump code.
-        IF looplab DO out2(s_lab, looplab) // Only compiled if LOOP occurred.
-        donelab := breaklab  // Remember the value of breaklab
+        breaklab, looplab := 0, 0
+        trans(C, 0)        // Zero because the body will be followed by
+                           // the conditional jump code.
+        IF looplab DO
+	  out2(s_lab, looplab) // Reached only by LOOP in the body.
+
+        blab := breaklab   // Remember the value of breaklab, only
+	                   // non zero when a BREAK occured in the body.
         breaklab, looplab := prevbreaklab, prevlooplab
       }
 
-      IF testlab DO out2(s_lab, testlab) // Only if needed
+      // Now compile the repetition test
+      IF testlab DO
+        out2(s_lab, testlab) // Only reached when the repetition
+	                     // condition is not tested before
+			     // compiling the body.
       // Compile the test code
       context, comline := x, h4!x
-      jumpcond(h2!x, sw, bodylab) // Compile the conditional jump.
- 
-      //IF next=0 & breaklab>0 DO out2(s_lab, breaklab) // A BREAK command
-                                                      // jumps to breaklab
-      IF donelab DO out2(s_lab, donelab)
+      jumpcond(E, sw, bodylab)           // Compile the conditional jump.
+
+      // This point reached if the repeat condition fails to jump
+      // to the start of the body.
+      IF blab DO
+        out2(s_lab, blab)   // Reached fromBREAK inside the body
+	                    // when next=0
+      IF donelab DO
+        out2(s_lab, donelab) // Readched by jumps made before executing
+	                     // the body for the first time
       trnext(next) // Possibly compile a jump or a return from
                    // a function or routine.
       RETURN

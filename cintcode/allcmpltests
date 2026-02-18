@@ -24,6 +24,12 @@ patcmpltest
 echo patcmpltest
 wait 2
 
+c bc brklooptests
+wait 2
+brklooptests
+echo brklooptests
+wait 2
+
 echo "*nCalling sysinfo"
 sysinfo
 
