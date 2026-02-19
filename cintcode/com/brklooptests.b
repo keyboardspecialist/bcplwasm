@@ -50,6 +50,15 @@ writef("Repetition tests*n*n")
   tst(tstk6(10), 66)
   tst(tstk7(10), 66)
 
+  testno := 4000
+  tst(tstm1(10), 1)
+  tst(tstm2(10), 1)
+  tst(tstm3(10), 37)
+  tst(tstm4(10), 0)
+  tst(tstm5(10), 66)
+  tst(tstm6(10), 66)
+  tst(tstm7(10), 66)
+
 fin:
   writef("*nError count = %n*n", errcount)
   RESULTIS 0
@@ -723,6 +732,33 @@ AND tstk7(n) = VALOF
   RESULTIS res
 }
 
+// Systematic test of WHILE/UNTIL optimisations
+
+AND tstm1(n) = VALOF
+{ // Testing Maniest constant small condition (FALSE)
+  LET x = 22201 // Cintcode location marker
+  LET res = 0
+  LET i = 0
+  //writef("tstk1*n")
+  
+  WHILE FALSE DO
+  { //writef("    i=%i2 res=%i5*n", i, res)
+    i := i+1
+    IF i>8 BREAK
+    res := res+i
+  }
+
+  //writef("res=%i5*n", res)
+
+  RESULTIS res
+}
+
+AND tstm2(n) = 123
+AND tstm3(n) = 123
+AND tstm4(n) = 123
+AND tstm5(n) = 123
+AND tstm6(n) = 123
+AND tstm7(n) = 123
 
 
 
