@@ -775,32 +775,34 @@ LET trans(x, next) BE
       // If E is simple enough compile code to check whether the
       // body should be executed before the body is compiled.
       LET const = isconst(E)
-      LET constval = 0
-      LET smallE = smallexp(E, 1)
-
+      LET constval = const -> evalconst(E, FALSE), 0
+      LET smallE = smallexp(E, 2)
+//sawritef("Compiling While: line=%i5 const=%n constval=%n smallE=%n*n",
+//                         ln&#xFFFFF,const,   constval,   smallE)
       TEST const | smallE
       THEN { TEST const
              THEN { // E is a manifest contant expression
-	            constval := evalconst(E, FALSE)
 		    // If constval=0 compile nothing causing
 		    // control to fall into the start of the body.
 		    // Othewise compile code based on the value
 		    // of next. But if next is zero donelab must
 		    // be allocated and Jump Ldonelab must be
 		    // compiled.
-		    UNLESS constval=0 & sw DO
-		    { // constval is FALSE and op=While or
-		      // constval is TRUE  and op=Until so
-		      // compile a jump around the body.
+		    IF (constval=0) = sw DO
+		    { // If constval is FALSE and op=While
+		      // or constval is TRUE  and op=Until
+		      // compile a jump todonelab around the body.
 		      donelab := genlab()
 		      out2(s_jump, donelab)
 		    }
 	          }
-             ELSE { // E is simple but not a manifest constant,
-	            // so if next=0 allocate donelab and compile
-		    // a suitable conditional jump on E to donelab.
-		    // otherwise compile a suitable conditional
-		    // jump on E to next.
+             ELSE { // const is FALSE and smallE is TRUE so
+	            // if next<=0
+		    //    allocate donelab and
+		    //    compile a conditional jump to donelab.
+		    // otherwise
+		    //    compile a conditional jump to next.
+		    //    
 		    TEST next<=0
 		    THEN { donelab := genlab()
 		           jumpcond(E, ~sw, donelab)
@@ -810,15 +812,14 @@ LET trans(x, next) BE
 	          }
 	     // Note that if donelab is non zero, it is necessary
 	     // to compile donelab after compiling the body and
-	     // if next=-1 then compile a retrun from the current
+	     // if next=-1 then compile a returun from the current
 	     // function or routine.
            }
-      ELSE { // E is neither a constant nor simple, so allocate
+      ELSE { // const=FALSE and smallE=FALSE, so allocate
              // testlab and compile an uncoditional jump to it.
 	     testlab := genlab()
 	     out2(s_jump, testlab)
            }
-
 
       // Now compile the body (C)
       
@@ -826,10 +827,13 @@ LET trans(x, next) BE
       
       { // Save the BREAK/LOOP environment.
         LET prevbreaklab, prevlooplab = breaklab, looplab
+
         breaklab, looplab := 0, 0
+	IF const IF (constval=0)~=sw DO looplab := bodylab
+	
         trans(C, 0)        // Zero because the body will be followed by
                            // the conditional jump code.
-        IF looplab DO
+        IF looplab UNLESS looplab=bodylab  DO
 	  out2(s_lab, looplab) // Reached only by LOOP in the body.
 
         blab := breaklab   // Remember the value of breaklab, only
@@ -2540,6 +2544,12 @@ LET jumpcond(x, b, L) BE
 { // L is an allocated label number > 0
   LET sw = b
 
+  IF isconst(x) DO
+  { LET constval = evalconst(x, FALSE)
+    IF constval=b DO out2(s_jump, L)
+    RETURN
+  }
+  
   SWITCHON h1!x INTO
   { CASE s_false:  b := NOT b
     CASE s_true:   IF b DO out2(s_jump, L)
@@ -2721,7 +2731,7 @@ AND transfor(x, next) BE
 	   // It can be compiled here but it is only worth
 	   // doing so if the limit expression is simple enough
 	   // and next is either a label or zero.
-	   TEST smallexp(limE, 2) & next>=0
+	   TEST smallexp(limE, 1) & next>=0
 	   THEN { // Since the limit expression is simple and
 	          // the conditional jump is to a label, it is
 		  // worth testing the condition at this point.
@@ -2801,9 +2811,15 @@ AND transfor(x, next) BE
 
 AND smallexp(x, d) = VALOF
 { // Return TRUE if x in non null and small
+  UNLESS x RESULTIS FALSE
+
+//sawritef("smallexp(%n, %n): op=%s*n", x, d, opname(h1!x))
+
   IF isconst(x) RESULTIS TRUE
 
-  IF x & d>0 SWITCHON h1!x INTO
+  IF d=0 RESULTIS FALSE
+  
+  SWITCHON h1!x INTO
   { DEFAULT:
       RESULTIS FALSE
 
@@ -2825,6 +2841,12 @@ AND smallexp(x, d) = VALOF
     CASE s_sub:
     CASE s_logand:
     CASE s_logor:
+    CASE s_eq:
+    CASE s_ne:
+    CASE s_gr:
+    CASE s_ge:
+    CASE s_ls:
+    CASE s_le:
       IF smallexp(h2!x, d-1) &
          smallexp(h3!x, d-1) RESULTIS TRUE
       RESULTIS FALSE

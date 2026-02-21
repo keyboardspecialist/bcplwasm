@@ -12,7 +12,7 @@ writef("Repetition tests*n*n")
 
   tst(tstf1(10), 1064)
   tst(tstf2(10), 1064)
-  tst(tstf3(10), 1000)
+  tst(tstf3(10), 1064)
   tst(tstf4(10), 1064)
   tst(tstf5(10), 1064)
   tst(tstf6(10), 1064)
@@ -20,7 +20,7 @@ writef("Repetition tests*n*n")
   tst(tstf8(10),  970)
   tst(tstf9(10),  530)
 
-  testno := 1000
+  testno := 1001
   
   tst(tstg1(10), 11)
   tst(tstg2(10), 54)
@@ -32,7 +32,7 @@ writef("Repetition tests*n*n")
   tst(tstg8(10), 245)
   tst(tstg9(10), 24)
 
-  testno := 2000
+  testno := 2001
 
   tst(tsth1(10), 36)
   tst(tsth2(10), 36)
@@ -41,23 +41,24 @@ writef("Repetition tests*n*n")
   tst(tsth5(10), 50)
   tst(tsth6(10), 0)
 
-  testno := 3000
-  tst(tstk1(10), 1)
-  tst(tstk2(10), 1)
+  testno := 3001
+  tst(tstk1(10), 0)
+  tst(tstk2(10), 0)
   tst(tstk3(10), 37)
   tst(tstk4(10), 0)
   tst(tstk5(10), 66)
   tst(tstk6(10), 66)
   tst(tstk7(10), 66)
 
-  testno := 4000
-  tst(tstm1(10), 1)
-  tst(tstm2(10), 1)
-  tst(tstm3(10), 37)
-  tst(tstm4(10), 0)
-  tst(tstm5(10), 66)
-  tst(tstm6(10), 66)
-  tst(tstm7(10), 66)
+  testno := 4001
+  writef("*nTesting repetitive loop optimizations of bcpltrn*n")
+  tst(tstm1(10), 0)
+  tst(tstm2(10), 31)
+  tst(tstm3(10), 31)
+  tst(tstm4(10), 61)
+  tst(tstm5(10), 50)
+  tst(tstm6(10), 61)
+  tst(tstm7(10), 73)
 
 fin:
   writef("*nError count = %n*n", errcount)
@@ -735,11 +736,11 @@ AND tstk7(n) = VALOF
 // Systematic test of WHILE/UNTIL optimisations
 
 AND tstm1(n) = VALOF
-{ // Testing Maniest constant small condition (FALSE)
+{ // Testing manifest constant small condition (FALSE)
   LET x = 22201 // Cintcode location marker
   LET res = 0
   LET i = 0
-  //writef("tstk1*n")
+  //writef("tstm1*n")
   
   WHILE FALSE DO
   { //writef("    i=%i2 res=%i5*n", i, res)
@@ -753,12 +754,123 @@ AND tstm1(n) = VALOF
   RESULTIS res
 }
 
-AND tstm2(n) = 123
-AND tstm3(n) = 123
-AND tstm4(n) = 123
-AND tstm5(n) = 123
-AND tstm6(n) = 123
-AND tstm7(n) = 123
+AND tstm2(n) = VALOF
+{ // Testing manifest constant small condition (TRUE)
+  LET x = 22202 // Cintcode location marker
+  LET res = 0
+  LET i = 0
+  //writef("tstm2*n")
+  
+  WHILE TRUE DO
+  { //writef("    i=%i2 res=%i5*n", i, res)
+    i := i+1
+    IF i=5 LOOP    // Should jump to start of loop
+    IF i>8 BREAK
+    res := res+i
+  }
+
+  //writef("res=%i5*n", res)
+
+  RESULTIS res
+}
+
+AND tstm3(n) = VALOF
+{ // Testing manifest constant small condition (TRUE)
+  LET x = 22203 // Cintcode location marker
+  LET res = 0
+  LET i = 0
+  //writef("tstm3*n")
+  
+  WHILE i<n DO
+  { //writef("    i=%i2 res=%i5*n", i, res)
+    i := i+1
+    IF i=5 LOOP    // Should jump to start of loop
+    IF i>8 BREAK
+    res := res+i
+  }
+
+  //writef("res=%i5*n", res)
+
+  RESULTIS res
+}
+
+AND tstm4(n) = VALOF
+{ // Testing manifest constant small condition (TRUE)
+  LET x = 22204 // Cintcode location marker
+  LET res = 0
+  LET i = 0
+  //writef("tstm4*n")
+  
+  UNTIL i>=n+1 DO
+  { //writef("    i=%i2 res=%i5*n", i, res)
+    i := i+1
+    IF i=5 LOOP    // Should jump to start of loop
+    IF i>12 BREAK
+    res := res+i
+  }
+
+  //writef("res=%i5*n", res)
+
+  RESULTIS res
+}
+
+AND tstm5(n) = VALOF
+{ // Testing manifest constant small condition (TRUE)
+  LET x = 22205 // Cintcode location marker
+  LET res = 0
+  LET i = 0
+  //writef("tstm5*n")
+  
+  { //writef("    i=%i2 res=%i5*n", i, res)
+    i := i+1
+    IF i=5 LOOP    // Should jump to start of loop
+    IF i>12 BREAK
+    res := res+i
+  } REPEATWHILE i<n
+
+  //writef("res=%i5*n", res)
+
+  RESULTIS res
+}
+
+AND tstm6(n) = VALOF
+{ // Testing manifest constant small condition (TRUE)
+  LET x = 22205 // Cintcode location marker
+  LET res = 0
+  LET i = 0
+  //writef("tstm6*n")
+  
+  { //writef("    i=%i2 res=%i5*n", i, res)
+    i := i+1
+    IF i=5 LOOP    // Should jump to start of loop
+    IF i>12 BREAK
+    res := res+i
+  } REPEATUNTIL i>n
+
+  //writef("res=%i5*n", res)
+
+  RESULTIS res
+}
+
+AND tstm7(n) = VALOF
+{ // Testing manifest constant small condition (TRUE)
+  LET x = 22205 // Cintcode location marker
+  LET res = 0
+  LET i = 0
+  //writef("tstm7*n")
+  
+  { //writef("    i=%i2 res=%i5*n", i, res)
+    i := i+1
+    IF i=5 LOOP    // Should jump to start of loop
+    IF i>12 BREAK
+    res := res+i
+  } REPEAT
+
+  //writef("res=%i5*n", res)
+
+  RESULTIS res
+}
+
 
 
 
