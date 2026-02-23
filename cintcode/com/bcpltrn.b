@@ -686,15 +686,18 @@ LET trans(x, next) BE
       LET c2lab      = genlab()
       LET testendlab = next=0 -> genlab(), next
       context, comline := x, h5!x
-      //outcomment("Compiling TEST E THEN C1 ELSE C2 on line %n", comline&#xFFFFF)
+      //outcomment("Compiling TEST E THEN C1 ELSE C2 on line %n",
+      //            comline&#xFFFFF)
       //outcomment("test: next=%n c2lab=%n testendlab=%n*n",
       //            next, c2lab, testendlab)
       jumpcond(h2!x, FALSE, c2lab)
 
-      //outcomment("test: Translating THEN comand, testendlab=%n*n", testendlab)
+      //outcomment("test: Translating THEN comand, testendlab=%n*n",
+      //            testendlab)
       trans(h3!x, testendlab)
 
-      //outcomment("test: Translating ELSE comand, next=%n*n", next)
+      //outcomment("test: Translating ELSE comand, next=%n*n",
+      //            next)
       out2(s_lab, c2lab)
       trans(h4!x, next)
 
@@ -875,18 +878,20 @@ LET trans(x, next) BE
       out2(s_lab, bodylab) // Label start of body
 
       { LET prevbreaklab, prevlooplab = breaklab, looplab
-        breaklab, looplab := genlab(), genlab()
+        breaklab, looplab := genlab(), 0
 
         trans(h2!x, 0)       // Zero because it is followed by the
                              // conditional jump
         donelab := breaklab
+
         // Compile the destination label for LOOP if necessary.
-        out2(s_lab, looplab)
+        IF looplab DO out2(s_lab, looplab) // Only if needed
+
         breaklab, looplab := prevbreaklab, prevlooplab
       }
 
-      context, comline := x, h4!x
       jumpcond(h3!x, sw, bodylab)
+      context, comline := x, h4!x
 
       // Compile the destination label for BREAK, if necessary.
 
