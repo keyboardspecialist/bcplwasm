@@ -643,7 +643,15 @@ AND scan() BE
     CASE s_lg:   loadt(k_glob,  rdgn());  ENDCASE
     CASE s_ll:   loadt(k_lab,   rdl());   ENDCASE
     CASE s_lf:   loadt(k_fnlab, rdl());   ENDCASE
-    CASE s_ln:   loadt(k_numb,  rdn());   ENDCASE
+    CASE s_ln: { LET n = rdn()
+                 loadt(k_numb,  n)
+                 IF debug>0 & n=29392 DO
+		 { sawritef("*nCompiling LN %n  debug=%n*n", n, debug)
+		   abort(29392)
+		 }
+
+		 ENDCASE
+	       }
 
     CASE s_lflt:
                { // Only used for floating point constants

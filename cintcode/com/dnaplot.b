@@ -935,6 +935,7 @@ AND mkGenomeModel() = VALOF
   LET FLT swx, FLT swy, FLT swz = f0, f1, f0  // Direction w
   LET FLT slx, FLT sly, FLT slz = f0, f0, f1  // Direction l
   LET m = @stx  // The 3x3 orientation matrix
+  LET xxxx = 29392
   
   indexp := 0
   
@@ -996,7 +997,6 @@ AND mkGenomeModel() = VALOF
     drawTriangle(vsxv, isxv, @cx, @dx, @ex, 1.0)   // Cyan
     drawTriangle(vsxv, isxv, @dx, @ax, @ex, 3.0)   // Cyan
   }
-
   IF FALSE DO // Normally not commented out
   { // Draw triangle in the NDC cube as a test.
     LET FLT ax, FLT ay, FLT az = -0.9,  +0.9, +0.9
