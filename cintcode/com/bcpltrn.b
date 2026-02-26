@@ -2549,11 +2549,11 @@ LET jumpcond(x, b, L) BE
 { // L is an allocated label number > 0
   LET sw = b
 
-  IF isconst(x) DO
-  { LET constval = evalconst(x, FALSE)
-    IF constval=b DO out2(s_jump, L)
-    RETURN
-  }
+//  IF isconst(x) DO
+//  { LET constval = evalconst(x, FALSE)
+//    IF constval=b DO out2(s_jump, L)
+//    RETURN
+//  }
   
   SWITCHON h1!x INTO
   { CASE s_false:  b := NOT b

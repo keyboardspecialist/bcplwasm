@@ -935,10 +935,11 @@ AND mkGenomeModel() = VALOF
   LET FLT swx, FLT swy, FLT swz = f0, f1, f0  // Direction w
   LET FLT slx, FLT sly, FLT slz = f0, f0, f1  // Direction l
   LET m = @stx  // The 3x3 orientation matrix
-  LET xxxx = 29392
+  LET xxxx = 10
   
   indexp := 0
-  
+  xxxx := 29392
+
   IF FALSE DO // Normally commented out if debugging model required
   { // Construct a simple 3D shape as a debugging  aid
     // The shape is a hollow 2x2 coloured cube centres at (0,0,0)
