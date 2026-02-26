@@ -1117,7 +1117,7 @@ AND error() BE { writes("  ??*n"); longjump(recp, recl) }
 
 AND wrfcode(f) BE
 { LET s = VALOF SWITCHON f&31 INTO
-  { DEFAULT:
+  { DEFAULT:          //    0    32    64    96   128   160   192   224
     CASE  0: RESULTIS "     -     K   LLP     L    LP    SP    AP     A"
     CASE  1: RESULTIS " FLTOP    KH  LLPH    LH   LPH   SPH   APH    AH"
     CASE  2: RESULTIS "   BRK    KW  LLPW    LW   LPW   SPW   APW    AW"
@@ -1237,7 +1237,7 @@ AND prinstr(pc) BE
     CASE '4': a  := gw(pc+1);                      ENDCASE
     CASE '7': // Global 0 to 255
               a := gb(pc+1); gn := a;              ENDCASE
-    CASE '8': // Global 256 to 512
+    CASE '8': // Global 256 to 511
               a := gb(pc+1); gn := a+256;          ENDCASE
     CASE '9': // Global 0 to 65535
               a := gh(pc+1); gn := a;              ENDCASE
@@ -1285,14 +1285,14 @@ AND gw(pc) = VALOF
 }
 
 // Modified 30/05/2022
-AND instrtype(f) = "F0000000000RI10000000000000RIRI*
-                  *124777777777777777770000RIRIRIRI*
-                  *12488888888888888888000000RIRIRI*
-                  *1249999999999999999900000000RIRI*
-                  *124000000000000000BL00000000RIRI*
-                  *12400000000000000000000000RIRIRI*
-                  *1240000000000?2?0000000000000004*
-                  *124000000000012?00000000000000XY"%f
+AND instrtype(f) = "F0000000000RI10000000000000RIRI*     //   0 -  31
+                  *124777777777777777770000RIRIRIRI*     //  32 -  63
+                  *12488888888888888888000000RIRIRI*     //  64 -  95
+                  *1249999999999999999900000000RIRI*     //  96 - 127
+                  *124000000000000000BL00000000RIRI*     // 128 - 159
+                  *12400000000000000000000000RIRIRI*     // 160 - 191
+                  *12400000000000200000000000000004*     // 192 - 223
+                  *124000000000012000000000000000XY"%f   // 224 - 255
 
 AND nextpc(pc) = VALOF SWITCHON instrtype(0%pc) INTO
                        { DEFAULT:
@@ -1300,15 +1300,14 @@ AND nextpc(pc) = VALOF SWITCHON instrtype(0%pc) INTO
                          CASE '1':
                          CASE 'F': // FLTOP MK exponent
                                    // FLTOP op
-                         writef("   (=XXX)")
                                    IF 0%(pc+1)=fl_mk RESULTIS pc+3
                                    RESULTIS pc+2
-                         CASE '7':
-                         CASE '8':
-                         CASE '9':
+                         CASE '7': // eg LG
+                         CASE '8': // eg LG1
                          CASE 'R':
                          CASE 'I': RESULTIS pc+2
                          CASE 'X':               // SELLD len sh
+                         CASE '9':               // eg LGH
                          CASE '2': RESULTIS pc+3
                          CASE 'Y': RESULTIS pc+4 // SELST op len sh
                          CASE '4': RESULTIS pc+5
