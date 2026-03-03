@@ -683,25 +683,52 @@ LET trans(x, next) BE
  
     CASE s_test:
     { // Translate TEST E THEN C1 ELSE C2
-      LET c2lab      = genlab()
-      LET testendlab = next=0 -> genlab(), next
+      // Compile as follows
+      //   allocase c2lab and compile
+      //   unless E jump to c2lab
+
+      // then
+
+      // If next=0
+      //   Allocate testendlab
+      //   C1 followed by a jump to testendlab
+      //   Lab c2lab
+      //   C2
+      //   Lab testendlab
+
+      // If next>0
+      //   C1 followed by a jump to next
+      //   Lab c2lab
+      //   C2 followed by a jump to next
+      
+      // If next<-1
+      //   C1 followed by a return from function or routine
+      //   Lab c2lab
+      //   C2 followed by a return from function or routine
+      
+      LET c2lab = genlab()
+      IF debug=1 DO
+        sawritef("Test: next=%n c2lab=%n*n", next, c2lab)
+      IF debug=1 DO
+        outcomment("Test: next=%n c2lab=%n*n", next, c2lab)
+
       context, comline := x, h5!x
-      //outcomment("Compiling TEST E THEN C1 ELSE C2 on line %n",
-      //            comline&#xFFFFF)
-      //outcomment("test: next=%n c2lab=%n testendlab=%n*n",
-      //            next, c2lab, testendlab)
       jumpcond(h2!x, FALSE, c2lab)
 
-      //outcomment("test: Translating THEN comand, testendlab=%n*n",
-      //            testendlab)
-      trans(h3!x, testendlab)
+      IF next=0 DO
+      { LET testendlab = genlab()
+        trans(h3!x, testendlab)
+        out2(s_lab, c2lab)
+        trans(h4!x, 0)
+        out2(s_lab, testendlab)
+        RETURN
+      }
 
-      //outcomment("test: Translating ELSE comand, next=%n*n",
-      //            next)
+      IF debug=1 DO
+        sawritef("Test: next=%n c2lab=%b*n", next, c2lab)
+      trans(h3!x, next)
       out2(s_lab, c2lab)
       trans(h4!x, next)
-
-      IF next=0 DO out2(s_lab, testendlab)
       RETURN
     }
  
@@ -2694,7 +2721,7 @@ AND transfor(x, next) BE
 
   // Set k, n to be the instruction to load the end limit value.
   // k and n are both zero if no end limit was specified.
-  IF limE TEST isconst(limE)
+  IF limE TEST FALSE & isconst(limE)
           THEN { k, n := s_ln, evalconst(limE, FALSE)
 	       }
           ELSE { k, n := s_lp, ssp
@@ -2736,7 +2763,7 @@ AND transfor(x, next) BE
 	   // It can be compiled here but it is only worth
 	   // doing so if the limit expression is simple enough
 	   // and next is either a label or zero.
-	   TEST smallexp(limE, 1) & next>=0
+	   TEST FALSE & smallexp(limE, 1) & next>=0
 	   THEN { // Since the limit expression is simple and
 	          // the conditional jump is to a label, it is
 		  // worth testing the condition at this point.
@@ -2772,6 +2799,7 @@ AND transfor(x, next) BE
     context, comline := x, ln
 
     out2(s_lab, bodylab)
+    ///IF debug=1 & bodylab=102 DO abort(65432)
     decllabels(body)
     trans(body, 0)
 
@@ -2796,10 +2824,12 @@ AND transfor(x, next) BE
   TEST k
   THEN { out2(s_lp,s); out2(k,n)
          out1(stepvalue>=0 -> s_le, s_ge)
+         // A limit was given so compile an conditional
+         // jump to the start of the body.
          out2(s_jt, bodylab)
        }
-  ELSE { // No limit was given so compile an unconditional jump
-         // to the start of the body.
+  ELSE { // No limit was given so compile an unconditional
+         // jump to the start of the body.
          out2(s_jump, bodylab)
        }
   // Compile a label for BREAK, if necessary.
@@ -3069,6 +3099,7 @@ LET load(x, ff) BE
            load(x, TRUE)
            RETURN
          }
+
          // Fall through
 
     CASE s_vecap:
@@ -4667,9 +4698,11 @@ AND out4(x, y, z, t) BE { out1(x); out1(y); out1(z); out1(t) }
  
 AND outstring(s) BE FOR i = 0 TO s%0 DO out1(s%i)
 
-AND outcomment(s, a, b, c, d) BE UNLESS nocomments DO
+AND outcomment(s, a, b, c, d) BE //UNLESS nocomments DO
 { LET prevout = output()
   LET ramstream = findoutput("RAM:")
+  IF debug=1 DO abort(97777)
+  sawritef(s,a,b,c,d)
   selectoutput(ramstream)
   writef(s, a, b, c, d)
   selectoutput(prevout)

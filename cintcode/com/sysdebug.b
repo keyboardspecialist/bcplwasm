@@ -1,5 +1,5 @@
 // The program allows the user to inspect the compacted memory
-// dump of the Cintpos system.
+// dump (typically in DUMP.mem) of the Cintsys system.
 
 // Martin Richards (c) November 2006
 
@@ -18,7 +18,6 @@
 SECTION " sysdebug"
 
 GET "libhdr"
-
 
 GLOBAL
 { eof: ug
@@ -74,7 +73,9 @@ MANIFEST {
 }
 
 LET rch() BE
-{ lch := sys(Sys_sardch) // This is for BCPL Cintcode, not Cintpos.
+{ // Read the next character from standard input leaving it
+  // in lch with ch holding the capitalised version.
+  lch := sys(Sys_sardch) // This is for BCPL Cintcode, not Cintpos.
   ch := capitalch(lch)
 }
 
@@ -98,7 +99,7 @@ LET start() = VALOF
   writef("BCPL word size    = %n bits*n", bitsperword)
 
   UNLESS rdargs("FROM", argv, 50) DO
-  { writes("bad arguments for SYSDEBUG*n")
+  { writes("bad arguments for sysdebug*n")
     stop(20)
   }
 
@@ -108,6 +109,8 @@ LET start() = VALOF
     RESULTIS 0
   }
 
+  // The Cintcode memory at the time of the dump has been read
+  // and can be inspected using mem(addr)
   IF mem(rootnode+rtn_devtab) |
      mem(rootnode+rtn_tasktab) DO
   { writef("The dump file seems to be a cintpos dump, not a cintsys dump*n")

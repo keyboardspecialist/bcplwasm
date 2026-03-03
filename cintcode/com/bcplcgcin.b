@@ -438,9 +438,9 @@ AND cgsects(workvec, vecsize) BE UNTIL op=0 DO
 { LET p = workvec
   tempv := p
   p := p+90
-  tempt := p
+  tempt := p  // ie room for 30 SS items
   casek := p
-  p := p+400
+  p := p+400  // Allow up to 400 CASEs in a SWITCHON
   casel := p
   p := p+400
   labv := p
@@ -460,7 +460,8 @@ AND cgsects(workvec, vecsize) BE UNTIL op=0 DO
   TEST t64 & ~ON64
   THEN blkupb := 3 // t64 set but running on a 32-bit implementation
   ELSE blkupb := 2 // otherwise.
-
+  // blkupb is not used so will be removed in due course.
+  
   initstack(3)
   initdatalists()
 
@@ -589,9 +590,20 @@ AND store(s1, s2) BE FOR p = tempv TO arg1 BY 3 DO
                      }
 
 AND scan() BE
-{ IF debug>1 DO { writef("OP=%t5 PND=%t5 ", opname(op), opname(pendingop))
-                  dboutput()
-                }
+{ IF debug>0 DO
+  { IF debug>1 DO newline()
+    writef("op=%t5 ", opname(op))
+    //writef("debug=%n ", debug)
+    TEST debug>1 
+    THEN { writef("pndop=%t5 ", opname(pendingop))
+           dboutput()
+	 }
+    ELSE { newline()
+         }
+
+    IF stvp>2977 DO abort(81234)
+  }
+
   SWITCHON op INTO
 
   { DEFAULT:     cgerror("Bad OCODE op %n %s", op, opname(op))
@@ -733,14 +745,16 @@ AND scan() BE
                  chkrefs(50)
                  ENDCASE
 
-    CASE s_lab:  cgpendingop()
+    CASE s_lab:{ LET lab = rdl()
+                 IF debug=1 & lab=102 DO abort(65432)
+                 cgpendingop()
                  UNLESS incode DO chkrefs(30)
                  store(0, ssp-1)
-                 setlab(rdl())
+                 setlab(lab)
                  forgetall()
                  incode := procdepth>0
                  ENDCASE
-
+               }
     CASE s_query:loadt(k_loc, ssp);              ENDCASE
 
     CASE s_stack:cgpendingop(); stack(rdn());    ENDCASE
@@ -793,26 +807,36 @@ AND scan() BE
                  THEN storet(arg1)
                  ELSE { loada(arg1); stack(ssp-1) }
 
+                 // Deal with Stack statements
                  { op := rdn()
                    UNLESS op=s_stack BREAK
                    stack(rdn())
                  } REPEAT
-
+//IF debug=1 DO
+//  sawritef("Jump: After skipping STACKs op=%s*n", opname(op))
+  
+                 // op is the Ocode operator after skipping Stack
+		 // statements.
+                 // Optimise Jump Ln ... Lab Ln
+		 // ie sometimes do not compile the jump
                  TEST op=s_lab
                  THEN { LET m = rdl()
-                        UNLESS l=m DO genr(f_j, l)
+		        //IF debug=1 DO sawritef("*nJump L%n Lab L%n*n", l, m)
+		        //IF debug=1 & m=102 DO abort(87654)
+                        UNLESS l=m DO
+			  genr(f_j, l) // Only compiled if needed
                         setlab(m)
                         forgetall()
                         incode := procdepth>0
-                        op := rdn()
+                        ENDCASE // Read another Ocode op and repeat scan.
                       }
                  ELSE { genr(f_j, l)
                         incode := FALSE
                         // Deal with some refs.
                         chkrefs(50)
+			LOOP // op is already the next Cintcode op
+			     // so just repeat scan.
                       }
-
-                 LOOP
                }
 
     // rstack always occurs immediately after a lab statement
@@ -832,7 +856,8 @@ AND scan() BE
                }
 
     CASE s_switchon:
-                 cgswitch(); ENDCASE
+                 cgswitch()
+		 ENDCASE
 
     CASE s_getbyte:
                  cgpendingop()
@@ -869,7 +894,8 @@ AND scan() BE
                }
 
     CASE s_global:
-                 cgglobal(rdn()); RETURN
+                 cgglobal(rdn())
+		 RETURN
 
     CASE s_datalab:
     { // DATALAB Ln op1 n1 ... opk nk
@@ -913,6 +939,7 @@ AND scan() BE
     }
   }
 
+  // This point is reached from ENDCASE in the above switch
   op := rdn()
 } REPEAT
 
@@ -1237,14 +1264,19 @@ AND genlp(n) BE TEST 3<=n<=16
                           THEN genh(f_lph, n)
                           ELSE genw(f_lpw, n)
 
-// Load an item (K,N) onto the SS. It may move SS items.
+// Load an item (k,n) onto the SS. It may move SS items.
 AND loadt(k, n) BE
-{ cgpendingop()
+{ // Note arg2 and arg1 hold info about the top
+  // two items on the stack, and arg1=arg2+3
+  cgpendingop()
   TEST arg1+3=tempt
   THEN { storet(tempv)  // SS stack overflow.
+         // Copy all SS items from tempv+3 to tempt-1
+	 // down three places.
          FOR t = tempv TO arg2+2 DO t!0 := t!3
        }
-  ELSE arg2, arg1 := arg2+3, arg1+3
+  ELSE { arg2, arg1 := arg2+3, arg1+3
+       }
   h1!arg1,h2!arg1,h3!arg1 := k,n,ssp
   ssp := ssp + 1
   IF maxssp<ssp DO maxssp := ssp
@@ -2622,7 +2654,14 @@ AND wrword_at(a) BE
 }
 
 AND dboutput() BE
-{ LET p = info_a
+{ // This is used in scan to trace the processing
+  // of Ocode statement and also in wrcode when compiling
+  // Cintcode instructions.
+  // It outputs the values of info about A and B
+  // folloed by the simulated stack if debug=2
+  // or the ref list is debug=3
+  
+  LET p = info_a
   writes("A=(")
   UNTIL p=0 DO { wrkn(h2!p, h3!p)
                  p := !p
@@ -2637,13 +2676,13 @@ AND dboutput() BE
                }
   wrch(')')
    
-  IF debug=2 DO { writes("  STK: ")
+  IF debug=2 DO { writef(" ssp=%n ", ssp)
                   FOR p=tempv TO arg1 BY 3  DO
-                  { IF (p-tempv) REM 30 = 10 DO newline()
+                  { IF (p-tempv) MOD 60 = 0 DO newline()
                     wrkn(h1!p,h2!p)
                     wrch('*s')
                   }
-		  writef("ssp=%n ", ssp)
+		  newline()
                 }
    
   IF debug=3 DO { LET l = rlist
@@ -2658,8 +2697,8 @@ AND dboutput() BE
 				   writef("%8X ", l!3) 
                                  l := !l
                                }
+		  newline()
                 }
-  newline()
 }
 
 
@@ -2693,12 +2732,12 @@ AND wrkn(k,n) BE
 }
 
 AND wrcode(f, form, a, b, c) BE
-{ IF debug=2 DO dboutput()
-  writef("%i4: ", stvp)
+{ writef("%i4: ", stvp)
   wrfcode(f)
   writes("  ")
   writef(form, a, b, c)
   newline()
+  IF debug=2 DO dboutput()
 }
 
 AND wrfcode(f) BE

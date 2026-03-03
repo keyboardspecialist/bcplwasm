@@ -3780,7 +3780,31 @@ void trace1(BCPLWORD pc, BCPLWORD p, BCPLWORD a, BCPLWORD b)
 }
 
 void dumpmem(BCPLWORD *mem, BCPLWORD upb, BCPLWORD context)
-{ FILEPT fp;
+{ // Output the Cintcode memory from mem[0] to mem[upb]
+  // as a sequence of BCPL words in a compacted form.
+  // But before doing so some fields in the rootnode are
+  // updated with information useful to any program that
+  // reads the dumped file.
+  
+  // The compacted form is as follows.
+  
+  // The first word is upb the upper bound of the Cintcode
+  // memory. This is followed by blocks of data.
+  
+  // The first word of a block specifies its length.
+  
+  // If this is positive there are len words of data spectified
+  // by len+1 words as follows
+
+  // len x1, x2,.., xlen   where len is typically 200
+
+  // But a block of words that are all equal can be represented
+  // by two words, the negated length and the value that is to be
+  // repeated len times.
+
+  // -len x1
+
+  FILEPT fp;
   BCPLWORD count = upb;
   BCPLWORD p=0, q, r=0;
   int len = 0;
@@ -3789,11 +3813,11 @@ void dumpmem(BCPLWORD *mem, BCPLWORD upb, BCPLWORD context)
   fp = fopen("DUMP.mem", "wb");
   if(fp==0) goto bad;
 
-  mem[rootnode + Rtn_sysp]   = lastWp-W;
-  mem[rootnode + Rtn_sysg]   = lastWg-W;
-  mem[rootnode + Rtn_sysst]  = lastst;
+  mem[rootnode + Rtn_sysp]   = lastWp-W; // The P pointer
+  mem[rootnode + Rtn_sysg]   = lastWg-W; // The G pointer
+  mem[rootnode + Rtn_sysst]  = lastst;   // The value of reg ST
 
-  mem[rootnode + Rtn_context] = context;
+  mem[rootnode + Rtn_context] = context; // The context as follows
   /* context = 1   SIGINT received                 (sysp, sysg)
   ** context = 2   SIGSEGV received                (sysp, sysg)
   ** context = 3   fault while running boot        (bootregs)
@@ -3801,9 +3825,11 @@ void dumpmem(BCPLWORD *mem, BCPLWORD upb, BCPLWORD context)
   ** context = 5   fault while user running        (klibregs)
   */
 
-  timestamp(datstamp);
+  timestamp(datstamp);                     // Date and time of the dump
   mem[rootnode + Rtn_days]  = datstamp[0]; // days
   mem[rootnode + Rtn_msecs] = datstamp[1]; // msecs
+
+  // Currently this code assumes the BCPL word length is 32 bits.
 
   // Write out size of cintcode memory
   //printf("\n%8lld Memory upb\n", LL upb);

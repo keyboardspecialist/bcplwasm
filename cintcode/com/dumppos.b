@@ -323,10 +323,12 @@ AND dumpmemory() BE
 
     { LET creator = a+size-5
       LET len = memb(creator, 0)
+      LET xxxx = 0
       writef(" allocated by: ")
       
       UNLESS 1 <= len <= 16 DO len := 0 // Invalid creator name
 
+xxxx := 23456
       FOR i = 1 TO len DO wrch(memb(creator, i))
       FOR i = len+1 TO 16 DO wrch(' ')
     }
