@@ -148,10 +148,10 @@ Added $~tag ... $>tag conditional compilation feature to allow
 code to be included if a conditional tag is not set..
 
 03/12/2013
-Added the compiler option OPT/K to set conditional compilation
-options. The argument is a string of option names consisting of
-letters, digits, underlines and dots separated by plus signs or
-indeed any characters not allowed in option names.
+Added the compiler option DEFS/K to set conditional compilation
+options. The argument is a string of conditional compilation names consisting of
+letters, digits, underlines and dots separated by any characters
+not allowed in conditional compilation names.
 
 13/05/2013
 This is a version of the BCPL compiler front end is used by many
@@ -368,10 +368,9 @@ LET default_hdrs() = VALOF // Changed MR 12/07/09
   IF hdrs RESULTIS hdrs
   // The following is only executed if cintsys or cintsys64 fails to set
   // the hdrs field in the rootnode.
+
   // Note that tcb=0 when running under cintsys.
-  TEST t64
-  THEN RESULTIS tcb -> "POS64HDRS", "BCPL64HDRS"
-  ELSE RESULTIS tcb -> "POSHDRS",   "BCPLHDRS"
+  RESULTIS tcb -> "POSHDRS", "BCPLHDRS"
 }
 
 GLOBAL {
@@ -468,16 +467,32 @@ LET chkglobals() = VALOF
 LET start() = VALOF
 { LET treesize = 0
   AND argv = VEC 50
-  AND argform = "FROM/A,TO/K,VER/K,SIZE/K/N,TREE/S,NONAMES/S,*
-                *D1/S,D2/S,OENDER/S,EQCASES/S,BIN/S,XREF/S,GDEFS/S,HDRS/K,*
+  AND argform = "FROM/A,TO/K,VER/K,SIZE/K/N,NONAMES/S,*
+                *OENDER/S,EQCASES/S,BIN/S,XREF/S,GDEFS/S,HDRS/K,*
                 *GB2312/S,UTF8/S,SAVESIZE/K/N,HARD/S,*
-                *T16/S,T32/S,T64/S,OPT/K,TREE2/S,NOSELST/S,MAP/K,LIST/K,-oc/S"
+                *T16/S,T32/S,T64/S,OPT/K,NOSELST/S,MAP/K,LIST/K,*
+		*-oc/S,-d/N"
   // T16, t32, MAP and LIST added by MR 01/10/2020
   LET stdout = output()
-  LET objline1vec = VEC 256/bytesperword+1
+  LET objline1vec  = VEC 256/bytesperword+1
   LET optstringvec = VEC 256/bytesperword+1
 
   debug := 0
+  // debug holds the compiler debugging level, typically as follows:
+
+  // 0       No debugging output
+  // 1       Output just the lexical token
+  // 2       Output the parse tree before running trn
+  // 3       Output the parse tree after running trn
+  // 4       Output the compiled Cintcode as it is generared
+  // 5       Output Ocode operators and the corresponding compiled
+  //         Cintcode as it is generated
+  // 6       Output Ocode operators and the corresponding compiled
+  //         Cintcode as it is generared and the simulated stack
+  // 7       Output Ocode operators and the corresponding compiled
+  //         Cintcode as it is generared and the list of label references
+  // 8       Output Ocode operators and the corresponding compiled
+  //         Cintcode as it is generared and the list of static values
 
   IF chkglobals() DO
   { // There was a problem with the global variable declarations
@@ -529,8 +544,11 @@ LET start() = VALOF
   // Set the current system wordlength flag
   // ON64 is defined in libhdr.h. Previously called c64.
 
-  t64 := ON64 // Set the default target word length
-              // 64 bit compiler has a 64 bit target by default
+  // Initialise the target BCPL word length variables
+  // These can be set to TRUE by compiler arguments.
+  T16, T32, T64 := FALSE, FALSE, FALSE
+  // These will be corrected after the call of rdargs.
+  
   IF rdargs(argform, argv, 50)=0 DO { writes("Bad arguments*n")
                                       errcount := 1
                                       GOTO fin
@@ -540,86 +558,117 @@ LET start() = VALOF
   // bigender is TRUE if currently running on a bigender m/c
   // This is complemented if the argument OENDER is given.
 
-  // Set the default configuration of the target.
-  t16 := FALSE
-  TEST ON64
-  THEN t32, t64, wordbytelen, wordbitlen := FALSE, TRUE, 8, 64
-  ELSE t32, t64, wordbytelen, wordbitlen := TRUE, FALSE, 4, 32
-  
-  IF argv!18 DO                           // T16/S
-  { t16, t32, t64, wordbytelen, wordbitlen :=  TRUE, FALSE, FALSE, 2, 16
-    IF argv!19 | argv!20 DO
-    { writef("Only one of T16, T32 or T64 is allowed*n")
-      RESULTIS 0
-    }
-  }
-  IF argv!19 DO                           // T32/S
-  { t32, t64, wordbytelen, wordbitlen := TRUE, FALSE, 4, 32
-    IF argv!20 DO
-    { writef("Only one of T16, T32 or T64 is allowed*n")
-      RESULTIS 0
-    }
-  }
-  IF argv!20 DO                           // T64/S
-  { t32, t64, wordbytelen, wordbitlen :=  FALSE, TRUE, 8, 64
-  }
-
-  writef("*n%n bit BCPL dev (16 Feb 2026), %n bit target*n",
+  writef("*n%n bit BCPL testing (5 Mar 2026), %n bit target*n",
           bitsperword, wordbitlen)
 
-  IF argv!21 DO                           // OPT/K
-  { LET s = argv!20
-    FOR i = 0 TO s%0 DO optstring%i := s%i
-//writef("*nopt=%s*n", optstring)
-  }
   treesize := 200_000
   IF argv!3 DO treesize := !argv!3        // SIZE/K/N
   IF treesize<10_000 DO treesize := 10_000
   obufsize := treesize/2
 
-  prtree        := argv!4                 // TREE/S
   savespacesize := 3
 
-  // Code generator options 
-  naming := TRUE
+// "FROM/A,TO/K,VER/K,SIZE/K/N,NONAMES/S,*
+// *OENDER/S,EQCASES/S,BIN/S,XREF/S,GDEFS/S,HDRS/K,*
+// *GB2312/S,UTF8/S,SAVESIZE/K/N,HARD/S,*
+// *T16/S,T32/S,T64/S,OPT/K,NOSELST/S,MAP/K,LIST/K,*
+// *-oc/S,-d/N"
 
-  // This must be done after T64 is properly set
+
+  fromfilename := argv!0                  // FROM/A
+  tofilename   := argv!1                  // TO/K
+  errfilename  := argv!2                  // ERR/K
+  
+  naming   := ~argv!4                     // NONAMES/S
+  IF argv!5 DO bigender := ~bigender      // OENDER/S
+  eqcases  := argv!6                      // EQCASES/S
+  bining   := argv!7                      // BIN/S (binary hunk)
+  xrefing  := argv!8                      // XREF/S
+  gdefsing := argv!9                      // GDEFS/S
+
   hdrs := default_hdrs()                  // Set the default HDRS
+  IF argv!10 DO hdrs := argv!10           // HDRS/K
 
-  IF argv!5 DO naming   := FALSE          // NONAMES/S
-  IF argv!6 DO debug    := debug+1        // D1/S
-  IF argv!7 DO debug    := debug+2        // D2/S
-  IF argv!8 DO bigender := ~bigender      // OENDER/S
-  eqcases  := argv!9                      // EQCASES/S
-  bining   := argv!10                     // BIN/S (binary hunk)
-  xrefing  := argv!11                     // XREF/S
-  gdefsing := argv!12                     // GDEFS/S
-  IF argv!13 DO hdrs := argv!13           // HDRS/K
+  defs := argv!11                         // DEFS/S
+
   defaultencoding := UTF8
-  IF argv!14 DO defaultencoding := GB2312 // GB2312/S
-  IF argv!15 DO defaultencoding := UTF8   // UTF8/S
+  IF argv!11 DO defaultencoding := GB2312 // GB2312/S
+  IF argv!12 DO defaultencoding := UTF8   // UTF8/S
   encoding := defaultencoding
-  IF argv!16 DO savespacesize := !(argv!16) // SAVESIZE/K/N
-  hard := argv!17                         // HARD/S
-                                          // t16/S is 18
-                                          // t32/S is 19
-                                          // t64/S is 20
-                                          // OPT   is 21
-  prtree2 := argv!22                      // TREE2/S -- print tree after trans
-                                          // to test the FLT feature.
+  IF argv!13 DO savespacesize := !(argv!13) // SAVESIZE/K/N
+  hard := argv!14                         // HARD/S
 
-  noselst := argv!23                      // NOSELST/S
+  T16 := argv!15                          // T16/S
+  T32 := argv!16                          // T32/S
+  T64 := argv!17                          // T64/S
+
+  // Check the target word length settings
+  
+  IF T16 DO
+  { T16, T32, T64, wordbytelen, wordbitlen :=  TRUE, FALSE, FALSE, 2, 16
+    IF T32 | T64 DO
+    { writef("Only one of T16, T32 or T64 is allowed*n")
+      RESULTIS 0
+    }
+  }
+  IF T32 DO
+  { T32, T64, wordbytelen, wordbitlen := TRUE, FALSE, 4, 32
+    IF T64 DO
+    { writef("Only one of T16, T32 or T64 is allowed*n")
+      RESULTIS 0
+    }
+  }
+  IF T64 DO
+  { T32, T64, wordbytelen, wordbitlen :=  FALSE, TRUE, 8, 64
+  }
+
+  UNLESS T16 | T32 | T64 TEST ON64
+  THEN T32, T64, wordbytelen, wordbitlen := FALSE, TRUE, 8, 64
+  ELSE T32, T64, wordbytelen, wordbitlen := TRUE, FALSE, 4, 32
+
+  IF argv!18 DO                           // DEFS/K
+  { LET s = argv!20
+    FOR i = 0 TO s%0 DO defstring%i := s%i
+//writef("*ndefs=%s*n", defstring)
+  }
+
+  noselst := argv!19                      // NOSELST/S
                                           // Do not generate SELLD or
                                           // SELST Ocode instructions.
 
-  mapfilename  := argv!24                  // MAP/K  For the Z80 codegenerator
-  listfilename := argv!25                  // LIST/K and possibly others
-  nocomments   := ~argv!26                 // -oc/S Set nocomments
+  mapfilename  := argv!20                 // MAP/K  For the Z80 codegenerator
+  listfilename := argv!21                 // LIST/K and possibly others
+  nocomments   := ~argv!22                // -oc/S Set nocomments
+  IF argv!23 DO
+    debug      := !(argv!23)              // -d n  Add n to debug
+    
+writef("debug=%n*n", debug)
+  UNLESS 0 <= debug <= 8 DO
+  { writef("*nThe -d compiler debugging level is out of range.*n")
+    writef("It should be one of the following:*n*n")
 
-  compiling32to32 := ~ON64 & t32
-  compiling32to64 := ~ON64 & t64
-  compiling64to32 :=  ON64 & t32
-  compiling64to64 :=  ON64 & t64
+    writef("0 No debugging output*n")
+    writef("1 Output just the lexical tokens*n")
+    writef("2 Output the parse tree before running trn*n")
+    writef("3 Output the parse tree after running trn*n")
+    writef("4 Output the compiled Cintcode*n")
+    writef("5 Output the Ocode operators and the compiled*n")
+    writef("  Cintcode*n")
+    writef("6 Output the Ocode operators, the compiled*n")
+    writef("  Cintcode and the simulated stack*n")
+    writef("7 Output the Ocode operators, the compiled*n")
+    writef("  Cintcode and the list of label references*n")
+    writef("8 Output the Ocode operators, the compiled*n")
+    writef("  Cintcode and the list of static values*n")
+    newline()
+    result2 := 0
+    RESULTIS 20
+  }
+  
+  compiling32to32 := ~ON64 & T32
+  compiling32to64 := ~ON64 & T64
+  compiling64to32 :=  ON64 & T32
+  compiling64to64 :=  ON64 & T64
 
   // Added 5/10/2010
   IF eqcases DO lookupword := eqlookupword
@@ -677,7 +726,7 @@ IF noselst DO writef("NOSELST option was given*n")
          LET tofilenamev = VEC 64+1 // Room for maximum length string.
          tofilename := tofilenamev
 	 FOR i = 0 TO len DO tofilename%i := arg1%i
-         IF t64 & len>4 &
+         IF T64 & len>4 &
 	    arg1%1='c'  &
 	    arg1%2='i'  &
 	    arg1%3='n'  &
@@ -701,7 +750,6 @@ IF noselst DO writef("NOSELST option was given*n")
          }
        }
   ELSE { ocodeout := findoutput("ocode")
-//  ELSE { ocodeout := findoutput("**")
          IF ocodeout=0 DO
          { writes("Trouble with file ocode*n")
            IF hard DO abort(1000)
@@ -759,12 +807,13 @@ IF noselst DO writef("NOSELST option was given*n")
 
       //writef("Tree size %n*n", treesize+treevec-treep)
  
-      IF prtree DO { writes("*nParse Tree*n")
-                     plist(tree, 0, 20)
-                     newline()
-                     newline()
-		     //abort(2345)
-                   }
+      IF debug=2 DO
+      { writes("*nParse Tree*n")
+        plist(tree, 0, 20)
+        newline()
+        newline()
+	GOTO fin
+      }
 
       IF errcount GOTO fin
  
@@ -773,11 +822,13 @@ IF noselst DO writef("NOSELST option was given*n")
         abort(999)
       }
 
-      IF prtree2 DO { writes("*nParse Tree after calling translate*n")
-                      plist(tree, 0, 20)
-                      newline()
-                      newline()
-                    }
+      IF debug=3  DO
+      { writes("*nParse Tree after calling translate*n")
+        plist(tree, 0, 20)
+        newline()
+        newline()
+	GOTO fin
+      }
   
       obufq := obufp     // Prepare to read from OCODE buffer
       obufp := 0
@@ -1559,9 +1610,9 @@ AND wrchbuf() BE
   //abort(1005)
 }
 
-AND rdoptstring() = VALOF
+AND rddefstring() = VALOF
 { // Read the conditional compilation option specified by the
-  // 'opt' compiler option. They are are stored in the parse tree space
+  // 'defs' compiler option. They are are stored in the parse tree space
   // as names with '<' as the first name character.
   LET pos = 1 // The position of the next optstring
               // character to consider
@@ -1573,6 +1624,9 @@ AND rdoptstring() = VALOF
     charv%0, charv%1 := 1, '<'
  
     // Skip characters before option name
+    // Option names have the same syntax a orinary names,
+    // but we do not insiste that they start with a letter.
+    // Perhaps we should.
     WHILE pos<=optstringlen DO
     { optch := optstring%pos
       IF 'a'<=optch<='z' | 'A'<=optch<='Z' |
@@ -2087,13 +2141,12 @@ AND formtree() =  VALOF
  
   token, decval := 0, 0
 
-  rdoptstring()
+  rddefstring()
 
   lex()
 
-  IF token=s_query DO            // For debugging lex.
+  IF debug=1 | token=s_query DO            // For debugging lex.
   { LET ln, name = ?, ?
-    lex()
     ln := lineno & #xFFFFF
     name := opname(token)
 
@@ -2134,6 +2187,7 @@ AND formtree() =  VALOF
     }
 
     IF token=s_eof RESULTIS 0
+    lex()
   } REPEAT
 
 rec:

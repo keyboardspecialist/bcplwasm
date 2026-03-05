@@ -484,7 +484,7 @@ LET trans(x, next) BE
         { LET k = n      // Initial value is a floating point number
           n := genlab()  // n is now the label for the static variable
           out2(s_datalab, n)
-	  TEST t64 & ~ON64
+	  TEST T64 & ~ON64
           THEN { // Only used by 32 bit bcpl compiling for 64 bit target
 	         out2(s_itemflt, k) // Let the cg convert k to double length
 	       }
@@ -945,7 +945,7 @@ LET trans(x, next) BE
       IF casecount<0 DO trnerr("CASE label out of context")
       WHILE p DO
       { IF h2!p=k DO trnerr("'CASE %n:' occurs twice", k)
-        IF t16 & (h2!p&#xFFFF)=(k&#xFFFF) DO
+        IF T16 & (h2!p&#xFFFF)=(k&#xFFFF) DO
 	  trnerr("'CASE %n:' occurs twice when compiling 16 bit BCPL", k&#xFFFF)
         p := h1!p
       }

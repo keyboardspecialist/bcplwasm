@@ -15,7 +15,7 @@ Modified to include floating point constants and the operators
 #* #/ ~+ #- #= #~= #< #> #<= and #>=.
 
 15/05/13
-Modified to use ON64 and t64 that specify the BCPL word length of
+Modified to use ON64 and T64 that specify the BCPL word length of
 the compiler and target machines, respectively.
 10/05/13
 Major change to the compilation of SWITCHON to stop the compiler
@@ -30,7 +30,7 @@ header g/bcplfecg.h
 
 This is a version of the BCPL Cintcode generator can generate eithe 32
 or 64-bit cintcode.  It is designed to run on both 32- and 64-bit
-systems. The options t32 and t64 specify the bit length of the BCPL
+systems. The options t32 and T64 specify the bit length of the BCPL
 word in the target system. The default is the same as the current
 system.  On 64-bit systems numerical constants are compiles to full
 precision, but on 32-bit systems they are truncated to 32 bits then
@@ -102,8 +102,8 @@ SECTION "BCPLCGCIN"
 // If ON64 is FALSE, we are running an a 32-bit system
 // If ON64 is TRUE,  we are running an a 64-bit system
 
-// If t64 is FALSE, it generates 32-bit Cintcode.
-// If t64 is TRUE,  it generates 64-bit Cintcode.
+// If T64 is FALSE, it generates 32-bit Cintcode.
+// If T64 is TRUE,  it generates 64-bit Cintcode.
 // If neither are set is generates code compatible with the currently
 // running system.
 
@@ -283,7 +283,7 @@ nliste   // =0 or points to the last item of nlist.
 skiplab
 
 codestr
-blkupb            // =3 if bytesperword=4 and t64=TRUE
+blkupb            // =3 if bytesperword=4 and T64=TRUE
                   // =2 otherwise.
 }
 
@@ -417,7 +417,7 @@ f_selst= 255  // Added 20/07/10
 
 LET codegenerate(workspace, workspacesize) BE
 { //writef("%n-bit BCPL generating %n-bit %s ender Cintcode*n",
-  //         (ON64->64,32), (t64->64,32), (bigender->"big","little"))
+  //         (ON64->64,32), (T64->64,32), (bigender->"big","little"))
 
   IF workspacesize<2000 DO { cgerror("Too little workspace")
                              errcount := errcount+1
@@ -430,7 +430,7 @@ LET codegenerate(workspace, workspacesize) BE
 
   cgsects(workspace, workspacesize)
   writef("Code size = %i5 bytes of %n-bit %s ender Cintcode*n",
-         progsize, (t64->64,32), (bigender->"big","little"))
+         progsize, (T64->64,32), (bigender->"big","little"))
 }
 
 
@@ -457,8 +457,8 @@ AND cgsects(workvec, vecsize) BE UNTIL op=0 DO
   procdepth := 0
   info_a, info_b := 0, 0
 
-  TEST t64 & ~ON64
-  THEN blkupb := 3 // t64 set but running on a 32-bit implementation
+  TEST T64 & ~ON64
+  THEN blkupb := 3 // T64 set but running on a 32-bit implementation
   ELSE blkupb := 2 // otherwise.
 
   initstack(3)
@@ -487,7 +487,7 @@ AND cgsects(workvec, vecsize) BE UNTIL op=0 DO
   putw(0, stvp/wordbytelen)  // Plant the word size of the module.
   outputsection()
   progsize := progsize + stvp
-//  IF t64 DO
+//  IF T64 DO
 //  { sawritef("progsize=%n*n", progsize)
 //    abort(4001)
 //  }
@@ -589,9 +589,9 @@ AND store(s1, s2) BE FOR p = tempv TO arg1 BY 3 DO
                      }
 
 AND scan() BE
-{ IF debug>1 DO { writef("OP=%t5 PND=%t5 ", opname(op), opname(pendingop))
-                  dboutput()
-                }
+{ IF debug>=5 DO { writef("*nop=%t5 pdnop=%t5 ", opname(op), opname(pendingop))
+                   dboutput()
+                 }
   SWITCHON op INTO
 
   { DEFAULT:     cgerror("Bad OCODE op %n %s", op, opname(op))
@@ -1542,7 +1542,7 @@ AND cgentry(l, n) BE
                  // string characters
   }
 
-  IF debug>0 DO writef("// Entry to:   %s*n", v)
+  IF debug>=4 DO writef("// Entry to:   %s*n", v)
   setlab(l)
   incode := TRUE
   forgetall()
@@ -1909,7 +1909,7 @@ AND cgstring(n) BE
     IF n>=2 DO c := rdn()
     IF n>=3 DO d := rdn()
     n := n-4      // 1 to 4 bytes are now in a, b, c and d
-    TEST t64
+    TEST T64
     THEN { // The target is 64 bit Cintcode.
            // Attempt to read 4 more bytes.
            IF n>=0 DO e := rdn()
@@ -1949,7 +1949,7 @@ AND setlab(ln) BE
   // relative address field and remove the item from rlist.
   LET p = @rlist
 
-  IF debug>0 DO writef("%i4: L%n:*n", stvp, ln)
+  IF debug>=4 DO writef("%i4: L%n:*n", stvp, ln)
 
   labv!ln := stvp  // Set the label.
 
@@ -2020,13 +2020,13 @@ AND cgstatics() BE WHILE nlist DO
     LET w   = h3!blk
     nlist := !nlist
     TEST ON64
-    THEN TEST t64
+    THEN TEST T64
          THEN codew( (w>>32), w)     // ON64 -> T64
          ELSE codew(-((w>>31)&1), w) // ON64 -> t32   sign extend
                                      // ((w>>31)&1)=0 if 32 bit w>=0
 				     // otherwise  =1
-    ELSE TEST t64
-         THEN codew(  h4!blk, w)     // c32 -> t64
+    ELSE TEST T64
+         THEN codew(  h4!blk, w)     // c32 -> T64
          ELSE codew(       0, w)     // c32 -> t32
     freeblk(blk)
   } REPEATUNTIL nlist=0 |   // Continue until end of list
@@ -2070,20 +2070,20 @@ LET geng(f, n) BE TEST n<256
 
 LET gen(f) BE IF incode DO
 { chkrefs(1)
-  IF debug DO wrcode(f, "")
+  IF debug>=4 DO wrcode(f, "")
   codeb(f)
 }
 
 LET genb(f, a) BE IF incode DO
 { chkrefs(2)
-  IF debug>0 DO wrcode(f, "%i3", a)
+  IF debug>=4 DO wrcode(f, "%i3", a)
   codeb(f)
   codeb(a)
 }
 
 LET genbb(f, a, b) BE IF incode DO
 { chkrefs(3)
-  IF debug>0 DO wrcode(f, "%i3 %i3", a, b)
+  IF debug>=4 DO wrcode(f, "%i3 %i3", a, b)
   codeb(f)
   codeb(a)
   codeb(b)
@@ -2094,7 +2094,7 @@ LET genflt(flop) BE IF incode DO
   // Typical value for flop is fl_mul
   // which would generate FLTOP MUL
   chkrefs(2)
-  IF debug>0 DO wrcode(f_fltop, "%s", flopname(flop))
+  IF debug>=4 DO wrcode(f_fltop, "%s", flopname(flop))
   codeb(f_fltop)
   codeb(flop)
 }
@@ -2103,7 +2103,7 @@ LET genr(f, n) BE IF incode DO
 { // Compile a two byte instruction that referenced label n.
   // Most of the work is done by relref.
   chkrefs(2)
-  IF debug>0 DO wrcode(f, "L%n", n)
+  IF debug>=4 DO wrcode(f, "L%n", n)
   codeb(f)
   codeb(0)
   relref(stvp-2, n)
@@ -2111,7 +2111,7 @@ LET genr(f, n) BE IF incode DO
 
 LET genh(f, h) BE IF incode DO  // Assume 0 <= h <= #xFFFF
 { chkrefs(3)
-  IF debug>0 DO wrcode(f, "%n", h)
+  IF debug>=4 DO wrcode(f, "%n", h)
   codeb(f)
   code2b(h)
 }
@@ -2133,19 +2133,19 @@ LET genw64(f, mw, lw) BE IF incode DO
 
   IF mw DO // Compile the mv instruction if necessary.
   { chkrefs(5)
-    IF debug>0 DO wrcode(f_mw, "#x%x8", mw)
+    IF debug>=4 DO wrcode(f_mw, "#x%x8", mw)
     codeb(f_mw)
     code4b(mw)
   }
 
   chkrefs(5)
-  IF debug>0 DO wrcode(f_lw, "#x%x8", lw)
+  IF debug>=4 DO wrcode(f_lw, "#x%x8", lw)
   codeb(f_lw)
   code4b(lw)
 }
 
 LET genw(f, w) BE IF incode DO
-{ IF t64 & ON64 DO
+{ IF T64 & ON64 DO
   { // Only compile an MW instruction when in 64 bit BCPL
     // compiling for a 64 bit target, and then only when w
     // cannot be represented as a signed 32 bit integer.
@@ -2162,14 +2162,14 @@ LET genw(f, w) BE IF incode DO
     IF mw DO
     { // Compile a MW instruction
       chkrefs(5)
-      IF debug>0 DO wrcode(f_mw, "#x%x8", mw)
+      IF debug>=4 DO wrcode(f_mw, "#x%x8", mw)
       codeb(f_mw)
       code4b(mw)
     }
   }
 
   chkrefs(5)
-  IF debug>0 DO wrcode(f, "#x%x8", w)
+  IF debug>=4 DO wrcode(f, "#x%x8", w)
   codeb(f)
   code4b(w) // Only uses the junior 32 bits of w
 }
@@ -2177,7 +2177,7 @@ LET genw(f, w) BE IF incode DO
 LET genfb(f, flop, a) BE IF incode DO
 { // Only called by: genfb(f_fltop, fl_mk, exponent)
   chkrefs(3)
-  IF debug>0 DO wrcode(f, "%s %n", flopname(flop), a)
+  IF debug>=4 DO wrcode(f, "%s %n", flopname(flop), a)
   codeb(f)
   codeb(flop)
   codeb(a)
@@ -2185,7 +2185,7 @@ LET genfb(f, flop, a) BE IF incode DO
 
 LET genfbb(f, sfop, a, b) BE IF incode DO
 { chkrefs(4)
-  IF debug>0 DO wrcode(f, "%s %n %n", sfname(sfop), a, b)
+  IF debug>=4 DO wrcode(f, "%s %n %n", sfname(sfop), a, b)
   codeb(f)
   codeb(sfop)
   codeb(a)
@@ -2215,13 +2215,13 @@ ELSE { codeb(w    ); codeb(w>>8 ); codeb(w>>16); codeb(w>>24)  }
 AND pack4b(a, b, c, d) = (((a<<8) | b)<<8 | c)<<8 | d
 
 AND codeh(h) BE
-{ IF debug>0 DO writef("%i4:  DATAH %n*n", stvp, h)
+{ IF debug>=4 DO writef("%i4:  DATAH %n*n", stvp, h)
   code2b(h)
 }
 
-AND codew(wh, wl) BE TEST t64
+AND codew(wh, wl) BE TEST T64
 THEN { // 64 bt target
-       IF debug>0 DO writef("%i4:  DATAW #x%x8%x8*n", stvp, wh, wl)
+       IF debug>=4 DO writef("%i4:  DATAW #x%x8%x8*n", stvp, wh, wl)
        TEST bigender
        THEN { codeb(wh>>24)
               codeb(wh>>16)
@@ -2243,7 +2243,7 @@ THEN { // 64 bt target
             }
      }
 ELSE { // 32 bit target
-       IF debug>0 DO writef("%i4:  DATAW #x%x8*n", stvp, wl)
+       IF debug>=4 DO writef("%i4:  DATAW #x%x8*n", stvp, wl)
        TEST bigender
        THEN { codeb(wl>>24)
               codeb(wl>>16)
@@ -2260,7 +2260,7 @@ ELSE { // 32 bit target
 AND codestr(s) BE
 { LET i, len = 0, s%0
 
-  TEST t64
+  TEST T64
   THEN UNTIL i>len DO // Target is 64-bit Cintcode
        { LET p = stvp
          LET a,b,c,d,e,f,g,h = 0,0,0,0,0,0,0,0
@@ -2284,13 +2284,13 @@ AND codestr(s) BE
          TEST bigender
          THEN { codeb(a); codeb(b); codeb(c); codeb(d)
                 codeb(e); codeb(f); codeb(g); codeb(h)
-                IF debug>0 DO
+                IF debug>=3 DO
                   writef("%i4:  DATAW #x%x2%x2%x2%x2%x2%x2%x2%x2*n", 
                           p,            a, b, c, d, e, f, g, h)
               }
          ELSE { codeb(a); codeb(b); codeb(c); codeb(d)
                 codeb(e); codeb(f); codeb(g); codeb(h)
-                IF debug>0 DO
+                IF debug>=4 DO
                   writef("%i4:  DATAW #x%x2%x2%x2%x2%x2%x2%x2%x2*n", 
                           p,            h, g, f, e, d, c, b, a)
               }
@@ -2309,11 +2309,11 @@ AND codestr(s) BE
 
          TEST bigender
          THEN { codeb(a); codeb(b); codeb(c); codeb(d)
-                IF debug>0 DO
+                IF debug>=4 DO
                   writef("%i4:  DATAW #x%x2%x2%x2%x2*n", p, a,b,c,d)
               }
          ELSE { codeb(a); codeb(b); codeb(c); codeb(d)
-                IF debug>0 DO
+                IF debug>=4 DO
                   writef("%i4:  DATAW #x%x2%x2%x2%x2*n", p, d,c,b,a)
               }
        }
@@ -2321,7 +2321,7 @@ AND codestr(s) BE
 
 AND coder(ln) BE
 { LET labval = labv!ln
-  IF debug>0 DO writef("%i4:  DATAH L%n-$*n", stvp, ln)
+  IF debug>=4 DO writef("%i4:  DATAH L%n-$*n", stvp, ln)
   code2b(0)
   TEST labval=-1 THEN { !refliste := getblk(0, stvp-2, ln)
                         refliste := !refliste
@@ -2336,7 +2336,7 @@ AND coder(ln) BE
 }
 
 AND getw(a) = VALOF TEST bigender
-THEN TEST t64
+THEN TEST T64
      THEN RESULTIS 
                    stv%(a+0)<<56 |
                    stv%(a+1)<<48 |
@@ -2350,7 +2350,7 @@ THEN TEST t64
                    stv%(a+1)<<16 |
                    stv%(a+2)<<8  |
                    stv%(a+3)
-ELSE TEST t64
+ELSE TEST T64
      THEN RESULTIS stv%(a+0)     |
                    stv%(a+1)<<8  |
                    stv%(a+2)<<16 |
@@ -2371,7 +2371,7 @@ AND puth(a, w) BE
 
 AND putw(a, w) BE
   TEST bigender
-  THEN TEST t64
+  THEN TEST T64
        THEN { stv%(a+0) := w>>56
               stv%(a+1) := w>>48
               stv%(a+2) := w>>40
@@ -2386,7 +2386,7 @@ AND putw(a, w) BE
               stv%(a+2) := w>>8
               stv%(a+3) := w
             }
-  ELSE TEST t64
+  ELSE TEST T64
        THEN { stv%(a+7) := w>>56
               stv%(a+6) := w>>48
               stv%(a+5) := w>>40
@@ -2459,7 +2459,7 @@ AND genindword(l) BE  // Called only from CHKREFS.
   IF incode DO
   { skiplab := newlab()
     // genr(f_j, skiplab) without the call of chkrefs(2).
-    IF debug>0 DO wrcode(f_j, "L%n", skiplab)
+    IF debug>=4 DO wrcode(f_j, "L%n", skiplab)
     codeb(f_j)
     codeb(0)
     relref(stvp-2, skiplab)
@@ -2490,7 +2490,7 @@ AND inrange_i(a, p) = VALOF
 AND fillref_d(a, p) BE
 { stv%a := stv%a & 254  // Back to direct form if neccessary.
   stv%(a+1) := p-a-1
-  //IF debug>0 DO
+  //IF debug>4 DO
   //  writef("fillref_d: a=%n p=%n instr=[%n,%n]*n", a, p, stv%a, stv%(a+1))
 }
 
@@ -2498,7 +2498,7 @@ AND fillref_i(a, p) BE  // P is even.
 { LET offset = (p-a)/2
   stv%a := stv%a | 1   // Force indirect form.
   stv%(a+1) := offset
-  UNLESS 0<=a<=64000 & 0<=offset<=255 | debug>0 DO
+  UNLESS 0<=a<=64000 & 0<=offset<=255 | debug>=4 DO
     sawritef("fillref_i: a=%n p=%n offset=%n instr:[%n,%n]*n",
               a, p, offset, stv%a, stv%(a+1))
 }
@@ -2541,14 +2541,14 @@ LET outputsection() BE
   UNTIL reflist=0 DO { cgerror("Label L%n unset", h3!reflist)
                        reflist := !reflist
                      }
-//IF t64 DO abort(3000)
+//IF T64 DO abort(3000)
   selectoutput(gostream)  // Output a HUNK or BHUNK.
 
   UNLESS objline1written IF objline1%0 DO
   { writef("%s*n", objline1)
     objline1written := TRUE
   }
-//IF t64 DO abort(3001)
+//IF T64 DO abort(3001)
 
   TEST bining
   THEN { writef("%X3 ", t_bhunk)          // writes 4 chars "BB8 "
@@ -2556,18 +2556,18 @@ LET outputsection() BE
          FOR p=0 TO stvp-1 DO wrch(stv%p) // write the bhunk
        }
   ELSE { newline()
-         TEST t64
+         TEST T64
          THEN { LET p = 0
-//IF t64 DO abort(30011)
+//IF T64 DO abort(30011)
                 writef("%16x ",t_hunk64)
                 writef("%16x ", stvp/wordbytelen)
-//IF t64 DO { newline(); abort(30012) }
+//IF T64 DO { newline(); abort(30012) }
                 WHILE p < stvp DO
                 { IF p MOD 32 = 0 DO newline()
                   wrword_at(p)
                   p := p+wordbytelen
                 }
-//IF t64 DO { newline(); abort(30013) }
+//IF T64 DO { newline(); abort(30013) }
               }
          ELSE { LET p = 0
                 writef("%8x ", t_hunk)
@@ -2578,14 +2578,14 @@ LET outputsection() BE
                   p := p+wordbytelen
                 }
               }
-//IF t64 DO abort(30014)
+//IF T64 DO abort(30014)
          newline()
-//IF t64 DO abort(30015)
+//IF T64 DO abort(30015)
        }
-//IF t64 DO abort(3002)
+//IF T64 DO abort(3002)
 
   selectoutput(outstream)
-//IF t64 DO abort(3003)
+//IF T64 DO abort(3003)
 }
 
 AND wrhex2(byte) BE
@@ -2600,14 +2600,14 @@ AND wrword_at(a) BE
                        wrhex2(stv%(a+1))
                        wrhex2(stv%(a+2))
                        wrhex2(stv%(a+3))
-                       IF t64 DO
+                       IF T64 DO
                        { wrhex2(stv%(a+4))
                          wrhex2(stv%(a+5))
                          wrhex2(stv%(a+6))
                          wrhex2(stv%(a+7))
                        }
                      }
-                ELSE { IF t64 DO
+                ELSE { IF T64 DO
                        { wrhex2(stv%(a+7))
                          wrhex2(stv%(a+6))
                          wrhex2(stv%(a+5))
@@ -2637,21 +2637,22 @@ AND dboutput() BE
                }
   wrch(')')
    
-  IF debug=2 DO { writes("  STK: ")
+  IF debug=6 DO { writes("  ssp=%n*n")
                   FOR p=tempv TO arg1 BY 3  DO
-                  { IF (p-tempv) REM 30 = 10 DO newline()
+                  { IF (p-tempv) MOD 30 = 10 DO newline()
                     wrkn(h1!p,h2!p)
                     wrch('*s')
                   }
-		  writef("ssp=%n ", ssp)
                 }
    
-  IF debug=3 DO { LET l = rlist
+  IF debug=7 DO { LET l = rlist
                   writes("*nRLIST ")
                   UNTIL l=0 DO { writef("%n L%n  ", l!1, l!2)
                                  l := !l
                                }
-                  l := nlist
+                }
+
+  IF debug=8 DO { LET l = nlist
                   writes("*nNLIST ")
                   UNTIL l=0 DO { writef("%n %8x  ", l!1, l!2)
 		                 IF compiling32to64 DO
@@ -2693,7 +2694,7 @@ AND wrkn(k,n) BE
 }
 
 AND wrcode(f, form, a, b, c) BE
-{ IF debug=2 DO dboutput()
+{ IF debug=4 DO dboutput()
   writef("%i4: ", stvp)
   wrfcode(f)
   writes("  ")

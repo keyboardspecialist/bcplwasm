@@ -26,7 +26,7 @@ c64 = BITSPERBCPLWORD=64 // Added 21/9/2019 replaces the global
 // Interface globals are between ug and feg-1
 intg=ug     // First of the interface globals, ie those
             // common to Lex, Syn, Trn and the codegenerator.
-feg=intg+65 // First of the Lex/Syn globals
+feg=intg+70 // First of the Lex/Syn globals
 trng=feg+75 // First of the TRN globals, changed 11/09/2025
 cgg=trng+90 // CG globals are cgg and above, changed 21/04/2022
 
@@ -193,28 +193,40 @@ rdn; wrn
 
 trnerr
 translate        // Main function of the translation phase
-savespacesize
 codegenerate     // Codegenerator Main function
 
-bigender         // Compiler options
+fromfilename     // Compiler options
+tofilename
+errfilename
+
 naming
-debug
+bigender
 eqcases
-prtree
-prtree2
 bining
 xrefing
 gdefsing
+hdrs
+defs             // Conditional compilation defs
+
+defaultencoding  // Default encoding, set by command args.
+encoding         // Current encoding =RTF8 or GB2312
+
+savespacesize
 hard             // Abort on errors
+
+T16              // =TRUE if generating 16-bit target code
+T32              // =TRUE if generating 32-bit target code
+T64              // =TRUE if generating 64-bit target code
+
+debug
+prtree    // This will be removed
+prtree2   // This will be removed
 noselst          // TRUE if not compiling SELLD and SELST instructions.
+
 
 objline1         // either "" or of form "#!..."
 objline1written
 optstring        // The opt argument
-//c64  This is now a manifest constant based on BITSPERBCPLWORD
-t16              // =TRUE if generating 16-bit target code
-t32              // =TRUE if generating 32-bit target code
-t64              // =TRUE if generating 64-bit target code
 
 compiling32to32  // =TRUE if 32-bit BCPL is compiling for a 32-bit target
 compiling32to64  // =TRUE if 32-bit BCPL is compiling for a 64-bit target
@@ -224,7 +236,6 @@ compiling64to64  // =TRUE if 64-bit BCPL is compiling for a 64-bit target
 wordbytelen      // = 2, 4 or  8
 wordbitlen       // = 16, 32 or 64
 encoding         // Current encoding =RTF8 or GB2312
-defaultencoding  // Default encoding, set by command args.
 
 errcount; errmax
 sourcestream; sysprint; ocodeout
