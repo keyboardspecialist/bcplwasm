@@ -1,6 +1,10 @@
 # This makefile is used to create .tgz versions
 # of the bcplman distribution.
 
+# If BCPL/ is not yet ready for distribution on my home page it can
+# still be sent there as bcplnew.tgz so that it can be copied easily
+# to other machines. This is done by: make sshbcplnew.
+
 PUB = /homes/mr/public_html
 
 # Public HTML directory if not mountable on this machine
@@ -47,7 +51,7 @@ allnew:
 	(cd natbcpl; make clean)
 	(cd bcplprogs; make vclean)
 	(cd ..; tar czf bcplnew.tgz BCPL)
-	ls -l ../bcplnew.tgz >TGZFILES
+	ls -l ../bcplnew.tgz >TGZFILESNEW
 
 sshpube:	dose
 	scp README TGZFILES ../bcpl.tgz $(SSHPUB)/BCPL
