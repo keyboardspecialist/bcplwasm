@@ -148,10 +148,10 @@ Added $~tag ... $>tag conditional compilation feature to allow
 code to be included if a conditional tag is not set..
 
 03/12/2013
-Added the compiler option OPT/K to set conditional compilation
-options. The argument is a string of option names consisting of
-letters, digits, underlines and dots separated by plus signs or
-indeed any characters not allowed in option names.
+Added the compiler option DEFS/K to set conditional compilation
+options. The argument is a string of conditional compilation names consisting of
+letters, digits, underlines and dots separated by any characters
+not allowed in conditional compilation names.
 
 13/05/2013
 This is a version of the BCPL compiler front end is used by many
@@ -368,10 +368,9 @@ LET default_hdrs() = VALOF // Changed MR 12/07/09
   IF hdrs RESULTIS hdrs
   // The following is only executed if cintsys or cintsys64 fails to set
   // the hdrs field in the rootnode.
+
   // Note that tcb=0 when running under cintsys.
-  TEST t64
-  THEN RESULTIS tcb -> "POS64HDRS", "BCPL64HDRS"
-  ELSE RESULTIS tcb -> "POSHDRS",   "BCPLHDRS"
+  RESULTIS tcb -> "POSHDRS", "BCPLHDRS"
 }
 
 GLOBAL {
@@ -468,16 +467,24 @@ LET chkglobals() = VALOF
 LET start() = VALOF
 { LET treesize = 0
   AND argv = VEC 50
-  AND argform = "FROM/A,TO/K,VER/K,SIZE/K/N,TREE/S,NONAMES/S,*
-                *D1/S,D2/S,OENDER/S,EQCASES/S,BIN/S,XREF/S,GDEFS/S,HDRS/K,*
+  AND argform = "FROM/A,TO/K,ERR/K,SIZE/K/N,NONAMES/S,*
+                *OENDER/S,EQCASES/S,BIN/S,XREF/S,GDEFS/S,HDRS/K,*
                 *GB2312/S,UTF8/S,SAVESIZE/K/N,HARD/S,*
-                *T16/S,T32/S,T64/S,OPT/K,TREE2/S,NOSELST/S,MAP/K,LIST/K,-oc/S"
+                *T16/S,T32/S,T64/S,DEFS/K,NOSELST/S,MAP/K,LIST/K,*
+		*-h/S,-d/N"
   // T16, t32, MAP and LIST added by MR 01/10/2020
-  LET stdout = output()
-  LET objline1vec = VEC 256/bytesperword+1
-  LET optstringvec = VEC 256/bytesperword+1
+  LET objline1vec  = VEC 256/bytesperword+1
+  LET defstringvec = VEC 256/bytesperword+1
 
-  debug := 0
+  stdout := output()
+  stdin  := input()
+  errstream := 0
+  sysprint  := 0
+  
+//writef("stdout=%n stdin=%n*n", stdout, stdin)
+
+  debug := 0  // debug holds the compiler debugging level.
+              // Try bcpl com/hello.b -d 20 to see what is available
 
   IF chkglobals() DO
   { // There was a problem with the global variable declarations
@@ -494,8 +501,8 @@ LET start() = VALOF
   
   objline1 := objline1vec
   objline1%0 := 0
-  optstring := optstringvec
-  optstring%0 := 0
+  defstring := defstringvec
+  defstring%0 := 0
   errmax   := 10
   errcount := 0
   fin_p, fin_l := level(), fin
@@ -506,9 +513,9 @@ LET start() = VALOF
 
   treevec      := 0
   obuf         := 0
-  sourcestream := 0
+  fromstream   := 0
   ocodeout     := 0
-  gostream     := 0
+  tostream     := 0
   getstreams   := 0
 
   sysprint := stdout
@@ -529,97 +536,151 @@ LET start() = VALOF
   // Set the current system wordlength flag
   // ON64 is defined in libhdr.h. Previously called c64.
 
-  t64 := ON64 // Set the default target word length
-              // 64 bit compiler has a 64 bit target by default
+  // Initialise the target BCPL word length variables
+  // These can be set to TRUE by compiler arguments.
+  T16, T32, T64 := FALSE, FALSE, FALSE
+  // These will be corrected after the call of rdargs.
+  
   IF rdargs(argform, argv, 50)=0 DO { writes("Bad arguments*n")
                                       errcount := 1
-                                      GOTO fin
+				      helping := TRUE
+                                      GOTO help
                                     }
 
   bigender := (!"AAAAAAA" & 255) ~= 7
   // bigender is TRUE if currently running on a bigender m/c
   // This is complemented if the argument OENDER is given.
 
-  // Set the default configuration of the target.
-  t16 := FALSE
-  TEST ON64
-  THEN t32, t64, wordbytelen, wordbitlen := FALSE, TRUE, 8, 64
-  ELSE t32, t64, wordbytelen, wordbitlen := TRUE, FALSE, 4, 32
-  
-  IF argv!18 DO                           // T16/S
-  { t16, t32, t64, wordbytelen, wordbitlen :=  TRUE, FALSE, FALSE, 2, 16
-    IF argv!19 | argv!20 DO
-    { writef("Only one of T16, T32 or T64 is allowed*n")
-      RESULTIS 0
-    }
-  }
-  IF argv!19 DO                           // T32/S
-  { t32, t64, wordbytelen, wordbitlen := TRUE, FALSE, 4, 32
-    IF argv!20 DO
-    { writef("Only one of T16, T32 or T64 is allowed*n")
-      RESULTIS 0
-    }
-  }
-  IF argv!20 DO                           // T64/S
-  { t32, t64, wordbytelen, wordbitlen :=  FALSE, TRUE, 8, 64
-  }
-
-  writef("*n%n bit BCPL dev (16 Feb 2026), %n bit target*n",
-          bitsperword, wordbitlen)
-
-  IF argv!21 DO                           // OPT/K
-  { LET s = argv!20
-    FOR i = 0 TO s%0 DO optstring%i := s%i
-//writef("*nopt=%s*n", optstring)
-  }
   treesize := 200_000
   IF argv!3 DO treesize := !argv!3        // SIZE/K/N
   IF treesize<10_000 DO treesize := 10_000
   obufsize := treesize/2
 
-  prtree        := argv!4                 // TREE/S
   savespacesize := 3
 
-  // Code generator options 
-  naming := TRUE
+// "FROM/A,TO/K,ERR/K,SIZE/K/N,NONAMES/S,*
+// *OENDER/S,EQCASES/S,BIN/S,XREF/S,GDEFS/S,HDRS/K,*
+// *GB2312/S,UTF8/S,SAVESIZE/K/N,HARD/S,*
+// *T16/S,T32/S,T64/S,DEFS/K,NOSELST/S,MAP/K,LIST/K,*
+// *-h/S,-d/N"
 
-  // This must be done after T64 is properly set
+
+  fromfilename := argv!0                  // FROM/A
+  tofilename   := argv!1                  // TO/K
+  errfilename  := argv!2                  // ERR/K
+  
+  naming   := ~argv!4                     // NONAMES/S
+  IF argv!5 DO bigender := ~bigender      // OENDER/S
+  eqcases  := argv!6                      // EQCASES/S
+  bining   := argv!7                      // BIN/S (binary hunk)
+  xrefing  := argv!8                      // XREF/S
+  gdefsing := argv!9                      // GDEFS/S
+
   hdrs := default_hdrs()                  // Set the default HDRS
+  IF argv!10 DO hdrs := argv!10           // HDRS/K
 
-  IF argv!5 DO naming   := FALSE          // NONAMES/S
-  IF argv!6 DO debug    := debug+1        // D1/S
-  IF argv!7 DO debug    := debug+2        // D2/S
-  IF argv!8 DO bigender := ~bigender      // OENDER/S
-  eqcases  := argv!9                      // EQCASES/S
-  bining   := argv!10                     // BIN/S (binary hunk)
-  xrefing  := argv!11                     // XREF/S
-  gdefsing := argv!12                     // GDEFS/S
-  IF argv!13 DO hdrs := argv!13           // HDRS/K
+  defs := argv!11                         // DEFS/S
+
   defaultencoding := UTF8
-  IF argv!14 DO defaultencoding := GB2312 // GB2312/S
-  IF argv!15 DO defaultencoding := UTF8   // UTF8/S
+  IF argv!11 DO defaultencoding := GB2312 // GB2312/S
+  IF argv!12 DO defaultencoding := UTF8   // UTF8/S
   encoding := defaultencoding
-  IF argv!16 DO savespacesize := !(argv!16) // SAVESIZE/K/N
-  hard := argv!17                         // HARD/S
-                                          // t16/S is 18
-                                          // t32/S is 19
-                                          // t64/S is 20
-                                          // OPT   is 21
-  prtree2 := argv!22                      // TREE2/S -- print tree after trans
-                                          // to test the FLT feature.
+  IF argv!13 DO savespacesize := !(argv!13) // SAVESIZE/K/N
 
-  noselst := argv!23                      // NOSELST/S
+  hard := argv!14                         // HARD/S
+
+  T16 := argv!15                          // T16/S
+  T32 := argv!16                          // T32/S
+  T64 := argv!17                          // T64/S
+
+  IF argv!18 DO                           // DEFS/K
+  { // Copy the string of conditional compilation names
+    // into defstring ready to be processed by rddefstring.
+    LET s = argv!18
+    FOR i = 0 TO s%0 DO defstring%i := s%i
+  }
+  //writef("*ndefstring=*"%s*"*n", defstring)
+
+  noselst := argv!19                      // NOSELST/S
                                           // Do not generate SELLD or
                                           // SELST Ocode instructions.
 
-  mapfilename  := argv!24                  // MAP/K  For the Z80 codegenerator
-  listfilename := argv!25                  // LIST/K and possibly others
-  nocomments   := ~argv!26                 // -oc/S Set nocomments
+  mapfilename  := argv!20                 // MAP/K  For the Z80 codegenerator
+  listfilename := argv!21                 // LIST/K and possibly others
+  helping      := argv!22                 // -h/S Output help info
+  IF argv!23 DO
+    debug      := !(argv!23)              // -d n  Add n to debug
+    
+  // Check the target bit and word length settings
+  
+  IF T16 DO
+  { T16, T32, T64, targetbytelen, targetbitlen :=  TRUE, FALSE, FALSE, 2, 16
+    IF T32 | T64 DO
+    { writef("Only one of T16, T32 or T64 is allowed*n")
+      RESULTIS 0
+    }
+  }
+  IF T32 DO
+  { T32, T64, targetbytelen, targetbitlen := TRUE, FALSE, 4, 32
+    IF T64 DO
+    { writef("Only one of T16, T32 or T64 is allowed*n")
+      RESULTIS 0
+    }
+  }
+  IF T64 DO
+  { T32, T64, targetbytelen, targetbitlen :=  FALSE, TRUE, 8, 64
+  }
 
-  compiling32to32 := ~ON64 & t32
-  compiling32to64 := ~ON64 & t64
-  compiling64to32 :=  ON64 & t32
-  compiling64to64 :=  ON64 & t64
+  UNLESS T16 | T32 | T64 TEST ON64
+  THEN T32, T64, targetbytelen, targetbitlen := FALSE, TRUE, 8, 64
+  ELSE T32, T64, targetbytelen, targetbitlen := TRUE, FALSE, 4, 32
+
+  writef("*n%n bit BCPL testing (5 Mar 2026), %n bit target*n",
+          bitsperword, targetbitlen)
+
+help:
+  IF helping DO
+  { newline()
+    writef("The compiler arguments TREE, TREE2,D1,D2 and -oc have*n")
+    writef("have been removed and replaced by -d.*n")
+    writef("Try bcpl com/hello.b -d 99 to see what is now available.*n")
+    writef("Argument VER and OPT has been renamed ERR and DEFS.*n*n")
+    GOTO fin
+  }
+
+  //writef("debug=%n*n", debug)
+  UNLESS 0 <= debug <= 10 DO
+  { writef("*nThe -d compiler debugging level is out of range.*n")
+    writef("It should be one of the following:*n*n")
+
+    writef("This is not yet fully implemented*n*n")
+
+    writef("0  No debugging output*n")
+    writef("1  Output just the lexical tokens*n")
+    writef("2  Output the parse tree before generating the Ocode*n")
+    writef("3  Output the parse tree after generating the Ocode*n")
+    writef("4  Output the Ocode to file: ocode as a sequence of integers*n")
+    writef("5  Output the Ocode in a readable form*n")
+    writef("6  Output the compiled Cintcode*n")
+    writef("7  Output the Ocode operators and the compiled*n")
+    writef("   Cintcode*n")
+    writef("8  Output the Ocode operators, the compiled*n")
+    writef("   Cintcode and the simulated stack while compiling*n")
+    writef("9  Output the Ocode operators, the compiled*n")
+    writef("   Cintcode and the list of label references*n")
+    writef("   while compiling*n")
+    writef("10 Output the Ocode operators, the compiled*n")
+    writef("   Cintcode and the list of static values*n")
+    writef("   while compiling*n")
+    newline()
+    result2 := 0
+    RESULTIS 20
+  }
+  
+  compiling32to32 := ~ON64 & T32
+  compiling32to64 := ~ON64 & T64
+  compiling64to32 :=  ON64 & T32
+  compiling64to64 :=  ON64 & T64
 
   // Added 5/10/2010
   IF eqcases DO lookupword := eqlookupword
@@ -658,57 +719,48 @@ IF noselst DO writef("NOSELST option was given*n")
     objline1written := FALSE
   }
 
-  sourcestream := findinput(argv!0)       // FROM/A
-  sourcenamev!0 := argv!0    // File number zero is the FROM file
+  fromstream := findinput(fromfilename)       // FROM/A
+  sourcenamev!0 := fromfilename    // File number zero is the FROM file
   sourcefileno  := 0
 
-  IF sourcestream=0 DO { writef("Trouble with file %s*n", argv!0)
+  IF fromstream=0 DO { writef("Trouble with file %s*n", fromfilename)
                          IF hard DO abort(1000)
                          errcount := 1
                          GOTO fin
                        }
 
-  selectinput(sourcestream)
+  selectinput(fromstream)
 
-  TEST argv!1                             // TO/K
-  THEN { // Change cin/ to cin64/ if necessary.
-         LET arg1 = argv!1
-	 LET len  = arg1%0
-         LET tofilenamev = VEC 64+1 // Room for maximum length string.
-         tofilename := tofilenamev
-	 FOR i = 0 TO len DO tofilename%i := arg1%i
-         IF t64 & len>4 &
-	    arg1%1='c'  &
-	    arg1%2='i'  &
-	    arg1%3='n'  &
-	    arg1%4='/'  DO
-         { // The target code is 64 bit and the destination starts
-	   // with cin/ so replace it by cin64/
-	   tofilename%4 := '6'
-           tofilename%5 := '4'
-           FOR i = 4 TO len DO tofilename%(i+2) := arg1%i
-	   tofilename%0 := len+2
-         }
+  IF tofilename DO                             // TO/K
+  { // Change cin/ to cin64/ if necessary.
+    LET arg1 = tofilename
+    LET len  = arg1%0
+    LET tofilenamev = VEC 64+1 // Room for maximum length string.
+    tofilename := tofilenamev
+    FOR i = 0 TO len DO tofilename%i := arg1%i
+    IF T64 & len>4 &
+       arg1%1='c'  &
+       arg1%2='i'  &
+       arg1%3='n'  &
+       arg1%4='/'  DO
+    { // The target code is 64 bit and the destination starts
+      // with cin/ so replace it by cin64/
+      tofilename%4 := '6'
+      tofilename%5 := '4'
+      FOR i = 4 TO len DO tofilename%(i+2) := arg1%i
+      tofilename%0 := len+2
+    }
 
-         //writef("bcpl compiling to file: %s*n", tofilename)
+    //writef("bcpl compiling to file: %s*n", tofilename)
 
-         gostream := findoutput(tofilename)
-         IF gostream=0 DO
-         { writef("Trouble with code file %s*n", tofilename)
-           IF hard DO abort(1000)
-           errcount := 1
-           GOTO fin
-         }
-       }
-  ELSE { ocodeout := findoutput("ocode")
-//  ELSE { ocodeout := findoutput("**")
-         IF ocodeout=0 DO
-         { writes("Trouble with file ocode*n")
-           IF hard DO abort(1000)
-           errcount := 1
-           GOTO fin
-         }
-       }
+    tostream := findoutput(tofilename)
+    IF tostream=0 DO
+    { writef("Trouble with code file %s*n", tofilename)
+      IF hard DO abort(1000)
+      errcount := 1
+      GOTO fin
+    }
+  }
 
   treevec := getvec(treesize)
   obuf    := getvec(obufsize)
@@ -719,13 +771,13 @@ IF noselst DO writef("NOSELST option was given*n")
     GOTO fin
   }
    
-  IF argv!2 DO                            // VER/K
+  IF errfilename DO                            // ERR/K
   { TEST xrefing
-    THEN sysprint := findappend(argv!2)
-    ELSE sysprint := findoutput(argv!2)
+    THEN sysprint := findappend(errfilename)
+    ELSE sysprint := findoutput(errfilename)
     IF sysprint=0 DO
     { sysprint := stdout
-      writef("Trouble with file %s*n", argv!2)
+      writef("Trouble with file %s*n", errfilename)
       IF hard DO abort(1000)
       errcount := 1
       GOTO fin
@@ -740,7 +792,7 @@ IF noselst DO writef("NOSELST option was given*n")
     FOR i = 0 TO 63 DO chbuf%i := 0
     // Sourcefile 0 is the FROM filename
     // others are GET files of the current section
-    sourcenamev!0 := argv!0
+    sourcenamev!0 := fromfilename
     sourcefileno := 0
     FOR i = 1 TO sourcenamevupb DO sourcenamev!i := 0 // Done for safety
 
@@ -759,12 +811,13 @@ IF noselst DO writef("NOSELST option was given*n")
 
       //writef("Tree size %n*n", treesize+treevec-treep)
  
-      IF prtree DO { writes("*nParse Tree*n")
-                     plist(tree, 0, 20)
-                     newline()
-                     newline()
-		     //abort(2345)
-                   }
+      IF debug=2 DO
+      { writes("*nParse Tree*n")
+        plist(tree, 0, 20)
+        newline()
+        newline()
+	GOTO fin
+      }
 
       IF errcount GOTO fin
  
@@ -773,21 +826,28 @@ IF noselst DO writef("NOSELST option was given*n")
         abort(999)
       }
 
-      IF prtree2 DO { writes("*nParse Tree after calling translate*n")
-                      plist(tree, 0, 20)
-                      newline()
-                      newline()
-                    }
+      IF debug=3  DO
+      { writes("*nParse Tree after calling translate*n")
+        plist(tree, 0, 20)
+        newline()
+        newline()
+	GOTO fin
+      }
   
       obufq := obufp     // Prepare to read from OCODE buffer
       obufp := 0
 
-      TEST argv!1=0  // TO/K
-      THEN { // Comment out one of the following lines
-             writeocode()  // Write OCODE file if no TO argument
-             //writeocodebytes()
-           }
-      ELSE codegenerate(treevec, treesize)
+      IF debug=4 DO
+      {        writeocode()
+	selectoutput(stdout)
+      }
+
+      IF debug=5 DO
+      { writef("Write OCODE in readable form*n")
+        procode()
+      }
+      UNLESS debug=4 | debug=5 DO
+        codegenerate(treevec, treesize)
     } REPEATWHILE token=s_dot
   }
    
@@ -803,15 +863,21 @@ fin:
       IF i DO freevec(str)
     }
   }
-
+//writef("sourcenamev=%n treevec=%n obuf=%n*n",
+//        sourcenamev,   treevec,   obuf)
   IF sourcenamev   DO freevec(sourcenamev)
 
   IF treevec       DO freevec(treevec)
   IF obuf          DO freevec(obuf)
-  IF sourcestream  DO IF sourcestream DO endstream(sourcestream)
-  IF ocodeout      IF ocodeout UNLESS ocodeout=stdout DO endstream(ocodeout)
-  IF gostream      IF gostream UNLESS gostream=stdout DO endstream(gostream)
-  UNLESS sysprint=stdout DO endstream(sysprint)
+
+
+//writef("fromstream=%n tostream=%n errstream=%n*n",
+//        fromstream, tostream,   errstream)
+  IF fromstream  DO endstream(fromstream)
+  //IF ocodeout UNLESS ocodeout=stdout DO endstream(ocodeout)
+  IF tostream UNLESS tostream=stdout DO endstream(tostream)
+//  writef("sysprint=%n stdout=%n stdin=%n*n", sysprint, stdout, stdin)
+  IF sysprint UNLESS sysprint=stdout DO endstream(sysprint)
 
   selectoutput(stdout)
 
@@ -831,22 +897,9 @@ obuft        end of the OCODE buffer.
 obufsize     size of obuf (in words)
 */
 
-AND writeocode() BE
-{ LET layout = 0
-  selectoutput(ocodeout)
-
-  UNTIL obufp>=obufq DO
-  { writef(" %n", rdn())
-    layout := layout+1
-    UNLESS layout MOD 16 DO newline()
-  }
-  newline()
-  selectoutput(sysprint)
-  writef("OCODE size: %i5/%n*n", obufq, obuft)
-}
-
 AND rdn() = VALOF
-{ LET byte = obuf%obufp
+{ // Return the next value from the Ocode buffer
+  LET byte = obuf%obufp
   IF obufp>=obufq RESULTIS 0
   obufp := obufp+1
   IF byte<223 RESULTIS byte
@@ -965,7 +1018,7 @@ LET lex() BE
 
                 CASE s_bitsperbcplword:                  // BITSPERBCPLWORD
                    token := s_number
-                   decval := wordbitlen // Target code word length
+                   decval := targetbitlen // Target code word length
                    RETURN
 
                 // Some reserved words become assignment operators
@@ -1371,10 +1424,10 @@ checkass:       UNLESS ch=':' RETURN
                 endread()
                 ch           := h4!getstreams
                 lineno       := h3!getstreams
-                sourcestream := h2!getstreams
+                fromstream := h2!getstreams
                 getstreams   := h1!getstreams
                 freevec(p) // Free the GET node
-                selectinput(sourcestream)
+                selectinput(fromstream)
                 LOOP
               }
               // endstreamch => EOF only at outermost GET level 
@@ -1559,41 +1612,44 @@ AND wrchbuf() BE
   //abort(1005)
 }
 
-AND rdoptstring() = VALOF
-{ // Read the conditional compilation option specified by the
-  // 'opt' compiler option. They are are stored in the parse tree space
+AND rddefstring() = VALOF
+{ // Read the conditional compilation options specified in
+  // defsstring. They are are stored in the parse tree space
   // as names with '<' as the first name character.
+  // Each name is a letter followed by letters, digits, dots
+  // and underscores. They are separated by arbitrary characters
+  // until the next letter or eof.
   LET pos = 1 // The position of the next optstring
               // character to consider
-  LET optstringlen = optstring%0
-  LET optch = ?
+  LET upb = defstring%0
+  LET ch = ?
 
   { // Get next option name, if any
     LET len = 1
     charv%0, charv%1 := 1, '<'
  
-    // Skip characters before option name
-    WHILE pos<=optstringlen DO
-    { optch := optstring%pos
-      IF 'a'<=optch<='z' | 'A'<=optch<='Z' |
-         '0'<=optch<='9' | optch='.' | optch='_' BREAK
+    // Skip until the next letter
+    WHILE pos<=upb DO
+    { ch := defstring%pos
+      IF 'a'<=ch<='z' | 'A'<=ch<='Z' BREAK
       pos := pos+1
     }
 
     // Copy option name, if any, into charv
-    WHILE pos<=optstringlen DO
-    { optch := optstring%pos
-      UNLESS 'a'<=optch<='z' | 'A'<=optch<='Z' |
-             '0'<=optch<='9' | optch='.' | optch='_' BREAK
+    WHILE pos<=upb DO
+    { ch := defstring%pos
+      UNLESS 'a'<=ch<='z' | 'A'<=ch<='Z' |
+             '0'<=ch<='9' | ch='.' | ch='_' BREAK
       // Copy next option name character into charv, if room
       len := len+1
-      IF len<=255 DO charv%0, charv%len := len, optch
+      IF len<=255 DO charv%0, charv%len := len, ch
       pos := pos+1
     }
 
-    IF len<=1 BREAK // No more option names
+    IF len<=1 BREAK // No more conditional compilation names
 
-    // Declare option name
+    // Declare the conditional compilation name and set its value
+    // to TRUE
     token := lookupword(charv)
     h1!wordnode := s_true
 
@@ -1601,7 +1657,7 @@ AND rdoptstring() = VALOF
 //FOR i = 2 TO charv%0 DO sawrch(charv%i)
 //sawritef(" declared*n")
 
-  } REPEAT    // Read next option name, if any
+  } REPEAT    // Read next name name, if any
 }
 
 AND rdtag(ch1) = VALOF
@@ -1713,11 +1769,11 @@ AND performget() BE
     sourcefileno := sourcefileno+1
     sourcenamev!sourcefileno := str
 
-    node!0, node!1, node!2, node!3 := getstreams, sourcestream, lineno, ch
+    node!0, node!1, node!2, node!3 := getstreams, fromstream, lineno, ch
     getstreams := node
   }
-  sourcestream := stream
-  selectinput(sourcestream)
+  fromstream := stream
+  selectinput(fromstream)
   lineno := (sourcefileno<<20) + 1
   rch()
 }
@@ -2087,13 +2143,12 @@ AND formtree() =  VALOF
  
   token, decval := 0, 0
 
-  rdoptstring()
+  rddefstring()
 
   lex()
 
-  IF token=s_query DO            // For debugging lex.
+  IF debug=1 | token=s_query DO            // For debugging lex.
   { LET ln, name = ?, ?
-    lex()
     ln := lineno & #xFFFFF
     name := opname(token)
 
@@ -2134,6 +2189,7 @@ AND formtree() =  VALOF
     }
 
     IF token=s_eof RESULTIS 0
+    lex()
   } REPEAT
 
 rec:
@@ -3675,4 +3731,216 @@ AND sfname(sfop) = VALOF SWITCHON sfop INTO
   CASE sf_eqv:    RESULTIS "EQV"
   CASE sf_xor:    RESULTIS "XOR"
 }
+
+AND writeocode() BE
+{ LET layout = 0
+  LET outstream = findoutput("ocode")
+  UNLESS outstream DO
+  { writef("Unable to output to file ocode*n")
+    RETURN
+  }
+  writef("Writing Ocode to file ocode in numerical form*n")
+  selectoutput(outstream)
+  obufp := 0
+  UNTIL obufp>=obufq DO
+  { writef(" %n", rdn())
+    layout := layout+1
+    UNLESS layout MOD 16 DO newline()
+  }
+  newline()
+  endstream(outstream)
+  selectoutput(stdout)
+}
+
+AND procode() BE
+{ scanocode()
+}
+
+AND scanocode() BE
+{ LET op = rdn()
+  LET op0, op1, op2, op1l = 0, 0, 0, 0
+  LET ops2 = 0
+  LET len = -1 // If op has a string argument len will be its length
+
+  SWITCHON op INTO
+
+  { DEFAULT:         writef("Bad OCODE op %n*n", op)
+                     abort(1001)
+                     LOOP
+
+    CASE 0:          RETURN    // End of Ocode
+      
+    CASE s_section:  op0, len := "SECTION", rdn(); ENDCASE
+    CASE s_needs:    op0, len := "NEEDS",   rdn(); ENDCASE
+
+    CASE s_lp:       op1 := "LP";            ENDCASE
+    CASE s_lg:       op1 := "LG";            ENDCASE
+    CASE s_ln:       op1 := "LN";            ENDCASE
+    
+    CASE s_lflt:     op1 := "LFLT";          ENDCASE
+
+    CASE s_lstr:     op0, len := "LSTR", rdn(); ENDCASE
+    CASE s_comment:  writef("# ") // Created by the -oc/S
+                                  // option as a debugging aid.
+                     FOR i = 1 TO rdn() DO
+                     { LET ch = rdn()
+		       wrch(ch)
+		     }
+		     newline()
+		     LOOP
+
+    CASE s_true:     op0 := "TRUE";          ENDCASE
+    CASE s_false:    op0 := "FALSE";         ENDCASE
+
+    CASE s_llp:      op1 := "LLP";           ENDCASE
+    CASE s_llg:      op1 := "LLG";           ENDCASE
+
+    CASE s_sp:       op1 := "SP";            ENDCASE
+    CASE s_sg:       op1 := "SG";            ENDCASE
+
+    CASE s_lf:       op1l := "LF";           ENDCASE
+    CASE s_ll:       op1l := "LL";           ENDCASE
+    CASE s_lll:      op1l := "LLL";          ENDCASE
+    CASE s_sl:       op1l := "SL";           ENDCASE
+      
+    CASE s_selld:    op2 := "SELLD";         ENDCASE
+    CASE s_selst:    ops2 := "SELST";        ENDCASE
+
+    CASE s_stind:    op0 := "STIND";         ENDCASE
+
+    CASE s_rv:       op0 := "RV";            ENDCASE
+
+    CASE s_float:    op0 := "FLOAT";         ENDCASE
+    CASE s_fix:      op0 := "FIX";           ENDCASE
+    CASE s_fabs:     op0 := "FABS";          ENDCASE
+    CASE s_fmul:     op0 := "FMUL";          ENDCASE
+    CASE s_fdiv:     op0 := "FDIV";          ENDCASE
+    CASE s_fadd:     op0 := "FADD";          ENDCASE
+    CASE s_fsub:     op0 := "FSUB";          ENDCASE
+    CASE s_fneg:     op0 := "FNEG";          ENDCASE
+    CASE s_feq:      op0 := "FEQ";           ENDCASE
+    CASE s_fmod:     op0 := "FMOD";          ENDCASE
+    CASE s_fne:      op0 := "FNE";           ENDCASE
+    CASE s_fls:      op0 := "FLS";           ENDCASE
+    CASE s_fgr:      op0 := "FGR";           ENDCASE
+    CASE s_fle:      op0 := "FLE";           ENDCASE
+    CASE s_fge:      op0 := "FGE";           ENDCASE
+
+    CASE s_mul:      op0 := "MUL";           ENDCASE
+    CASE s_div:      op0 := "DIV";           ENDCASE
+    CASE s_mod:      op0 := "MOD";           ENDCASE
+    CASE s_add:      op0 := "ADD";           ENDCASE
+    CASE s_sub:      op0 := "SUB";           ENDCASE
+    CASE s_eq:       op0 := "EQ";            ENDCASE
+    CASE s_ne:       op0 := "NE";            ENDCASE
+    CASE s_ls:       op0 := "LS";            ENDCASE
+    CASE s_gr:       op0 := "GR";            ENDCASE
+    CASE s_le:       op0 := "LE";            ENDCASE
+    CASE s_ge:       op0 := "GE";            ENDCASE
+    CASE s_lshift:   op0 := "LSHIFT";        ENDCASE
+    CASE s_rshift:   op0 := "RSHIFT";        ENDCASE
+    CASE s_logand:   op0 := "LOGAND";        ENDCASE
+    CASE s_logor:    op0 := "LOGOR";         ENDCASE
+    CASE s_eqv:      op0 := "EQV";           ENDCASE
+    CASE s_xor:      op0 := "XOR";           ENDCASE
+    CASE s_not:      op0 := "NOT";           ENDCASE
+    CASE s_neg:      op0 := "NEG";           ENDCASE
+    CASE s_abs:      op0 := "ABS";           ENDCASE
+
+    CASE s_jt:       op1l := "JT";           ENDCASE
+    CASE s_jf:       op1l := "JF";           ENDCASE
+
+    CASE s_goto:     op0 := "GOTO";          ENDCASE
+
+    CASE s_lab:      op1l := "LAB";          ENDCASE
+
+    CASE s_query:    op0 := "QUERY";         ENDCASE
+
+    CASE s_stack:    op1 := "STACK";         ENDCASE
+
+    CASE s_store:    op0 := "STORE";         ENDCASE
+
+    CASE s_entry:    { LET l = rdn()
+                       len := rdn()
+                       writef("ENTRY L%n", l)
+                       ENDCASE
+                     }
+
+    CASE s_save:     op1 := "SAVE";          ENDCASE
+
+    CASE s_fnap:     op1 := "FNAP";          ENDCASE
+    CASE s_rtap:     op1 := "RTAP";          ENDCASE
+
+    CASE s_fnrn:     op0 := "FNRN";          ENDCASE
+    CASE s_rtrn:     op0 := "RTRN";          ENDCASE
+
+    CASE s_endproc:  op0 := "ENDPROC";       ENDCASE // No args now
+
+    CASE s_res:      op1l := "RES";          ENDCASE
+    CASE s_jump:     op1l := "JUMP";         ENDCASE
+
+    CASE s_rstack:   op1 := "RSTACK";        ENDCASE
+
+    CASE s_finish:   op0 := "FINISH";        ENDCASE
+
+    CASE s_switchon: { LET n = rdn()
+                       writef("SWITCHON %n L%n*n", n, rdn())
+                       FOR i = 1 TO n DO
+                       { writef("%i8   ", rdn())
+                         writef("L%n*n", rdn())
+                       }
+                       newline()
+                       LOOP
+                     }
+
+    CASE s_getbyte:  op0 := "GETBYTE";       ENDCASE
+    CASE s_putbyte:  op0 := "PUTBYTE";       ENDCASE
+
+    CASE s_global:   { LET n = rdn()
+                       writef("GLOBAL %n*n", n)
+                       FOR i = 1 TO n DO
+                       { writef("%i8   ", rdn())
+                         writef("L%n*n", rdn())
+                       }
+                       newline()
+                       LOOP
+                     }
+
+
+    CASE s_datalab:  op1l := "DATALAB";      ENDCASE
+    CASE s_itemn:    op1  := "ITEMN";        ENDCASE
+    CASE s_itemflt:  op1  := "ITEMFLT";      ENDCASE
+  }
+
+  UNLESS op0=0   DO writef("%S",     op0)
+  UNLESS op1=0   DO { LET a = rdn()
+                      TEST -10_000_000 < a < 10_000_000
+                      THEN writef("%S %n",  op1,  a)
+                      ELSE TEST ON64
+		           THEN writef("%S #%16x",  op1,  a)
+		           ELSE writef("%S #%8x",   op1,  a)
+                    }
+  UNLESS op2=0   DO writef("%S %n %n",  op2,  rdn(), rdn())
+  UNLESS op1l=0  DO writef("%S L%n", op1l, rdn())
+  UNLESS ops2=0  DO
+  { LET assop = rdn()
+    LET len   = rdn()
+    LET sh    = rdn()
+    LET s = sfname(assop)
+    writef("%s %s %n %n", ops2, s, len, sh)
+  }
+  IF len>=0 DO { // Write a string of len characters
+                 writef(" %n ", len)
+                 FOR i = 1 TO len DO
+                 { LET ch = rdn()
+                   IF i MOD 15 = 0 DO newline()
+                   TEST 32<=ch<=127 THEN writef(" '%c'", ch)
+                                    ELSE writef(" %i3 ", ch)
+                 }
+               }
+
+  newline()
+//abort(2345)
+} REPEAT
+
 

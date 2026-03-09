@@ -508,7 +508,7 @@ $( //  Main routine of the BCPL code generator.
     // listfilename and mapfilename are set by the frontend.
 
     // The Ocode is read from a buffer in memory using rdn, rdgn, etc
-    // The intel hex output is sent to gostream
+    // The intel hex output is sent to tostream
     
     liststream  :=  0
     IF listfilename DO
@@ -531,7 +531,7 @@ $( //  Main routine of the BCPL code generator.
 
     //  We can now select the streams, and away we go!
 
-    selectoutput( gostream )
+    selectoutput( tostream )
 
     freelist2     :=  NIL
     freelist3     :=  NIL
@@ -5674,7 +5674,7 @@ $(
 
     printdebuginfo()
 
-    IF gostream   DO { endstream( gostream );   gostream   := 0 }
+    IF tostream   DO { endstream( tostream );   tostream   := 0 }
     IF liststream DO { endstream( liststream ); liststream := 0 }
     IF mapstream  DO { endstream( mapstream );  mapstream  := 0 }
 

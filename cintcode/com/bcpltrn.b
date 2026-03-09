@@ -230,7 +230,7 @@ AND translate(x) = VALOF
   // the codegenerator globals.
   LET lasttrngn = @lasttrnglobal - @glob0
 
-  IF debug>0 DO writef("lasttrngn=%i3   cgg=%i3*n", lasttrngn, cgg)
+  //IF debug>0 DO writef("lasttrngn=%i3   cgg=%i3*n", lasttrngn, cgg)
 
   IF lasttrngn>=cgg DO
   { writef("SYSTEM ERROR: lasttrngn=%i3   cgg=%i3*n", lasttrngn, cgg)
@@ -305,7 +305,7 @@ LET trnext(next) BE
   // next >0  Compile a jump to next
   // next =0  Compile nothing
   // next=-1  Compile rtrn or fnrn
-  //outcomment("trnext: next=%n*n", next)
+  outcomment("trnext: next=%n*n", next)
 
   IF next=0 RETURN // No code to compile.
   
@@ -484,7 +484,7 @@ LET trans(x, next) BE
         { LET k = n      // Initial value is a floating point number
           n := genlab()  // n is now the label for the static variable
           out2(s_datalab, n)
-	  TEST t64 & ~ON64
+	  TEST T64 & ~ON64
           THEN { // Only used by 32 bit bcpl compiling for 64 bit target
 	         out2(s_itemflt, k) // Let the cg convert k to double length
 	       }
@@ -706,13 +706,22 @@ LET trans(x, next) BE
       //   Lab c2lab
       //   C2 followed by a return from function or routine
       
-      LET c2lab = genlab()
+      LET c2lab      = genlab()
+      LET testendlab = next
+      IF testendlab=0 DO
+        testendlab := genlab() // Allocate a label for the point
+	                       // just after the TEST command,
+			       // if necessary.
       IF debug=1 DO
         sawritef("Test: next=%n c2lab=%n*n", next, c2lab)
       IF debug=1 DO
         outcomment("Test: next=%n c2lab=%n*n", next, c2lab)
 
       context, comline := x, h5!x
+      outcomment("Compiling TEST E THEN C1 ELSE C2 on line %n",
+                  comline&#xFFFFF)
+      outcomment("test: condjump, next=%n c2lab=%n testendlab=%n*n",
+                  next, c2lab, testendlab)
       jumpcond(h2!x, FALSE, c2lab)
 
       IF next=0 DO
@@ -729,6 +738,40 @@ LET trans(x, next) BE
       trans(h3!x, next)
       out2(s_lab, c2lab)
       trans(h4!x, next)
+
+/*
+//=======
+      LET c2lab      = genlab()
+      LET testendlab = next
+      IF testendlab=0 DO
+        testendlab := genlab() // Allocate a label for the point
+	                       // just after the TEST command,
+			       // if necessary.
+      context, comline := x, h5!x
+      outcomment("Compiling TEST E THEN C1 ELSE C2 on line %n",
+                  comline&#xFFFFF)
+      outcomment("test: condjump, next=%n c2lab=%n testendlab=%n*n",
+                  next, c2lab, testendlab)
+      jumpcond(h2!x, FALSE, c2lab)
+
+      outcomment("test: Translating THEN comand, testendlab=%n*n",
+                  testendlab)
+      trans(h3!x, testendlab)
+
+      outcomment("test: Translating ELSE command, c2lab=%n, next=%n*n",
+                  c2lab, next)
+      out2(s_lab, c2lab)
+      trans(h4!x, next)
+
+      // Compile the label just after the TEST command, if neccesary
+      IF testendlab DO
+      { outcomment("The point at the end of the TEST command needed L%n",
+                    testendlab)
+        out2(s_lab, testendlab)
+      }
+>>>>>>> testing
+*/
+
       RETURN
     }
  
@@ -972,7 +1015,7 @@ LET trans(x, next) BE
       IF casecount<0 DO trnerr("CASE label out of context")
       WHILE p DO
       { IF h2!p=k DO trnerr("'CASE %n:' occurs twice", k)
-        IF t16 & (h2!p&#xFFFF)=(k&#xFFFF) DO
+        IF T16 & (h2!p&#xFFFF)=(k&#xFFFF) DO
 	  trnerr("'CASE %n:' occurs twice when compiling 16 bit BCPL", k&#xFFFF)
         p := h1!p
       }
@@ -2694,7 +2737,6 @@ AND transfor(x, next) BE
 
   LET prevdvece     = dvece
   LET prevcasecount = casecount
-  LET k, n = 0, 0   // Typically the instruction to load the limit
   LET stepvalue = 1 // The default step value
   LET s = ssp
 
@@ -2703,6 +2745,10 @@ AND transfor(x, next) BE
                          // the repetition test at the end of the body.
   LET testlab = 0        // This is used, if needed, to label the
                          // repetition test at the end of the body.
+  LET k, n = 0, 0  // If non zero (k,n) is the instruction to load the limit
+                   // If k=0 no end limit is specified, causing an
+		   // unconditional jump to bodylab rather than a
+		   // conditional jump.
 
   casecount := -1  // Disallow CASE and DEFAULT labels,
                    // but ENDCASE is still alloed.
@@ -2727,29 +2773,41 @@ AND transfor(x, next) BE
           ELSE { k, n := s_lp, ssp
                  load(limE, FALSE) // Place the end limit in the stack
                }
+
+  IF k DO outcomment("FOR loop limit value is specified by k=%s n=%n",
+                      opname(k), n)
 	      
   // Note: k=0 if no limit was given.
+  IF k=0 DO outcomment("No end limit was given")
   
   out1(s_store)  // Ensure the control variable and possibly
                  // the end limit values are stored in memory.
    
   IF stepE DO stepvalue := evalconst(stepE, FALSE)
+  outcomment("The FOR loop step value is %n", n)
  
   TEST k=s_ln & isconst(initvalE)
   THEN { // Optimize the case when both the initial and limit
-         // values are constants. 
+         // values are both constants. 
          LET initvalue = evalconst(initvalE, FALSE)
 	 // Note: n is the limit value
+	 outcomment("The end limit is constant %n", n)
+	 outcomment("and the initial value is also a constant %n", initvalue)
          IF stepvalue>=0 & initvalue>n |
 	    stepvalue< 0 & initvalue<n DO
          { // The initial conditions indicate that the body
 	   // will not be executed even once.
-	   // But it must still be compiled.
+	   // (But it must still be compiled).
 	   TEST next=0
 	   THEN { blab := genlab()
-	          trnext(blab) // Jump around the FOR loop code.
+	          outcomment("Allocate L%n to label the point", blab)
+		  outcomment("just after the end of the FOR loop")
+		  outcomment("and compile a jump to it")
+	          out2(s_jump, blab) // Jump around the FOR loop code.
 		}
-	   ELSE { trnext(next)
+	   ELSE { outcomment("Compile either function or routine return")
+	          outcomment("or a jump to the next label L%n", next)
+	          trnext(next)
 		}
          }
 	 // Otherwise fall through to the start of the body.
@@ -2763,10 +2821,19 @@ AND transfor(x, next) BE
 	   // It can be compiled here but it is only worth
 	   // doing so if the limit expression is simple enough
 	   // and next is either a label or zero.
-	   TEST FALSE & smallexp(limE, 1) & next>=0
-	   THEN { // Since the limit expression is simple and
+	   outcomment("An end limit was given")
+	   outcomment("but the initial and limit values are")
+	   outcomment("not both constants")
+	   TEST smallexp(limE, 1) & next>=0
+           THEN { // Since the limit expression is simple and
 	          // the conditional jump is to a label, it is
 		  // worth testing the condition at this point.
+		  outcomment("The end limit expression is simple")
+		  outcomment("and next does not specify a function")
+		  outcomment("or routine return, so it is worth")
+		  outcomment("compiling an initial conditional jump")
+  		  outcomment("before falling into the start of the body")
+
 	          out2(s_lp, s)
                   out2(k, n)
                   out1(stepvalue>=0 -> s_gr, s_ls)
@@ -2774,9 +2841,13 @@ AND transfor(x, next) BE
 		  THEN { // Allocate a label for the conditional
 		         // jump, if needed.
 			 UNLESS blab DO blab := genlab()
+			 outcomment("next was zero so allocate L%n", blab)
+			 outcomment("for the conditional jump")
 		         out2(s_jt, blab)
 		       }
-		  ELSE { out2(s_jt, next)
+		  ELSE { outcomment("Compile a conditianle jump to next=L%n",
+		                     next)
+		         out2(s_jt, next)
 		       }
 		  // If Jt fails fall into the start of
 		  // the body to execute it for the first time..
@@ -2784,37 +2855,62 @@ AND transfor(x, next) BE
 	   ELSE { // Otherwise compile jump to where the repetition
 		  // condition is tested after the body.
 		  testlab := genlab()
+		  outcomment("We do not choose to make an initial conditional")
+		  outcomment("jump, so just compile a jump to testlab L%n",
+		              testlab)
 	          out2(s_jump, testlab)
 	        }
 	 }
        }
 
   { // Compile the FOR loop body
-    // preserve the BREAK/LOOP environment.
+    // preserving the BREAK/LOOP environment.
     LET prevbreaklab, prevlooplab = breaklab, looplab
     looplab := 0
-    breaklab := next>0 -> next, blab
+    breaklab := blab // Normally zero unless blab was allocated
+    IF breaklab=0 & next>0 DO
+      breaklab := next // use next as the break label, but remember
+                       // to only set the break label if breaklab~=next
+		       
     // Note: breaklab is now >=0, either next, blab or zero
     
     context, comline := x, ln
 
+    outcomment("We now compile the FOR loop body")
     out2(s_lab, bodylab)
     ///IF debug=1 & bodylab=102 DO abort(65432)
     decllabels(body)
-    trans(body, 0)
+    outcomment("Compiling the body with a setting of next = zero")
+    outcomment("since we assume it will be followed by code to")
+    outcomment("update the control variable and test it")
+    trans(body, 0) // Zero because we assume there will be code
+                   // to update the control variable and test it.
 
-    // It is possible that blab is zero and breaklab is not.
-    // This can only happen if BREAK occured in the body.
-    blab := breaklab
+    // If breaklab is non zero and not equal to blab or next,
+    // it it mist have been allocated by a BREAK command occuring
+    // in the body.
 
+    outcomment("If a LOOP command occurs within the body looplab")
+    outcomment("would have be allocated for the jump to the point")
+    outcomment("where the control variable is updated and tested")
     IF looplab DO out2(s_lab, looplab)
 
+    // Remember breaklab in blab in case we have to set that label
+    // just after the code for the FOR loop.
+    blab := breaklab
+    
     // Restore the previous BREAK/LOOP environment
     breaklab, looplab := prevbreaklab, prevlooplab
   }
   
-  // Compile code to increment the control variable
-  out2(s_lp, s); out2(s_ln, stepvalue); out1(s_add); out2(s_sp, s)
+  // Compile code to increment the control variable unless
+  // the step value was zero.
+  //IF stepvalue DO
+  { out2(s_lp, s)
+    out2(s_ln, stepvalue)
+    out1(s_add)
+    out2(s_sp, s)
+  }
 
   // Compile the test label if needed.
   IF testlab DO out2(s_lab, testlab)
@@ -2822,7 +2918,8 @@ AND transfor(x, next) BE
   // If an end limit was given compile a conditioal jump
   // to the start of the body.
   TEST k
-  THEN { out2(s_lp,s); out2(k,n)
+  THEN { // s is the stack location of the control variable
+         out2(s_lp,s); out2(k,n)
          out1(stepvalue>=0 -> s_le, s_ge)
          // A limit was given so compile an conditional
          // jump to the start of the body.
@@ -2832,10 +2929,15 @@ AND transfor(x, next) BE
          // jump to the start of the body.
          out2(s_jump, bodylab)
        }
-  // Compile a label for BREAK, if necessary.
-  IF blab>0 DO out2(s_lab, blab)
+       
+  // Compile the break label, if necessary.
+  IF blab>0 & blab~=next DO
+  { outcomment("Now settin the break label L%n", blab)
+    out2(s_lab, blab)
+  }
 
-  // Compile a jump, a return or nothing.
+  // Compile a return or nothing.
+  outcomment("Compiling a function or routine return, or nothing")
   trnext(next)
   
   casecount := prevcasecount
@@ -2994,7 +3096,7 @@ LET load(x, ff) BE
            }
 
            // Optimise accessing a complete word.
-           IF sh=0 & (len=0 | len=wordbitlen) DO
+           IF sh=0 & (len=0 | len=targetbitlen) DO
            { out1(s_rv) // The source field is a complete word
              RETURN
            }
@@ -3007,7 +3109,7 @@ LET load(x, ff) BE
                   { out2(s_ln, sh)
                     out1(s_rshift)
                   }
-                  IF len>0 & (len+sh~=wordbitlen) DO
+                  IF len>0 & (len+sh~=targetbitlen) DO
                   { // Applying a mask is necessary
                     LET mask = (1<<len)-1
                     out2(s_ln, mask)
@@ -4698,7 +4800,7 @@ AND out4(x, y, z, t) BE { out1(x); out1(y); out1(z); out1(t) }
  
 AND outstring(s) BE FOR i = 0 TO s%0 DO out1(s%i)
 
-AND outcomment(s, a, b, c, d) BE //UNLESS nocomments DO
+AND outcomment(s, a, b, c, d) BE IF debug>0 DO
 { LET prevout = output()
   LET ramstream = findoutput("RAM:")
   IF debug=1 DO abort(97777)

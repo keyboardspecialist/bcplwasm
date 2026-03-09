@@ -28,7 +28,7 @@ LET default_hdrs() = VALOF // Changed MR 12/07/09
   // The following is only executed if cintsys or cintsys64 fails to set
   // the hdrs field in the rootnode.
   // Note that tcb=0 when running under cintsys.
-  TEST t64
+  TEST T64
   THEN RESULTIS tcb -> "POS64HDRS", "BCPL64HDRS"
   ELSE RESULTIS tcb -> "POSHDRS",   "BCPLHDRS"
 }
@@ -132,7 +132,7 @@ LET start() = VALOF
   IF argv!3 DO bigender := ~bigender // oender/S
   eqcases := TRUE
   IF argv!4 DO eqcases  := ~eqcases  // EQCASES/S
-  t64 := argv!5                      // t64/S
+  T64 := argv!5                      // t64/S
   
   IF argv!5 DO                       // -h/S
   { writef("*nUsage: bbc2bcpl *"%s*"*n", formatstr)
@@ -967,10 +967,10 @@ AND wrchbuf() BE
 }
  
  
-AND rdoptstring() = VALOF
-{ LET pos = 1 // The position of the next optstring
+AND rddefstring() = VALOF
+{ LET pos = 1 // The position of the next defstring
               // character to consider
-  LET optstringlen = optstring%0
+  LET defstringlen = defstring%0
   LET optch = ?
 
   { // Get next option name, if any
@@ -978,16 +978,16 @@ AND rdoptstring() = VALOF
     charv%0, charv%1 := 1, '<'
  
     // Skip characters before option name
-    WHILE pos<=optstringlen DO
-    { optch := optstring%pos
+    WHILE pos<=defstringlen DO
+    { optch := defstring%pos
       IF 'a'<=optch<='z' | 'A'<=optch<='Z' |
          '0'<=optch<='9' | optch='.' | optch='_' BREAK
       pos := pos+1
     }
 
     // Copy option name, if any, into charv
-    WHILE pos<=optstringlen DO
-    { optch := optstring%pos
+    WHILE pos<=defstringlen DO
+    { optch := defstring%pos
       UNLESS 'a'<=optch<='z' | 'A'<=optch<='Z' |
              '0'<=optch<='9' | optch='.' | optch='_' BREAK
       // Copy next option name character into charv, if room

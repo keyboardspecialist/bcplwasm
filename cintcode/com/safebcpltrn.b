@@ -6,9 +6,53 @@
 
 Change history
 
+05/02/2026
+Implemented the expression escape commands:
+BREAK, LOOP, NEXT, EXIT, ENDCASE, RETURN, RESULTIS and GOTO
+
+10/12/2023 
+Ensured that LFLT and ITEMFLT are compiled correctly.  When loading a
+floating point constant LFLT is used instead of LN. This allows the
+codegenerator to convert single length floats to doubles when
+compiling32to64 is TRUE. When compiling64to32 is TRUE loading floats
+uses LFLT n leaving the codegenerator to convert them to single
+length.  When either compiling32to32 or compiling64to64 is TRUE no
+conversion is needed so LN n is used.
+
+For static variables and table entries ITEMFLT is used to allocate
+space for a floating point number when compiling32to64 is TRUE
+allowing the codegenerator to convert from single to double
+length. When comping64to32 ITEMFLT is also used leaving the
+codegenerator to convert double floats to single length. When either
+compiling32tot32 and compiling64to64 is TRUE no conversion is needed
+so ITEMN n is used.
+
+22/11/2023
+Modifying the translation of manifest floating point constants.  The
+compiler evaluates constants using arithmetic of the word length of
+the compiler. If the compiler and target word lengths differ, floating
+point values must be expanded or contracted. This conversion is done
+by the codegenerator using LFLT n and ITEMFLT n which replace the LN n
+and ITEMN n Ocode statements where required.
+
+19/03/2023
+Slightly improved the compilation of x op:= y where x is a name.
+
+03/03/2023
+Modified bcpltrn.b to allow functions, routine and pattern functions
+and routines to have the FLT tag. Calls of functions with the FLT tag
+are assumed to return floating point results. If a function is 
+declared having the FLT tag is in the scope of a global variable of
+the same name, the global must also have been declared with the FLT
+tag. If the function did not have the FLT tag, the global should also
+not have the tag. If a match expression is evaluated in FLT mode, all
+its result expressions are evaluated in FLT mode. Likewise, if an
+EVERY expression is evaluated in FLT mode the result is the floating
+point sum of its successful result expressions.
+
 27/06/2022
 Removed the global variables ret0lab and retlab, using code dependent
-on proccontect instead.
+on proccontext instead.
 
 08/06/2022
 Changed the meaning of nextlab used in the compilation of NEXT.
@@ -59,7 +103,8 @@ decllabels; undeclare
 jumpcond; transswitch; transfor
 assop2op; op2sfop; cv2flt; rel2patrel; patrel2rel
 assign; load; fnbody; loadlv; loadlist
-isflt; isconst; iszero; evalconst; transname; xref
+isflt; isconst; iszero; evalconst; smallexp
+transname; xref
 genlab; labnumber
 newblk
 dvec; dvece; dvecp; dvect
@@ -121,8 +166,6 @@ nextlab       // =-2 NEXT is illegal, ie not in a match list.
 proccontext   // =0  Not in a function or routine
               // otherwise =s_fnrn or =s_rtrn
 
-choosereturnlab
-
 
 context; comline; procname
 matchcontext // Equals s_patfndef, s_patrtdef,
@@ -135,8 +178,8 @@ ssp          // The stack position just above the top item of the stack.
 vecssp
 gdeflist; gdefcount
 outstring; out1; out2; out3; out4
+
 outcomment
-nocomments  // normally set to TRUE. Set in translate.
 
 lasttrnglobal // Used to check for global overlap with cgg
 
@@ -187,10 +230,7 @@ AND translate(x) = VALOF
   // the codegenerator globals.
   LET lasttrngn = @lasttrnglobal - @glob0
 
-  nocomments := TRUE  // Normal setting
-  //nocomments := FALSE // Setting when debugging
-  
-  IF debug>0 DO writef("lasttrngn=%i3   cgg=%i3*n", lasttrngn, cgg)
+  //IF debug>0 DO writef("lasttrngn=%i3   cgg=%i3*n", lasttrngn, cgg)
 
   IF lasttrngn>=cgg DO
   { writef("SYSTEM ERROR: lasttrngn=%i3   cgg=%i3*n", lasttrngn, cgg)
@@ -262,8 +302,11 @@ AND translate(x) = VALOF
 
 LET trnext(next) BE
 { // Compile code to follow a command
-  // next is >0, =0 or =-1
-  
+  // next >0  Compile a jump to next
+  // next =0  Compile nothing
+  // next=-1  Compile rtrn or fnrn
+  outcomment("trnext: next=%n*n", next)
+
   IF next=0 RETURN // No code to compile.
   
   IF next>0 DO
@@ -283,9 +326,7 @@ LET trnext(next) BE
 LET trans(x, next) BE
 // x       is the parse tree of the command to be translated
 // next=-2 System error.
-// next=-1 Compile the command and follow by code to return from
-//         the current function or routine as specified by
-//         retlab and proccontext.
+// next=-1 Compile the command and follow by RTRN or LN 0; FNRN
 // next>0  Compile the command followed by a JUMP next
 // next=0  Compile x only
 
@@ -302,7 +343,7 @@ LET trans(x, next) BE
   op := h1!x // op is the leading operator of
              // the command to translate.
 
-  SWITCHON op INTO
+  SWITCHON op INTO // All possible commands.
   { DEFAULT: trnerr("System error in Trans, op = %s", opname(op))
              RETURN
  
@@ -338,75 +379,90 @@ LET trans(x, next) BE
     CASE s_static:
     CASE s_global:
     CASE s_manifest:
-    { LET prevcasecount = casecount
-      LET prevdvece = dvece
+    { LET prevdvece = dvece
       LET prevssp   = ssp
       AND y, n = h2!x, 0
       LET prevk = 0 // The previous integer or floating point value
       LET prevt = 0 // =0, s_notflt or s_flt
-         
+      LET prevcasecount = casecount
+   
       casecount := -1 // Disallow CASE and DEFAULT labels
                       // but ENDCASE may still be allowed
       context, comline := x, h4!x
  
-      WHILE y DO
-      { LET name = h3!y
+      WHILE y DO // Deal with every name in the list
+      { // y -> [CONSTDEF, next, name, exp, ln]
+        LET name = h3!y // name is a Name or a Flt node.
         LET fop = op    // = s_static, s_global or s_manifest
-        ff := FALSE     // ff will only be TRUE for static and manifest
+        ff := FALSE     // ff can only be TRUE for static and manifest
                         // names with the FLT tag. If TRUE the value of
                         // the constant will be a floating point number.
+ 			// For global declarations the value is always
+ 			// an integer global number.
 
         context, comline := y, h5!y
 
-        // If the name is prefixed by FLT remove the prefix and
-        // modify fop as follows
+        // the name is is given the FLT tag it it was given explicitly
+	// or if it was declaed as a static or manifest with an explicit
+	// value having the FLT tag.
+        // It the name is being declared with the FLT tag modify fop as
+	// follows
         //     s_static   -> s_fstatic
         //     s_manifest -> s_fmanifest
         // and s_global   -> s_fglobal
 
-        IF h1!name=s_flt DO name, fop := h2!name, op | s_fltbit
+        IF h1!name=s_flt DO 
+	  name, fop := h2!name, op | s_fltbit
 
-        // If fop is s_fstatic or s_fmanifest the constant
-        // expression in evaluated in an FLT context, in all
-        // other cases it is evaluated in a non FLT context.
+        UNLESS op=s_global IF isflt(h4!y) DO
+	  fop := op | s_fltbit
 
         IF fop=s_fstatic | fop=s_fmanifest DO ff := TRUE
 
         TEST h4!y
-        THEN { n := evalconst(h4!y, ff)
+        THEN { // The constant expression was given
+	       n := evalconst(h4!y, ff)
              }
-        ELSE { // The constant expression was not given so the
-               // value is chosen as follows:
-               // If there was no previous value the value is
-               // 0 or 0.0.
+        ELSE { // No constant expression was given
                TEST prevt=0
-               THEN { n := ff -> flt0, 0
+               THEN { // This is the first item in the declaration
+                      // so it is given the value 0 or 0.0.
+                      n := ff -> flt0, 0
                     }
-               ELSE { IF fop=s_static  DO n := 0
-                      IF fop=s_fstatic DO n := flt0
+               ELSE // This is not the first item in the declaration
+	            // so choose a suitable value base on the king
+		    // of declaration.
+	            n := VALOF SWITCHON fop INTO
+	            { DEFAULT:
+		        trnerr("System error in trans")
+			RESULTIS 0
 
-                      // for s_manifest  the value is one larger than the
-                      //                 previous value is converted to
-                      //                 integer, if necessary.
+                      CASE s_static:
+		        // For s_static    the value is alwys 0
+                        RESULTIS 0
 
-                      IF fop=s_manifest DO
-                      { IF prevt=s_flt DO n := sys(Sys_flt, fl_fix, n)
-                        n := n+1
-                      }
+                      CASE s_fstatic:
+		        // For s_fstatic   the value is always 0.0
+                        RESULTIS flt0
 
-                      // for s_fmanifest the value is 1.0 larger than the
-                      //                 previous value is converted to
-                      //                 floating point, if necessary.
+                      CASE s_manifest:
+                        // for s_manifest  the next value is an integer one
+                        //                  larger than the previous value.
+                        IF prevt=s_flt DO n := sys(Sys_flt, fl_fix, n)
+                        RESULTIS n+1
 
-                      IF fop=s_fmanifest DO
-                      { IF prevt=s_notflt DO n := sys(Sys_flt, fl_float, n)
-                        n := sys(Sys_flt, fl_add, n, flt1)
-                      }
+                      CASE s_fmanifest:
+                        // for s_fmanifest the value is 1.0 larger than the
+                        //                 previous value is converted to
+                        //                 floating point, if necessary.
+                        IF prevt=s_notflt DO n := sys(Sys_flt, fl_float, n)
+                        RESULTIS sys(Sys_flt, fl_add, n, flt1)
 
-                      // For s_global and s_fglobal the value is a
-                      // global number one larger than the previous one.
-
-                      IF fop=s_global | fop=s_fglobal DO n := n + 1
+                      CASE s_global:
+                      CASE s_fglobal:
+                        // For s_global and s_fglobal the next value is a
+                        // global number one larger than the previous one.
+                        RESULTIS n+1
                     }
              }
 
@@ -417,11 +473,23 @@ LET trans(x, next) BE
         prevk := n
         prevt := ff -> s_flt, s_notflt
 
-        IF op=s_static DO
-        { LET k = n
-          n := genlab()      // n is now the label for the static variable
+        IF fop=s_static DO
+        { LET k = n      // Initial value is not a floating point number
+          n := genlab()  // n is now the label for the static variable
           out2(s_datalab, n)
           out2(s_itemn, k)
+        }
+
+        IF fop=s_fstatic DO
+        { LET k = n      // Initial value is a floating point number
+          n := genlab()  // n is now the label for the static variable
+          out2(s_datalab, n)
+	  TEST T64 & ~ON64
+          THEN { // Only used by 32 bit bcpl compiling for 64 bit target
+	         out2(s_itemflt, k) // Let the cg convert k to double length
+	       }
+          ELSE { out2(s_itemn, k)
+	       }
         }
 
         IF op=s_global UNLESS 0<=n<=65535 DO
@@ -430,7 +498,11 @@ LET trans(x, next) BE
         }
         // n is a global number, a manifest value or a label for a
         // static variable.
-        addname(name, fop, n, 0)
+        addname(name, fop, n, 0) // Declare the global, static or manifest
+	                         // without a pattern path component. For
+				 // manifests the bit length and numerical
+				 // representation of n depend on the word
+				 // length used by the compiler.
         IF xrefing DO xref(name,
                            (fop=s_global->"G:",
                             fop=s_fglobal->"FG:",
@@ -475,7 +547,8 @@ LET trans(x, next) BE
       out1(s_store) // Ensure that the arguments stored are in memory
 
       // Translate the match items
-      transmatchlist(op,     // The match context s_matchc or s_everyc
+      transmatchlist(FALSE,
+                     op,     // The match context s_matchc or s_everyc
                      h3!x,   // mlist -> [matchitemc, plist, C, link, ln]
                      argpos, // Position of the first argument
 		     next)   // Copy of the second argument of trans
@@ -538,8 +611,9 @@ LET trans(x, next) BE
       context, comline := x, h4!x
       ssp := ssp+savespacesize // Position of the first argument
       out2(s_stack, ssp)
-      loadlist(h3!x) // Load arguments in non FLT mode
-      load(h2!x, FALSE)
+      loadlist(h3!x)    // Load arguments in non FLT mode
+      load(h2!x, FALSE) // Evaluate the routine entry point in
+                        // non FLT mode
       out2(s_rtap, prevssp)
       ssp := prevssp
       trnext(next)
@@ -568,32 +642,28 @@ LET trans(x, next) BE
 
       SWITCHON h1!(h3!x) INTO // The leading operator of the body.
                               // Optimising commands like BREAK and EXIT.
-      { DEFAULT: // No optimisation
-          //TEST next>0
-          //THEN { // If the condition is not equal to sw skip aroung the body. 
-	  //       jumpcond(h2!x, ~sw, next)
-          //       trans(h3!x, next)
-          //     }
-          //ELSE
-	       { // Compile:            // IF B~=sw DO C
-                 LET L = genlab()
-                 jumpcond(h2!x, sw, L)  // If B=sw goto L
-                 trans(h3!x, next)      //   C
-                 out2(s_lab, L)         // L:
-                 trnext(next)
-               }
+      { DEFAULT: // No optimisation, compile: IF B~=sw DO C
+        { LET L = genlab()
+          jumpcond(h2!x, sw, L)  // If B=sw jump to L
+          trans(h3!x, next)      // C
+          out2(s_lab, L)         // L:
+          trnext(next)
+          RETURN
+        }
+
+        CASE s_break:
+          condbreak(h2!x, ~sw, next) // ~sw will be TRUE if compiling
+	                             // IF E BREAK
           RETURN
 
-        CASE s_break: // In IF/UNLESS in trans
-          condbreak(h2!x, ~sw, next)
-          RETURN
-
-        CASE s_loop: // In IF/UNLESS in trans
-          condloop(h2!x, ~sw, next)
+        CASE s_loop:
+          condloop(h2!x, ~sw, next) // ~sw will be TRUE if compiling
+	                            // IF E LOOP
 	  RETURN
 
-        CASE s_endcase: // In IF/UNLESS in trans
-          condendcase(h2!x, ~sw, next)
+        CASE s_endcase:
+          condendcase(h2!x, ~sw, next) // ~sw will be TRUE if compiling
+	                               // IF E ENDCASE
           RETURN
 
         CASE s_next: // In IF/UNLESS in trans
@@ -612,19 +682,96 @@ LET trans(x, next) BE
       RETURN
  
     CASE s_test:
-    { LET L, M = genlab(), 0
+    { // Translate TEST E THEN C1 ELSE C2
+      // Compile as follows
+      //   allocase c2lab and compile
+      //   unless E jump to c2lab
+
+      // then
+
+      // If next=0
+      //   Allocate testendlab
+      //   C1 followed by a jump to testendlab
+      //   Lab c2lab
+      //   C2
+      //   Lab testendlab
+
+      // If next>0
+      //   C1 followed by a jump to next
+      //   Lab c2lab
+      //   C2 followed by a jump to next
+      
+      // If next<-1
+      //   C1 followed by a return from function or routine
+      //   Lab c2lab
+      //   C2 followed by a return from function or routine
+      
+      LET c2lab      = genlab()
+      LET testendlab = next
+      IF testendlab=0 DO
+        testendlab := genlab() // Allocate a label for the point
+	                       // just after the TEST command,
+			       // if necessary.
+      IF debug=1 DO
+        sawritef("Test: next=%n c2lab=%n*n", next, c2lab)
+      IF debug=1 DO
+        outcomment("Test: next=%n c2lab=%n*n", next, c2lab)
+
       context, comline := x, h5!x
-      jumpcond(h2!x, FALSE, L)
-         
-      TEST next=0 THEN { M := genlab()
-                         trans(h3!x, M)
-		       }
-                  ELSE { trans(h3!x, next)
-		       }
-                     
-      out2(s_lab, L)
+      outcomment("Compiling TEST E THEN C1 ELSE C2 on line %n",
+                  comline&#xFFFFF)
+      outcomment("test: condjump, next=%n c2lab=%n testendlab=%n*n",
+                  next, c2lab, testendlab)
+      jumpcond(h2!x, FALSE, c2lab)
+
+      IF next=0 DO
+      { LET testendlab = genlab()
+        trans(h3!x, testendlab)
+        out2(s_lab, c2lab)
+        trans(h4!x, 0)
+        out2(s_lab, testendlab)
+        RETURN
+      }
+
+      IF debug=1 DO
+        sawritef("Test: next=%n c2lab=%b*n", next, c2lab)
+      trans(h3!x, next)
+      out2(s_lab, c2lab)
       trans(h4!x, next)
-      IF M DO out2(s_lab, M)
+
+/*
+//=======
+      LET c2lab      = genlab()
+      LET testendlab = next
+      IF testendlab=0 DO
+        testendlab := genlab() // Allocate a label for the point
+	                       // just after the TEST command,
+			       // if necessary.
+      context, comline := x, h5!x
+      outcomment("Compiling TEST E THEN C1 ELSE C2 on line %n",
+                  comline&#xFFFFF)
+      outcomment("test: condjump, next=%n c2lab=%n testendlab=%n*n",
+                  next, c2lab, testendlab)
+      jumpcond(h2!x, FALSE, c2lab)
+
+      outcomment("test: Translating THEN comand, testendlab=%n*n",
+                  testendlab)
+      trans(h3!x, testendlab)
+
+      outcomment("test: Translating ELSE command, c2lab=%n, next=%n*n",
+                  c2lab, next)
+      out2(s_lab, c2lab)
+      trans(h4!x, next)
+
+      // Compile the label just after the TEST command, if neccesary
+      IF testendlab DO
+      { outcomment("The point at the end of the TEST command needed L%n",
+                    testendlab)
+        out2(s_lab, testendlab)
+      }
+>>>>>>> testing
+*/
+
       RETURN
     }
  
@@ -677,74 +824,150 @@ LET trans(x, next) BE
       ssp := ssp - 1
       RETURN
  
-    CASE s_while: sw := TRUE
-    CASE s_until:
-    { // If next>0, It is the label to jump to after the
-      //            code for the command.
-      // If next=-1 After the code for the command compile a return
-      //            from the current procedure based on proccontext
-      //            and retlab.
-      // otherwise  compile nothing after the command.
-      LET L = genlab()  // Label for start of the body
-      LET prevbreaklab, prevlooplab = breaklab, looplab
-      context, comline := x, h4!x
- 
-      breaklab := genlab() // Destination for BREAK as follows, ????
-			   // =-2 BREAK is not legal here
-                           // =0  Update breaklab with a new label
-			   // >0  Compile BREAK as a jump to breaklab
-			   // <-1 Compile BREAK as a return from a function
-			   //     or routine based in proccontext and retlab.
-      IF breaklab= 0 DO breaklab :=  genlab()
-      IF breaklab=-1 DO breaklab := -genlab()
+    CASE s_while: sw := TRUE // x -> [op, E, C,ln]
+    CASE s_until:            // where op = While or Until
+                             // sw=-1 if While, =0 otherwise
+    { LET E  = h2!x
+      LET C  = h3!x // The body
+      LET ln = h4!x
+
+      // If next>0, The WHILE or UNTIL command is followed by code
+      //            to jump to label next.
+      // If next=-1 The WHILE or UNTIL command is followed by code
+      //            to return from the current function or routine.
+      // If next=0  Compile nothing after the WHILE or UNTIL command.
+
+      // Modified to only allow BREAK and LOOP inside the body. 5feb2027
       
-      looplab := 0         // This will be allocated if LOOP occurs.
+      LET bodylab = genlab()  // Label for start of the body
+      LET testlab = 0
+      LET blab    = 0   // The destination of BREAK if it occurs
+                        // in the body.
+      LET donelab = 0
 
-      jumpcond(h2!x, ~sw, breaklab)
+      // If E is simple enough compile code to check whether the
+      // body should be executed before the body is compiled.
+      LET const = isconst(E)
+      LET constval = const -> evalconst(E, FALSE), 0
+      LET smallE = smallexp(E, 2)
+//sawritef("Compiling While: line=%i5 const=%n constval=%n smallE=%n*n",
+//                         ln&#xFFFFF,const,   constval,   smallE)
+      TEST const | smallE
+      THEN { TEST const
+             THEN { // E is a manifest contant expression
+		    // If constval=0 compile nothing causing
+		    // control to fall into the start of the body.
+		    // Othewise compile code based on the value
+		    // of next. But if next is zero donelab must
+		    // be allocated and Jump Ldonelab must be
+		    // compiled.
+		    IF (constval=0) = sw DO
+		    { // If constval is FALSE and op=While
+		      // or constval is TRUE  and op=Until
+		      // compile a jump todonelab around the body.
+		      donelab := genlab()
+		      out2(s_jump, donelab)
+		    }
+	          }
+             ELSE { // const is FALSE and smallE is TRUE so
+	            // if next<=0
+		    //    allocate donelab and
+		    //    compile a conditional jump to donelab.
+		    // otherwise
+		    //    compile a conditional jump to next.
+		    //    
+		    TEST next<=0
+		    THEN { donelab := genlab()
+		           jumpcond(E, ~sw, donelab)
+			 }
+		    ELSE { jumpcond(E, ~sw, next)
+		         }
+	          }
+	     // Note that if donelab is non zero, it is necessary
+	     // to compile donelab after compiling the body and
+	     // if next=-1 then compile a returun from the current
+	     // function or routine.
+           }
+      ELSE { // const=FALSE and smallE=FALSE, so allocate
+             // testlab and compile an uncoditional jump to it.
+	     testlab := genlab()
+	     out2(s_jump, testlab)
+           }
+
+      // Now compile the body (C)
       
-      out2(s_lab, L)    // Label the start of the body
-      trans(h3!x, 0)    // Zero because the body will be followed by
-                        // the conditional jump code
+      out2(s_lab, bodylab) // Label the start of the body
+      
+      { // Save the BREAK/LOOP environment.
+        LET prevbreaklab, prevlooplab = breaklab, looplab
 
+        breaklab, looplab := 0, 0
+	IF const IF (constval=0)~=sw DO looplab := bodylab
+	
+        trans(C, 0)        // Zero because the body will be followed by
+                           // the conditional jump code.
+        IF looplab UNLESS looplab=bodylab  DO
+	  out2(s_lab, looplab) // Reached only by LOOP in the body.
+
+        blab := breaklab   // Remember the value of breaklab, only
+	                   // non zero when a BREAK occured in the body.
+        breaklab, looplab := prevbreaklab, prevlooplab
+      }
+
+      // Now compile the repetition test
+      IF testlab DO
+        out2(s_lab, testlab) // Only reached when the repetition
+	                     // condition is not tested before
+			     // compiling the body.
+      // Compile the test code
       context, comline := x, h4!x
-      IF looplab DO out2(s_lab, looplab) // Only compiled if LOOP occurred.
-      jumpcond(h2!x, sw, L)              // Compile the conditional jump.
+      jumpcond(E, sw, bodylab)           // Compile the conditional jump.
 
-      IF breaklab>0 DO out2(s_lab, breaklab) // A BREAK command
-                                             // jumped to breaklab
+      // This point reached if the repeat condition fails to jump
+      // to the start of the body.
+      IF blab DO
+        out2(s_lab, blab)   // Reached fromBREAK inside the body
+	                    // when next=0
+      IF donelab DO
+        out2(s_lab, donelab) // Readched by jumps made before executing
+	                     // the body for the first time
       trnext(next) // Possibly compile a jump or a return from
                    // a function or routine.
-      breaklab, looplab := prevbreaklab, prevlooplab
       RETURN
     }
  
     CASE s_repeatwhile: sw := TRUE
     CASE s_repeatuntil:
-    { LET L = genlab()
-      LET prevbreaklab, prevlooplab = breaklab, looplab
-      context, comline := x, h4!x
-      breaklab := genlab() // Cause BREAK to compile a jump or a return
-                           // from the current function or routine.
-                           // If next=0 breaklab will be given a newly
-		           // allocated label.
-		           // If next=-1 the code will depend on
-		           // proccontext.
-      looplab := genlab()  // Allocated by the first LOOP, if any.
+    { // Implemented the new meaning of BREAK and LOOP  5 Feb 2026
+    
+      LET bodylab = genlab()
+      LET donelab = 0
 
-      out2(s_lab, L)       // Label start of body
-      trans(h2!x, 0)       // Zero because it is followed by the
-                           // conditional jump
-      // Compile the destination label for LOOP if necessary.
-      IF looplab DO out2(s_lab, looplab)
       context, comline := x, h4!x
-      jumpcond(h3!x, sw, L)
+
+      out2(s_lab, bodylab) // Label start of body
+
+      { LET prevbreaklab, prevlooplab = breaklab, looplab
+        breaklab, looplab := genlab(), 0
+
+        trans(h2!x, 0)       // Zero because it is followed by the
+                             // conditional jump
+        donelab := breaklab
+
+        // Compile the destination label for LOOP if necessary.
+        IF looplab DO out2(s_lab, looplab) // Only if needed
+
+        breaklab, looplab := prevbreaklab, prevlooplab
+      }
+
+      jumpcond(h3!x, sw, bodylab)
+      context, comline := x, h4!x
 
       // Compile the destination label for BREAK, if necessary.
-      //IF breaklab>0 UNLESS breaklab=next DO out2(s_lab, breaklab)
-      IF breaklab>0 DO out2(s_lab, breaklab)
+
+      IF donelab>0 DO out2(s_lab, donelab)
 
       trnext(next) // Compile a jump, a return or nothing
-      breaklab, looplab := prevbreaklab, prevlooplab
       RETURN
     }
  
@@ -792,6 +1015,8 @@ LET trans(x, next) BE
       IF casecount<0 DO trnerr("CASE label out of context")
       WHILE p DO
       { IF h2!p=k DO trnerr("'CASE %n:' occurs twice", k)
+        IF T16 & (h2!p&#xFFFF)=(k&#xFFFF) DO
+	  trnerr("'CASE %n:' occurs twice when compiling 16 bit BCPL", k&#xFFFF)
         p := h1!p
       }
       caselist := newblk(caselist, k, l)
@@ -827,10 +1052,10 @@ LET trans(x, next) BE
 } REPEAT
 
 LET declnames(x) BE UNLESS x=0 SWITCHON h1!x INTO
-  // x is the definition(s) following LET, so the leading operator is
+{ // x is the definition(s) following LET, so the leading operator is
   // one of s_vecdef, s_valdef, s_fndef, s_rtdef, s_patfndef, s_patrtdef
-  // or s_and. This function adds names to the declaration vector.
-{ DEFAULT:
+  // or s_and. This function adds names to the declaration vector dvec.
+  DEFAULT:
     trnerr("Compiler error in Declnames, op=%s", opname(h1!x))
     RETURN
  
@@ -850,26 +1075,32 @@ LET declnames(x) BE UNLESS x=0 SWITCHON h1!x INTO
  
   CASE s_rtdef:  // x -> [ rtdef, name, namelist, C, entrylab, ln ]
   CASE s_fndef:  //   |  [ fndef, name, namelist, E, entrylab, ln ]
+  { // Add the name of a function or routine to dvec. The name may
+    // have the FLT tag.
+    LET name = h2!x
+    LET ff = FALSE // =TRUE if the name has the FLT tag
     context, comline := x, h6!x
-    IF h1!(h2!x)=s_flt DO
-    { trnerr("Procdure names must not have the FLT tag")
-      h2!x := h2!(h2!x) // Remove the FLT tag
-    }
-    h5!x := genlab()     // The entry label.
-    declstat(h2!x, h5!x) // Declare the procedure name.
+    // 28feb2023  Functions declarations my now use the FLT prefix
+    // to indicate the result of a call has the FLT tag.
+    IF h1!name=s_flt DO ff, name := TRUE, h2!name
+    h5!x := genlab()         // The entry label.
+    declstat(ff, name, h5!x) // Declare the procedure name.
     RETURN
- 
+  }
+  
   CASE s_patrtdef: // x -> [ patrtdef, name, matchlist, entrylab, ln ]
   CASE s_patfndef: //   |  [ patfndef, name, matchlist, entrylab, ln ]
+  { LET name = h2!x
+    LET ff = FALSE // =TRUE if the name has the FLT tag
     context, comline := x, h5!x
-    IF h1!(h2!x)=s_flt DO
-    { trnerr("Function name must not have the FLT tag")
-      h2!x := h2!(h2!x) // Remove the FLT tag
-    }
-    h4!x := genlab()     // Choose the entry point label number
-    declstat(h2!x, h4!x) // Declare the patfn or patrt name.
+    // 28feb2023  Functions declarations my now use the FLT prefix
+    // to indicate the result of a call has the FLT tag.
+    IF h1!name=s_flt DO ff, name := TRUE, h2!name
+    h4!x := genlab()         // The entry label.
+    declstat(ff, name, h4!x) // Declare the procedure name.
     RETURN
- 
+  }
+  
   CASE s_and:
     declnames(h2!x)
     declnames(h3!x)
@@ -882,7 +1113,8 @@ AND decldyn(x) BE UNLESS x=0 DO
   LET k = s_local
 
   IF h1!x=s_flt DO
-  { k := s_flocal     // x -> [s_flt, [s_name.chain,<caracters>]
+  { // x -> [s_flt, [s_name, chain, <characters>]]
+    k := s_flocal
     x := h2!x
   }
 
@@ -903,33 +1135,58 @@ AND decldyn(x) BE UNLESS x=0 DO
     RETURN
   }
  
-  trnerr("Compiler error in Decldyn")
+  trnerr("Compiler error in decldyn")
 }
 
-AND declstat(x, lab) BE
-{ LET c = cellwithname(x)
-  LET fk = h2!c
-  LET k = fk & s_fltmask 
+AND declstat(ff, x, lab) BE
+{ // ff is TRUE if the name had the FLT tag.
+  // x  is the name of a function, routine or a
+  // pattern function or routine, or a label.
+  // If it is a label name ff will be FALSE.
+  LET c = cellwithname(x)
+  LET fk = h2!c          // fk is one of s_global, s_static,
+                         // s_manifest, s_label
+		         // s_fglobal, s_fstatic, s_fmanifest,
+			 // s_flabel
+  LET k = fk & s_fltmask // k is one of s_global, s_static,
+                         // s_manifest, s_label
+
   TEST k=s_global
-  THEN { LET gn = h3!c
+  THEN { // x is being declared in the scope of a global
+         // declaration of the same name. So the global
+	 // must be initialised with the entry point.
+	 // If either x or the global declaration has
+	 // the FLT tag they must both have this tag.
+ 	 LET gn = h3!c
+	 TEST ff
+	 THEN IF fk=s_global DO
+	   trnerr("An FLT function definition in the*n*
+                  *scope of a non FLT global with the same name.")
+	 ELSE IF fk=s_fglobal DO
+	   trnerr("An non FLT function definition in the*n*
+                  *scope of an FLT global with the same name.")
          gdeflist := newblk(gdeflist, gn, lab)
          gdefcount := gdefcount + 1
-         addname(x, s_global, gn, 0)
+         addname(x, fk, gn, 0)      // Modified 28feb2023
          IF xrefing DO
            xref(x,
                 (fk=s_fglobal -> "FG:", "G:"),
                 gn, h1!context)
-                IF gdefsing DO
-                { writef("G%i3 = %s*n", gn, @h3!x)
-                  //abort(1000)
-                }
-      }
- ELSE { addname(x, s_label, lab, 0)
-        IF xrefing DO
-          xref(x,
-               (fk=s_flocal -> "FF:", "F:"),
-               lab, h1!context)
-      }
+         IF gdefsing DO
+         { writef("G%i3 = %s*n", gn, @h3!x)
+           //abort(1000)
+         }
+       }
+  ELSE { // x is not being declared in the scope of a global
+         // declaration of the same name. It is the name of
+	 // a function, routine or pattern function or routine,
+	 // or an ordinary label.
+         addname(x, (ff->s_flabel,s_label), lab, 0)
+         IF xrefing DO
+           xref(x,
+                (ff -> "FF:", "F:"),
+                lab, h1!context)
+       }
 }
  
 AND decllabels(x) BE
@@ -951,13 +1208,18 @@ AND checkdistinct(p) BE
 }
  
 AND addname(name, k, a, path) BE
-{ LET p = dvece + 4
+{ // k is one of
+  //  s_global,  s_static,  s_manifest,  s_local,  s_label,
+  //  s_fglobal, s_fstatic, s_fmanifest, s_flocal, s_flabel
+
+  LET p = dvece + 4
   IF p>dvect DO trnerr("More workspace needed")
   h1!dvece, h2!dvece, h3!dvece, h4!dvece := name, k, a, path
   h2!name := dvece // Remember the declaration
   dvece := p
-  //writef("addname: name cell at=%n %s k=%s a=%n path=%x8*n",
-  //        dvece-4, @h3!name, opname(k), a, path)
+  IF FALSE & debug & k=s_fstatic DO
+    writef("addname: name cell at=%n %s k=%s a=%n path=%x8*n",
+            dvece-4, @h3!name, opname(k), a, path)
 }
  
 AND undeclare(e) BE 
@@ -969,7 +1231,7 @@ AND undeclare(e) BE
 }
 
 AND cellwithname(n) = VALOF
-{ // n is a name node not prefixed by FLT.
+{ // n is a name node ie not prefixed by FLT.
   LET t = h2!n
   IF t RESULTIS t  // It has been looked up before
   t := dvece
@@ -980,10 +1242,18 @@ AND cellwithname(n) = VALOF
  
 AND scanlabels(x) BE UNLESS x=0 SWITCHON h1!x INTO
  
-{ CASE s_colon:   context, comline := x, h5!x
+{ CASE s_colon: { LET name = h2!x
+                  IF h1!name=s_flt DO
+		  { trnerr("A label may not have the FLT tag")
+		    name := h2!name
+		  }
+                  context, comline := x, h5!x
                   h4!x := genlab()
-                  declstat(h2!x, h4!x)
- 
+                  declstat(FALSE, name, h4!x)
+                  scanlabels(h3!x)
+                  RETURN
+                }
+		
   CASE s_if: CASE s_unless: CASE s_while: CASE s_until:
   CASE s_switchon: CASE s_case:
                   scanlabels(h3!x)
@@ -1010,7 +1280,7 @@ AND transdef(x) BE
                       // function or routine definition.
                       LET L, s = 0, ssp
                       IF procname DO
-		      { // e are not compiling outer level declarations
+		      { // We are not compiling outer level declarations
 		        L := genlab()
 		        out2(s_jump, L)
                       }
@@ -1044,7 +1314,10 @@ AND transdyndefs(x) BE SWITCHON h1!x INTO
  
 AND transstatdefs(x) BE SWITCHON h1!x INTO
 { // Translate s_rtdef, s_fndef, s_patrtdef and s_patfndef
-  // Ignore the other declarations.
+  // Ignore the other declarations. Ie compile the code
+  // for all the fuctions in the current LET construct.
+  // variables in this construct have already been declared
+  // in dvec.
   
   DEFAULT:     RETURN
 
@@ -1077,17 +1350,15 @@ AND transstatdefs(x) BE SWITCHON h1!x INTO
 
     AND argpos = savespacesize
     AND body = h4!x
-
+    LET ff = FALSE
     matchcontext := 0  // Not in a match construct.
 
     TEST h1!x=s_rtdef
     THEN proccontext := s_rtrn
     ELSE proccontext := s_fnrn
     
-    procname := h2!x // The FLT tag if any will have been 
-                     // removed by declstat.
-	  	     // Note procname points to a name node
-		     // when compiling a procedure.
+    procname := h2!x
+    IF h1!procname=s_flt DO ff, procname := TRUE, h2!procname
     
     context, comline := x, h6!x
 
@@ -1123,8 +1394,8 @@ AND transstatdefs(x) BE SWITCHON h1!x INTO
            undeclare(e1)       // Undeclare the labels
          }
     ELSE { proccontext := s_fnrn
-           fnbody(body, FALSE) // Compile the body expression in
-         }                     // non FLT mode followed by FNRN.
+           fnbody(body, ff) // Compile the body expression in
+         }                  // FLT or non FLT mode followed by FNRN.
 //sawritef("At end of a procedure definition of %s*n", @h3!procname)
 
     TEST proccontext=s_rtrn
@@ -1153,21 +1424,21 @@ AND transstatdefs(x) BE SWITCHON h1!x INTO
   CASE s_patfndef: //   |  [ patfndef, name, mlist, entrylab, ln ]
 //  { // Note that dvece is saved and restored when translating match items.
   { LET prevdvece    = dvece     // These must be restored at the end
-  LET xxx = 123
     LET prevdvecp    = dvecp
     LET prevprocname = procname
     AND mlist  = h3!x
     AND argpos = savespacesize
+    LET ff = FALSE
 
-    procname := h2!x // The FLT tag. if any. will have been 
-                     // removed by declstat.
+    procname := h2!x
+    IF h1!procname=s_flt DO ff, procname := TRUE, h2!procname
 
     context, comline := x, h5!x
 
     out2(s_entry, h4!x)      // The label allocated for the entry point.
     outstring(@h3!procname)
 
-    dvecp := dvece           // To diasallow dynamic free variables.
+    dvecp := dvece           // To disallow dynamic free variables.
     
     // The arguments will have been laid out in the stack starting
     // at argpos by the code to call this function or routine.
@@ -1176,7 +1447,8 @@ AND transstatdefs(x) BE SWITCHON h1!x INTO
     // knows how many arguments are inspected by the pattern items.
 
     // Translate all the match items
-    transmatchlist(h1!x,   // The context is s_patfndef or s_patrtdef
+    transmatchlist(ff,
+                   h1!x,   // The context is s_patfndef or s_patrtdef
                    mlist,  // mlist -> [matchiteme, plist, E, link, ln]
                            //       |  [matchitemc, plist, C, link, ln]
                    argpos, // Position of the first match argument
@@ -1246,54 +1518,36 @@ AND transbreak() BE
 }
 
 AND condbreak(x, b, next) BE
-{ // Compile a conditional execution of BREAK.
-  // Compile code to execute BREAK if x yields the truth value b,
-  // otherwise compile code specified by next, as follows.
-  // next>0  Compile JUMP next
-  // next=0  Compile nothing
-  // next<0  Compile RTRN or LN 0; FNRN
+{ // When b is TRUE  compile: IF E BREAK
+  // When b is FALSE compile: UNLESS E BREAK
 
-  LET L = ?
-  
-  IF breaklab<0 DO
-  { IF next>0 DO
-    { jumpcond(x, ~b, next)
-      transbreak()
-      RETURN
-    }
-    
-    L := genlab()
-    
-    IF next=0 DO
-    { jumpcond(x, ~b, L)
-      transbreak()
-      out2(s_lab, L)
-      RETURN
-    }
-    
-    // Both breaklab and next are negative, so compile x in
-    // truth value mode discarding the result followed by
-    // RTRN or LN 0; FNRN.
-    jumpcond(x, ~b, L)
-    out2(s_lab, L)
-    transbreak()
+  IF breaklab>=0 DO
+  { IF breaklab=0 DO breaklab := genlab()
+    jumpcond(x, b, breaklab)
+    trnext(next)
     RETURN
   }
 
-  // breaklab is positive, so allocate breaklab if necessary
-  // and compile a conditional jmp to breaklab.
-  
-  UNLESS breaklab DO breaklab := genlab()
-  jumpcond(x, b, breaklab)
-}
+  IF next<=0 DO
+  { LET L = genlab()
+    jumpcond(x, ~b, L)
+    transreturn()
+    out2(s_lab, L)
+    trnext(next)
+    RETURN
+  }
 
+  jumpcond(x, ~b, next)
+  transreturn()
+  RETURN
+}
+    
 AND transloop() BE
 { // Compile the LOOP command.
 
+  UNLESS looplab DO looplab := genlab()
+  
   // looplab=-2   LOOP is illegal.
-  // looplab=-1   Compile a return from a procedure using
-  //              RTRN or LN 0; FNRN.
-  // looplab= 0   Update looplab with a new label and compile a jump.
   // looplab> 0   Compile a jump to looplab.
 
   IF looplab =-2 DO
@@ -1301,61 +1555,27 @@ AND transloop() BE
     RETURN
   }
 
-  IF looplab<0 DO
-  { TEST proccontext=s_rtrn
-    THEN out1(s_rtrn)
-    ELSE out3(s_ln, 0, s_fnrn)
-    RETURN
-  }
+  IF looplab<=0 DO trnerr("System error in transloop, looplab=%n", looplab)
 
-  // looplab is positive
-  IF looplab=0 DO looplab := genlab()
   out2(s_jump, looplab)
   RETURN
 }
 
 AND condloop(x, b, next) BE
-{ // Compile a conditional execution of LOOP.
-  // Compile code to execute LOOP if x yields the truth value b,
-  // otherwise compile code specified by next, as follows.
-  // next>0  Compile JUMP next
-  // next=0  Compile nothing
-  // next<0  Compile RTRN or LN 0; FNRN
+{ // When b is TRUE  compile: IF E LOOP
+  // When b is FALSE compile: UNLESS E LOOP
 
-  LET L = ?
-  
-  IF looplab<0 DO
-  { IF next>0 DO
-    { jumpcond(x, ~b, next)
-      transloop()
-      RETURN
-    }
-    
-    L := genlab()
-    
-    IF next=0 DO
-    { jumpcond(x, ~b, L)
-      transloop()
-      out2(s_lab, L)
-      RETURN
-    }
-    
-    // Both looplab and next are negative, so compile x in
-    // truth value mode discarding the result followed by
-    // RTRN or LN 0; FNRN.
-    jumpcond(x, ~b, L)
-    out2(s_lab, L)
-    transloop()
+  IF looplab=0 DO looplab := genlab()
+  IF looplab>0 DO
+  { jumpcond(x, b, looplab)
+    trnext(next)
     RETURN
   }
 
-  // looplab is positive, so allocate looplab if necessary
-  // and compile a conditional jmp to looplab.
-  
-  UNLESS looplab DO looplab := genlab()
-  jumpcond(x, b, looplab)
+  trnerr("System error in condloop,looplab=%n", looplab)
+  RETURN
 }
-
+    
 AND transendcase() BE
 { // Compile the ENDCASE command.
 
@@ -1384,57 +1604,32 @@ AND transendcase() BE
 }
 
 AND condendcase(x, b, next) BE
-{ // Compile a conditional execution of ENDCASE.
-  // Compile code to execute ENDCASE if x yields the truth value b,
-  // otherwise compile code specified by next, as follows.
-  // next>0  Compile JUMP next
-  // next=0  Compile nothing
-  // next<0  Compile RTRN or LN 0; FNRN
+{ // When b is TRUE  compile: IF E ENDCASE
+  // When b is FALSE compile: UNLESS E ENDCASE
 
-  LET L = ?
-  
-  IF endcaselab<0 DO
-  { IF next>0 DO
-    { jumpcond(x, ~b, next)
-      transendcase()
-      RETURN
-    }
-    
-    L := genlab()
-    
-    IF next=0 DO
-    { jumpcond(x, ~b, L)
-      transendcase()
-      out2(s_lab, L)
-      RETURN
-    }
-    
-    // Both endcaselab and next are negative, so compile x in
-    // truth value mode discarding the result followed by
-    // RTRN or LN 0; FNRN.
-    jumpcond(x, ~b, L)
-    out2(s_lab, L)
-    transendcase()
+  IF endcaselab>=0 DO
+  { IF endcaselab=0 DO endcaselab := genlab()
+    jumpcond(x, b, endcaselab)
+    trnext(next)
     RETURN
   }
 
-  // endcaselab is positive, so allocate endcaselab if necessary
-  // and compile a conditional jmp to endcaselab.
-  
-  UNLESS endcaselab DO endcaselab := genlab()
-  jumpcond(x, b, endcaselab)
+  IF next<=0 DO
+  { LET L = genlab()
+    jumpcond(x, ~b, L)
+    transreturn()
+    out2(s_lab, L)
+    trnext(next)
+    RETURN
+  }
+
+  jumpcond(x, ~b, next)
+  transreturn()
+  RETURN
 }
-
+    
 AND transnext() BE
-{ // Compile the NEXT command.
-
-  // nextlab=-2   NEXT is illegal.
-  // nextlab=-1   Compile a return from a procedure using
-  //              RTRN or LN 0; FNRN.
-  // nextlab= 0   Update nextlab with a new label and compile a jump.
-  // nextlab> 0   Compile a jump to nextlab.
-
-  IF nextlab =-2 DO
+{ IF nextlab =-2 DO
   { trnerr("NEXT out of context")
     RETURN
   }
@@ -1453,27 +1648,20 @@ AND transnext() BE
 }
 
 AND condnext(x, b, next) BE
-{ // Compile a conditional execution of NEXT.
-  // Compile code to execute NEXT if x yields the truth value b,
-  // otherwise compile code specified by next, as follows.
-  // next>0  Compile JUMP next
-  // next=0  Compile nothing
-  // next<0  Compile RTRN or LN 0; FNRN
+{ // When b is TRUE  compile: IF E ENDCASE
+  // When b is FALSE compile: UNLESS E ENDCASE
 
-  LET L = ?
-  
   IF nextlab<0 DO
   { IF next>0 DO
     { jumpcond(x, ~b, next)
-      transnext()
+      transreturn()
       RETURN
     }
     
-    L := genlab()
-    
     IF next=0 DO
-    { jumpcond(x, ~b, L)
-      transnext()
+    { LET L = genlab()
+      jumpcond(x, ~b, L)
+      transreturn()
       out2(s_lab, L)
       RETURN
     }
@@ -1481,17 +1669,21 @@ AND condnext(x, b, next) BE
     // Both nextlab and next are negative, so compile x in
     // truth value mode discarding the result followed by
     // RTRN or LN 0; FNRN.
-    jumpcond(x, ~b, L)
-    out2(s_lab, L)
-    transnext()
-    RETURN
+    { LET L= genlab()
+      jumpcond(x, ~b, L)
+      out2(s_lab, L)
+      transreturn()
+      RETURN
+    }
+
+    trnerr("System error in condnext, next=%n", next)
   }
 
   // nextlab is positive, so allocate nextlab if necessary
   // and compile a conditional jmp to nextlab.
   
   UNLESS nextlab DO nextlab := genlab()
-  jumpcond(x, b, endcaselab)
+  jumpcond(x, b, nextlab)
 }
 
 AND transexit() BE
@@ -1533,15 +1725,9 @@ AND transexit() BE
 }
 
 AND condexit(x, b, next) BE
-{ // Compile a conditional execution of EXIT.
-  // Compile code to execute EXIT if x yields the truth value b,
-  // otherwise compile code specified by next, as follows.
-  // next>0  Compile JUMP next
-  // next=0  Compile nothing
-  // next<0  Compile RTRN or LN 0; FNRN
+{ // When b is TRUE  compile: IF E ENDCASE
+  // When b is FALSE compile: UNLESS E ENDCASE
 
-  LET L = ?
-  
   IF exitlab<0 DO
   { IF next>0 DO
     { jumpcond(x, ~b, next)
@@ -1549,10 +1735,9 @@ AND condexit(x, b, next) BE
       RETURN
     }
     
-    L := genlab()
-    
     IF next=0 DO
-    { jumpcond(x, ~b, L)
+    { LET L = genlab()
+      jumpcond(x, ~b, L)
       transexit()
       out2(s_lab, L)
       RETURN
@@ -1561,17 +1746,21 @@ AND condexit(x, b, next) BE
     // Both exitlab and next are negative, so compile x in
     // truth value mode discarding the result followed by
     // RTRN or LN 0; FNRN.
-    jumpcond(x, ~b, L)
-    out2(s_lab, L)
-    transexit()
-    RETURN
+    { LET L= genlab()
+      jumpcond(x, ~b, L)
+      out2(s_lab, L)
+      transexit()
+      RETURN
+    }
+
+    trnerr("System error in condexit, next=%n", next)
   }
 
-  // exitlab is positive, so allocate exitlab if necessary
+  // nextlab is positive, so allocate exitlab if necessary
   // and compile a conditional jmp to exitlab.
   
   UNLESS exitlab DO exitlab := genlab()
-  jumpcond(x, b, endcaselab)
+  jumpcond(x, b, exitlab)
 }
 
 AND transreturn() BE
@@ -1581,25 +1770,18 @@ AND transreturn() BE
 }
 
 AND condreturn(x, b, next) BE
-{ // Compile a conditional execution of RETURN.
-  // Compile code to execute RETURN if x yields the truth value b,
-  // otherwise compile code specified by next, as follows.
-  // next>0  Compile JUMP next
-  // next=0  Compile nothing
-  // next<0  Compile RTRN or LN 0; FNRN
+{ // When b is TRUE  compile: IF E RETURN
+  // When b is FALSE compile: UNLESS E RETURN
 
-  LET L = ?
-  
   IF next>0 DO
   { jumpcond(x, ~b, next)
     transreturn()
     RETURN
   }
     
-  L := genlab()
-    
   IF next=0 DO
-  { jumpcond(x, ~b, L)
+  { LET L = genlab()
+    jumpcond(x, ~b, L)
     transreturn()
     out2(s_lab, L)
     RETURN
@@ -1607,18 +1789,25 @@ AND condreturn(x, b, next) BE
     
   // next is negative, so compile x in truth value mode discarding
   // the result followed by RTRN or LN 0; FNRN.
-  jumpcond(x, ~b, L)
-  out2(s_lab, L)
-  transreturn()
+  IF next=-1 DO
+  { LET L = genlab()
+    jumpcond(x, ~b, L)
+    out2(s_lab, L)
+    transreturn()
+  }
+
+  trnerr("System error in condreturn, nxt=%n", next)
 }
 
-AND transmatchlist(mcontext, mlist, argpos, next) BE
+AND transmatchlist(ff, mcontext, mlist, argpos, next) BE
 { // This function is only used to compile a match list in
   // one of the six contexts specified by mcontext namely:
   //   s_patfndef, s_patrtdef,
   //   s_matche,   s_matchc,
   //   s_everye or s_everyc
 
+  // ff = TRUE if evaluating the match list in FLT mode
+  
   // mlist points to the first match item which is
   // either  [ matchiteme, plist, E, link, ln ]
   //     or  [ matchitemc, plist, C, link, ln ]
@@ -1751,7 +1940,7 @@ AND transmatchlist(mcontext, mlist, argpos, next) BE
         // The current pattern was matched successfully.
 
         TEST matchcontext=s_patfndef
-        THEN { fnbody(body, FALSE) // Compile body in non FLT mode
+        THEN { fnbody(body, ff)    // Compile body in ff mode
              }                     // followed by FNRN.
 	ELSE { LET p = dvecp
 	       decllabels(body)
@@ -1789,7 +1978,7 @@ AND transmatchlist(mcontext, mlist, argpos, next) BE
 
       // All match items have failed or EXIT called so return
       // the result of zero.
-      out2(s_ln, 0)
+      out2(s_ln, (ff->flt0,0)) // Return 0.0 or 0 depending on ff
       out1(s_fnrn)
 
       matchcontext  := prevmatchcontext
@@ -1902,9 +2091,9 @@ AND transmatchlist(mcontext, mlist, argpos, next) BE
 
         // The translate the body of this matchitem.
 
-outcomment("Code for body of a %s, *
-           *nextlab=%n exitlab=%n next=%n",
-           opname(matchcontext), nextlab, exitlab, next)
+//outcomment("Code for body of a %s, *
+//           *nextlab=%n exitlab=%n next=%n",
+//           opname(matchcontext), nextlab, exitlab, next)
 
         SWITCHON matchcontext INTO
 	{ DEFAULT:
@@ -1937,7 +2126,7 @@ outcomment("Code for body of a %s, *
           }
 
           CASE s_matche:
-            load(body, FALSE) // Load the body expression in non FLT mode.
+            load(body, ff) // Load the body expression in ff mode.
 	    TEST next<0
 	    THEN { out1(s_fnrn)
 	           ssp := ssp-1
@@ -1964,16 +2153,16 @@ outcomment("Code for body of a %s, *
           }
 
          CASE s_everye:
-            load(body, FALSE)
+            load(body, ff)
             out2(s_lp, patresultpos)
-	    out1(s_add)
+	    out1(ff -> s_fadd, s_add)
 	    out2(s_sp, patresultpos)
             ENDCASE
 	}
 
-outcomment("Code for nextlab after body in a %s, *
-           *nextlab=%n exitlab=%n next=%n",
-            opname(matchcontext), nextlab, exitlab, next)
+//outcomment("Code for nextlab after body in a %s, *
+//           *nextlab=%n exitlab=%n next=%n",
+//            opname(matchcontext), nextlab, exitlab, next)
 
         IF nextlab DO
 	{ out2(s_lab, nextlab) // Compile the label if necessary
@@ -1989,8 +2178,8 @@ outcomment("Code for nextlab after body in a %s, *
       // All match items have been compiled.
       // Compile code after the last match item.
 
-outcomment("Code at end of %s, nextlab=%n exitlab=%n next=%n",
-            opname(matchcontext), nextlab, exitlab, next)
+//outcomment("Code at end of %s, nextlab=%n exitlab=%n next=%n",
+//            opname(matchcontext), nextlab, exitlab, next)
 
       SWITCHON matchcontext INTO
       { DEFAULT:
@@ -2006,7 +2195,7 @@ outcomment("Code at end of %s, nextlab=%n exitlab=%n next=%n",
           IF next>0 DO out2(s_jump, next)
           IF next<0 TEST proccontext=s_rtrn
 	            THEN out1(s_rtrn)
-		    ELSE out3(s_ln, 0, s_fnrn)
+		    ELSE out3(s_ln, (ff->flt0,0), s_fnrn)
           ENDCASE
 
         CASE s_matche:
@@ -2014,7 +2203,7 @@ outcomment("Code at end of %s, nextlab=%n exitlab=%n next=%n",
           out2(s_stack, ssp)
 
           UNLESS exitlab DO exitlab := genlab()
-          out2(s_ln, 0)        // All match items failed.
+          out2(s_ln, (ff->flt0,0))        // All match items failed.
           out2(s_res, exitlab)
 	  
           out2(s_lab, exitlab) // Possibly reached from the body of
@@ -2036,7 +2225,7 @@ outcomment("Code at end of %s, nextlab=%n exitlab=%n next=%n",
         CASE s_everye:
           ssp := patresultpos+1
 	  out2(s_stack, ssp)
-outcomment("EVERYe final code, patresultpos=%n*n", patresultpos)
+//outcomment("EVERYe final code, patresultpos=%n*n", patresultpos)
           IF exitlab DO out2(s_lab, exitlab)
 
           IF next>0 DO out2(s_jump, next)
@@ -2426,24 +2615,16 @@ AND statdefs(x) = h1!x=s_fndef | h1!x=s_rtdef       -> TRUE,
                   statdefs(h2!x)                    -> TRUE,
                   statdefs(h3!x)
 
-AND choosereturnlab() = VALOF
-{ // Exactly one of the following should be not equal -2
-  //    retlab       returning from a routine
-  //    ret0lab      returning from funcion with result 0 
-  
-  //IF retlab = 0 DO retlab := genlab()
-  //IF retlab>0 RESULTIS retlab
-
-  //IF ret0lab = 0 DO ret0lab := genlab()
-  //IF ret0lab>0 RESULTIS ret0lab
-
-  RESULTIS 0
-}
-
 LET jumpcond(x, b, L) BE
 { // L is an allocated label number > 0
   LET sw = b
 
+//  IF isconst(x) DO
+//  { LET constval = evalconst(x, FALSE)
+//    IF constval=b DO out2(s_jump, L)
+//    RETURN
+//  }
+  
   SWITCHON h1!x INTO
   { CASE s_false:  b := NOT b
     CASE s_true:   IF b DO out2(s_jump, L)
@@ -2473,17 +2654,17 @@ LET jumpcond(x, b, L) BE
 }
  
 AND transswitch(x, next) BE
-{ LET cl, cc = caselist, casecount // These must be saved and restored 
-  LET dl, el = defaultlab, endcaselab
-  LET next1 = 0       // This will hold next or a label after
-                      // the SWITCHON statement
-  LET L = genlab()    // Labelling the Ocode SWITCHON statement
-  LET dlab = 0        // This will hold defaultlab or a label after
-                      // the Ocode SWITCHON statement
+{ LET cl, cc = caselist, casecount    // These must all be saved and
+  LET dl, el = defaultlab, endcaselab // restored.
+
+  LET L = genlab()    // Label for the Ocode SWITCHON statement that wiil
+                      // be compiled after the body of the switch has been
+		      // compiled when the default label and all case
+		      // labels have been discovered.
   
-  casecount, defaultlab := 0, 0 // DEFAULT and CASE labels
-                                // are allowed.
-  caselist := 0 // No CASE labels yet.
+  defaultlab := 0     // No DEFAULT label found so far.
+  caselist   := 0     // No CASE labels yet.
+  casecount  := 0     // Count of CASE labels so far
   
   // Note the possible values of next are:
   // =0  continue execution just after the SWITCHON command.
@@ -2495,86 +2676,53 @@ AND transswitch(x, next) BE
 
   // If next=0 the code must jump around the SWITCHON statement.
   // This is done placing a newly allocated label in next1 and
-  // compiling the LAB statement for next1 after compiling
-  // the Ocode SWITCHON statement.
+  // compiling the LAB statement for endcaselab after compiling
+  // the SWITCHON statement.
   
-  endcaselab := next // A value >0, =0 or =-1
-  endcaselab := genlab() // A value >0
-  next1 := next>0 -> next, genlab()
-  // next1 is normally labels the first instruction after
-  // the Ocode SWITCHON statement, but equals next if
-  // next is greater than 0
-  
+  endcaselab := next
+  IF endcaselab=0 DO endcaselab := genlab()
+  // Note endcaselab is >0 or =-1
+
   context, comline := x, h4!x
 
   load(h2!x, FALSE)  // Evaluate the switch expression
 
-  out2(s_res, L) // Make a jump to the end of the switch
-                 // body with the switch expression in <res>
-		 // where it will be accessed by an RSTACK
-		 // statement. This may avoid the switch 
-		 // value being copied into a stack location.
+  out2(s_res, L) // Make a jump to the SWITCHON statement that
+                 // will be compiled after the SWITCHON body has
+		 // been compiled.
+                 // The value of the switch expression is
+		 // accessed by an RSTACK statement at label L.
+		 // This often avoids copying the switch expression
+		 // value into a stack location.
   ssp := ssp-1
 
   // Compile the switch body collecting the case label data
 
-  trans(h3!x, next1) // next1 is used to normally jump around
-                     // the SWITCHON statement, but will jump
-		     // to next if next is greaer than 0.
-
-  // Since next1 is non zero this position in the code will
-  // not be reached from the compilation of h3!x
+  IF endcaselab=0 DO endcaselab := genlab()
+  trans(h3!x, endcaselab)
+  // Control cannot reach this point in the compiled code
+  // since endcaselab is >0 or =-1
 
   context, comline := x, h4!x
   
-  // Choose the default label number for the SWITCHON statement
-  IF defaultlab>0 DO dlab := defaultlab  // DEFAULT: was present
-  IF defaultlab=0 &                      // DEFAULT: not present
-     next>0       DO dlab := next        // and next is a specified label
-	                              
-  UNLESS dlab     DO dlab := genlab()    // Otherwise allocate a label
-
   out2(s_lab, L)      // The switch value is on the top of the stack
   out2(s_rstack, ssp) // Load <res> onto the top of the stack
   ssp := ssp+1
 
   // The switch expression value is on the top of the stack
-  out3(s_switchon, casecount, dlab)
-  //IF hard DO
-  //{ sawritef("transsawitch: casecount=%n caselist=%n*n",
-  //                    casecount, caselist)
-  //  abort(3323)
-  //}
+  IF defaultlab=0 DO
+  { UNLESS endcaselab>0 DO endcaselab := genlab()
+    defaultlab := endcaselab  // DEFAULT: was present
+  }
+  out3(s_switchon, casecount, defaultlab)
   WHILE caselist DO { out2(h2!caselist, h3!caselist)
                       caselist := h1!caselist
                     }
   ssp := ssp-1
 
-  { LET flag = FALSE // Will be TRUE if a label is set
-                     // after the Ocode SWITCHON statement
-  
-    // next1 is >0 and if equal to next there is no need to
-    // set the next1 label.
-    UNLESS next1=next DO
-    { out2(s_lab, next1)
-      flag := TRUE
-    }
-
-    // Compile a LAB statement for the destination of ENDCASE,
-    // if necessary.
-    IF endcaselab>0 &
-      endcaselab ~= next DO
-      { out2(s_lab, endcaselab)
-        flag := TRUE
-      }
-
-    // Compile a LAB statement for the DEFAULT label, if necessary.
-    IF defaultlab=0 & dlab ~= next DO
-      { out2(s_lab,  dlab)
-        flag := TRUE
-      }
-
-    IF flag DO trnext(next)
+  IF endcaselab>0 & endcaselab~=next DO
+  { out2(s_lab, endcaselab)
+    trnext(next)
   }
 
   defaultlab, endcaselab := dl, el
@@ -2582,19 +2730,30 @@ AND transswitch(x, next) BE
 }
  
 AND transfor(x, next) BE
-{ // x -> [s_for, N, initval, lim, step, c, ln]
-  LET e, m, blab = dvece, genlab(), genlab()
-  LET bl, ll = breaklab, looplab
-  // Note: ENDCASE is allowed in FOR commands
-  LET cc = casecount
-  LET k, n, step = 0, 0, 1
-  LET s = ssp
-  LET name = h2!x
+{ // x -> [s_for, name, initvalE, limE, stepE, body, ln]
+  LET name                  = h2!x
+  LET initvalE, limE, stepE = h3!x, h4!x, h5!x
+  LET body, ln              = h6!x, h7!x
 
-  casecount := -1  // Disallow CASE and DEFAULT labels.   
-  breaklab, looplab := genlab(), genlab()
+  LET prevdvece     = dvece
+  LET prevcasecount = casecount
+  LET stepvalue = 1 // The default step value
+  LET s = ssp
+
+  LET bodylab = genlab() // This labels the start of the body
+  LET blab    = 0        // If needed this labels the point just after
+                         // the repetition test at the end of the body.
+  LET testlab = 0        // This is used, if needed, to label the
+                         // repetition test at the end of the body.
+  LET k, n = 0, 0  // If non zero (k,n) is the instruction to load the limit
+                   // If k=0 no end limit is specified, causing an
+		   // unconditional jump to bodylab rather than a
+		   // conditional jump.
+
+  casecount := -1  // Disallow CASE and DEFAULT labels,
+                   // but ENDCASE is still alloed.
    
-  context, comline := x, h7!x
+  context, comline := x, ln
  
   IF h1!name=s_flt DO
   { trnerr("FOR loop control variable must not have the FLT tag")
@@ -2602,85 +2761,246 @@ AND transfor(x, next) BE
     h2!x := name
   }
 
+  // Declare the control variable.
   addname(name, s_local, s, 0)
-  load(h3!x, FALSE)       // The initial value
+  load(initvalE, FALSE) // Load initial value in non FLT mode
 
-  // Set k, n to be the instruction to load the end limit, if there is one
-  // k is zero if no end limit was specified.???
-  IF h4!x TEST h1!(h4!x)=s_number
-          THEN   k, n := s_ln, h2!(h4!x)
+  // Set k, n to be the instruction to load the end limit value.
+  // k and n are both zero if no end limit was specified.
+  IF limE TEST FALSE & isconst(limE)
+          THEN { k, n := s_ln, evalconst(limE, FALSE)
+	       }
           ELSE { k, n := s_lp, ssp
-                 load(h4!x, FALSE) // Place the end limit in the stack
+                 load(limE, FALSE) // Place the end limit in the stack
                }
-  // k=0 if there is no TO expression
+
+  IF k DO outcomment("FOR loop limit value is specified by k=%s n=%n",
+                      opname(k), n)
+	      
+  // Note: k=0 if no limit was given.
+  IF k=0 DO outcomment("No end limit was given")
   
-  IF h5!x DO step := evalconst(h5!x, FALSE) // Set step if BY given
- 
-  out1(s_store)  // Ensure the control variable and possible end limit
-                 // is stored in memory
+  out1(s_store)  // Ensure the control variable and possibly
+                 // the end limit values are stored in memory.
    
-  TEST k=s_ln & h1!(h3!x)=s_number  // check for constant limit expression
-  THEN { // The initial and limit values are both constants 
-         LET initval = h2!(h3!x)
-         IF step>=0 & initval>n | step<0 & initval<n DO
-         { // The body of this FOR loop will not be executed
-	   TEST next<0
-           THEN out1(s_rtrn)
-           ELSE TEST next>0
-                THEN out2(s_jump, next)
-                ELSE { //blab := breaklab>0 -> breaklab, genlab()
-                       out2(s_jump, blab)
-                     }
+  IF stepE DO stepvalue := evalconst(stepE, FALSE)
+  outcomment("The FOR loop step value is %n", n)
+ 
+  TEST k=s_ln & isconst(initvalE)
+  THEN { // Optimize the case when both the initial and limit
+         // values are both constants. 
+         LET initvalue = evalconst(initvalE, FALSE)
+	 // Note: n is the limit value
+	 outcomment("The end limit is constant %n", n)
+	 outcomment("and the initial value is also a constant %n", initvalue)
+         IF stepvalue>=0 & initvalue>n |
+	    stepvalue< 0 & initvalue<n DO
+         { // The initial conditions indicate that the body
+	   // will not be executed even once.
+	   // (But it must still be compiled).
+	   TEST next=0
+	   THEN { blab := genlab()
+	          outcomment("Allocate L%n to label the point", blab)
+		  outcomment("just after the end of the FOR loop")
+		  outcomment("and compile a jump to it")
+	          out2(s_jump, blab) // Jump around the FOR loop code.
+		}
+	   ELSE { outcomment("Compile either function or routine return")
+	          outcomment("or a jump to the next label L%n", next)
+	          trnext(next)
+		}
          }
+	 // Otherwise fall through to the start of the body.
        }
-  ELSE { //IF next<=0 DO blab := genlab()
-         // Only perform a conditional jump if the TO expression was given.
+  ELSE { // The initial and limit values are not both constants
+         // and so must be tested before executing the body.
+         // But if no limit is given no test is needed, we just
+	 // fall through to the start of the body.
 	 IF k DO
-         { out2(s_lp, s)
-           out2(k, n)
-           out1(step>=0 -> s_gr, s_ls)
-           out2(s_jt, next>0 -> next, blab)
+         { // An end limit was given so a test is required.
+	   // It can be compiled here but it is only worth
+	   // doing so if the limit expression is simple enough
+	   // and next is either a label or zero.
+	   outcomment("An end limit was given")
+	   outcomment("but the initial and limit values are")
+	   outcomment("not both constants")
+	   TEST smallexp(limE, 1) & next>=0
+           THEN { // Since the limit expression is simple and
+	          // the conditional jump is to a label, it is
+		  // worth testing the condition at this point.
+		  outcomment("The end limit expression is simple")
+		  outcomment("and next does not specify a function")
+		  outcomment("or routine return, so it is worth")
+		  outcomment("compiling an initial conditional jump")
+  		  outcomment("before falling into the start of the body")
+
+	          out2(s_lp, s)
+                  out2(k, n)
+                  out1(stepvalue>=0 -> s_gr, s_ls)
+		  TEST next=0
+		  THEN { // Allocate a label for the conditional
+		         // jump, if needed.
+			 UNLESS blab DO blab := genlab()
+			 outcomment("next was zero so allocate L%n", blab)
+			 outcomment("for the conditional jump")
+		         out2(s_jt, blab)
+		       }
+		  ELSE { outcomment("Compile a conditianle jump to next=L%n",
+		                     next)
+		         out2(s_jt, next)
+		       }
+		  // If Jt fails fall into the start of
+		  // the body to execute it for the first time..
+	        }
+	   ELSE { // Otherwise compile jump to where the repetition
+		  // condition is tested after the body.
+		  testlab := genlab()
+		  outcomment("We do not choose to make an initial conditional")
+		  outcomment("jump, so just compile a jump to testlab L%n",
+		              testlab)
+	          out2(s_jump, testlab)
+	        }
 	 }
        }
 
-  //IF breaklab=0 & blab>0 DO breaklab := blab
-   
-  context, comline := x, h7!x
-  out2(s_lab, m)
-  decllabels(h6!x)
-  trans(h6!x, 0)   // Translate the body of the for loop.
+  { // Compile the FOR loop body
+    // preserving the BREAK/LOOP environment.
+    LET prevbreaklab, prevlooplab = breaklab, looplab
+    looplab := 0
+    breaklab := blab // Normally zero unless blab was allocated
+    IF breaklab=0 & next>0 DO
+      breaklab := next // use next as the break label, but remember
+                       // to only set the break label if breaklab~=next
+		       
+    // Note: breaklab is now >=0, either next, blab or zero
+    
+    context, comline := x, ln
 
-  IF looplab>0 DO out2(s_lab, looplab)
+    outcomment("We now compile the FOR loop body")
+    out2(s_lab, bodylab)
+    ///IF debug=1 & bodylab=102 DO abort(65432)
+    decllabels(body)
+    outcomment("Compiling the body with a setting of next = zero")
+    outcomment("since we assume it will be followed by code to")
+    outcomment("update the control variable and test it")
+    trans(body, 0) // Zero because we assume there will be code
+                   // to update the control variable and test it.
 
-  // Compile code to increment the control variable
-  out2(s_lp, s); out2(s_ln, step); out1(s_add); out2(s_sp, s)
+    // If breaklab is non zero and not equal to blab or next,
+    // it it mist have been allocated by a BREAK command occuring
+    // in the body.
+
+    outcomment("If a LOOP command occurs within the body looplab")
+    outcomment("would have be allocated for the jump to the point")
+    outcomment("where the control variable is updated and tested")
+    IF looplab DO out2(s_lab, looplab)
+
+    // Remember breaklab in blab in case we have to set that label
+    // just after the code for the FOR loop.
+    blab := breaklab
+    
+    // Restore the previous BREAK/LOOP environment
+    breaklab, looplab := prevbreaklab, prevlooplab
+  }
+  
+  // Compile code to increment the control variable unless
+  // the step value was zero.
+  //IF stepvalue DO
+  { out2(s_lp, s)
+    out2(s_ln, stepvalue)
+    out1(s_add)
+    out2(s_sp, s)
+  }
+
+  // Compile the test label if needed.
+  IF testlab DO out2(s_lab, testlab)
+
+  // If an end limit was given compile a conditioal jump
+  // to the start of the body.
   TEST k
-  THEN { // If the TO expression is given compile the conditional jump.
-         out2(s_lp,s); out2(k,n); out1(step>=0 -> s_le, s_ge)
-         out2(s_jt, m)
+  THEN { // s is the stack location of the control variable
+         out2(s_lp,s); out2(k,n)
+         out1(stepvalue>=0 -> s_le, s_ge)
+         // A limit was given so compile an conditional
+         // jump to the start of the body.
+         out2(s_jt, bodylab)
        }
-  ELSE { // No TO expression given so compile an unconditional jump
-         out2(s_jump, m)
+  ELSE { // No limit was given so compile an unconditional
+         // jump to the start of the body.
+         out2(s_jump, bodylab)
        }
- 
-  //IF next<=0 TEST blab>0 
-  //           THEN                  out2(s_lab, blab)
-  //           ELSE IF breaklab>0 DO out2(s_lab, breaklab)
-  IF breaklab>0 DO out2(s_lab, breaklab)
-  IF blab>0 DO out2(s_lab, blab)
+       
+  // Compile the break label, if necessary.
+  IF blab>0 & blab~=next DO
+  { outcomment("Now settin the break label L%n", blab)
+    out2(s_lab, blab)
+  }
+
+  // Compile a return or nothing.
+  outcomment("Compiling a function or routine return, or nothing")
   trnext(next)
-  casecount := cc
-  breaklab, looplab, ssp := bl, ll, s
+  
+  casecount := prevcasecount
+  ssp := s
   out2(s_stack, ssp)
-  undeclare(e)
+  undeclare(prevdvece)
 }
 
+AND smallexp(x, d) = VALOF
+{ // Return TRUE if x in non null and small
+  UNLESS x RESULTIS FALSE
+
+//sawritef("smallexp(%n, %n): op=%s*n", x, d, opname(h1!x))
+
+  IF isconst(x) RESULTIS TRUE
+
+  IF d=0 RESULTIS FALSE
+  
+  SWITCHON h1!x INTO
+  { DEFAULT:
+      RESULTIS FALSE
+
+    CASE s_name:
+    CASE s_number:
+    CASE s_true:
+    CASE s_false:
+      RESULTIS TRUE
+    
+    CASE s_pos:
+    CASE s_neg:
+      IF smallexp(h2!x, d-1) RESULTIS TRUE
+      RESULTIS FALSE
+
+    CASE s_mul:
+    CASE s_div:
+    CASE s_mod:
+    CASE s_add:
+    CASE s_sub:
+    CASE s_logand:
+    CASE s_logor:
+    CASE s_eq:
+    CASE s_ne:
+    CASE s_gr:
+    CASE s_ge:
+    CASE s_ls:
+    CASE s_le:
+      IF smallexp(h2!x, d-1) &
+         smallexp(h3!x, d-1) RESULTIS TRUE
+      RESULTIS FALSE
+  }
+  RESULTIS FALSE
+}
+
+
 LET isflt(x) = x=0 -> FALSE, VALOF
-{ // Return TRUE if expression x is an fnumber, a name declared
-  // with the FLT tag or has a leading operator such as #+ or #-
-  // that returns a floating point value. Remember the operators
-  // such as + and - are converted to #+ and #- if they have
-  // floating point operands.
+{ // Return TRUE if expression x has the FLT tag, Such an expression
+  // must be a name declared with the FLT tag or is a floating point
+  // constant or has a leading operator such as #+ or #-.
+  // Remember the operators such as + and - are converted to #+ and
+  // #- if they have have one or more operands with the FLT tag.
+  // This fuction does not modify operators such as +and - in the
+  // parse tree. Such transformations are done by fuctions such as
+  // load and evalconst.
   SWITCHON h1!x INTO
   { DEFAULT:  RESULTIS FALSE
 
@@ -2689,14 +3009,15 @@ LET isflt(x) = x=0 -> FALSE, VALOF
                    RESULTIS TRUE
                  }
 
+    CASE s_fnum:
     CASE s_float: CASE s_fabs:
     CASE s_fpos:  CASE s_fneg:
     CASE s_fadd:  CASE s_fsub:
     CASE s_fmul:  CASE s_fdiv: CASE s_fmod:
-    CASE s_fcond:
-    CASE s_fnum:  RESULTIS TRUE
+    CASE s_fcond: RESULTIS TRUE
 
     CASE s_pos:CASE s_neg: CASE s_abs:
+    CASE s_fnap:             // Added 28 Feb 2023
       RESULTIS isflt(h2!x)
 
     CASE s_add: CASE s_sub:
@@ -2711,14 +3032,32 @@ LET isflt(x) = x=0 -> FALSE, VALOF
 }
  
 LET load(x, ff) BE
-{ // Translate expression x into Ocode.
-  // The compiled code will load one value on the runtime stack.
-  // If ff=TRUE, the expression is in an FLT context and will
-  // convert, for example, + and - to #+ and #-.
+{ // This compiles code to load the value of expression x onto
+  // the runtime stack. If ff=TRUE x is being compiled in FLT
+  // mode causing costants and certain expression operators to
+  // be promoted to their equivalent floating point form.
+  // floating point leading operator.
+  // If x is a manifest constant expression its value will be
+  // computed using arithmetic of the word length of the compiler.
+  // When compiling32to64=TRUE floating point constants are
+  // loaded using LFLT n where n is a 32 bit value representing
+  // a single precision floating point value. This is then
+  // converted to double precision by the code generator.
+
   LET op = h1!x
 
+  UNLESS ff DO ff := isflt(x)
+  
   IF isconst(x) DO
-  { out2(s_ln, evalconst(x, ff | isflt(x)))
+  { // Evaluate the constant using arithmetic of the wordlength
+    // of the compler.
+    LET val = evalconst(x, ff)
+    LET ldop = s_ln
+ 
+    IF ff IF compiling32to64 | compiling64to32 DO
+      ldop := s_lflt
+
+    out2(ldop, val)
     ssp := ssp + 1
     RETURN
   }
@@ -2730,15 +3069,18 @@ LET load(x, ff) BE
            ssp := ssp + 1
            RETURN
 
-    CASE s_break:
+    CASE s_break:    // The escape commands in an expression
     CASE s_loop:
     CASE s_endcase:
     CASE s_next:
     CASE s_exit:
     CASE s_return:
+    CASE s_resultis:
+    CASE s_goto:
            trans(x, 0)
-	   ssp := ssp+1       // Because every expression 'loads'
-	   out2(s_stack, ssp) // one value on the stack.
+	   out2(s_ln, 0)      // Because every expression 'loads'
+	   ssp := ssp+1       // one value on the stack.
+	   out2(s_stack, ssp)
 	   RETURN
 	   
     CASE s_of:
@@ -2746,15 +3088,15 @@ LET load(x, ff) BE
            LET len = slct>>24
            LET sh  = slct>>16 & 255
            LET offset = slct & #xFFFF
-           load(h3!x, FALSE)
+           load(h3!x, FALSE) // The RH operand is a pointer to a structure
 	   
            IF offset DO
-           { out2(s_ln, offset)
+           { out2(s_ln, offset) // Possibly add the offset
              out1(s_add)
            }
 
            // Optimise accessing a complete word.
-           IF sh=0 & (len=0 | len=wordbitlen) DO
+           IF sh=0 & (len=0 | len=targetbitlen) DO
            { out1(s_rv) // The source field is a complete word
              RETURN
            }
@@ -2767,7 +3109,7 @@ LET load(x, ff) BE
                   { out2(s_ln, sh)
                     out1(s_rshift)
                   }
-                  IF len>0 & (len+sh~=wordbitlen) DO
+                  IF len>0 & (len+sh~=targetbitlen) DO
                   { // Applying a mask is necessary
                     LET mask = (1<<len)-1
                     out2(s_ln, mask)
@@ -2859,6 +3201,7 @@ LET load(x, ff) BE
            load(x, TRUE)
            RETURN
          }
+
          // Fall through
 
     CASE s_vecap:
@@ -2926,7 +3269,7 @@ intsymmetric:
        { // Convert the integer constant to floating point
          h1!x := s_fnum
          h2!x := sys(Sys_flt, fl_mk, h2!x, 0)
-//sawritef("number converted to fnumber %13e*n", h2!x)
+//sawritef("number converted to fnum %13e*n", h2!x)
        }
        // Fall through
     CASE s_fnum:
@@ -2976,7 +3319,8 @@ intsymmetric:
       loadlist(h2!x)
       out1(s_store) // Ensure that the arguments are in memory
 
-      transmatchlist(s_matche,
+      transmatchlist(ff,
+                     s_matche,
                      h3!x,   // mlist -> [matchiteme, plist, E, link, ln]
                      argpos, // Position of the first match arg
 		     0)      // This means fall through if all match
@@ -2993,14 +3337,15 @@ intsymmetric:
 
       context, comline := x, h5!x
 
-      out2(s_ln, 0)       // Initialise the result location
+      out2(s_ln, (ff->flt0,0))       // Initialise the result location
       patresultpos := ssp
       ssp := ssp+1
 
       loadlist(h2!x)
       out1(s_store) // Ensure that the arguments are in memory
 
-      transmatchlist(s_everye,
+      transmatchlist(ff,
+                     s_everye,
                      h3!x,           // List of match items.
                      patresultpos+1, // Position of the first match arg
 		     0)              // This means leave the everye result
@@ -3020,8 +3365,9 @@ intsymmetric:
      { LET s = ssp
        ssp := ssp + savespacesize
        out2(s_stack, ssp)
-       loadlist(h3!x) // Load arguments in non FLT mode
-       load(h2!x, FALSE)
+       loadlist(h3!x)    // Load arguments in non FLT mode
+       load(h2!x, FALSE) // Evaluate the function entry point in
+                         // non FLT mode
        out2(s_fnap, s)
        ssp := s + 1
        RETURN
@@ -3056,11 +3402,26 @@ cond:
      { LET m = genlab()
        out2(s_datalab, m)
        x := h2!x
-       WHILE h1!x=s_comma DO
-       { out2(s_itemn, evalconst(h2!x, FALSE))
-         x := h3!x
-       }
-       out2(s_itemn, evalconst(x, FALSE))
+       
+       TEST compiling32to64 | compiling64to32
+       THEN { // The word lengths of the compiler and target differ.
+              LET ff = FALSE
+       //abort(9191)
+              WHILE h1!x=s_comma DO
+              { ff := isflt(h2!x)                     // Non final element
+                out2(ff->s_itemflt,s_itemn, evalconst(h2!x, ff))
+                x := h3!x
+              }
+	      ff := isflt(x)                          // Final element
+              out2(ff->s_itemflt,s_itemn, evalconst(x, ff))
+	    }
+       ELSE { WHILE h1!x=s_comma DO
+              { out2(s_itemn, evalconst(h2!x, FALSE)) // Non final element
+                x := h3!x
+              }
+              out2(s_itemn, evalconst(x, FALSE))      // Final element
+	    }
+
        out2(s_lll, m)
        ssp := ssp + 1
        RETURN
@@ -3089,7 +3450,8 @@ AND fnbody(x, ff) BE SWITCHON h1!x INTO
     loadlist(h2!x)
     out1(s_store) // Ensure that the arguments are in memory
 
-    transmatchlist(h1!x,   // The match context: s_matche or s_everye
+    transmatchlist(ff,
+                   h1!x,   // The match context: s_matche or s_everye
                    h3!x,   // mlist -> [matchiteme, plist, E, link, ln]
                    argpos, // Position of the first match arg
                    -1)     // This means return the value as the
@@ -3103,7 +3465,7 @@ AND fnbody(x, ff) BE SWITCHON h1!x INTO
     ssp := ssp+1
     out2(s_stack, ssp)
     // Initialise the EVERY expression result location.
-    out2(s_ln, 0)
+    out2(s_ln, (ff->flt0,0))
     out2(s_sp, patresultpos)
       
     context, comline := x, h5!x
@@ -3111,7 +3473,8 @@ AND fnbody(x, ff) BE SWITCHON h1!x INTO
     loadlist(h2!x)
     out1(s_store) // Ensure that the arguments are in memory
 
-    transmatchlist(s_everye, // The match context
+    transmatchlist(ff,
+                   s_everye, // The match context
                    h3!x,     // mlist -> [matchiteme, plist, E, link, ln]
                    argpos,   // Position of the first match arg
                    -1)       // This means return the EVERY epression result
@@ -3425,14 +3788,16 @@ LET iszero(x, ff) = isconst(x) & evalconst(x, ff)=0 -> TRUE, FALSE
 
 LET evalconst(x, ff) = VALOF
 { // If ff=TRUE the expression x is to be evaluated in
-  // an FLT context, causing integer expression operators
+  // an FLT mode, causing integer expression operators
   // to be automatically converted to their floating
-  // point versions. Integer constants are also converted
-  // to floating point.
+  // point versions, and integer constants are also
+  // converted to floating point.
 
   LET op, a, b = 0, 0, 0
 
-  IF x=0 DO { trnerr("Compiler error in Evalconst")
+  IF x=0 DO { sawritef("Compiler error in Evalconst*n")
+              abort(1912)
+trnerr("Compiler error in Evalconst")
               RESULTIS 0
             }
 
@@ -3482,9 +3847,6 @@ LET evalconst(x, ff) = VALOF
     CASE s_fneg:
     CASE s_fabs:
     CASE s_fix:  
-                   UNLESS t64=ON64 DO
-                     trnerr("Compiler and target word length must be the same*
-                            *for floating point numbers")
                    a := evalconst(h2!x, TRUE)
                    ENDCASE
 
@@ -3512,9 +3874,6 @@ LET evalconst(x, ff) = VALOF
     CASE s_fgr:
     CASE s_fle:
     CASE s_fge:
-                 UNLESS t64=ON64 DO
-                   trnerr("Compiler and target word length must be the same*
-                          *for floating point numbers")
                  a, b := evalconst(h2!x, TRUE), evalconst(h3!x, TRUE)
                  ENDCASE
 
@@ -3650,23 +4009,17 @@ AND assign(lhs, rhs, ff, op) BE
              load(rhs, ff)
              transname(lhs, s_sp, s_sg, s_sl, 0, 0)
              ssp := ssp - 1
+             RETURN
            }
       ELSE { // Compile: name sfop:= E
-             TEST noselst
-             THEN { // Load: lhs op rhs
-                    // op is a dyadic operator
-                    LET operator, a, b = op, lhs, rhs
-                    load(@operator, ff)
-                    transname(lhs, s_sp, s_sg, s_sl, 0, 0)
-                    ssp := ssp - 1
-                  }
-             ELSE { load(rhs, ff)
-                    loadlv(lhs)
-                    out4(s_selst, sfop, 0, 0)
-                    ssp := ssp - 2
-                  }
+             // Load: lhs op rhs
+             // op is a dyadic operator
+             LET operator, a, b = op, lhs, rhs
+             load(@operator, ff)
+             transname(lhs, s_sp, s_sg, s_sl, 0, 0)
+             ssp := ssp - 1
+             RETURN
            }
-      RETURN
  
     CASE s_rv:
     CASE s_vecap:  IF op=s_none DO
@@ -3856,12 +4209,16 @@ AND transname(x, p, g, l, f, n) BE
                            a, l)
                     RETURN
  
+    CASE s_flabel:
     CASE s_label:   IF f=0 DO
                     { trnerr("Misuse of entry name '%s'", @h3!x)
                       f := p
                     }
                     out2(f, a)
-                    IF xrefing DO xref(x, "F:", a, f)
+                    IF xrefing DO
+		      xref(x,
+		           ((k & s_fltbit)=0 -> "F:", "FF:"),
+		           a, f)
                     RETURN
 
     CASE s_fmanifest:
@@ -4443,9 +4800,11 @@ AND out4(x, y, z, t) BE { out1(x); out1(y); out1(z); out1(t) }
  
 AND outstring(s) BE FOR i = 0 TO s%0 DO out1(s%i)
 
-AND outcomment(s, a, b, c, d) BE UNLESS nocomments DO
+AND outcomment(s, a, b, c, d) BE IF debug>0 DO
 { LET prevout = output()
   LET ramstream = findoutput("RAM:")
+  IF debug=1 DO abort(97777)
+  sawritef(s,a,b,c,d)
   selectoutput(ramstream)
   writef(s, a, b, c, d)
   selectoutput(prevout)

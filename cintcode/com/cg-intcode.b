@@ -342,7 +342,7 @@ IF debug>1 DO
   { DEFAULT:
       selectoutput(sysprint)
       writef("IC-CG: unknown OCODE number:  %N*N", op)
-      selectoutput(gostream)
+      selectoutput(tostream)
       ENDCASE
 
     CASE s_none:
@@ -888,7 +888,7 @@ AND data(k, v) BE
   IF datap>datat DO
   { selectoutput(sysprint)
     writes("IC-CG: too many constants*N")
-    selectoutput(gostream)
+    selectoutput(tostream)
     datap := 0
   }
 }
@@ -901,7 +901,7 @@ AND nextparam() = VALOF
   {
     selectoutput( sysprint )
     writes( "IC-CG:  too many labels (!)*N" )
-    selectoutput( gostream )
+    selectoutput( tostream )
 
     param  :=  100  // ????
   }
@@ -1009,7 +1009,7 @@ AND opcode(op) = VALOF SWITCHON op INTO
 
   DEFAULT: selectoutput(sysprint)
                  writef("IC-CG: unknown op %N*N", op)
-                 selectoutput(gostream)
+                 selectoutput(tostream)
                  RESULTIS 0
     }
 
@@ -1086,7 +1086,7 @@ LET codegenerate(workspace, workspacesize) BE
 
    proglength := 0
 
-   selectoutput(gostream)
+   selectoutput(tostream)
 
    {
      op := readop()

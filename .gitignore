@@ -15,12 +15,16 @@ PUBFILESNEW
 TGZDATENEW
 TGZFILESNEW
 allcompiled
-<<<<<<< HEAD
 t1.b
-=======
-t1.b 
->>>>>>> syntrneds
+.gitignore
+cintcode/T-CMD*
+BACKUP_*
+BASE_*
+LOCAL_*
+REMOTE_*
+
 /xfiles
+cintcode/g/glmanifests.h
 
 /README
 *.ocd

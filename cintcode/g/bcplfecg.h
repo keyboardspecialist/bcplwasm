@@ -26,7 +26,7 @@ c64 = BITSPERBCPLWORD=64 // Added 21/9/2019 replaces the global
 // Interface globals are between ug and feg-1
 intg=ug     // First of the interface globals, ie those
             // common to Lex, Syn, Trn and the codegenerator.
-feg=intg+65 // First of the Lex/Syn globals
+feg=intg+75 // First of the Lex/Syn globals
 trng=feg+75 // First of the TRN globals, changed 11/09/2025
 cgg=trng+90 // CG globals are cgg and above, changed 21/04/2022
 
@@ -173,11 +173,16 @@ sf_xor
 
 GLOBAL {
 // Globals shared by the frontend and codegenerators.
+stdout:intg
+stdin
+stderr
 
-nametable:intg; nametablesize
+nametable; nametablesize
 fin_p; fin_l; plist; treep; treevec
 
+fromfilename    // Compiler options
 tofilename      // Derived from TO/K
+errfilename
 mapfilename     // Set by MAP/K option for the Z80 codegenerator
 listfilename    // Set by LIST/K option
 
@@ -193,43 +198,51 @@ rdn; wrn
 
 trnerr
 translate        // Main function of the translation phase
-savespacesize
 codegenerate     // Codegenerator Main function
+writeocode
+procode
 
-bigender         // Compiler options
 naming
-debug
+bigender
 eqcases
-prtree
-prtree2
 bining
 xrefing
 gdefsing
+hdrs
+defs             // Conditional compilation defs
+
+defaultencoding  // Default encoding, set by command args.
+encoding         // Current encoding =RTF8 or GB2312
+
+savespacesize
 hard             // Abort on errors
+
+T16              // =TRUE if generating 16-bit target code
+T32              // =TRUE if generating 32-bit target code
+T64              // =TRUE if generating 64-bit target code
+
+debug
 noselst          // TRUE if not compiling SELLD and SELST instructions.
+
 
 objline1         // either "" or of form "#!..."
 objline1written
-optstring        // The opt argument
-//c64  This is now a manifest constant based on BITSPERBCPLWORD
-t16              // =TRUE if generating 16-bit target code
-t32              // =TRUE if generating 32-bit target code
-t64              // =TRUE if generating 64-bit target code
+defstring        // The defs argument
 
 compiling32to32  // =TRUE if 32-bit BCPL is compiling for a 32-bit target
 compiling32to64  // =TRUE if 32-bit BCPL is compiling for a 64-bit target
 compiling64to32  // =TRUE if 32-bit BCPL is compiling for a 32-bit target
 compiling64to64  // =TRUE if 64-bit BCPL is compiling for a 64-bit target
 
-wordbytelen      // = 2, 4 or  8
-wordbitlen       // = 16, 32 or 64
-encoding         // Current encoding =RTF8 or GB2312
-defaultencoding  // Default encoding, set by command args.
+targetbytelen    // = 2, 4 or  8
+targetbitlen     // = 16, 32 or 64
 
 errcount; errmax
-sourcestream; sysprint; ocodeout
-gostream         // Stream for compiled code
-//sourcenamev      // Fileno to string mapping -- not used by any CG.
+fromstream       // The current source stream
+sysprint         // The current output stream
+ocodeout         // The output stream when writing numerical ocode
+tostream         // Stream for compiled code
+errstream
 
 // The following are to remove the need for the compiler to handle
 // to floating point constants 0.0 and 1.0
@@ -238,7 +251,10 @@ flt0  // Floating point 0.0 constructed by sys(Sys_flt, fl_mk, 0, 0)
 flt1  // Floating point 1.0 constructed by sys(Sys_flt, fl_mk, 1, 0)
 flt10 // Floating point 10.0 constructed by sys(Sys_flt, fl_mk, 10, 0)
 
-nocomments // Added 03/09/2022
+helping // Added 06/03/2026
+
+writeocode
+procode
 
 lastintglobal // Used to check for global overlap with syng
 }

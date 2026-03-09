@@ -224,7 +224,7 @@ LET codegenerate(workspace, workspacesize) BE
 
   op := rdn()
 
-  selectoutput(gostream)
+  selectoutput(tostream)
   cgsects(workspace, workspacesize)
   selectoutput(sysprint)
   writef("Program size = %n Fcodes*n", progsize)

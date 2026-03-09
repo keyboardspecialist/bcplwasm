@@ -210,7 +210,7 @@ LET default_hdrs() = VALOF // Changed MR 12/07/09
   // The following is only executed if cintsys or cintsys64 fails to set
   // the hdrs field in the rootnode.
   // Note that tcb=0 when running under cintsys.
-  TEST t64
+  TEST T64
   THEN RESULTIS tcb -> "POS64HDRS", "BCPL64HDRS"
   ELSE RESULTIS tcb -> "POSHDRS",   "BCPLHDRS"
 }
@@ -243,11 +243,11 @@ LET start() = VALOF
   flt10 := sys(Sys_flt, fl_mk, 10, 0)
 
   spacev       :=  0
-  sourcestream :=  0
+  fromstream   :=  0
   getstreams   :=  0
   sourcefileno := -1 // No source files yet
   sourcenamev  :=  0 // Not allocated yet
-  tokv       :=  0
+  tokv         :=  0
   tokenp       :=  0
   tokenpmax    :=  0
   
@@ -262,8 +262,8 @@ LET start() = VALOF
 
   bigender := (!"AAAAAAA" & 255) ~= 7    // =TRUE if on a bigender m/c
 
-  t16, t32, t64 := FALSE, TRUE, FALSE
-  wordbytelen, wordbitlen := 4, 32       // T32 is the default setting
+  T16, T32, T64 := FALSE, TRUE, FALSE
+  targetbytelen, targetbitlen := 4, 32   // T32 is the default setting
   
   fromfilename := argv!0                 // FROM/A
   tofilename   := argv!1                 // TO/K    zero or a file name
@@ -283,21 +283,20 @@ LET start() = VALOF
 
   // It is now safe to call newvec
   
-  // This must be done after T64 is properly set
   hdrs := default_hdrs()                  // Set the default HDRS
 
   IF argv!3 DO hdrs := argv!3             // HDRS/K
   debug := argv!4                         // -d/S
   
-  sourcestream  := findinput(fromfilename) // FROM/A
+  fromstream  := findinput(fromfilename) // FROM/A
 
-  IF sourcestream=0 DO { writef("Trouble with file %s*n", fromfilename)
+  IF fromstream=0 DO { writef("Trouble with file %s*n", fromfilename)
                          IF hard DO abort(1000)
                          errcount := 1
                          GOTO fin
                        }
 
-  selectinput(sourcestream)
+  selectinput(fromstream)
   
   selectoutput(sysprint)
 
@@ -431,7 +430,7 @@ err:
   //writef("The self expanding vector %n -> [%n, %n]*n",
   //        tokensxv, tokvupb, tokv)
   IF tokv DO freevec(tokv)
-  IF sourcestream  DO IF sourcestream DO endstream(sourcestream)
+  IF fromstream  DO IF fromstream DO endstream(fromstream)
   UNLESS sysprint=stdout DO endstream(sysprint)
 
   selectoutput(stdout)
@@ -499,7 +498,7 @@ LET lex() BE
 
         CASE s_bitsperbcplword:                  // BITSPERBCPLWORD
           token := s_number
-          decval := wordbitlen // Target code word length
+          decval := targetbitlen // Target code word length
           RETURN
 
         // Some reserved words become assignment operators
@@ -875,10 +874,10 @@ chkass:         UNLESS ch=':' RETURN
                 endread()
                 ch           := h4!getstreams
                 lineno       := h3!getstreams
-                sourcestream := h2!getstreams
+                fromstream := h2!getstreams
                 getstreams   := h1!getstreams
                 freevec(p) // Free the GET node
-                selectinput(sourcestream)
+                selectinput(fromstream)
                 LOOP
               }
               // endstreamch => EOF only at outermost GET level 
@@ -1092,11 +1091,11 @@ AND performget() BE
     sourcefileno := sourcefileno+1
     sourcenamev!sourcefileno := str
 
-    node!0, node!1, node!2, node!3 := getstreams, sourcestream, lineno, ch
+    node!0, node!1, node!2, node!3 := getstreams, fromstream, lineno, ch
     getstreams := node
   }
-  sourcestream := stream
-  selectinput(sourcestream)
+  fromstream := stream
+  selectinput(fromstream)
   lineno := (sourcefileno<<20) + 1 // First line of the new file
   rch()
 }
