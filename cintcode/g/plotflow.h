@@ -88,6 +88,7 @@ AND zigzag(x, y) BE
   currpen := prevcurrpen
 }
 
+/*
 LET drawtestboxL(y, x1, x2, x3, str) BE
 { // Draw a test box with initial and final lines at level y
   // left justified at x2.
@@ -178,3 +179,5 @@ AND drawcatboxC(y, x1, x2, x3, str) BE
   // draw the final line
   moveto(x2+catWby2, y); drawto(x3, y)
 }
+
+*/

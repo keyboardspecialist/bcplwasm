@@ -6345,6 +6345,24 @@ AND rndtextbox(x, y, text) = VALOF
   RESULTIS x2
 }
 
+LET strut(x, y) BE
+{ LET prevcurrpen = currpen
+  currpen := penS3
+  moveto(x, y)
+  drawby(0, cellH)
+  currpen := prevcurrpen
+}
+
+AND zigzag(x, y) BE
+{ LET prevcurrpen = currpen
+  currpen := penS3
+  moveto(x, y)
+  drawby( cellHby4, cellHby4)
+  drawby(-cellHby2, cellHby2)
+  drawby( cellHby4, cellHby4)
+  currpen := prevcurrpen
+}
+
 LET drawtestboxL(y, x1, x2, x3, str) BE
 { // Draw a test box with initial and final lines at level y
   // left justified at x2.
