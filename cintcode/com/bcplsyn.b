@@ -1010,162 +1010,165 @@ LET lex() BE
       CASE 'P':CASE 'Q':CASE 'R':CASE 'S':CASE 'T':
       CASE 'U':CASE 'V':CASE 'W':CASE 'X':CASE 'Y':
       CASE 'Z':
-              token := lookupword(rdtag(ch))
-              SWITCHON token INTO
-              { DEFAULT: RETURN
+        token := lookupword(rdtag(ch))
+        SWITCHON token INTO
+        { DEFAULT: RETURN
 
-                CASE s_get:  performget(); LOOP          // GET
+          CASE s_get:  performget(); LOOP          // GET
 
-                CASE s_bitsperbcplword:                  // BITSPERBCPLWORD
-                   token := s_number
-                   decval := targetbitlen // Target code word length
-                   RETURN
+          CASE s_bitsperbcplword:                  // BITSPERBCPLWORD
+            token := s_number
+            decval := targetbitlen // Target code word length
+            RETURN
 
-                // Some reserved words become assignment operators
-                // if immediately followed by :=
+          // Some reserved words become assignment operators
+          // if immediately followed by :=
 
-                CASE s_mod:    assop := s_assmod;    GOTO checkass // MOD:=
-                CASE s_lshift: assop := s_asslshift; GOTO checkass // LSHIFT:=
-                CASE s_rshift: assop := s_assrshift; GOTO checkass // RSHIFT:=
-                CASE s_logand: assop := s_asslogand; GOTO checkass // LOGAND:=
-                CASE s_logor:  assop := s_asslogor;  GOTO checkass // LOGOR:=
-                CASE s_eqv:    assop := s_asseqv;    GOTO checkass // EQV:=
-                CASE s_xor:    assop := s_assxor;    GOTO checkass // XOR:=
-              }
+          CASE s_mod:    assop := s_assmod;    GOTO checkass // MOD:=
+          CASE s_lshift: assop := s_asslshift; GOTO checkass // LSHIFT:=
+          CASE s_rshift: assop := s_assrshift; GOTO checkass // RSHIFT:=
+          CASE s_logand: assop := s_asslogand; GOTO checkass // LOGAND:=
+          CASE s_logor:  assop := s_asslogor;  GOTO checkass // LOGOR:=
+          CASE s_eqv:    assop := s_asseqv;    GOTO checkass // EQV:=
+          CASE s_xor:    assop := s_assxor;    GOTO checkass // XOR:=
+        }
 
       CASE '$':
-              rch()
-              IF ch='$' | ch='<' | ch='>' | ch='~' DO
-              { LET k = ch
+        rch()
+        IF ch='$' | ch='<' | ch='>' | ch='~' DO
+        { LET k = ch
 //sawritef("*nprocessing $%c*n", ch)
-                token := lookupword(rdtag('<'))
-		// Initialise the conditional compilation tag.
-		// if necessary.
-		IF token=s_name DO
-		  token, h1!wordnode := s_false, s_false
+          token := lookupword(rdtag('<'))
+	  // Initialise the conditional compilation tag.
+	  // if necessary.
+	  IF token=s_name DO
+	    token, h1!wordnode := s_false, s_false
 //sawritef("charv=%s token=%n*n", charv, token)
 
-		// Conditional compilation tags are held in the
-		// name table and always have '<' as the first
-		// character. The h1 field is always s_true or s_false.
-                // token = s_true  if the tag is set
-                //       = s_false otherwise
+	  // Conditional compilation tags are held in the
+	  // name table and always have '<' as the first
+	  // character. The h1 field is always s_true or s_false.
+          // token = s_true  if the tag is set
+          //       = s_false otherwise
 
-                // If $<tag is encountered when not skipping and tag
-		// is set to false, skipping will start and continue
-		// until a matching $>tag is encountered, or the end
-		// end of input or end of section is reached.
-		// $~tag starts skipping if the tag is set to true.
+          // If $<tag is encountered when not skipping and tag
+	  // is set to false, skipping will start and continue
+	  // until a matching $>tag is encountered, or the end
+	  // end of input or end of section is reached.
+	  // $~tag starts skipping if the tag is set to true.
 		
-                // $>tag   marks the end of a conditional
-                //         skipping section
-                IF k='>' DO
-                { IF skiptag=wordnode DO
-                    skiptag := 0   // Matching $>tag found, so
-		                   // unset skipping mode and
-                  LOOP             // read another token.
-                }
+          // $>tag   marks the end of a conditional
+          //         skipping section
+          IF k='>' DO
+          { IF skiptag=wordnode DO
+              skiptag := 0   // Matching $>tag found, so
+	                     // unset skipping mode and
+            LOOP             // read another token.
+          }
  
-                IF skiptag LOOP    // If currently skipping
-		                   // read another token.
+          IF skiptag LOOP    // If currently skipping
+	                     // read another token.
 
-                // Only process $<tag and $$tag when not skipping
+          // Only process $<tag and $$tag when not skipping
 
-                // At this point we know we are not skipping, so
-		// we do not ignore $$tag, $<tag and $~tag.
+          // At this point we know we are not skipping, so
+	  // we do not ignore $$tag, $<tag and $~tag.
 		
-                IF k='$' DO
-                { // $$tag  complements the value of a tag
-                  h1!wordnode := token=s_true -> s_false, s_true
-                  LOOP             // Read another token
-                }
+          IF k='$' DO
+          { // $$tag  complements the value of a tag
+            h1!wordnode := token=s_true -> s_false, s_true
+            LOOP             // Read another token
+          }
  
-                IF k='<' DO
-                { // $<tag
-                  IF token=s_true LOOP // Option set so don't skip
-                }
+          IF k='<' DO
+          { // $<tag
+            IF token=s_true LOOP // So don't skip
+          }
 
-                IF k='~' DO
-                { // $~tag
-                  UNLESS token=s_true LOOP // Option not set so don't skip
-                }
+          IF k='~' DO
+          { // $~tag
+            UNLESS token=s_true LOOP // So don't skip
+          }
 
-                // Skip tokens until matching $>tag, EOF or end of section
-                skiptag := wordnode
-                UNTIL skiptag=0 | token=s_dot | token=s_eof DO lex()
-                skiptag := 0
-                RETURN
-              }
+          // Skip tokens until matching $>tag, EOF or end of
+	  // section
+          skiptag := wordnode
+          UNTIL skiptag=0 | token=s_dot | token=s_eof DO lex()
+          skiptag := 0
+          RETURN
+        }
  
-              UNLESS ch='(' | ch=')' DO synerr("'$' out of context")
-              token := ch='(' -> s_lsect, s_rsect                    // $(tag
-              lookupword(rdtag('$'))                                 // $)tag
-              RETURN
+        UNLESS ch='(' | ch=')' DO synerr("'$' out of context")
+        token := ch='(' -> s_lsect, s_rsect           // $(tag
+        lookupword(rdtag('$'))                        // $)tag
+        RETURN
  
-      CASE '{': token, wordnode := s_lsect, nulltag; BREAK           // {
-      CASE '}': token, wordnode := s_rsect, nulltag; BREAK           // }
+      CASE '{':
+        token, wordnode := s_lsect, nulltag; BREAK  // {
+      CASE '}':
+        token, wordnode := s_rsect, nulltag; BREAK  // }
 
       CASE '#':
-              token := s_number
-              rch()
-              IF '0'<=ch<='7' DO                                      // #377
-              { decval := readnumber( 8, 100)
-                RETURN
-              }
-              IF ch='b' | ch='B' DO                                   // #B1101
-              { numrch()
-                decval := readnumber( 2, 100)
-                RETURN
-              }
-              IF ch='o' | ch='O' DO                                   // #O477
-              { numrch()
-                decval := readnumber( 8, 100)
-                RETURN
-              }
-              IF ch='x' | ch='X' DO                                   // #X7FF4
-              { numrch()
-                decval := readnumber(16, 100)
-                RETURN
-              }
-              IF ch='(' DO                                             // #(
-              { token := s_mthap
-                RETURN
-              }
-              UNLESS ch<=32 DO // All white space characters
-	                       // so the operator to modify must
-			       // follow the hash immediately.
-              { // Get the next token
-                lex()
-                SWITCHON token INTO
-                { DEFAULT:       ENDCASE
+        token := s_number
+        rch()
+        IF '0'<=ch<='7' DO                            // #377
+        { decval := readnumber( 8, 100)
+          RETURN
+        }
+        IF ch='b' | ch='B' DO                         // #b1101
+        { numrch()
+          decval := readnumber( 2, 100)
+          RETURN
+        }
+        IF ch='o' | ch='O' DO                         // #o477
+        { numrch()
+          decval := readnumber( 8, 100)
+          RETURN
+        }
+        IF ch='x' | ch='X' DO                         // #x7FF4
+        { numrch()
+          decval := readnumber(16, 100)
+          RETURN
+        }
+        IF ch='(' DO                                  // #(
+        { token := s_mthap
+          RETURN
+        }
+        UNLESS ch<=32 DO // All white space characters
+	                 // so the operator to modify must
+	                 // follow the hash immediately.
+        { // Get the next token
+          lex()
+          SWITCHON token INTO
+          { DEFAULT:       ENDCASE
 
-                  CASE s_mul :   token := s_fmul;    RETURN // #*
-                  CASE s_div:    token := s_fdiv;    RETURN // #/
-                  CASE s_mod:    token := s_fmod;    RETURN // #MOD
-                  CASE s_add:    token := s_fadd;    RETURN // #+
-                  CASE s_sub:    token := s_fsub;    RETURN // #-
-                  CASE s_abs:    token := s_fabs;    RETURN // #ABS
+            CASE s_mul :   token := s_fmul;    RETURN // #*
+            CASE s_div:    token := s_fdiv;    RETURN // #/
+            CASE s_mod:    token := s_fmod;    RETURN // #MOD
+            CASE s_add:    token := s_fadd;    RETURN // #+
+            CASE s_sub:    token := s_fsub;    RETURN // #-
+            CASE s_abs:    token := s_fabs;    RETURN // #ABS
 
-                  CASE s_ass:    token := s_fass;    RETURN // #:=
-                  CASE s_assmul: token := s_assfmul; RETURN // #*:=
-                  CASE s_assdiv: token := s_assfdiv; RETURN // #/:=
-                  CASE s_assmod: token := s_assfmod; RETURN // #MOD:=
-                  CASE s_assadd: token := s_assfadd; RETURN // #+:=
-                  CASE s_asssub: token := s_assfsub; RETURN // #-:=
+            CASE s_ass:    token := s_fass;    RETURN // #:=
+            CASE s_assmul: token := s_assfmul; RETURN // #*:=
+            CASE s_assdiv: token := s_assfdiv; RETURN // #/:=
+            CASE s_assmod: token := s_assfmod; RETURN // #MOD:=
+            CASE s_assadd: token := s_assfadd; RETURN // #+:=
+            CASE s_asssub: token := s_assfsub; RETURN // #-:=
 
-                  CASE s_eq:     token := s_feq;     RETURN // #=
-                  CASE s_ne:     token := s_fne;     RETURN // #~=
-                  CASE s_ls:     token := s_fls;     RETURN // #<
-                  CASE s_le:     token := s_fle;     RETURN // #<=
-                  CASE s_gr:     token := s_fgr;     RETURN // #>
-                  CASE s_ge:     token := s_fge;     RETURN // #>=
+            CASE s_eq:     token := s_feq;     RETURN // #=
+            CASE s_ne:     token := s_fne;     RETURN // #~=
+            CASE s_ls:     token := s_fls;     RETURN // #<
+            CASE s_le:     token := s_fle;     RETURN // #<=
+            CASE s_gr:     token := s_fgr;     RETURN // #>
+            CASE s_ge:     token := s_fge;     RETURN // #>=
 
-                  CASE s_range:  token := s_frange;  RETURN // #..
+            CASE s_range:  token := s_frange;  RETURN // #..
 
-                  CASE s_cond:   token := s_fcond;   RETURN // #->
-                }
-              }
-              synerr("'#' out of context")
+            CASE s_cond:   token := s_fcond;   RETURN // #->
+          }
+        }
+        synerr("'#' out of context")
 
       CASE '[': token := s_sbra;      BREAK                  // [
       CASE ']': token := s_sket;      BREAK                  // ]
@@ -1178,45 +1181,47 @@ LET lex() BE
       CASE '%': token := s_byteap;    BREAK                  // %
 
       CASE '=': rch()
-                IF ch='>' DO { token := s_yields; BREAK }    // =>
-                token := s_eq                                // =
-                RETURN
+        IF ch='>' DO { token := s_yields; BREAK }    // =>
+        token := s_eq                                // =
+        RETURN
 
       CASE '.':
-              { LET k = rdch() // Read the next input character
-	        unrdch()       // without advancing the stream.
-                IF k='.' DO
-		{ token := s_range                           // ..
-                  rch()        // Read in the second dot
-                  BREAK
-                }
-		// Note that underscores in numbers are only
-		// permitted after encountering the first digit.
-		IF k='e' | k='E' DO
-		{ rch()
-		  synerr("No digits before %c in a floating point *
-		         *number", ch)
-		}
-		IF '0'<=k<='9' DO
-		{ // The dot is a decimal point, so leave it as
-		  // the current character.
-                  readdecimal()
-		  RETURN
-		}
-		// This dot is not part of .. or a floating point number
-                token := s_dot
-		rch()
-                IF getstreams DO
-		  synerr("A section separating dot is not allowed in GET files")
-		RETURN
-              }
+      { LET k = rdch() // Read the next input character
+        unrdch()       // without advancing the stream.
+        IF k='.' DO
+	{ token := s_range                           // ..
+          rch()        // Read in the second dot
+          BREAK
+        }
+	// Note that underscores in numbers are only
+	// permitted after encountering the first digit.
+	IF k='e' | k='E' DO
+	{ rch()
+	  synerr("No digits before %c in a floating point *
+	         *number", ch)
+	}
+	IF '0'<=k<='9' DO
+	{ // The dot is a decimal point, so leave it as
+	  // the current character.
+          readdecimal()
+	  RETURN
+	}
+	// This dot is not part of .. or a floating point number
+        token := s_dot
+        rch()
+        IF getstreams DO
+	  synerr("A section separating dot is not allowed in GET files")
+	RETURN
+      }
 
-checkassx:      rch()
-checkass:       UNLESS ch=':' RETURN
-                rch()
-                UNLESS ch='=' DO synerr("Bad assignment operator")
-                token := assop
-                BREAK
+checkassx:
+        rch()
+checkass:
+        UNLESS ch=':' RETURN
+        rch()
+        UNLESS ch='=' DO synerr("Bad assignment operator")
+        token := assop
+        BREAK
  
       CASE '!': token, assop := s_vecap, s_assvecap;   GOTO checkassx
       CASE '**':token, assop := s_mul, s_assmul;       GOTO checkassx
@@ -1225,214 +1230,217 @@ checkass:       UNLESS ch=':' RETURN
       CASE '|': token, assop := s_logor, s_asslogor;   GOTO checkassx
  
       CASE '/':
-              rch()
-              //IF ch='\' DO    // Disallow /\ for &
-              //{ token, assop := s_logand, s_asslogand
-              //  GOTO checkassx
-              //}
-              IF ch='/' DO
-              { rch() REPEATUNTIL ch='*n' |
-                                  //ch='*p' | // Do not increment lineno
-                                  ch=endstreamch
-                LOOP
-              }
+        rch()
+        //IF ch='\' DO    // Disallow /\ for &
+        //{ token, assop := s_logand, s_asslogand
+        //  GOTO checkassx
+        //}
+        IF ch='/' DO
+        { rch() REPEATUNTIL ch='*n' |
+                            //ch='*p' | // Do not increment lineno
+                            ch=endstreamch
+          LOOP
+        }
  
-              IF ch='**' DO
-              { LET depth = 1 // Depth of nesting in /* */ comments
+        IF ch='**' DO
+        { LET depth = 1 // Depth of nesting in /* */ comments
 
-                { rch()
-                  IF ch='**' DO
-                  { rch() REPEATWHILE ch='**'
-                    IF ch='/' DO { depth := depth-1; LOOP }
-                  }
-                  IF ch='/' DO
-                  { rch()
-                    IF ch='**' DO { depth := depth+1; LOOP }
-                  }
-                  IF ch='*n' DO lineno := lineno+1
-                  IF ch=endstreamch DO synerr("Missing '**/'")
-                } REPEATUNTIL depth=0
+          { rch()
+            IF ch='**' DO
+            { rch() REPEATWHILE ch='**'
+              IF ch='/' DO { depth := depth-1; LOOP }
+            }
+            IF ch='/' DO
+            { rch()
+              IF ch='**' DO { depth := depth+1; LOOP }
+            }
+            IF ch='*n' DO lineno := lineno+1
+            IF ch=endstreamch DO synerr("Missing '**/'")
+          } REPEATUNTIL depth=0
 
-                rch()
-                LOOP
-              }
+          rch()
+          LOOP
+        }
 
-              token, assop := s_div, s_assdiv
-              GOTO checkass
+        token, assop := s_div, s_assdiv
+        GOTO checkass
  
       CASE '~':
-              rch()
-              IF ch='=' DO { token := s_ne;     BREAK }          // ~=
-              token := s_not                                     // ~
-              RETURN
+        rch()
+        IF ch='=' DO { token := s_ne;     BREAK }          // ~=
+        token := s_not                                     // ~
+        RETURN
  
       CASE '\':
-              rch()
-              //IF ch='/' DO    // Disallow \/ for |
-              //{ token, assop := s_logor, s_asslogor
-              //  GOTO checkassx
-              //}
-              IF ch='=' DO { token := s_ne;     BREAK }           // \=
-              token := s_not                                      // \
-              RETURN
+        rch()
+        //IF ch='/' DO    // Disallow \/ for |
+        //{ token, assop := s_logor, s_asslogor
+        //  GOTO checkassx
+        //}
+        IF ch='=' DO { token := s_ne;     BREAK }           // \=
+        token := s_not                                      // \
+        RETURN
  
       CASE '<': rch()
-              IF ch='=' DO { token := s_le;     BREAK }            // <=
-              IF ch='<' DO
-              { token, assop := s_lshift, s_asslshift              // << or <<:=
-                GOTO checkassx
-              }
-              IF ch='>' DO { token := s_seq;    BREAK }            // <>
-              token := s_ls                                        // <
-              RETURN
+        IF ch='=' DO { token := s_le;     BREAK }            // <=
+        IF ch='<' DO
+        { token, assop := s_lshift, s_asslshift              // << or <<:=
+          GOTO checkassx
+        }
+        IF ch='>' DO { token := s_seq;    BREAK }            // <>
+        token := s_ls                                        // <
+        RETURN
  
-      CASE '>': rch()
-              IF ch='=' DO { token := s_ge;     BREAK }            // >=
-              IF ch='>' DO
-              { token, assop := s_rshift, s_assrshift              // >> or >>:=
-                GOTO checkassx
-              }
-              token := s_gr                                        // >
-              RETURN
+      CASE '>':
+        rch()
+        IF ch='=' DO { token := s_ge;     BREAK }            // >=
+        IF ch='>' DO
+        { token, assop := s_rshift, s_assrshift              // >> or >>:=
+          GOTO checkassx
+        }
+        token := s_gr                                        // >
+         RETURN
  
-      CASE '-': rch()
-              IF ch='>' DO { token := s_cond; BREAK  }             // ->
-              token, assop := s_sub, s_asssub                      // - or -:=
-              GOTO checkass
+      CASE '-':
+        rch()
+        IF ch='>' DO { token := s_cond; BREAK  }             // ->
+        token, assop := s_sub, s_asssub                      // - or -:=
+        GOTO checkass
  
-      CASE ':': rch()
-              IF ch='=' DO { token := s_ass; BREAK  }              // :=
-              IF ch=':' DO { token := s_of;  BREAK  }              // ::
-              token := s_colon                                     // :
-              RETURN
+      CASE ':':
+        rch()
+        IF ch='=' DO { token := s_ass; BREAK  }              // :=
+        IF ch=':' DO { token := s_of;  BREAK  }              // ::
+        token := s_colon                                     // :
+        RETURN
  
-      CASE '"':                                                    // "string"
-           { LET len = 0
-             rch()
-             encoding := defaultencoding // encoding for *# escapes
+      CASE '"':                                              // "string"
+      { LET len = 0
+        rch()
+        encoding := defaultencoding // encoding for *# escapes
 
-             UNTIL ch='"' DO
-             { LET code = rdstrch()
-               TEST result2
-               THEN { // A  *# code found.
-                      // Convert it to UTF8 or GB2312 format.
-                      TEST encoding=GB2312
-                      THEN { // Convert to GB2312 sequence
-                             IF code>#x7F DO
-                             { LET hi = code  /  100 + 160
-                               LET lo = code MOD 100 + 160
-                               IF len>=254 DO synerr("Bad string constant")
-                               TEST bigender
-                               THEN { charv%(len+1) := hi 
-                                      charv%(len+2) := lo
-                                    }
-                               ELSE { charv%(len+1) := lo 
-                                      charv%(len+2) := hi
-                                    }
-                               len := len + 2
-                               LOOP
-                             }
-                             IF len>=255 DO synerr("Bad string constant")
-                             charv%(len+1) := code // Ordinary ASCII char
-                             len := len + 1
-                             LOOP
-                           }
-                      ELSE { // Convert to UTF8 sequence
-                             IF code<=#x7F DO
-                             { IF len>=255 DO synerr("Bad string constant")
-                               charv%(len+1) := code   // 0xxxxxxx
-                               len := len + 1
-                               LOOP
-                             }
-                             IF code<=#x7FF DO
-                             { IF len>=254 DO synerr("Bad string constant")
-                               charv%(len+1) := #b1100_0000+(code>>6)  // 110xxxxx
-                               charv%(len+2) := #x80+( code    &#x3F)  // 10xxxxxx
-                               len := len + 2
-                               LOOP
-                             }
-                             IF code<=#xFFFF DO
-                             { IF len>=253 DO synerr("Bad string constant")
-                               charv%(len+1) := #b1110_0000+(code>>12) // 1110xxxx
-                               charv%(len+2) := #x80+((code>>6)&#x3F)  // 10xxxxxx
-                               charv%(len+3) := #x80+( code    &#x3F)  // 10xxxxxx
-                               len := len + 3
-                               LOOP
-                             }
-                             IF code<=#x1F_FFFF DO
-                             { IF len>=252 DO synerr("Bad string constant")
-                               charv%(len+1) := #b1111_0000+(code>>18) // 11110xxx
-                               charv%(len+2) := #x80+((code>>12)&#x3F) // 10xxxxxx
-                               charv%(len+3) := #x80+((code>> 6)&#x3F) // 10xxxxxx
-                               charv%(len+4) := #x80+( code     &#x3F) // 10xxxxxx
-                               len := len + 4
-                               LOOP
-                             }
-                             IF code<=#x3FF_FFFF DO
-                             { IF len>=251 DO synerr("Bad string constant")
-                               charv%(len+1) := #b1111_1000+(code>>24) // 111110xx
-                               charv%(len+2) := #x80+((code>>18)&#x3F) // 10xxxxxx
-                               charv%(len+3) := #x80+((code>>12)&#x3F) // 10xxxxxx
-                               charv%(len+4) := #x80+((code>> 6)&#x3F) // 10xxxxxx
-                               charv%(len+5) := #x80+( code     &#x3F) // 10xxxxxx
-                               len := len + 5
-                               LOOP
-                             }
-                             IF code<=#x7FFF_FFFF DO
-                             { IF len>=250 DO synerr("Bad string constant")
-                               charv%(len+1) := #b1111_1100+(code>>30) // 1111110x
-                               charv%(len+2) := #x80+((code>>24)&#x3F) // 10xxxxxx
-                               charv%(len+3) := #x80+((code>>18)&#x3F) // 10xxxxxx
-                               charv%(len+4) := #x80+((code>>12)&#x3F) // 10xxxxxx
-                               charv%(len+5) := #x80+((code>> 6)&#x3F) // 10xxxxxx
-                               charv%(len+6) := #x80+( code     &#x3F) // 10xxxxxx
-                               len := len + 6
-                               LOOP
-                             }
-                             synerr("Bad Unicode character")
-                           }
-                    }
-               ELSE { // Not a Unicode character
-                      IF len=255 DO synerr("Bad string constant")
-                      len := len + 1
-                      charv%len := code
-                    }
-             }
+        UNTIL ch='"' DO
+        { LET code = rdstrch()
+          TEST result2
+          THEN { // A  *# code found.
+                 // Convert it to UTF8 or GB2312 format.
+                 TEST encoding=GB2312
+                 THEN { // Convert to GB2312 sequence
+                        IF code>#x7F DO
+                        { LET hi = code  /  100 + 160
+                          LET lo = code MOD 100 + 160
+                          IF len>=254 DO synerr("Bad string constant")
+                          TEST bigender
+                          THEN { charv%(len+1) := hi 
+                                 charv%(len+2) := lo
+                               }
+                          ELSE { charv%(len+1) := lo 
+                                 charv%(len+2) := hi
+                               }
+                          len := len + 2
+                          LOOP
+                        }
+                        IF len>=255 DO synerr("Bad string constant")
+                        charv%(len+1) := code // Ordinary ASCII char
+                        len := len + 1
+                        LOOP
+                      }
+                 ELSE { // Convert to UTF8 sequence
+                        IF code<=#x7F DO
+                        { IF len>=255 DO synerr("Bad string constant")
+                          charv%(len+1) := code   // 0xxxxxxx
+                          len := len + 1
+                          LOOP
+                        }
+                        IF code<=#x7FF DO
+                        { IF len>=254 DO synerr("Bad string constant")
+                          charv%(len+1) := #b1100_0000+(code>>6)  // 110xxxxx
+                          charv%(len+2) := #x80+( code    &#x3F)  // 10xxxxxx
+                          len := len + 2
+                          LOOP
+                        }
+                        IF code<=#xFFFF DO
+                        { IF len>=253 DO synerr("Bad string constant")
+                          charv%(len+1) := #b1110_0000+(code>>12) // 1110xxxx
+                          charv%(len+2) := #x80+((code>>6)&#x3F)  // 10xxxxxx
+                          charv%(len+3) := #x80+( code    &#x3F)  // 10xxxxxx
+                          len := len + 3
+                          LOOP
+                        }
+                        IF code<=#x1F_FFFF DO
+                        { IF len>=252 DO synerr("Bad string constant")
+                          charv%(len+1) := #b1111_0000+(code>>18) // 11110xxx
+                          charv%(len+2) := #x80+((code>>12)&#x3F) // 10xxxxxx
+                          charv%(len+3) := #x80+((code>> 6)&#x3F) // 10xxxxxx
+                          charv%(len+4) := #x80+( code     &#x3F) // 10xxxxxx
+                          len := len + 4
+                          LOOP
+                        }
+                        IF code<=#x3FF_FFFF DO
+                        { IF len>=251 DO synerr("Bad string constant")
+                          charv%(len+1) := #b1111_1000+(code>>24) // 111110xx
+                          charv%(len+2) := #x80+((code>>18)&#x3F) // 10xxxxxx
+                          charv%(len+3) := #x80+((code>>12)&#x3F) // 10xxxxxx
+                          charv%(len+4) := #x80+((code>> 6)&#x3F) // 10xxxxxx
+                          charv%(len+5) := #x80+( code     &#x3F) // 10xxxxxx
+                          len := len + 5
+                          LOOP
+                        }
+                        IF code<=#x7FFF_FFFF DO
+                        { IF len>=250 DO synerr("Bad string constant")
+                          charv%(len+1) := #b1111_1100+(code>>30) // 1111110x
+                          charv%(len+2) := #x80+((code>>24)&#x3F) // 10xxxxxx
+                          charv%(len+3) := #x80+((code>>18)&#x3F) // 10xxxxxx
+                          charv%(len+4) := #x80+((code>>12)&#x3F) // 10xxxxxx
+                          charv%(len+5) := #x80+((code>> 6)&#x3F) // 10xxxxxx
+                          charv%(len+6) := #x80+( code     &#x3F) // 10xxxxxx
+                          len := len + 6
+                          LOOP
+                        }
+                        synerr("Bad Unicode character")
+                      }
+               }
+          ELSE { // Not a Unicode character
+                 IF len=255 DO synerr("Bad string constant")
+                 len := len + 1
+                 charv%len := code
+               }
+        }
  
-             charv%0 := len
-             wordnode := newvec(len/bytesperword+2)
-             h1!wordnode := s_string
-             FOR i = 0 TO len DO (@h2!wordnode)%i := charv%i
-             token := s_string
-	     rch()
-	     RETURN
-          }
+        charv%0 := len
+        wordnode := newvec(len/bytesperword+2)
+        h1!wordnode := s_string
+        FOR i = 0 TO len DO (@h2!wordnode)%i := charv%i
+        token := s_string
+        rch()
+        RETURN
+      }
  
       CASE '*'':                                                  // 'c'
-              rch()
-              encoding := defaultencoding
-              decval := rdstrch()
-              token := s_number
-              UNLESS ch='*'' DO synerr("Bad character constant")
-              BREAK
+        rch()
+        encoding := defaultencoding
+        decval := rdstrch()
+        token := s_number
+        UNLESS ch='*'' DO synerr("Bad character constant")
+        BREAK
  
  endstr:
       //CASE endstreamch: // Commented out because of an Itanium bug
-              IF getstreams DO
-              { // Return from a 'GET' stream
-                LET p = getstreams
-                endread()
-                ch           := h4!getstreams
-                lineno       := h3!getstreams
-                fromstream := h2!getstreams
-                getstreams   := h1!getstreams
-                freevec(p) // Free the GET node
-                selectinput(fromstream)
-                LOOP
-              }
-              // endstreamch => EOF only at outermost GET level 
-              token := s_eof                                         // eof
-              RETURN
+      IF getstreams DO
+      { // Return from a 'GET' stream
+        LET p = getstreams
+        endread()
+        ch           := h4!getstreams
+        lineno       := h3!getstreams
+        fromstream := h2!getstreams
+        getstreams   := h1!getstreams
+        freevec(p) // Free the GET node
+        selectinput(fromstream)
+        LOOP
+      }
+      // endstreamch => EOF only at outermost GET level 
+      token := s_eof                                         // eof
+      RETURN
     } // End of the SWITCHON body.
   } REPEAT // Restart the lex REPEAT loop
 
@@ -1501,12 +1509,12 @@ AND declsyswords() BE
   dsw("BREAK", s_break)
   dsw("BY", s_by)
   dsw("CASE", s_case)
-  dsw("DO", s_do)
   dsw("DEFAULT", s_default)
-  dsw("EQ", s_eq)
-  dsw("EQV", s_eqv)
+  dsw("DO", s_do)
   dsw("ELSE", s_else)
   dsw("ENDCASE", s_endcase)
+  dsw("EQ", s_eq)
+  dsw("EQV", s_eqv)
   dsw("EVERY", s_every)
   dsw("EXIT", s_exit)
   dsw("FALSE", s_false)
@@ -1525,10 +1533,10 @@ AND declsyswords() BE
   dsw("LET", s_let)
   dsw("LV", s_lv)
   dsw("LE", s_le)
-  dsw("LS", s_ls)
-  dsw("LOGOR", s_logor)
   dsw("LOGAND", s_logand)
+  dsw("LOGOR", s_logor)
   dsw("LOOP", s_loop)
+  dsw("LS", s_ls)
   dsw("LSHIFT", s_lshift)
   dsw("MANIFEST", s_manifest)
   dsw("MATCH", s_match)
@@ -1540,14 +1548,14 @@ AND declsyswords() BE
   dsw("NOT", s_not)
   dsw("OF", s_of)                   // Inserted 11/7/01
   dsw("OR", s_else)
+  dsw("REM", s_mod)
+  dsw("REPEAT", s_repeat)
+  dsw("REPEATUNTIL", s_repeatuntil)
+  dsw("REPEATWHILE", s_repeatwhile)
   dsw("RESULTIS", s_resultis)
   dsw("RETURN", s_return)
-  dsw("REM", s_mod)
   dsw("RSHIFT", s_rshift)
   dsw("RV", s_rv)
-  dsw("REPEAT", s_repeat)
-  dsw("REPEATWHILE", s_repeatwhile)
-  dsw("REPEATUNTIL", s_repeatuntil)
   dsw("SECTION", s_section)
   dsw("SKIP", s_skip)               // Inserted 22/2/2022
   dsw("SLCT", s_slct)               // Inserted 11/7/2001

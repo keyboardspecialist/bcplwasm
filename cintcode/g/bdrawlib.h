@@ -89,6 +89,7 @@ MANIFEST {
   catradius  = 15      // Radius of cat box round corners
 
   // Assume 16x24 font
+  //     width   spaces
   wl1  =  3*16 +  2*3  // Length of a box containing 1 character 
   wl2  =  4*16 +  3*3  // Length of a box containing 2 characters 
   wl3  =  5*16 +  4*3  // Length of a box containing 3 characters
@@ -103,6 +104,12 @@ MANIFEST {
   wl12 = 14*16 + 13*3  // Length of a box containing 12 characters
   wl13 = 15*16 + 14*3  // Length of a box containing 13 characters
   wl14 = 16*16 + 15*3  // Length of a box containing 14 characters
+  wl15 = 17*16 + 16*3  // Length of a box containing 15 characters
+  wl16 = 18*16 + 17*3  // Length of a box containing 16 characters
+  wl17 = 19*16 + 18*3  // Length of a box containing 17 characters
+  wl18 = 20*16 + 19*3  // Length of a box containing 18 characters
+  wl19 = 21*16 + 20*3  // Length of a box containing 19 characters
+  wl20 = 22*16 + 21*3  // Length of a box containing 20 characters
 
   fac = 90
 

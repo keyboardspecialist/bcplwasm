@@ -6381,12 +6381,12 @@ LET drawtestboxL(y, x1, x2, x3, str) BE
   // Draw the string
   drawstr(x2+fontW+charHsep, y, str)
   // draw the final line
-  moveto(x2+boxwidth, y); drawto(x3, y)  
+  IF x3 DO { moveto(x2+boxwidth, y); drawto(x3, y) }
 }
 
 AND drawtestboxC(y, x1, x2, x3, str) BE
 { // Draw a test box with initial and final lines at level y
-  // centred at x2.
+  // centred at x2. The final line is onlt frawn if x~=0.
   LET boxwidth = (str%0+2) * (fontW+charHsep) - charHsep
   LET boxwidthby2 = boxwidth/2
   LET boxHby2 = fontH*8/10
@@ -6403,13 +6403,13 @@ AND drawtestboxC(y, x1, x2, x3, str) BE
   // Draw the string
   drawstrcentred(x2, y, str)
   // draw the final line
-  moveto(bx2, y); drawto(x3, y)
+  IF x3 DO { moveto(bx2, y); drawto(x3, y) }
   
 }
 
 AND drawcatboxL(y, x1, x2, x3, str) BE
 { // Draw a category box with initial and final lines at level y
-  // centres at x2.
+  // centres at x2. The final line is onlt frawn if x~=0.
   LET catwidth = (str%0+2) * (fontW+charHsep) - charHsep
   LET catwidthby2 = catwidth/2
   LET catHby2 = fontH*11/10
@@ -6429,12 +6429,12 @@ AND drawcatboxL(y, x1, x2, x3, str) BE
   // Draw the string
   drawstrcentred(x2+catwidthby2, y, str)
   // draw the final line
-  moveto(bx2, y); drawto(x3, y)  
+  IF x3 DO { moveto(bx2, y); drawto(x3, y) }
 }
 
 AND drawcatboxC(y, x1, x2, x3, str) BE
 { // Draw a category box with initial and final lines at level y
-  // centres at x2.
+  // centres at x2. The final line is onlt frawn if x~=0.
   LET catwidth = (str%0+2) * (fontW+charHsep) - charHsep
   LET catwidthby2 = catwidth/2
   LET catHby2 = fontH*11/10
@@ -6454,6 +6454,6 @@ AND drawcatboxC(y, x1, x2, x3, str) BE
   // Draw the string
   drawstrcentred(x2, y, str)
   // draw the final line
-  moveto(x2+catwidthby2, y); drawto(x3, y)
+  IF x3 DO { moveto(x2+catwidthby2, y); drawto(x3, y) }
 }
 
