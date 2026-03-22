@@ -110,6 +110,16 @@ MANIFEST {
   wl18 = 20*16 + 19*3  // Length of a box containing 18 characters
   wl19 = 21*16 + 20*3  // Length of a box containing 19 characters
   wl20 = 22*16 + 21*3  // Length of a box containing 20 characters
+  wl21 = 23*16 + 22*3  // Length of a box containing 21 characters
+  wl22 = 24*16 + 23*3  // Length of a box containing 22 characters
+  wl23 = 25*16 + 24*3  // Length of a box containing 23 characters
+  wl24 = 26*16 + 25*3  // Length of a box containing 24 characters
+  wl25 = 27*16 + 26*3  // Length of a box containing 25 characters
+  wl26 = 28*16 + 27*3  // Length of a box containing 26 characters
+  wl27 = 29*16 + 28*3  // Length of a box containing 27 characters
+  wl28 = 30*16 + 29*3  // Length of a box containing 27 characters
+  wl29 = 31*16 + 30*3  // Length of a box containing 27 characters
+  wl30 = 32*16 + 31*3  // Length of a box containing 27 characters
 
   fac = 90
 
