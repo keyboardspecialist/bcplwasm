@@ -468,7 +468,7 @@ LET start() = VALOF
 { LET treesize = 0
   AND argv = VEC 50
   AND argform = "FROM/A,TO/K,ERR/K,SIZE/K/N,NONAMES/S,*
-                *OENDER/S,EQCASES/S,BIN/S,XREF/S,GDEFS/S,HDRS/K,*
+                *OENDER/S,EQCASES/S,BIN/S,XREF/S,GDEFS/S,OPT/K,*
                 *GB2312/S,UTF8/S,SAVESIZE/K/N,HARD/S,*
                 *T16/S,T32/S,T64/S,DEFS/K,NOSELST/S,MAP/K,LIST/K,*
 		*-h/S,-d/N"
@@ -541,11 +541,16 @@ LET start() = VALOF
   T16, T32, T64 := FALSE, FALSE, FALSE
   // These will be corrected after the call of rdargs.
   
-  IF rdargs(argform, argv, 50)=0 DO { writes("Bad arguments*n")
-                                      errcount := 1
-				      helping := TRUE
-                                      GOTO help
-                                    }
+  IF rdargs(argform, argv, 50)=0 DO errcount := 1
+  IF argv!22 DO
+  { helping := TRUE
+    GOTO help
+  }
+
+  IF errcount DO
+  { writef("Bad arguments for:*n*n%s*n*n", argform)
+    GOTO fin
+  }
 
   bigender := (!"AAAAAAA" & 255) ~= 7
   // bigender is TRUE if currently running on a bigender m/c
@@ -609,7 +614,7 @@ LET start() = VALOF
   listfilename := argv!21                 // LIST/K and possibly others
   helping      := argv!22                 // -h/S Output help info
   IF argv!23 DO
-    debug      := !(argv!23)              // -d n  Add n to debug
+    debug      := !(argv!23)              // -d n  Set the debug value
     
   // Check the target bit and word length settings
   
@@ -641,40 +646,38 @@ LET start() = VALOF
 help:
   IF helping DO
   { newline()
-    writef("The compiler arguments TREE, TREE2,D1,D2 and -oc have*n")
-    writef("have been removed and replaced by -d.*n")
-    writef("Try bcpl com/hello.b -d 99 to see what is now available.*n")
+    writef("The compiler arguments TREE, TREE2, D1, D2 and -oc have*n")
+    writef("have been removed and replaced by the -d option.*n")
+    writef("Try bcpl com/hello.b to junk -d 99 to see what is now available.*n")
+    writef("and try this command with 99 replaced by all values from 1 to 10.*n")
     writef("Argument VER and OPT has been renamed ERR and DEFS.*n*n")
+    errcount := 0
     GOTO fin
   }
 
   //writef("debug=%n*n", debug)
   UNLESS 0 <= debug <= 10 DO
-  { writef("*nThe -d compiler debugging level is out of range.*n")
-    writef("It should be one of the following:*n*n")
-
-    writef("This is not yet fully implemented*n*n")
+  { writef("*nSummary of the valid -d values:*n*n")
 
     writef("0  No debugging output*n")
     writef("1  Output just the lexical tokens*n")
     writef("2  Output the parse tree before generating the Ocode*n")
     writef("3  Output the parse tree after generating the Ocode*n")
     writef("4  Output the Ocode to file: ocode as a sequence of integers*n")
+    writef("   suitable for printing using the procode command*n")
     writef("5  Output the Ocode in a readable form*n")
-    writef("6  Output the compiled Cintcode*n")
-    writef("7  Output the Ocode operators and the compiled*n")
-    writef("   Cintcode*n")
-    writef("8  Output the Ocode operators, the compiled*n")
-    writef("   Cintcode and the simulated stack while compiling*n")
-    writef("9  Output the Ocode operators, the compiled*n")
-    writef("   Cintcode and the list of label references*n")
-    writef("   while compiling*n")
-    writef("10 Output the Ocode operators, the compiled*n")
-    writef("   Cintcode and the list of static values*n")
-    writef("   while compiling*n")
+    writef("6  Output the compiled code (Cintcode or machine code)*n")
+    writef("7  Output the Ocode operators and the compiled code*n")
+    writef("8  Output the Ocode operators, the compiled code*n")
+    writef("   and the simulated stack*n")
+    writef("9  Output the Ocode operators, the compiled code*n")
+    writef("   and the list of label references*n")
+    writef("10 Output the Ocode operators, the compiled code*n")
+    writef("   and the list of static values*n")
+    writef("99 Output this list*n")
     newline()
     result2 := 0
-    RESULTIS 20
+    RESULTIS 0
   }
   
   compiling32to32 := ~ON64 & T32

@@ -5,6 +5,7 @@
 *.oc
 *.oc#
 *.cd
+cintcode/t24
 junk*
 TGZDATE
 TGZFILES

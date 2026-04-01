@@ -60,7 +60,7 @@ Z/s/          set terminator for I & R (default Z)
 *             rewind
 +n            move on n lines
 -n            delete n lines
-0            move back n lines (* = as far as possible)
+0             move back n lines (* = as far as possible)
 =n            renumber current line n
 ?             verify current line
 !             verify indicating case or hex value

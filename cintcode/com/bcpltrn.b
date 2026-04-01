@@ -305,7 +305,7 @@ LET trnext(next) BE
   // next >0  Compile a jump to next
   // next =0  Compile nothing
   // next=-1  Compile rtrn or fnrn
-  outcomment("trnext: next=%n*n", next)
+  //outcomment("trnext: next=%n*n", next)
 
   IF next=0 RETURN // No code to compile.
   
@@ -714,14 +714,14 @@ LET trans(x, next) BE
 			       // if necessary.
       IF debug=1 DO
         sawritef("Test: next=%n c2lab=%n*n", next, c2lab)
-      IF debug=1 DO
-        outcomment("Test: next=%n c2lab=%n*n", next, c2lab)
+      //IF debug=1 DO
+      //  outcomment("Test: next=%n c2lab=%n*n", next, c2lab)
 
       context, comline := x, h5!x
-      outcomment("Compiling TEST E THEN C1 ELSE C2 on line %n",
-                  comline&#xFFFFF)
-      outcomment("test: condjump, next=%n c2lab=%n testendlab=%n*n",
-                  next, c2lab, testendlab)
+      //outcomment("Compiling TEST E THEN C1 ELSE C2 on line %n",
+      //            comline&#xFFFFF)
+      //outcomment("test: condjump, next=%n c2lab=%n testendlab=%n*n",
+      //            next, c2lab, testendlab)
       jumpcond(h2!x, FALSE, c2lab)
 
       IF next=0 DO
@@ -748,25 +748,25 @@ LET trans(x, next) BE
 	                       // just after the TEST command,
 			       // if necessary.
       context, comline := x, h5!x
-      outcomment("Compiling TEST E THEN C1 ELSE C2 on line %n",
-                  comline&#xFFFFF)
-      outcomment("test: condjump, next=%n c2lab=%n testendlab=%n*n",
-                  next, c2lab, testendlab)
+      //outcomment("Compiling TEST E THEN C1 ELSE C2 on line %n",
+      //            comline&#xFFFFF)
+      //outcomment("test: condjump, next=%n c2lab=%n testendlab=%n*n",
+      //            next, c2lab, testendlab)
       jumpcond(h2!x, FALSE, c2lab)
 
-      outcomment("test: Translating THEN comand, testendlab=%n*n",
-                  testendlab)
+      //outcomment("test: Translating THEN comand, testendlab=%n*n",
+      //            testendlab)
       trans(h3!x, testendlab)
 
-      outcomment("test: Translating ELSE command, c2lab=%n, next=%n*n",
-                  c2lab, next)
+      //outcomment("test: Translating ELSE command, c2lab=%n, next=%n*n",
+      //            c2lab, next)
       out2(s_lab, c2lab)
       trans(h4!x, next)
 
       // Compile the label just after the TEST command, if neccesary
       IF testendlab DO
-      { outcomment("The point at the end of the TEST command needed L%n",
-                    testendlab)
+      { //outcomment("The point at the end of the TEST command needed L%n",
+        //            testendlab)
         out2(s_lab, testendlab)
       }
 >>>>>>> testing
@@ -2774,25 +2774,25 @@ AND transfor(x, next) BE
                  load(limE, FALSE) // Place the end limit in the stack
                }
 
-  IF k DO outcomment("FOR loop limit value is specified by k=%s n=%n",
-                      opname(k), n)
+  //IF k DO outcomment("FOR loop limit value is specified by k=%s n=%n",
+  //                    opname(k), n)
 	      
   // Note: k=0 if no limit was given.
-  IF k=0 DO outcomment("No end limit was given")
+  //IF k=0 DO outcomment("No end limit was given")
   
   out1(s_store)  // Ensure the control variable and possibly
                  // the end limit values are stored in memory.
    
   IF stepE DO stepvalue := evalconst(stepE, FALSE)
-  outcomment("The FOR loop step value is %n", n)
+  //outcomment("The FOR loop step value is %n", n)
  
   TEST k=s_ln & isconst(initvalE)
   THEN { // Optimize the case when both the initial and limit
          // values are both constants. 
          LET initvalue = evalconst(initvalE, FALSE)
 	 // Note: n is the limit value
-	 outcomment("The end limit is constant %n", n)
-	 outcomment("and the initial value is also a constant %n", initvalue)
+	 //outcomment("The end limit is constant %n", n)
+	 //outcomment("and the initial value is also a constant %n", initvalue)
          IF stepvalue>=0 & initvalue>n |
 	    stepvalue< 0 & initvalue<n DO
          { // The initial conditions indicate that the body
@@ -2800,13 +2800,13 @@ AND transfor(x, next) BE
 	   // (But it must still be compiled).
 	   TEST next=0
 	   THEN { blab := genlab()
-	          outcomment("Allocate L%n to label the point", blab)
-		  outcomment("just after the end of the FOR loop")
-		  outcomment("and compile a jump to it")
+	          //outcomment("Allocate L%n to label the point", blab)
+		  //outcomment("just after the end of the FOR loop")
+		  //outcomment("and compile a jump to it")
 	          out2(s_jump, blab) // Jump around the FOR loop code.
 		}
-	   ELSE { outcomment("Compile either function or routine return")
-	          outcomment("or a jump to the next label L%n", next)
+	   ELSE { //outcomment("Compile either function or routine return")
+	          //outcomment("or a jump to the next label L%n", next)
 	          trnext(next)
 		}
          }
@@ -2821,18 +2821,18 @@ AND transfor(x, next) BE
 	   // It can be compiled here but it is only worth
 	   // doing so if the limit expression is simple enough
 	   // and next is either a label or zero.
-	   outcomment("An end limit was given")
-	   outcomment("but the initial and limit values are")
-	   outcomment("not both constants")
+	   //outcomment("An end limit was given")
+	   //outcomment("but the initial and limit values are")
+	   //outcomment("not both constants")
 	   TEST smallexp(limE, 1) & next>=0
            THEN { // Since the limit expression is simple and
 	          // the conditional jump is to a label, it is
 		  // worth testing the condition at this point.
-		  outcomment("The end limit expression is simple")
-		  outcomment("and next does not specify a function")
-		  outcomment("or routine return, so it is worth")
-		  outcomment("compiling an initial conditional jump")
-  		  outcomment("before falling into the start of the body")
+		  //outcomment("The end limit expression is simple")
+		  //outcomment("and next does not specify a function")
+		  //outcomment("or routine return, so it is worth")
+		  //outcomment("compiling an initial conditional jump")
+  		  //outcomment("before falling into the start of the body")
 
 	          out2(s_lp, s)
                   out2(k, n)
@@ -2841,12 +2841,12 @@ AND transfor(x, next) BE
 		  THEN { // Allocate a label for the conditional
 		         // jump, if needed.
 			 UNLESS blab DO blab := genlab()
-			 outcomment("next was zero so allocate L%n", blab)
-			 outcomment("for the conditional jump")
+			 //outcomment("next was zero so allocate L%n", blab)
+			 //outcomment("for the conditional jump")
 		         out2(s_jt, blab)
 		       }
-		  ELSE { outcomment("Compile a conditianle jump to next=L%n",
-		                     next)
+		  ELSE { //outcomment("Compile a conditianle jump to next=L%n",
+		         //            next)
 		         out2(s_jt, next)
 		       }
 		  // If Jt fails fall into the start of
@@ -2855,9 +2855,9 @@ AND transfor(x, next) BE
 	   ELSE { // Otherwise compile jump to where the repetition
 		  // condition is tested after the body.
 		  testlab := genlab()
-		  outcomment("We do not choose to make an initial conditional")
-		  outcomment("jump, so just compile a jump to testlab L%n",
-		              testlab)
+		  //outcomment("We do not choose to make an initial conditional")
+		  //outcomment("jump, so just compile a jump to testlab L%n",
+		  //          testlab)
 	          out2(s_jump, testlab)
 	        }
 	 }
@@ -2876,13 +2876,13 @@ AND transfor(x, next) BE
     
     context, comline := x, ln
 
-    outcomment("We now compile the FOR loop body")
+    //outcomment("We now compile the FOR loop body")
     out2(s_lab, bodylab)
     ///IF debug=1 & bodylab=102 DO abort(65432)
     decllabels(body)
-    outcomment("Compiling the body with a setting of next = zero")
-    outcomment("since we assume it will be followed by code to")
-    outcomment("update the control variable and test it")
+    //outcomment("Compiling the body with a setting of next = zero")
+    //outcomment("since we assume it will be followed by code to")
+    //outcomment("update the control variable and test it")
     trans(body, 0) // Zero because we assume there will be code
                    // to update the control variable and test it.
 
@@ -2890,9 +2890,9 @@ AND transfor(x, next) BE
     // it it mist have been allocated by a BREAK command occuring
     // in the body.
 
-    outcomment("If a LOOP command occurs within the body looplab")
-    outcomment("would have be allocated for the jump to the point")
-    outcomment("where the control variable is updated and tested")
+    //outcomment("If a LOOP command occurs within the body looplab")
+    //outcomment("would have be allocated for the jump to the point")
+    //outcomment("where the control variable is updated and tested")
     IF looplab DO out2(s_lab, looplab)
 
     // Remember breaklab in blab in case we have to set that label
@@ -2932,12 +2932,12 @@ AND transfor(x, next) BE
        
   // Compile the break label, if necessary.
   IF blab>0 & blab~=next DO
-  { outcomment("Now settin the break label L%n", blab)
+  { //outcomment("Now settin the break label L%n", blab)
     out2(s_lab, blab)
   }
 
   // Compile a return or nothing.
-  outcomment("Compiling a function or routine return, or nothing")
+  //outcomment("Compiling a function or routine return, or nothing")
   trnext(next)
   
   casecount := prevcasecount

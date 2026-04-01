@@ -64,7 +64,7 @@ sshpube:	dose
 sshpubenew:	dosenew
 	scp README TGZFILESNEW ../bcplnew.tgz $(SSHPUB)/BCPL
 	cp TGZDATENEW PUBDATENEW
-	cp TGZDATENW cintcode/PUBDATENEW
+	cp TGZDATENEW cintcode/PUBDATENEW
 	cp TGZFILESNEW PUBFILESNEW
 	@cat TGZFILESNEW
 	@cat TGZDATENEW

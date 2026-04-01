@@ -419,6 +419,11 @@ xrefbcpl:	cin/bcpl g/libhdr.h g/bcplfecg.h
 	cintsys -c sortxref rawxref to xrefbcpl
 	rm rawxref
 
+xrefbcplrpi:	cin/bcpl g/libhdr.h g/bcplfecg.h
+	cintsys -c bcpl com/bcplrpi.b to junk xref >rawxref
+	cintsys -c sortxref rawxref to xrefbcplrpi
+	rm rawxref
+
 xrefvspl:	cin/bcpl g/libhdr.h
 	cintsys -c bcpl com/vspl.b to junk xref >rawxref
 	cintsys -c sortxref rawxref to xrefvspl

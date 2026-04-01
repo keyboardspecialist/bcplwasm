@@ -2644,53 +2644,55 @@ AND wrword_at(a) BE
 }
 
 AND dboutput() BE
-{ // This is used in scan to trace the processing
-  // of Ocode statement and also in wrcode when compiling
-  // Cintcode instructions.
-  // It outputs the values of info about A and B
-  // folloed by the simulated stack if debug=2
-  // or the ref list is debug=3
+{ // This is used as a debugging aid in scan to trace the
+  // processing of Ocode statement and also in wrcode when
+  // generating compiled instructions.
+  // What and how much is output depends on the setting
+  // of debug.
   
-  LET p = info_a
+  LET p = info_a  // Output info about A
   writes("A=(")
   UNTIL p=0 DO { wrkn(h2!p, h3!p)
                  p := !p
                  UNLESS p=0 DO wrch('*s')
                }
     
-  p := info_b
+  p := info_b  // Output info about B
   writes(") B=(")
   UNTIL p=0 DO { wrkn(h2!p, h3!p)
                  p := !p
                  UNLESS p=0 DO wrch('*s')
                }
-  wrch(')')
+  writes(")*n")
    
-  IF debug=8 DO { writef(" ssp=%n ", ssp)
-                  FOR p=tempv TO arg1 BY 3  DO
-                  { IF (p-tempv) MOD 60 = 0 DO newline()
-                    wrkn(h1!p,h2!p)
-                    wrch('*s')
-                  }
-		  newline()
-                }
+  IF debug=8 DO // Output the simulated stack
+  { writef(" ssp=%n ", ssp)
+    FOR p=tempv TO arg1 BY 3  DO
+    { IF (p-tempv) MOD 60 = 0 DO newline()
+      wrkn(h1!p,h2!p)
+      wrch('*s')
+    }
+    newline()
+  }
    
-  IF debug=9 DO { LET l = rlist
-                  writes("*nRLIST ")
-                  UNTIL l=0 DO { writef("%n L%n  ", l!1, l!2)
-                                 l := !l
-                               }
-                }
+  IF debug=9 DO
+  { LET l = rlist // Output RLIST
+    writes("RLIST ")
+    UNTIL l=0 DO { writef("%n L%n  ", l!1, l!2)
+                   l := !l
+                 }
+  }
 
-  IF debug=10 DO { LET l = nlist
-                  writes("*nNLIST ")
-                  UNTIL l=0 DO { writef("%n %8x  ", l!1, l!2)
-		                 IF compiling32to64 DO
-				   writef("%8X ", l!3) 
-                                 l := !l
-                               }
-		  newline()
-                }
+  IF debug=10 DO // Output NLIST
+  { LET l = nlist
+    writes("NLIST ")
+    UNTIL l=0 DO { writef("%n %8x  ", l!1, l!2)
+                   IF compiling32to64 DO
+                   writef("%8X ", l!3) 
+                   l := !l
+                 }
+    newline()
+  }
 }
 
 
