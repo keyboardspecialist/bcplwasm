@@ -5,6 +5,26 @@
 
 /* Change history
 
+03/04/2026
+
+If this compiler is executing Cintcode the command arguments are
+processed using rdargs reading from the standard input stream.  When
+the compiler is executing native machine code the mechanism is
+slightly different. The function start then takes two arguments.  The
+second argument is a BCPL vector holdings holding BCPL strings for all
+the compiler arguments and the first argument holds the number of such
+strings. They are processed by writing these strings separated by
+spaces to a RAM stream which is then closed and reopened as input to
+rdargs to decode the compiler arguments. To only slight
+inconvenenience of this mechanism is if a string is double quotes
+is needed by rdargs. But such a need is unlikely.
+
+The function start begins with a special declaration: LET xxx = #x7F7F
+which compiles into the following Cintcode: LH #x7F7F; SP5 which
+corresponds to the following sequence of hex byte: 61 7f 7f A5. If
+this sequence is detected the compiler is currently executing
+Cinteode. Otherwise it is assumed to be executing native machine code.
+
 05/02/2026
 Implemented the expression escape commands:
 BREAK, LOOP, NEXT, EXIT, ENDCASE, RETURN, RESULTIS and GOTO
@@ -464,8 +484,13 @@ LET chkglobals() = VALOF
 //    synerr("32-bit floating point constants cannot be compiled using 64 bit BCPL")
 //}
  
-LET start() = VALOF
-{ LET treesize = 0
+LET start(n, v) = VALOF
+{ // If executing native machine code v will be a vector of
+  // argument strings and n will specify how many of them
+  // are present.
+  LET xxx = #x7F7F
+  LET nativecode = TRUE // Assume executing native nachine code
+  LET treesize = 0
   AND argv = VEC 50
   AND argform = "FROM/A,TO/K,ERR/K,SIZE/K/N,NONAMES/S,*
                 *OENDER/S,EQCASES/S,BIN/S,XREF/S,GDEFS/S,OPT/K,*
@@ -473,8 +498,20 @@ LET start() = VALOF
                 *T16/S,T32/S,T64/S,DEFS/K,NOSELST/S,MAP/K,LIST/K,*
 		*-h/S,-d/N"
   // T16, t32, MAP and LIST added by MR 01/10/2020
+
   LET objline1vec  = VEC 256/bytesperword+1
   LET defstringvec = VEC 256/bytesperword+1
+
+  // Test whether executing native machine code. The work for both
+  // big and little ender Cintcode and for any BCPL word length.
+  LET nativecode = FALSE // Assume executing Cintcode
+  IF 0%(start+0) = #x61 &  // LH #x7F7F
+     0%(start+1) = #x7F &
+     0%(start+2) = #x7F &
+     0%(start+3) = #xA5 DO // SP5
+  { nativecode := FALSE // Must be executing Cintcode
+  }
+  //sawritef("nativecode=%n*n", nativecode)
 
   stdout := output()
   stdin  := input()
@@ -540,8 +577,26 @@ LET start() = VALOF
   // These can be set to TRUE by compiler arguments.
   T16, T32, T64 := FALSE, FALSE, FALSE
   // These will be corrected after the call of rdargs.
-  
-  IF rdargs(argform, argv, 50)=0 DO errcount := 1
+
+  TEST nativecode
+  THEN { LET previn = input()
+         LET prevout = output()
+	 LET blkno, offset = 0, 0 // By point
+	 LET ramstream = findinoutput("RAM:stream")
+	 UNLESS ramstream DO
+	 { synerr("Unable to create the RAM stream*n")
+	   GOTP fin
+	 }
+	 selectoutput(ramstream)
+	 FOR i = 0 TO n-1 DO writef("%s ", v!i)
+	 rewindstream(ramstream)
+	 selectinput(ramstream)
+	 IF rdargs(argform, argv, 50)=0 DO errcount := 1
+	 endstream(ramstream)
+       }
+  ELSE { IF rdargs(argform, argv, 50)=0 DO errcount := 1
+       }
+
   IF argv!22 DO
   { helping := TRUE
     GOTO help

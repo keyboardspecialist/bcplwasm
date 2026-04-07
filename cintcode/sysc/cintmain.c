@@ -330,8 +330,8 @@ extern BCPLWORD callc(BCPLWORD *args, BCPLWORD *g);
 
 #ifdef CINTPOSyes
 // The following two vectors are declared in devices.c
-extern BCPLWORD irqfifov[];         /* A fifo of interrupting devid's */
-extern BCPLWORD irqfifop, irqfifoq; /* circular queue from p to q-1   */
+extern BCPLWORD irqfifov[];         // A fifo of interrupting devid's
+extern BCPLWORD irqfifop, irqfifoq; // circular queue from p to q-1
 
 int icount=0; // Decrement on every cintcode instruction and when <=0
               // check for interrupts in the fifo.
@@ -342,7 +342,7 @@ pthread_mutex_t irq_mutex = PTHREAD_MUTEX_INITIALIZER;
 // irq_mutex controls access to the irq fifo, device pkts and DCB fields
 
 pthread_cond_t  irq_cv    = PTHREAD_COND_INITIALIZER;
-// irq_cv is signalled every time a device thread put and interrupt request
+// irq_cv is signalled every time a device thread puts an interrupt request
 // in the fifo
 
 pthread_mutex_t trpush_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -358,6 +358,8 @@ extern BCPLWORD devcommand(BCPLWORD dcb, BCPLWORD com, BCPLWORD arg);
 #endif
 
 #endif
+// Just ended the section starting #ifdef CINTPOSyes
+// So the following code is for bot cintsys and cintpos
 
 // trpush is defined in this file.
 BCPLWORD trcount = -1; // trpush initially disabled
@@ -443,6 +445,7 @@ static char chbuf4[256];
 
 #ifdef TARGET64
 
+// Static variables for 64 bit BCPL target
 #ifdef CINTSYSyes
 static char* rootvar    = "BCPL64ROOT";
 static char* pathvar    = "BCPL64PATH";
@@ -458,6 +461,8 @@ static char* scriptsvar = "POS64SCRIPTS";
 #endif
 
 #else
+
+// Static variables for 32 bit BCPL target
 
 #ifdef CINTSYSyes
 static const char* rootvar    = "BCPLROOT";
@@ -487,14 +492,16 @@ int boottrace   = 0;
 
 BCPLWORD memupb;        // In words
 BCPLWORD Globupb=2000;  // MR 28/12/2019 used to be 1000
-                        // also made a similar change in boot.b
+                        // also made a similar change in bootsys.b and
+                        // bootpos.b
+
 BCPLWORD tallyupb, tallyvec, *tallyv, tallylim=0;
 BCPLWORD vecstatsvupb, vecstatsvec, *vecstatsv;    // Stats of getvec/freevec
 BCPLWORD dcountv;       // To hold the BCPL pointer to the debug count vector
 
 BCPLWORD taskname[4];         /* Used in getvec for debugging */
 
-// Functions defined in this file (cintsys.c).
+// Functions defined in this file (cintmain.c).
 
 void copyaddrB2C(void*from, void*to); // Used for saving and restoring
 void copyaddrC2B(void*from, void*to); // host machine addresses.
@@ -1368,12 +1375,12 @@ int main(int argc, char* argv[])
   if(W[rootnode+Rtn_klib]==0) return 20;
 #endif
   
-  /* Set handler for CTRL-C */
-  old_inthandler  = signal(SIGINT, inthandler); /* To catch CTRL-C */
-  /* Set handler for segment violation */
-  old_segvhandler  = signal(SIGSEGV, segvhandler); /* To catch segv */
+  // Set handler for CTRL-C
+  old_inthandler  = signal(SIGINT, inthandler); // To catch CTRL-C
+  // Set handler for segment violation
+  old_segvhandler  = signal(SIGSEGV, segvhandler); // To catch segv
 
-  /* Make sys available via the root node */
+  // Make sys available via the root node
   W[rootnode+Rtn_sys] = W[globbase+Gn_sys];
 
   /*
@@ -1392,18 +1399,18 @@ int main(int argc, char* argv[])
   ** or bootpos to be entered. 
   */
 
-  W[bootregs+0] = 0;                /* A */
-  W[bootregs+1] = 0;                /* B */
-  W[bootregs+2] = 0;                /* C */
-  W[bootregs+3] = stackbase<<B2Wsh; /* P */
-  W[bootregs+4] = globbase<<B2Wsh;  /* G */
-  W[bootregs+5] = 2;                /* ST -- in boot, interrupts disabled */
-  W[bootregs+6] = W[globbase+1];    /* PC (start in boot.b) */
-  W[bootregs+7] = -1;               /* Count */
-  W[bootregs+8] = 0;                /* MW */
+  W[bootregs+0] = 0;                // A
+  W[bootregs+1] = 0;                // B
+  W[bootregs+2] = 0;                // C
+  W[bootregs+3] = stackbase<<B2Wsh; // P  byte address
+  W[bootregs+4] = globbase<<B2Wsh;  // G  byte address
+  W[bootregs+5] = 2;                // ST =3 means in boot, interrupts disabled
+  W[bootregs+6] = W[globbase+1];    // PC (start in boot.b) byte address
+  W[bootregs+7] = -1;               // Count
+  W[bootregs+8] = 0;                // MW
 
   // Uncomment the following line to trace Cintcode execution
-  // tracing = 1;
+  //tracing = 1;
   //tracing = 0;
 
 #ifdef CINTPOSyes

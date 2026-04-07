@@ -164,7 +164,9 @@ AND nilwrfn(scb) = VALOF
 }
 
 AND ramwrfn(scb) = VALOF
-{ // Replace the buffer by one of twice the size
+{ // Only called when writing a charcter to a RAM file when
+  // the buffer is full.
+  // Replace the buffer by one of twice the size
   LET oldbufend = scb!scb_bufend
   LET oldbufupb = oldbufend/bytesperword
   LET oldbuf    = scb!scb_buf
