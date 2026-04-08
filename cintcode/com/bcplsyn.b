@@ -585,7 +585,7 @@ LET start(n, v) = VALOF
 	 LET ramstream = findinoutput("RAM:stream")
 	 UNLESS ramstream DO
 	 { synerr("Unable to create the RAM stream*n")
-	   GOTP fin
+	   GOTO fin
 	 }
 	 selectoutput(ramstream)
 	 FOR i = 0 TO n-1 DO writef("%s ", v!i)

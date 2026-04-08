@@ -1,5 +1,5 @@
 
-SECTION "CG"
+SECTION "CGRPI"
 
 // RPi code generator for 32-bit BCPL June 2016
  
@@ -405,7 +405,7 @@ AND cgsects(workvec, vecsize) BE UNTIL op=0 DO
 AND gen_move_rq(op, rd, n) BE
 { // mov rd,#q (op is MOV or MVN) q is operand2 imm
   IF debug>5 DO writef("%t8 r%n,#%n*n", opname(op), rd, n)
-  abort(1000)
+  //abort(1000)
   codew(14 << 28 | 1 << 25 | op << 21 | rd << 12 | n)
 }
 
@@ -704,7 +704,7 @@ AND scan() BE
       ENDCASE
     CASE s_ln:   
       loadt(k_numb, rdn())
-      abort(1001)
+      //abort(1001)
       ENDCASE
     CASE s_lstr: //#######################
             cgstring(rdn())
