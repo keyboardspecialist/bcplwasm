@@ -695,7 +695,7 @@ LET start(n, v) = VALOF
   THEN T32, T64, targetbytelen, targetbitlen := FALSE, TRUE, 8, 64
   ELSE T32, T64, targetbytelen, targetbitlen := TRUE, FALSE, 4, 32
 
-  writef("*n%n bit BCPL testing (5 Mar 2026), %n bit target*n",
+  writef("*n%n bit BCPL (8 Apr 2026), %n bit target*n",
           bitsperword, targetbitlen)
 
 help:
