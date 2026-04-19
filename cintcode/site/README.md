@@ -26,6 +26,8 @@ site/
     shifts.b       — logical >>, <<, hex format
     vec.b          — getvec / freevec
     echo.b         — rdch, reads from stdin pane
+    match.b        — MATCH expression (MCPL pattern matching)
+    every.b        — EVERY expression (sum of all matching arms)
     *.wat, *.wasm  — built artifacts
 ```
 

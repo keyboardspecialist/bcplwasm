@@ -250,12 +250,15 @@ export class BcplRuntime {
     return instance;
   }
 
-  // Call the user's start() function. Generated code exports it as
-  // fn_L10 by convention (first user function label). If a different
-  // entry is wanted, pass the export name.
-  run(entry = "fn_L10") {
-    const fn = this.instance.exports[entry];
-    if (!fn) throw new Error(`no export ${entry}`);
+  // Call the user's start() function. BCPL convention: start lives
+  // at global 1; after $__init runs, G!1 holds its table index.
+  // Look that up via the exported ftable (works regardless of which
+  // fn_L<n> the compiler assigned to start).
+  run() {
+    const tidx = this.loadWord(2);  // G+1 word addr = byte 8
+    const table = this.instance.exports.ftable;
+    const fn = table.get(tidx);
+    if (!fn) throw new Error(`start (G!1 tidx=${tidx}) not in table`);
     try {
       return fn();
     } catch (e) {
