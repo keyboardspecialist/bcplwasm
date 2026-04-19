@@ -1,0 +1,4 @@
+.k file/a,opt
+echo "bcplwasm com/<file>.b to wat/<file>.wat <opt>"
+bcplwasm com/<file>.b to wat/<file>.wat <opt>
+

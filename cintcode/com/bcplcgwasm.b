@@ -715,7 +715,7 @@ AND cgpendingop_wasm() BE
     CASE s_div:   binop("i32.div_s");       ENDCASE
     CASE s_mod:   binop("i32.rem_s");       ENDCASE
     CASE s_lshift:binop("i32.shl");         ENDCASE
-    CASE s_rshift:binop("i32.shr_s");       ENDCASE
+    CASE s_rshift:binop("i32.shr_u");       ENDCASE  // BCPL >> is logical
     CASE s_logand:binop("i32.and");         ENDCASE
     CASE s_logor: binop("i32.or");          ENDCASE
     CASE s_xor:   binop("i32.xor");         ENDCASE
@@ -725,8 +725,21 @@ AND cgpendingop_wasm() BE
     CASE s_fmul:  fbinop("f32.mul");        ENDCASE
     CASE s_fdiv:  fbinop("f32.div");        ENDCASE
     CASE s_fmod:
-      writef("    ;; FMOD: TODO (no direct Wasm f32.rem)*n")
-      cssp := cssp - 1
+      // No direct Wasm op; compute a - trunc(a/b) * b.
+      // Inputs $t{cssp-2}=a, $t{cssp-1}=b (both i32 bit patterns of f32).
+      { LET va = cssp - 2
+        LET vb = cssp - 1
+        cssp := cssp - 1
+        writef("    (local.set $t%n (i32.reinterpret_f32*n", va)
+        writef("      (f32.sub*n")
+        writef("        (f32.reinterpret_i32 (local.get $t%n))*n", va)
+        writef("        (f32.mul*n")
+        writef("          (f32.trunc*n")
+        writef("            (f32.div*n")
+        writef("              (f32.reinterpret_i32 (local.get $t%n))*n", va)
+        writef("              (f32.reinterpret_i32 (local.get $t%n))))*n", vb)
+        writef("          (f32.reinterpret_i32 (local.get $t%n))))))*n", vb)
+      }
       ENDCASE
     CASE s_eq:  cmp_op("i32.eq");           ENDCASE
     CASE s_ne:  cmp_op("i32.ne");           ENDCASE
@@ -1098,11 +1111,23 @@ prescan_done:
       { LET l = rdl()
         cgpendingop_wasm()
         selectoutput(tostream)
-        // User funcs live at table indices stdlib_count+ftab_index.
+        // LF can refer to a function label (use it via FNAP/RTAP ->
+        // needs table index) or a local dispatch label (use it via
+        // computed GOTO -> needs dispatch index). Prefer ftab lookup;
+        // fall back to labmap. The two namespaces don't overlap:
+        // s_entry populates ftab_v, s_lab populates labmap.
         { LET tidx = 0
-          FOR i = 0 TO ftab_n-1 DO IF ftab_v!i=l DO { tidx:=i+stdlib_count; BREAK }
-          writef("    (local.set $t%n (i32.const %n)) ;; LF L%n -> tidx %n*n",
-                 cssp, tidx, l, tidx)
+          LET kind = "tidx"
+          LET found = FALSE
+          FOR i = 0 TO ftab_n-1 DO IF ftab_v!i=l DO
+          { tidx := i + stdlib_count; found := TRUE; BREAK
+          }
+          UNLESS found DO
+            IF l >= 0 & l < nlabmap & labmap!l >= 0 DO
+            { tidx := labmap!l; kind := "dispatch-idx"; found := TRUE
+            }
+          writef("    (local.set $t%n (i32.const %n)) ;; LF L%n -> %s %n*n",
+                 cssp, tidx, l, kind, tidx)
         }
         selectoutput(sysprint)
         cssp := cssp + 1
@@ -1313,11 +1338,14 @@ prescan_done:
       }
 
       CASE s_goto:
-      { // Computed goto: not yet supported
+      { // Computed GOTO: top of expression stack holds a dispatch
+        // index (produced by LL of a code label in this function).
+        // Set $__lab and re-enter the dispatch loop.
         cgpendingop_wasm()
         cssp := cssp - 1
         selectoutput(tostream)
-        writef("    unreachable ;; GOTO (computed) not supported*n")
+        writef("      (local.set $__lab (local.get $t%n))*n", cssp)
+        writef("      (br $__dispatch) ;; GOTO (computed)*n")
         selectoutput(sysprint)
         terminated := TRUE
         ENDCASE
@@ -1557,7 +1585,26 @@ prescan_done:
       { LET sfop = rdn(); LET len = rdn(); LET sh = rdn()
         cgpendingop_wasm()
         selectoutput(tostream)
-        writef("    ;; SELST op=%n len=%n sh=%n TODO*n", sfop, len, sh)
+        // Stack: $t{cssp-2}=value, $t{cssp-1}=word-addr.
+        // Semantics: mem[addr]{sh..sh+len-1} := value{0..len-1}
+        //   (for sf_none). Other sfops apply the op between old
+        //   field value and new value first.
+        { LET va = cssp - 2
+          LET ad = cssp - 1
+          LET fmask = len >= 32 -> -1, (1 << len) - 1
+          LET cmask = ~(fmask << sh)
+          UNLESS sfop = sf_none DO
+            writef("    ;; SELST: sfop %n not supported, using :=*n", sfop)
+          writef("    (i32.store*n")
+          writef("      (i32.shl (local.get $t%n) (i32.const 2))*n", ad)
+          writef("      (i32.or*n")
+          writef("        (i32.and*n")
+          writef("          (i32.load (i32.shl (local.get $t%n) (i32.const 2)))*n", ad)
+          writef("          (i32.const %n))*n", cmask)
+          writef("        (i32.shl*n")
+          writef("          (i32.and (local.get $t%n) (i32.const %n))*n", va, fmask)
+          writef("          (i32.const %n))))*n", sh)
+        }
         cssp := cssp - 2
         selectoutput(sysprint)
         terminated := FALSE
