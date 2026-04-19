@@ -7,6 +7,8 @@
   (import "env" "bcpl_writen"  (func $imp_writen  (type $bcpl_fn)))
   (import "env" "bcpl_writes"  (func $imp_writes  (type $bcpl_fn)))
   (import "env" "bcpl_writef"  (func $imp_writef  (type $bcpl_fn)))
+  (import "env" "bcpl_getvec"  (func $imp_getvec  (type $bcpl_fn)))
+  (import "env" "bcpl_freevec" (func $imp_freevec (type $bcpl_fn)))
   (memory (export "mem") 4) ;; 4 pages = 256KB
   (global $G (export "G") i32 (i32.const 1))
   (global $P (export "P") (mut i32) (i32.const 0))
@@ -150,7 +152,7 @@
   ) ;; end func $fn_L10
 
   ;; --- function table ---
-  (elem (table $ftable) (i32.const 0) func $imp_stop $imp_rdch $imp_wrch $imp_newline $imp_writen $imp_writes $imp_writef $fn_L10)
+  (elem (table $ftable) (i32.const 0) func $imp_stop $imp_rdch $imp_wrch $imp_newline $imp_writen $imp_writes $imp_writef $imp_getvec $imp_freevec $fn_L10)
 
   (func $__init
     (global.set $P (i32.const 1008))
@@ -162,7 +164,9 @@
     (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 344)) (i32.const 4)) ;; writen
     (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 356)) (i32.const 5)) ;; writes
     (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376)) (i32.const 6)) ;; writef
-    (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 4)) (i32.const 7)) ;; G!1 = fn_L10
+    (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 100)) (i32.const 7)) ;; getvec
+    (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 108)) (i32.const 8)) ;; freevec
+    (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 4)) (i32.const 9)) ;; G!1 = fn_L10
   )
   (start $__init)
 
