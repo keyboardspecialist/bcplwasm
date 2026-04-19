@@ -43,6 +43,21 @@
       user-select: none;
     }
     .wat-pane pre { max-height: 30rem; font-size: 0.78rem; }
+    .stdin-pane { margin-top: 1rem; }
+    .stdin-pane h3 { margin: 0 0 0.4rem 0; font-size: 0.95rem; color: #888; }
+    .stdin-pane textarea {
+      width: 100%;
+      min-height: 4rem;
+      font-family: ui-monospace, monospace;
+      font-size: 0.85rem;
+      background: #0e1116;
+      color: #e6edf3;
+      border: 1px solid #2a2f37;
+      border-radius: 6px;
+      padding: 0.5rem;
+      box-sizing: border-box;
+      resize: vertical;
+    }
     footer { margin-top: 2rem; color: #888; font-size: 0.85rem; }
     code { background: rgba(128,128,128,0.15); padding: 0 0.25rem; border-radius: 3px; }
   </style>
@@ -66,6 +81,8 @@
       <option value="cgoto">cgoto</option>
       <option value="fmod">fmod</option>
       <option value="shifts">shifts</option>
+      <option value="vec">vec</option>
+      <option value="echo">echo</option>
     </select>
     <button id="run">Run</button>
   </div>
@@ -79,6 +96,11 @@
       <h3>Output</h3>
       <pre id="output"></pre>
     </div>
+  </div>
+
+  <div class="stdin-pane">
+    <h3>Input (stdin — consumed by <code>rdch()</code>)</h3>
+    <textarea id="stdin" spellcheck="false" placeholder="type input here, then click Run"></textarea>
   </div>
 
   <div class="wat-pane">
@@ -102,6 +124,7 @@
     const sourceEl  = document.getElementById("source");
     const outputEl  = document.getElementById("output");
     const watEl     = document.getElementById("wat");
+    const stdinEl   = document.getElementById("stdin");
     const selectEl  = document.getElementById("example");
     const runBtn    = document.getElementById("run");
 
@@ -125,7 +148,10 @@
     async function runExample() {
       const name = selectEl.value;
       outputEl.textContent = "";
-      const rt = new BcplRuntime((s) => { outputEl.textContent += s; });
+      const rt = new BcplRuntime(
+        (s) => { outputEl.textContent += s; },
+        stdinEl.value
+      );
       try {
         await rt.load(`examples/${name}.wasm`);
         rt.run();

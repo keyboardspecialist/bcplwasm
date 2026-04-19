@@ -98,6 +98,8 @@ Source (.b file)
 - `bcplcgrpi.b` — Raspberry Pi native backend
 - `bcplcgsial.b` — SIAL intermediate backend
 - `bcplcgz80.b` — Z80 backend
+- `bcplcgwasm.b` — WebAssembly (WAT) backend (see below)
+- `bcplwasm.b` — compiler driver that swaps `bcplcgcin.b` for `bcplcgwasm.b`
 
 **Headers (`g/`)** — BCPL `.h` files (manifests, `GET` directives):
 - `libhdr.h` — standard header, included by nearly all programs
@@ -116,3 +118,85 @@ The same C source handles both word sizes via `TARGET64` and `CURRENT64` preproc
 - The `g/` directory is the standard header search path
 - `com/` programs are the user-facing commands; `sysb/` programs are the runtime internals
 - `cin/syscin/` files are loaded at boot and stay resident in memory
+
+## WebAssembly Backend
+
+New backend in `com/bcplcgwasm.b` emits WebAssembly Text Format (`.wat`).
+Driver `com/bcplwasm.b` composes `bcplsyn` + `bcpltrn` + `bcplcgwasm`.
+
+### Compile + assemble
+
+Inside the BCPL CLI:
+```
+bcplwasm com/hello.b to hello.wat
+```
+
+Then assemble with [WABT](https://github.com/WebAssembly/wabt):
+```
+wat2wasm hello.wat -o hello.wasm
+```
+
+### Memory layout (32-bit target)
+
+All addresses are BCPL word addresses. Byte address = word × 4.
+
+| word addr | region |
+|-----------|--------|
+| 0 | reserved |
+| 1..1000 | global vector (G!0..G!999) |
+| 1001..1001+stat_n | static data (strings, DATALAB items) |
+| 1001+stat_n (aligned)+ | BCPL stack (P grows up) |
+| top of memory down | heap (getvec bump allocator) |
+
+Exported Wasm globals: `$G` (word addr 1), `$P` (mutable, set by `$__init`).
+
+### Calling convention (matches cintcode's F_k)
+
+Caller (for a call with OCODE `FNAP k` / `RTAP k`):
+1. Store args at caller `P!(k+3..)`.
+2. Save `(old_P, 0, fn_idx)` at caller `P!(k..k+2)`.
+3. Advance `$P` by `k` words.
+4. `call_indirect $ftable (type $bcpl_fn) fn_idx`.
+5. FNAP captures return value at `$t{k}` and sets `cssp := k+1`.
+6. RTAP drops return value, `cssp := k`.
+
+Callee:
+- Reads args at `P!3..`.
+- On FNRN: copies return value to `$t0`, restores `P := mem[P*4]` (i.e. P!0), `return $t0`.
+- On RTRN: restores P, `return (i32.const 0)`.
+
+### Function table
+
+`(table $ftable 256 funcref)`. Slots:
+- `0..stdlib_count-1` = host-imported stdlib (see below).
+- `stdlib_count..` = user functions in declaration order.
+
+LF of a function label pushes table index. LF of a local (dispatch) label pushes the in-function dispatch-loop index used by computed `GOTO`.
+
+### Control flow
+
+Each function body is one `(loop $__dispatch (if ...) (if ...) ... )`. A local `$__lab` names the active basic block; every `JUMP`/`JT`/`JF`/`GOTO` does `local.set $__lab; br $__dispatch`. Entry block has `$__lab = 0`. Labels get indices from a prescan.
+
+### Typelessness
+
+BCPL words are untyped bit patterns. All expression-stack locals and memory are `i32` (or `i64` on 64-bit target — not yet implemented). Float ops reinterpret: `(i32.reinterpret_f32 (f32.<op> (f32.reinterpret_i32 a) (f32.reinterpret_i32 b)))`. `#FNEG`/`#FABS` flip/clear the sign bit directly.
+
+### Host-imported stdlib
+
+`site/runtime.js` supplies these via `(import "env" "...")`. Table slots fixed at 0..8. `$__init` stores each slot index into the matching BCPL global number:
+
+| tidx | import | global | purpose |
+|------|--------|--------|---------|
+| 0 | `bcpl_stop` | 2 | halt |
+| 1 | `bcpl_rdch` | 38 | read char from stdin |
+| 2 | `bcpl_wrch` | 41 | write char |
+| 3 | `bcpl_newline` | 84 | write newline |
+| 4 | `bcpl_writen` | 86 | write integer |
+| 5 | `bcpl_writes` | 89 | write BCPL string |
+| 6 | `bcpl_writef` | 94 | formatted write |
+| 7 | `bcpl_getvec` | 25 | allocate n+1 words |
+| 8 | `bcpl_freevec` | 27 | free vector |
+
+### Playground
+
+`site/index.html` + `site/runtime.js` run compiled `.wasm` in-browser with the stdlib. `site/build.sh` rebuilds all examples (`site/examples/*.b`). See `site/README.md`.

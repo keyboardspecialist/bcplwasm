@@ -14,18 +14,30 @@
 // relative to the current P, restore P, return result.
 
 export class BcplRuntime {
-  constructor(writeOut) {
+  constructor(writeOut, input = "") {
     this.writeOut = writeOut;   // (string) => void — write to UI
+    this.input = input;         // stdin buffer — consumed by rdch
+    this.inputIdx = 0;
     this.instance = null;
     this.mem = null;
     this.memView = null;
     this.finished = false;
+    // Heap grows downward from top of linear memory.
+    // Stack grows upward from just past static data (set in $__init).
+    // Free list: singly-linked, first word of each freed block holds
+    // next_free (word addr, 0 = end). Simple first-fit reuse.
+    this.heapTop = 0;           // set after instantiation
+    this.freeList = 0;          // word addr of first free block, 0 if none
   }
 
   // Byte view; refresh after memory.grow (we never grow, but keep
   // pattern correct).
   refresh() {
     this.memView = new DataView(this.mem.buffer);
+    // Init heap pointer once on first refresh after load.
+    if (this.heapTop === 0) {
+      this.heapTop = (this.mem.buffer.byteLength >> 2);  // total words
+    }
   }
 
   loadWord(wordAddr) {
@@ -69,9 +81,10 @@ export class BcplRuntime {
   }
 
   imp_rdch() {
-    // No stdin wired up; return -1 (endstreamch).
+    // Returns next char from input buffer, or -1 (endstreamch) at EOF.
     this.restoreP();
-    return -1;
+    if (this.inputIdx >= this.input.length) return -1;
+    return this.input.charCodeAt(this.inputIdx++);
   }
 
   imp_wrch() {
@@ -166,6 +179,47 @@ export class BcplRuntime {
     return 0;
   }
 
+  // getvec(n) — allocate n+1 words. Prefer free list (first-fit),
+  // else bump-allocate from top of memory. Returns BCPL word address
+  // (pointer such that p!0..p!n span the allocation), or 0 on OOM.
+  imp_getvec() {
+    const n = this.arg(0);
+    const size = n + 1;   // BCPL vectors are 0..n inclusive
+    // First-fit on free list.
+    let prev = 0, cur = this.freeList;
+    while (cur !== 0) {
+      const blockSize = this.loadWord(cur + 1);  // stored at p!1
+      const next = this.loadWord(cur);           // stored at p!0
+      if (blockSize >= size) {
+        if (prev === 0) this.freeList = next;
+        else this.storeWord(prev, next);
+        this.restoreP();
+        return cur;
+      }
+      prev = cur; cur = next;
+    }
+    // Bump.
+    this.heapTop -= (size + 1);  // reserve 1 extra word for size header
+    if (this.heapTop <= 0) {
+      this.restoreP();
+      return 0;
+    }
+    const p = this.heapTop;
+    this.storeWord(p + 1, size);  // remember size for freevec/freelist
+    this.restoreP();
+    return p;
+  }
+
+  imp_freevec() {
+    const p = this.arg(0);
+    if (p === 0) { this.restoreP(); return 0; }
+    // Link block onto free list. Size already stored at p!1.
+    this.storeWord(p, this.freeList);
+    this.freeList = p;
+    this.restoreP();
+    return 0;
+  }
+
   // ------------------ loader ------------------
 
   imports() {
@@ -178,6 +232,8 @@ export class BcplRuntime {
         bcpl_writen:  () => this.imp_writen(),
         bcpl_writes:  () => this.imp_writes(),
         bcpl_writef:  () => this.imp_writef(),
+        bcpl_getvec:  () => this.imp_getvec(),
+        bcpl_freevec: () => this.imp_freevec(),
       }
     };
   }

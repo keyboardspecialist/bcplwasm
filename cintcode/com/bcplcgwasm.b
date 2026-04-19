@@ -41,7 +41,7 @@ MANIFEST {
   // Wasm function-table slot at the front of the table, and __init
   // writes that slot into its BCPL global number so indirect calls
   // (FNAP via G!n) reach the host.
-  stdlib_count = 7
+  stdlib_count = 9
 }
 
 GLOBAL {
@@ -342,6 +342,8 @@ AND emit_mod_header() BE
   writef("  (import *"env*" *"bcpl_writen*"  (func $imp_writen  (type $bcpl_fn)))*n")
   writef("  (import *"env*" *"bcpl_writes*"  (func $imp_writes  (type $bcpl_fn)))*n")
   writef("  (import *"env*" *"bcpl_writef*"  (func $imp_writef  (type $bcpl_fn)))*n")
+  writef("  (import *"env*" *"bcpl_getvec*"  (func $imp_getvec  (type $bcpl_fn)))*n")
+  writef("  (import *"env*" *"bcpl_freevec*" (func $imp_freevec (type $bcpl_fn)))*n")
   writef("  (memory (export *"mem*") 4) ;; 4 pages = 256KB*n")
   writef("  (global $G (export *"G*") i32 (i32.const %n))*n", wasm_glob_base)
   writef("  (global $P (export *"P*") (mut i32) (i32.const 0))*n")
@@ -357,6 +359,7 @@ AND emit_mod_footer() BE
   writef("  (elem (table $ftable) (i32.const 0) func")
   writef(" $imp_stop $imp_rdch $imp_wrch $imp_newline")
   writef(" $imp_writen $imp_writes $imp_writef")
+  writef(" $imp_getvec $imp_freevec")
   FOR i = 0 TO ftab_n-1 DO writef(" $fn_L%n", ftab_v!i)
   writef(")*n*n")
 
@@ -376,6 +379,8 @@ AND emit_mod_footer() BE
   writef("    (i32.store ") ; emit_g_addr(86) ; writef(" (i32.const 4)) ;; writen*n")
   writef("    (i32.store ") ; emit_g_addr(89) ; writef(" (i32.const 5)) ;; writes*n")
   writef("    (i32.store ") ; emit_g_addr(94) ; writef(" (i32.const 6)) ;; writef*n")
+  writef("    (i32.store ") ; emit_g_addr(25) ; writef(" (i32.const 7)) ;; getvec*n")
+  writef("    (i32.store ") ; emit_g_addr(27) ; writef(" (i32.const 8)) ;; freevec*n")
   // Set G!n = table index for each user function global.
   FOR i = 0 TO ginit_n-1 BY 2 DO
   { LET gnum = ginit_v!i
