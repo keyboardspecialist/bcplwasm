@@ -67,6 +67,7 @@
     (global.set $P (i32.add (global.get $P) (i32.const 4)))
     (local.set $t4 (call_indirect $ftable (type $bcpl_fn) (local.get $t7)))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)) (local.get $t4))
+    (local.set $t3 (local.get $t4))
     (local.set $t4 (i32.const -1))
     (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
     (if (i32.ne  (local.get $t4) (local.get $t5)) (then
