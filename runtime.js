@@ -104,26 +104,61 @@ export class BcplRuntime {
     const fmt = this.readBcplString(this.arg(0));
     const args = [this.arg(1), this.arg(2), this.arg(3), this.arg(4)];
     let ai = 0, out = "";
+    const f32buf = new ArrayBuffer(4);
+    const f32i = new Int32Array(f32buf);
+    const f32f = new Float32Array(f32buf);
     for (let i = 0; i < fmt.length; i++) {
       const c = fmt[i];
       if (c !== "%") { out += c; continue; }
       i++;
       if (i >= fmt.length) break;
-      let code = fmt[i];
-      // width digit for %iN, %nN, %sN — we allow optional width.
-      let width = 0;
-      if (/[0-9]/.test(fmt[i + 1] ?? "")) {
-        width = parseInt(fmt[i + 1], 10);
-        i++;
+      // BCPL writef format (per sysb/blib.b write_format):
+      //   %N[.P]<code>   explicit width.precision before code (%5.2f)
+      //   %<code>[W]     single-char width after code (%i4, %X8) —
+      //                  for codes I/D/X/O/U/Z/B only. W is digit or
+      //                  letter A–F (=10..15). Codes S/C/N/#/T take
+      //                  no width.
+      let widthgiven = false, width = 0, precision = -1;
+      if (/[0-9.]/.test(fmt[i] ?? "")) {
+        widthgiven = true;
+        while (/[0-9]/.test(fmt[i] ?? "")) {
+          width = width * 10 + (fmt.charCodeAt(i) - 48);
+          i++;
+        }
+        if (fmt[i] === ".") {
+          i++;
+          precision = 0;
+          while (/[0-9]/.test(fmt[i] ?? "")) {
+            precision = precision * 10 + (fmt.charCodeAt(i) - 48);
+            i++;
+          }
+        }
+      }
+      const code = (fmt[i] ?? "").toLowerCase();
+      if (!widthgiven && "idxouzb".includes(code)) {
+        const wc = fmt[i + 1] ?? "";
+        if (/[0-9]/.test(wc))       { width = wc.charCodeAt(0) - 48;                            i++; }
+        else if (/[a-f]/i.test(wc)) { width = 10 + (wc.toLowerCase().charCodeAt(0) - 97);       i++; }
       }
       switch (code) {
         case "n": out += String(args[ai++] | 0); break;
+        case "d":
         case "i": out += String(args[ai++] | 0).padStart(width, " "); break;
+        case "u": out += String(args[ai++] >>> 0).padStart(width, " "); break;
         case "c": out += String.fromCharCode(args[ai++] & 0xFF); break;
         case "s": out += this.readBcplString(args[ai++]); break;
-        case "x": case "X":
-          out += ((args[ai++] >>> 0).toString(16).padStart(width, "0")); break;
-        default: out += c + code; break;
+        case "x": out += ((args[ai++] >>> 0).toString(16).padStart(width, "0")); break;
+        case "o": out += ((args[ai++] >>> 0).toString(8).padStart(width, "0")); break;
+        case "b": out += ((args[ai++] >>> 0).toString(2).padStart(width, "0")); break;
+        case "f": case "e": case "g": {
+          f32i[0] = args[ai++] | 0;
+          let s = (code === "e")
+            ? f32f[0].toExponential(precision >= 0 ? precision : 6)
+            : f32f[0].toFixed(precision >= 0 ? precision : 6);
+          out += s.padStart(width, " ");
+          break;
+        }
+        default: out += "%" + (fmt[i] ?? ""); break;
       }
     }
     this.writeOut(out);
