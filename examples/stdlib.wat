@@ -2,13 +2,13 @@
   (type $bcpl_fn (func (result i32)))
   (import "env" "mem"    (memory 4))
   (import "env" "ftable" (table $ftable 256 funcref))
-  (import "env" "P" (global $P  (mut i32)))
-  (import "env" "G" (global $G  i32))
+  (import "env" "P" (global $P (mut i32)))
+  (import "env" "G" (global $G i32))
   (import "env" "static_base" (global $SB i32))
   (import "env" "table_base"  (global $TB i32))
 
   ;; SECTION: stdlib
-  (func $fn_S1_L10 (export "fn_S1_L10") (type $bcpl_fn)
+  (func $fn_L10 (export "fn_L10") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
     (local $t1 i32)
@@ -303,10 +303,10 @@
     )) ;; end last block
     ) ;; end $__dispatch
     (i32.const 0) ;; unreachable return
-  ) ;; end func $fn_S1_L10
+  ) ;; end func $fn_L10
 
-  ;; --- function table (this module's slice) ---
-  (elem (table $ftable) (global.get $TB) func $fn_S1_L10)
+  ;; --- function table slice ---
+  (elem (table $ftable) (global.get $TB) func $fn_L10)
 
   ;; static data — passive segment (84 words)
   (data $stat "\1C\00\00\00\6D\75\6C\64\69\76\28\31\30\30\30\2C\20\31\30\30\30\2C\20\37\29\20\20\3D\20\25\6E\0A\2D\00\00\00\6D\75\6C\64\69\76\28\31\5F\30\30\30\5F\30\30\30\2C\20\31\5F\30\30\30\5F\30\30\30\2C\20\31\5F\30\30\30\5F\30\30\30\29\20\3D\20\25\6E\0A\00\00\00\12\00\00\00\72\61\6E\64\6E\6F\28\36\29\20\73\61\6D\70\6C\65\3A\20\00\00\03\00\00\00\25\6E\20\00\14\00\00\00\63\61\70\69\74\61\6C\63\68\28\27\61\27\29\20\3D\20\25\63\0A\28\00\00\00\63\6F\6D\70\63\68\28\27\41\27\2C\27\61\27\29\20\3D\20\25\6E\20\28\63\61\73\65\2D\69\6E\73\65\6E\73\69\74\69\76\65\29\0A\15\00\00\00\63\6F\6D\70\63\68\28\27\41\27\2C\27\42\27\29\20\3D\20\25\6E\0A\00\00\00\1E\00\00\00\63\6F\6D\70\73\74\72\69\6E\67\28\22\61\62\63\22\2C\20\22\61\62\63\22\29\20\3D\20\25\6E\0A\00\00\03\00\00\00\61\62\63\00\03\00\00\00\61\62\63\00\1E\00\00\00\63\6F\6D\70\73\74\72\69\6E\67\28\22\61\62\63\22\2C\20\22\61\62\64\22\29\20\3D\20\25\6E\0A\00\00\03\00\00\00\61\62\63\00\03\00\00\00\61\62\64\00\10\00\00\00\25\7A\34\20\7C\20\25\7A\34\20\7C\20\25\7A\34\0A")

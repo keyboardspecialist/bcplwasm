@@ -2,13 +2,13 @@
   (type $bcpl_fn (func (result i32)))
   (import "env" "mem"    (memory 4))
   (import "env" "ftable" (table $ftable 256 funcref))
-  (import "env" "P" (global $P  (mut i32)))
-  (import "env" "G" (global $G  i32))
+  (import "env" "P" (global $P (mut i32)))
+  (import "env" "G" (global $G i32))
   (import "env" "static_base" (global $SB i32))
   (import "env" "table_base"  (global $TB i32))
 
   ;; SECTION: fact
-  (func $fn_S1_L10 (export "fn_S1_L10") (type $bcpl_fn)
+  (func $fn_L10 (export "fn_L10") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
     (local $t1 i32)
@@ -92,9 +92,9 @@
     )) ;; end last block
     ) ;; end $__dispatch
     (i32.const 0) ;; unreachable return
-  ) ;; end func $fn_S1_L10
+  ) ;; end func $fn_L10
 
-  (func $fn_S1_L11 (export "fn_S1_L11") (type $bcpl_fn)
+  (func $fn_L11 (export "fn_L11") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
     (local $t1 i32)
@@ -146,10 +146,10 @@
     )) ;; end last block
     ) ;; end $__dispatch
     (i32.const 0) ;; unreachable return
-  ) ;; end func $fn_S1_L11
+  ) ;; end func $fn_L11
 
-  ;; --- function table (this module's slice) ---
-  (elem (table $ftable) (global.get $TB) func $fn_S1_L10 $fn_S1_L11)
+  ;; --- function table slice ---
+  (elem (table $ftable) (global.get $TB) func $fn_L10 $fn_L11)
 
   ;; static data — passive segment (5 words)
   (data $stat "\0F\00\00\00\66\61\63\74\28\25\6E\29\20\3D\20\25\69\34\0A\00")

@@ -2,13 +2,13 @@
   (type $bcpl_fn (func (result i32)))
   (import "env" "mem"    (memory 4))
   (import "env" "ftable" (table $ftable 256 funcref))
-  (import "env" "P" (global $P  (mut i32)))
-  (import "env" "G" (global $G  i32))
+  (import "env" "P" (global $P (mut i32)))
+  (import "env" "G" (global $G i32))
   (import "env" "static_base" (global $SB i32))
   (import "env" "table_base"  (global $TB i32))
 
   ;; SECTION: shifts
-  (func $fn_S1_L10 (export "fn_S1_L10") (type $bcpl_fn)
+  (func $fn_L10 (export "fn_L10") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
     (local $t1 i32)
@@ -100,10 +100,10 @@
     )) ;; end last block
     ) ;; end $__dispatch
     (i32.const 0) ;; unreachable return
-  ) ;; end func $fn_S1_L10
+  ) ;; end func $fn_L10
 
-  ;; --- function table (this module's slice) ---
-  (elem (table $ftable) (global.get $TB) func $fn_S1_L10)
+  ;; --- function table slice ---
+  (elem (table $ftable) (global.get $TB) func $fn_L10)
 
   ;; static data — passive segment (29 words)
   (data $stat "\2C\00\00\00\2D\31\36\20\3E\3E\20\32\20\20\20\20\20\3D\20\25\6E\20\28\77\61\6E\74\20\31\30\37\33\37\34\31\38\32\30\20\6C\6F\67\69\63\61\6C\29\0A\26\00\00\00\23\78\38\30\30\30\30\30\30\30\20\3E\3E\20\34\20\3D\20\25\58\38\20\28\77\61\6E\74\20\30\38\30\30\30\30\30\30\29\0A\00\00\12\00\00\00\34\20\3C\3C\20\32\20\20\20\20\20\20\20\3D\20\25\6E\0A\00\00")
