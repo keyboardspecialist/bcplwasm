@@ -397,24 +397,46 @@ export class BcplRuntime {
   // low-level memory ops. Covers just what's needed to get through
   // compiler initialisation: make a flt constant, return it.
   imp_sys() {
-    const op = this.arg(0);  // Sys_* selector
-    // Sys_flt = 85 (ish), and within fl_mk = 1.
-    // Float constructors: fl_mk(mantissa, exponent). For our typeless
-    // backend we return the bit pattern of the i32 value as if it
-    // were a float. start() uses flt0 = sys(Sys_flt, fl_mk, 0, 0) and
-    // similar — return 0 for those.
+    const op = this.arg(0);
+    // Must capture all args BEFORE restoreP since it rewrites P.
+    const a1 = this.arg(1), a2 = this.arg(2), a3 = this.arg(3);
     this.restoreP();
-    if (op === 85) {                      // Sys_flt
-      const sub = this.arg(1);            // fl_mk, fl_add, ...
-      if (sub === 1) {                    // fl_mk(m, e)
-        const m = this.arg(2);
-        // Produce IEEE-754 single precision bit pattern of (m).
+    switch (op) {
+      case 0:   // Sys_quit(code) — hard abort.
+        throw new BcplHalt(a1 | 0, /*isAbort*/ true);
+      case 30:  // Sys_cputime — return 0 (no timer).
+        return 0;
+      case 63: { // Sys_flt(subop, a, b)
+        const sub = a1;
         const f = new Float32Array(1);
-        f[0] = m;
-        return new Int32Array(f.buffer)[0];
+        const i = new Int32Array(f.buffer);
+        const toF = (bits) => { i[0] = bits; return f[0]; };
+        const toI = (val) => { f[0] = val;  return i[0]; };
+        switch (sub) {
+          case 1:  // fl_mk(m, e) — m * 10^e
+            return toI(a2 * Math.pow(10, a3 | 0));
+          case 2:  return toI(toF(a2) + toF(a3));     // fl_add
+          case 3:  return toI(toF(a2) - toF(a3));     // fl_sub
+          case 4:  return toI(toF(a2) * toF(a3));     // fl_mul
+          case 5:  return toI(toF(a2) / toF(a3));     // fl_div
+          case 6:  return toI(toF(a2) % toF(a3));     // fl_mod
+          case 7:  return toF(a2) === toF(a3) ? -1 : 0; // fl_eq
+          case 8:  return toF(a2) !== toF(a3) ? -1 : 0; // fl_ne
+          case 9:  return toF(a2) <  toF(a3) ? -1 : 0;  // fl_ls
+          case 10: return toF(a2) >  toF(a3) ? -1 : 0;  // fl_gr
+          case 11: return toF(a2) <= toF(a3) ? -1 : 0;  // fl_le
+          case 12: return toF(a2) >= toF(a3) ? -1 : 0;  // fl_ge
+          case 13: return toI(-toF(a2));                // fl_neg
+          case 14: return toI(Math.abs(toF(a2)));       // fl_abs
+          case 15: return toI(a2 | 0);                  // fl_float i->f
+          case 16: return (toF(a2) | 0);                // fl_fix f->i
+          default: return 0;
+        }
       }
+      default:
+        // Unhandled syscall — return 0 rather than trap.
+        return 0;
     }
-    return 0;
   }
 
   // level() — BCPL captures current stack frame pointer for later
@@ -432,6 +454,26 @@ export class BcplRuntime {
     const l = this.arg(1);
     this.restoreP();
     throw new BcplHalt(l, /*isAbort*/ true);
+  }
+
+  // pathfindinput(name, path) — try to open `name` via a search path.
+  // Fallback to plain findinput.
+  imp_pathfindinput() {
+    const nameArg = this.arg(0);
+    this.restoreP();
+    if (!nameArg) return 0;
+    const name = this.readBcplString(nameArg);
+    const data = storageBackend.get(name);
+    if (data === null) return 0;
+    return this._allocStream({ kind: "file", mode: "r", name, data, pos: 0 });
+  }
+
+  // stop(n) — explicit halt with exit code. Alias of imp_stop but
+  // kept distinct in the table so we can tell an intentional
+  // stop(n) apart from a call into slot 0 (unassigned global).
+  imp_stop_fn() {
+    this.finished = true;
+    throw new BcplHalt(this.arg(0));
   }
 
   // rdargs(argform, argv, argvsize) — very minimal parser. Reads
@@ -617,6 +659,8 @@ export class BcplRuntime {
         bcpl_sys:          () => this.imp_sys(),
         bcpl_level:        () => this.imp_level(),
         bcpl_longjump:     () => this.imp_longjump(),
+        bcpl_pathfindinput:() => this.imp_pathfindinput(),
+        bcpl_stop_fn:      () => this.imp_stop_fn(),
       }
     };
   }
@@ -628,7 +672,7 @@ export class BcplRuntime {
   // table_base) and export register()/stat_words()/fn_count(). The
   // loader two-pass-instantiates each program: probe sizes, bump-
   // allocate bases, then real instantiate + register.
-  static STDLIB_TABLE_SLOTS = 33;
+  static STDLIB_TABLE_SLOTS = 35;
   static STATIC_WORD_BASE   = 1001;  // first word past G
 
   async loadMaster(url = "master.wasm") {

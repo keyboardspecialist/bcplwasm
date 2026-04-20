@@ -39,8 +39,10 @@
   (import "env" "bcpl_sys"          (func $imp_sys          (type $bcpl_fn)))
   (import "env" "bcpl_level"        (func $imp_level        (type $bcpl_fn)))
   (import "env" "bcpl_longjump"     (func $imp_longjump     (type $bcpl_fn)))
+  (import "env" "bcpl_pathfindinput"(func $imp_pathfindinput(type $bcpl_fn)))
+  (import "env" "bcpl_stop_fn"      (func $imp_stop_fn      (type $bcpl_fn)))
 
-  (memory $mem    (export "mem")    16)                    ;; 1 MB — room for the compiler self-hosting
+  (memory $mem    (export "mem")    64)                    ;; 4 MB — room for compiler self-hosting (treevec=200000 words)
   (table  $ftable (export "ftable") 512 funcref)
   (global $G      (export "G") i32        (i32.const 1))
   (global $P      (export "P") (mut i32)  (i32.const 0))
@@ -56,7 +58,8 @@
     $imp_endstream    $imp_endread      $imp_endwrite
     $imp_output       $imp_input        $imp_rdargs       $imp_unrdch
     $imp_rewindstream $imp_findinoutput $imp_errwrch      $imp_sawritef
-    $imp_sys          $imp_level        $imp_longjump)
+    $imp_sys          $imp_level        $imp_longjump
+    $imp_pathfindinput $imp_stop_fn)
 
   ;; init(stack_base_word): writes stdlib G entries + sets $P.
   ;; Call AFTER all programs have been registered.
@@ -101,6 +104,11 @@
     (i32.store (i32.const 352) (i32.const  6)) ;; G!87 writeoct = writef
     ;; Low-level: sys(Sys_*, ...), level(), longjump(p, l).
     (i32.store (i32.const  16) (i32.const 30)) ;; G!3   sys
-    (i32.store (i32.const 120) (i32.const 31)) ;; G!29  level
-    (i32.store (i32.const 124) (i32.const 32)) ;; G!30  longjump
+    (i32.store (i32.const  64) (i32.const 31)) ;; G!15  level
+    (i32.store (i32.const  68) (i32.const 32)) ;; G!16  longjump
+    (i32.store (i32.const 216) (i32.const 33)) ;; G!53  pathfindinput
+    ;; G!2 stop already points to imp_stop, but route it through
+    ;; imp_stop_fn so a real stop(n) is distinguishable from a call
+    ;; to an unassigned global (which also lands at slot 0).
+    (i32.store (i32.const  12) (i32.const 34)) ;; G!2   stop
   ))
