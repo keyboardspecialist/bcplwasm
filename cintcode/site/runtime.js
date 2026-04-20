@@ -340,6 +340,106 @@ export class BcplRuntime {
     return 0;
   }
 
+  // output() / input() — return handle of current stream.
+  imp_output() { this.restoreP(); return this.curOut; }
+  imp_input()  { this.restoreP(); return this.curIn;  }
+
+  // unrdch(ch) — push back one char into the current input stream.
+  imp_unrdch() {
+    const s = this.streams[this.curIn];
+    this.restoreP();
+    if (!s) return -1;
+    if (s.kind === "stdin") {
+      if (this.inputIdx > 0) this.inputIdx--;
+      return 0;
+    }
+    if (s.pos > 0) s.pos--;
+    return 0;
+  }
+
+  // rewindstream(h) — reset stream position to 0.
+  imp_rewindstream() {
+    const h = this.arg(0);
+    this.restoreP();
+    if (h <= 0 || h >= this.streams.length) return 0;
+    const s = this.streams[h];
+    if (!s) return 0;
+    if (s.kind === "stdin") { this.inputIdx = 0; return 0; }
+    if (s.kind === "stdout") return 0;
+    s.pos = 0;
+    return 0;
+  }
+
+  // findinoutput(name) — open bidirectional stream. We treat it as
+  // an empty read/write stream.
+  imp_findinoutput() {
+    const name = this.readBcplString(this.arg(0));
+    this.restoreP();
+    const data = storageBackend.get(name) ?? "";
+    return this._allocStream({ kind: "file", mode: "rw", name, data, pos: 0 });
+  }
+
+  // errwrch(ch) — write char to stderr. Routed to writeOut callback
+  // with an [err] prefix so it isn't silently swallowed.
+  imp_errwrch() {
+    const ch = this.arg(0) & 0xFF;
+    this.restoreP();
+    this.writeOut(String.fromCharCode(ch));
+    return 0;
+  }
+
+  // sawritef — same as writef for our purposes (writes directly to
+  // the underlying output rather than via selectoutput).
+  imp_sawritef() { return this.imp_writef(); }
+
+  // rdargs(argform, argv, argvsize) — very minimal parser. Reads
+  // an input line (or storage slot "_argv_line"), splits on spaces,
+  // fills argv[0..] with BCPL-string pointers to the tokens.
+  // Returns a non-zero success value (the length of argv used).
+  imp_rdargs() {
+    const argform = this.readBcplString(this.arg(0));
+    const argvWord = this.arg(1);       // word addr of argv vector
+    const argvSize = this.arg(2);
+    this.restoreP();
+
+    // Tokenise the current stdin as the command line.
+    let line = "";
+    let ch = this._readChar();
+    while (ch !== -1 && ch !== 10) {
+      line += String.fromCharCode(ch);
+      ch = this._readChar();
+    }
+    const tokens = line.trim().split(/\s+/).filter(Boolean);
+
+    // For v1: fill argv slots 0..tokens.length-1 with BCPL-string
+    // pointers written into a scratch region of memory. Other slots
+    // left zero.
+    //
+    // Allocate strings in a small scratch region — reuse heap.
+    const writeBcplString = (s) => {
+      const words = 1 + Math.ceil(s.length / 4);
+      this.heapTop -= words;
+      const base = this.heapTop;
+      this.storeWord(base, s.length);
+      for (let i = 0; i < s.length; i++) {
+        const byteAddr = (base + 1) * 4 + i;
+        this.memView.setUint8(byteAddr, s.charCodeAt(i) & 0xFF);
+      }
+      // zero-pad remaining bytes in the final word.
+      for (let i = s.length; i < (words - 1) * 4; i++) {
+        this.memView.setUint8((base + 1) * 4 + i, 0);
+      }
+      return base;
+    };
+
+    // Zero the argv vector first.
+    for (let i = 0; i < argvSize; i++) this.storeWord(argvWord + i, 0);
+    for (let i = 0; i < Math.min(tokens.length, argvSize); i++) {
+      this.storeWord(argvWord + i, writeBcplString(tokens[i]));
+    }
+    return tokens.length || 1;  // non-zero = success
+  }
+
   // Allocate a new stream slot, return its handle (index in
   // this.streams). Never returns 0.
   _allocStream(s) {
@@ -464,6 +564,14 @@ export class BcplRuntime {
         bcpl_endstream:    () => this.imp_endstream(),
         bcpl_endread:      () => this.imp_endread(),
         bcpl_endwrite:     () => this.imp_endwrite(),
+        bcpl_output:       () => this.imp_output(),
+        bcpl_input:        () => this.imp_input(),
+        bcpl_rdargs:       () => this.imp_rdargs(),
+        bcpl_unrdch:       () => this.imp_unrdch(),
+        bcpl_rewindstream: () => this.imp_rewindstream(),
+        bcpl_findinoutput: () => this.imp_findinoutput(),
+        bcpl_errwrch:      () => this.imp_errwrch(),
+        bcpl_sawritef:     () => this.imp_sawritef(),
       }
     };
   }
@@ -475,7 +583,7 @@ export class BcplRuntime {
   // table_base) and export register()/stat_words()/fn_count(). The
   // loader two-pass-instantiates each program: probe sizes, bump-
   // allocate bases, then real instantiate + register.
-  static STDLIB_TABLE_SLOTS = 22;
+  static STDLIB_TABLE_SLOTS = 30;
   static STATIC_WORD_BASE   = 1001;  // first word past G
 
   async loadMaster(url = "master.wasm") {
