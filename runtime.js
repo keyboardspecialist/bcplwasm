@@ -13,9 +13,30 @@
 // Host stdlib follows the same convention: read args from memory
 // relative to the current P, restore P, return result.
 
+// Browser storage shim. Uses localStorage when available (browser),
+// otherwise an in-memory Map (Node tests). Keys namespaced under
+// "bcpl:" so other app data isn't touched.
+const storageBackend = (() => {
+  try {
+    if (typeof localStorage !== "undefined") {
+      return {
+        get: (k) => localStorage.getItem("bcpl:" + k),
+        set: (k, v) => localStorage.setItem("bcpl:" + k, v),
+        del: (k) => localStorage.removeItem("bcpl:" + k),
+      };
+    }
+  } catch { /* fallthrough */ }
+  const mem = new Map();
+  return {
+    get: (k) => mem.has(k) ? mem.get(k) : null,
+    set: (k, v) => mem.set(k, v),
+    del: (k) => mem.delete(k),
+  };
+})();
+
 export class BcplRuntime {
   constructor(writeOut, input = "") {
-    this.writeOut = writeOut;   // (string) => void — write to UI
+    this.writeOut = writeOut;   // (string) => void — UI sink for stdout
     this.input = input;         // stdin buffer — consumed by rdch
     this.inputIdx = 0;
     this.instance = null;
@@ -23,11 +44,18 @@ export class BcplRuntime {
     this.memView = null;
     this.finished = false;
     // Heap grows downward from top of linear memory.
-    // Stack grows upward from just past static data (set in $__init).
-    // Free list: singly-linked, first word of each freed block holds
-    // next_free (word addr, 0 = end). Simple first-fit reuse.
-    this.heapTop = 0;           // set after instantiation
-    this.freeList = 0;          // word addr of first free block, 0 if none
+    this.heapTop = 0;
+    this.freeList = 0;
+    // Stream table. Handle 0 reserved. 1 = stdout (routed to UI
+    // callback), 2 = stdin (routed to input buffer). User streams
+    // start at 3.
+    this.streams = [
+      null,
+      { kind: "stdout" },
+      { kind: "stdin" },
+    ];
+    this.curOut = 1;
+    this.curIn  = 2;
   }
 
   // Byte view; refresh after memory.grow (we never grow, but keep
@@ -72,6 +100,37 @@ export class BcplRuntime {
   // stdlib entry must call this before returning.
   restoreP() { this.P = this.loadWord(this.P); }
 
+  // Route one char to the current output stream. stdout → UI. User
+  // streams buffer in-memory; contents commit on endstream.
+  _writeChar(ch) {
+    const s = this.streams[this.curOut];
+    if (!s) return;
+    if (s.kind === "stdout") {
+      this.writeOut(String.fromCharCode(ch & 0xFF));
+      return;
+    }
+    s.data = (s.data || "") + String.fromCharCode(ch & 0xFF);
+  }
+
+  _writeString(str) {
+    const s = this.streams[this.curOut];
+    if (!s) return;
+    if (s.kind === "stdout") { this.writeOut(str); return; }
+    s.data = (s.data || "") + str;
+  }
+
+  // Read one char from current input stream, or -1 at EOF.
+  _readChar() {
+    const s = this.streams[this.curIn];
+    if (!s) return -1;
+    if (s.kind === "stdin") {
+      if (this.inputIdx >= this.input.length) return -1;
+      return this.input.charCodeAt(this.inputIdx++);
+    }
+    if (s.pos >= s.data.length) return -1;
+    return s.data.charCodeAt(s.pos++);
+  }
+
   // ------------------ stdlib implementations ------------------
 
   imp_stop() {
@@ -81,33 +140,31 @@ export class BcplRuntime {
   }
 
   imp_rdch() {
-    // Returns next char from input buffer, or -1 (endstreamch) at EOF.
     this.restoreP();
-    if (this.inputIdx >= this.input.length) return -1;
-    return this.input.charCodeAt(this.inputIdx++);
+    return this._readChar();
   }
 
   imp_wrch() {
     const ch = this.arg(0);
-    this.writeOut(String.fromCharCode(ch & 0xFF));
+    this._writeChar(ch);
     this.restoreP();
     return 0;
   }
 
   imp_newline() {
-    this.writeOut("\n");
+    this._writeChar(10);
     this.restoreP();
     return 0;
   }
 
   imp_writen() {
-    this.writeOut(String(this.arg(0)));
+    this._writeString(String(this.arg(0)));
     this.restoreP();
     return 0;
   }
 
   imp_writes() {
-    this.writeOut(this.readBcplString(this.arg(0)));
+    this._writeString(this.readBcplString(this.arg(0)));
     this.restoreP();
     return 0;
   }
@@ -148,7 +205,7 @@ export class BcplRuntime {
         }
       }
       const code = (fmt[i] ?? "").toLowerCase();
-      if (!widthgiven && "idxouzb".includes(code)) {
+      if (!widthgiven && "idxouzbt".includes(code)) {
         const wc = fmt[i + 1] ?? "";
         if (/[0-9]/.test(wc))       { width = wc.charCodeAt(0) - 48;                            i++; }
         else if (/[a-f]/i.test(wc)) { width = 10 + (wc.toLowerCase().charCodeAt(0) - 97);       i++; }
@@ -163,6 +220,13 @@ export class BcplRuntime {
         case "x": out += ((args[ai++] >>> 0).toString(16).padStart(width, "0")); break;
         case "o": out += ((args[ai++] >>> 0).toString(8).padStart(width, "0")); break;
         case "b": out += ((args[ai++] >>> 0).toString(2).padStart(width, "0")); break;
+        case "z": {  // zero-padded signed decimal
+          const v = args[ai++] | 0;
+          const s = String(Math.abs(v)).padStart(width - (v < 0 ? 1 : 0), "0");
+          out += (v < 0 ? "-" : "") + s;
+          break;
+        }
+        case "t": out += this.readBcplString(args[ai++]).padEnd(width, " "); break;
         case "f": case "e": case "g": {
           f32i[0] = args[ai++] | 0;
           let s = (code === "e")
@@ -174,7 +238,7 @@ export class BcplRuntime {
         default: out += "%" + (fmt[i] ?? ""); break;
       }
     }
-    this.writeOut(out);
+    this._writeString(out);
     this.restoreP();
     return 0;
   }
@@ -220,6 +284,159 @@ export class BcplRuntime {
     return 0;
   }
 
+  // muldiv(a, b, c) = (a*b) / c with 64-bit intermediate to avoid
+  // overflow, truncated to i32 on return. BCPL's classic way to
+  // rescale integers without losing precision.
+  imp_muldiv() {
+    const a = BigInt(this.arg(0));
+    const b = BigInt(this.arg(1));
+    const c = BigInt(this.arg(2));
+    this.restoreP();
+    if (c === 0n) return 0;
+    return Number((a * b) / c) | 0;
+  }
+
+  // abort(n) — same semantics as stop but flagged as an error halt.
+  imp_abort() {
+    this.finished = true;
+    throw new BcplHalt(this.arg(0), /*isAbort*/ true);
+  }
+
+  // randno(n) — return pseudo-random integer in [1..n] inclusive.
+  // n <= 0 returns 0 (matches BLIB behaviour).
+  imp_randno() {
+    const n = this.arg(0);
+    this.restoreP();
+    if (n <= 0) return 0;
+    return 1 + (Math.random() * n) | 0;  // 1..n
+  }
+
+  // capitalch(ch) — uppercase a-z, leave others alone.
+  imp_capitalch() {
+    const ch = this.arg(0) & 0xFF;
+    this.restoreP();
+    if (ch >= 0x61 && ch <= 0x7A) return ch - 0x20;
+    return ch;
+  }
+
+  // compch(a, b) — case-insensitive char compare. -1, 0, +1.
+  imp_compch() {
+    const up = (c) => (c >= 0x61 && c <= 0x7A) ? c - 0x20 : c;
+    const a = up(this.arg(0) & 0xFF);
+    const b = up(this.arg(1) & 0xFF);
+    this.restoreP();
+    if (a < b) return -1;
+    if (a > b) return 1;
+    return 0;
+  }
+
+  // compstring(s1, s2) — case-sensitive BCPL string compare. -1/0/+1.
+  imp_compstring() {
+    const s1 = this.readBcplString(this.arg(0));
+    const s2 = this.readBcplString(this.arg(1));
+    this.restoreP();
+    if (s1 < s2) return -1;
+    if (s1 > s2) return 1;
+    return 0;
+  }
+
+  // Allocate a new stream slot, return its handle (index in
+  // this.streams). Never returns 0.
+  _allocStream(s) {
+    for (let i = 3; i < this.streams.length; i++) {
+      if (this.streams[i] === null) { this.streams[i] = s; return i; }
+    }
+    this.streams.push(s);
+    return this.streams.length - 1;
+  }
+
+  // findoutput(name) — open a new write stream backed by storage.
+  // Truncates any prior contents. Returns a stream handle, or 0 on
+  // failure.
+  imp_findoutput() {
+    const name = this.readBcplString(this.arg(0));
+    this.restoreP();
+    if (!name) return 0;
+    const h = this._allocStream({
+      kind: "file", mode: "w", name, data: "", pos: 0,
+    });
+    return h;
+  }
+
+  // findinput(name) — open a stream for reading from storage.
+  // Returns handle, or 0 if no such stream exists.
+  imp_findinput() {
+    const name = this.readBcplString(this.arg(0));
+    this.restoreP();
+    if (!name) return 0;
+    const data = storageBackend.get(name);
+    if (data === null) return 0;
+    return this._allocStream({
+      kind: "file", mode: "r", name, data, pos: 0,
+    });
+  }
+
+  // selectoutput(h) — make h the current output stream. Returns
+  // previous handle.
+  imp_selectoutput() {
+    const h = this.arg(0);
+    this.restoreP();
+    if (h < 0 || h >= this.streams.length || this.streams[h] === null) return 0;
+    const prev = this.curOut;
+    this.curOut = h;
+    return prev;
+  }
+
+  imp_selectinput() {
+    const h = this.arg(0);
+    this.restoreP();
+    if (h < 0 || h >= this.streams.length || this.streams[h] === null) return 0;
+    const prev = this.curIn;
+    this.curIn = h;
+    return prev;
+  }
+
+  // endstream(h) — close h. If it was a write stream, commit data
+  // to storage. If it was the current in/out stream, reset to the
+  // stdin/stdout defaults.
+  imp_endstream() {
+    const h = this.arg(0);
+    this.restoreP();
+    if (h <= 0 || h >= this.streams.length) return 0;
+    const s = this.streams[h];
+    if (!s) return 0;
+    if (s.kind === "file" && s.mode === "w") {
+      storageBackend.set(s.name, s.data);
+    }
+    this.streams[h] = null;
+    if (this.curOut === h) this.curOut = 1;
+    if (this.curIn  === h) this.curIn  = 2;
+    return 0;
+  }
+
+  // endread / endwrite — close the currently selected input/output
+  // stream (whatever its handle).
+  imp_endread() {
+    const h = this.curIn;
+    this.restoreP();
+    if (h >= 3 && this.streams[h]) {
+      this.streams[h] = null;
+    }
+    this.curIn = 2;
+    return 0;
+  }
+  imp_endwrite() {
+    const h = this.curOut;
+    this.restoreP();
+    if (h >= 3 && this.streams[h]) {
+      const s = this.streams[h];
+      if (s.mode === "w") storageBackend.set(s.name, s.data);
+      this.streams[h] = null;
+    }
+    this.curOut = 1;
+    return 0;
+  }
+
   // ------------------ loader ------------------
 
   imports() {
@@ -234,6 +451,19 @@ export class BcplRuntime {
         bcpl_writef:  () => this.imp_writef(),
         bcpl_getvec:  () => this.imp_getvec(),
         bcpl_freevec: () => this.imp_freevec(),
+        bcpl_muldiv:  () => this.imp_muldiv(),
+        bcpl_abort:   () => this.imp_abort(),
+        bcpl_randno:  () => this.imp_randno(),
+        bcpl_capitalch:  () => this.imp_capitalch(),
+        bcpl_compch:     () => this.imp_compch(),
+        bcpl_compstring: () => this.imp_compstring(),
+        bcpl_findoutput:   () => this.imp_findoutput(),
+        bcpl_findinput:    () => this.imp_findinput(),
+        bcpl_selectoutput: () => this.imp_selectoutput(),
+        bcpl_selectinput:  () => this.imp_selectinput(),
+        bcpl_endstream:    () => this.imp_endstream(),
+        bcpl_endread:      () => this.imp_endread(),
+        bcpl_endwrite:     () => this.imp_endwrite(),
       }
     };
   }
@@ -269,5 +499,8 @@ export class BcplRuntime {
 }
 
 export class BcplHalt {
-  constructor(code) { this.code = code; }
+  constructor(code, isAbort = false) {
+    this.code = code;
+    this.isAbort = isAbort;
+  }
 }
