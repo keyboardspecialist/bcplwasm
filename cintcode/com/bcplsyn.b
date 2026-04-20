@@ -908,8 +908,9 @@ IF noselst DO writef("NOSELST option was given*n")
         codegenerate(treevec, treesize)
     } REPEATWHILE token=s_dot
   }
-   
+
 fin:
+
   IF getstreams    DO { LET p = getstreams
                         getstreams := !p
                         freevec(p)

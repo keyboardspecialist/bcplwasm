@@ -124,17 +124,55 @@ The same C source handles both word sizes via `TARGET64` and `CURRENT64` preproc
 New backend in `com/bcplcgwasm.b` emits WebAssembly Text Format (`.wat`).
 Driver `com/bcplwasm.b` composes `bcplsyn` + `bcpltrn` + `bcplcgwasm`.
 
-### Compile + assemble
+### Bootstrap from source
 
-Inside the BCPL CLI:
+`cin/bcplwasm` is not tracked (the whole `cin/` directory is gitignored —
+Cintcode bytecode is a build artifact). Fresh clone needs a one-time
+bootstrap:
+
+```bash
+# Build cintsys itself.
+make
+
+# Set BCPL env (see "Required Environment Variables" above).
+export BCPLROOT=$PWD
+export BCPLPATH=$BCPLROOT/cin
+export BCPLHDRS=$BCPLROOT/g
+export BCPLSCRIPTS=$BCPLROOT/s
+export PATH=$PATH:$BCPLROOT/bin
+
+# Compile the wasm backend driver into Cintcode.
+echo "bcpl com/bcplwasm.b to cin/bcplwasm" | bin/cintsys
+```
+
+After that, `bcplwasm` is a normal cintsys command.
+
+### Compile a BCPL program to wasm
+
+Inside the BCPL CLI (or piped as above):
 ```
 bcplwasm com/hello.b to hello.wat
 ```
 
-Then assemble with [WABT](https://github.com/WebAssembly/wabt):
+Assemble with [WABT](https://github.com/WebAssembly/wabt):
 ```
 wat2wasm hello.wat -o hello.wasm
 ```
+
+### Rebuild all site examples
+
+```bash
+./site/build.sh     # runs bcplwasm + wat2wasm over every site/examples/*.b
+```
+
+`build.sh` picks up `WAT2WASM=/path/to/wat2wasm` if wat2wasm isn't on PATH.
+
+### Hosted playground
+
+The `pages` branch ships pre-built `site/examples/*.{wat,wasm}` so GitHub
+Pages can serve them directly with no build step. Users who want to
+modify examples clone `main`, bootstrap as above, rebuild, and either
+use it locally or push a fresh `pages` branch.
 
 ### Memory layout (32-bit target)
 

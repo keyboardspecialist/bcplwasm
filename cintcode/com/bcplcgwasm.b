@@ -95,6 +95,13 @@ GLOBAL {
   pend_n         // number of words used in pend_v (multiple of 3)
   pend_max       // capacity (words)
   sect_open      // TRUE if module header has been emitted
+  section_id     // monotonic counter, incremented per codegenerate
+                 // call; used to namespace function names and ftab_v
+                 // entries so BCPL labels (L10.. reset per section)
+                 // don't collide when multiple sections share one
+                 // Wasm module.
+  workspace_base // saved for reuse across codegenerate calls
+  workspace_size
   queue_inner    // helper: queue a nested function range
   drain_pending  // helper: emit queued inner functions
   skip_inner_body // helper: fast-forward over nested fn body
@@ -113,26 +120,31 @@ LET codegenerate(workspace, workspacesize) BE
     longjump(fin_p, fin_l)
   }
 
-  // Partition workspace
-  labmap     := p;  p := p + maxlabs;   nlabmap := maxlabs
-  stat_words := p;  p := p + 2048
-  stat_labmap := p; p := p + maxlabs * 2; stat_labmap_n := maxlabs
-  ginit_v    := p;  p := p + 512        // up to 256 global inits
-  ftab_v     := p;  p := p + 512        // up to 512 functions
-  pend_v     := p;  p := p + 768;  pend_max := 768  // 256 inner fns * 3 words
+  labmap      := p;  p := p + maxlabs;   nlabmap := maxlabs
+  stat_words  := p;  p := p + 2048
+  stat_labmap := p;  p := p + maxlabs * 2; stat_labmap_n := maxlabs
+  ginit_v     := p;  p := p + 512
+  ftab_v      := p;  p := p + 1536
+  pend_v      := p;  p := p + 768;  pend_max := 768
 
-  FOR i = 0 TO maxlabs-1  DO labmap!i := -1
+  FOR i = 0 TO maxlabs-1   DO labmap!i := -1
   FOR i = 0 TO maxlabs*2-1 DO stat_labmap!i := -1
   stat_n    := 0
   ginit_n   := 0
   ftab_n    := 0
   pend_n    := 0
   sect_open := FALSE
+  section_id := 1   // single-section; multi-section support deferred
 
   op := rdn()
   cgsects(workspace + 4096, workspacesize - 4096)
 }
 
+// Multi-section OCODE stream: a single BCPL compilation unit may
+// consist of several sections joined by '.', each terminated by its
+// own s_global. We accumulate functions + static data + globals
+// across ALL sections into one Wasm module. The footer (elem,
+// $__init, data) is emitted exactly once when the stream ends (op=0).
 AND cgsects(workvec, vecsize) BE UNTIL op=0 DO
 { UNLESS sect_open DO
   { sect_open := TRUE
@@ -149,9 +161,6 @@ AND cgsects(workvec, vecsize) BE UNTIL op=0 DO
     op := rdn()
   }
 
-  // Pre-register every top-level ENTRY label in ftab_v before emit,
-  // so LF references (including forward references across sibling
-  // functions) resolve to the correct table index during emission.
   register_entries()
   scan_emit()
   op := rdn()
@@ -176,9 +185,13 @@ AND register_entries() BE
         IF depth = 0 DO
           IF ftab_n < 512 DO
           { LET seen = FALSE
-            FOR i = 0 TO ftab_n-1 DO IF ftab_v!i=l DO { seen := TRUE; BREAK }
+            FOR i = 0 TO ftab_n-1 DO
+              IF (ftab_v!(i*2) = section_id) & (ftab_v!(i*2+1) = l) DO
+              { seen := TRUE; BREAK }
             UNLESS seen DO
-            { ftab_v!ftab_n := l; ftab_n := ftab_n + 1
+            { ftab_v!(ftab_n*2)     := section_id
+              ftab_v!(ftab_n*2 + 1) := l
+              ftab_n := ftab_n + 1
             }
           }
         depth := depth + 1
@@ -300,7 +313,8 @@ AND queue_inner(start, ebd, lab) BE
   pend_v!pend_n := ebd;   pend_n := pend_n + 1
   pend_v!pend_n := lab;   pend_n := pend_n + 1
   IF ftab_n < 512 DO
-  { ftab_v!ftab_n := lab
+  { ftab_v!(ftab_n*2)     := section_id
+    ftab_v!(ftab_n*2 + 1) := lab
     ftab_n := ftab_n + 1
   }
 }
@@ -321,6 +335,9 @@ AND drain_pending() BE
     scan_emit()     // re-entrant: processes the single function
     i := i + 3
   }
+  // Reset queue so the next section starts fresh — avoids re-emitting
+  // already-drained inner functions when cgsects loops.
+  pend_n := 0
   obufq := sv_obufq
   obufp := sv_obufp
   op    := sv_op
@@ -330,105 +347,52 @@ AND drain_pending() BE
 // Module header and footer
 // ------------------------------------------------------------------
 
+// Linker-mode header: the program module imports shared memory,
+// function table, and P/G globals from a pre-instantiated "master"
+// module supplied by the host runtime. Each program additionally
+// imports two i32 globals from the host:
+//   $SB (static_base): word address where this module's static data
+//                      lives (assigned by the loader, used for LSTR/
+//                      LL/LLL references).
+//   $TB (table_base):  base index into $ftable where this module's
+//                      functions are placed. LF translates to
+//                      (i32.add (global.get $TB) (i32.const <localidx>)).
+// Stdlib still comes in via env.bcpl_* — master sets G[gnum] for
+// those once at startup; the program module never touches them.
 AND emit_mod_header() BE
 { selectoutput(tostream)
   writef("(module*n")
   writef("  (type $bcpl_fn (func (result i32)))*n")
-  // Stdlib imports — host provides these. Table slots 0..stdlib_count-1.
-  writef("  (import *"env*" *"bcpl_stop*"    (func $imp_stop    (type $bcpl_fn)))*n")
-  writef("  (import *"env*" *"bcpl_rdch*"    (func $imp_rdch    (type $bcpl_fn)))*n")
-  writef("  (import *"env*" *"bcpl_wrch*"    (func $imp_wrch    (type $bcpl_fn)))*n")
-  writef("  (import *"env*" *"bcpl_newline*" (func $imp_newline (type $bcpl_fn)))*n")
-  writef("  (import *"env*" *"bcpl_writen*"  (func $imp_writen  (type $bcpl_fn)))*n")
-  writef("  (import *"env*" *"bcpl_writes*"  (func $imp_writes  (type $bcpl_fn)))*n")
-  writef("  (import *"env*" *"bcpl_writef*"  (func $imp_writef  (type $bcpl_fn)))*n")
-  writef("  (import *"env*" *"bcpl_getvec*"  (func $imp_getvec  (type $bcpl_fn)))*n")
-  writef("  (import *"env*" *"bcpl_freevec*" (func $imp_freevec (type $bcpl_fn)))*n")
-  writef("  (import *"env*" *"bcpl_muldiv*"  (func $imp_muldiv  (type $bcpl_fn)))*n")
-  writef("  (import *"env*" *"bcpl_abort*"   (func $imp_abort   (type $bcpl_fn)))*n")
-  writef("  (import *"env*" *"bcpl_randno*"  (func $imp_randno  (type $bcpl_fn)))*n")
-  writef("  (import *"env*" *"bcpl_capitalch*"(func $imp_capitalch (type $bcpl_fn)))*n")
-  writef("  (import *"env*" *"bcpl_compch*"  (func $imp_compch  (type $bcpl_fn)))*n")
-  writef("  (import *"env*" *"bcpl_compstring*" (func $imp_compstring (type $bcpl_fn)))*n")
-  writef("  (import *"env*" *"bcpl_findoutput*"  (func $imp_findoutput  (type $bcpl_fn)))*n")
-  writef("  (import *"env*" *"bcpl_findinput*"   (func $imp_findinput   (type $bcpl_fn)))*n")
-  writef("  (import *"env*" *"bcpl_selectoutput*"(func $imp_selectoutput(type $bcpl_fn)))*n")
-  writef("  (import *"env*" *"bcpl_selectinput*" (func $imp_selectinput (type $bcpl_fn)))*n")
-  writef("  (import *"env*" *"bcpl_endstream*"   (func $imp_endstream   (type $bcpl_fn)))*n")
-  writef("  (import *"env*" *"bcpl_endread*"     (func $imp_endread     (type $bcpl_fn)))*n")
-  writef("  (import *"env*" *"bcpl_endwrite*"    (func $imp_endwrite    (type $bcpl_fn)))*n")
-  writef("  (memory (export *"mem*") 4) ;; 4 pages = 256KB*n")
-  writef("  (global $G (export *"G*") i32 (i32.const %n))*n", wasm_glob_base)
-  writef("  (global $P (export *"P*") (mut i32) (i32.const 0))*n")
-  writef("  (table $ftable (export *"ftable*") 256 funcref)*n*n")
+  writef("  (import *"env*" *"mem*"    (memory 4))*n")
+  writef("  (import *"env*" *"ftable*" (table $ftable 256 funcref))*n")
+  writef("  (import *"env*" *"P*" (global $P  (mut i32)))*n")
+  writef("  (import *"env*" *"G*" (global $G  i32))*n")
+  writef("  (import *"env*" *"static_base*" (global $SB i32))*n")
+  writef("  (import *"env*" *"table_base*"  (global $TB i32))*n*n")
+  // Stdlib is reached via G[gnum] set by master.init(); the program
+  // module never calls imp_* directly, so no imports needed here.
   selectoutput(sysprint)
 }
 
+// Linker-mode footer:
+//   - Emit an (elem ...) entry whose offset is the imported
+//     $TB global, so the loader can place this module's functions
+//     anywhere in the shared table.
+//   - Emit a passive data segment with all collected static words.
+//   - Emit a $register export: the loader calls it after
+//     instantiation to copy passive data into memory at $SB*4 and
+//     to write G[gnum] := TB + local_tidx for every s_global pair.
 AND emit_mod_footer() BE
-{ // Emit function table element section.
-  // Slots 0..stdlib_count-1: imported stdlib. Slots stdlib_count+: user funcs.
-  selectoutput(tostream)
-  writef("  ;; --- function table ---*n")
-  writef("  (elem (table $ftable) (i32.const 0) func")
-  writef(" $imp_stop $imp_rdch $imp_wrch $imp_newline")
-  writef(" $imp_writen $imp_writes $imp_writef")
-  writef(" $imp_getvec $imp_freevec")
-  writef(" $imp_muldiv $imp_abort $imp_randno")
-  writef(" $imp_capitalch $imp_compch $imp_compstring")
-  writef(" $imp_findoutput $imp_findinput")
-  writef(" $imp_selectoutput $imp_selectinput")
-  writef(" $imp_endstream $imp_endread $imp_endwrite")
-  FOR i = 0 TO ftab_n-1 DO writef(" $fn_L%n", ftab_v!i)
+{ selectoutput(tostream)
+  writef("  ;; --- function table (this module's slice) ---*n")
+  writef("  (elem (table $ftable) (global.get $TB) func")
+  FOR i = 0 TO ftab_n-1 DO
+    writef(" $fn_S%n_L%n", ftab_v!(i*2), ftab_v!(i*2+1))
   writef(")*n*n")
 
-  // Emit init function
-  writef("  (func $__init*n")
-  { LET stack_base = wasm_stat_base + stat_n
-    stack_base := (stack_base + 3) & ~3  // align up
-    writef("    (global.set $P (i32.const %n))*n", stack_base)
-  }
-  writef("    (i32.store (i32.const %n) (i32.const %n))*n",
-         glob_base_bytes, wasm_glob_size)
-  // Init stdlib globals (BCPL global numbers → fixed table slots).
-  writef("    (i32.store ") ; emit_g_addr( 2) ; writef(" (i32.const 0)) ;; stop*n")
-  writef("    (i32.store ") ; emit_g_addr(38) ; writef(" (i32.const 1)) ;; rdch*n")
-  writef("    (i32.store ") ; emit_g_addr(41) ; writef(" (i32.const 2)) ;; wrch*n")
-  writef("    (i32.store ") ; emit_g_addr(84) ; writef(" (i32.const 3)) ;; newline*n")
-  writef("    (i32.store ") ; emit_g_addr(86) ; writef(" (i32.const 4)) ;; writen*n")
-  writef("    (i32.store ") ; emit_g_addr(89) ; writef(" (i32.const 5)) ;; writes*n")
-  writef("    (i32.store ") ; emit_g_addr(94) ; writef(" (i32.const 6)) ;; writef*n")
-  writef("    (i32.store ") ; emit_g_addr(25) ; writef(" (i32.const 7)) ;; getvec*n")
-  writef("    (i32.store ") ; emit_g_addr(27) ; writef(" (i32.const 8)) ;; freevec*n")
-  writef("    (i32.store ") ; emit_g_addr( 5) ; writef(" (i32.const 9)) ;; muldiv*n")
-  writef("    (i32.store ") ; emit_g_addr(28) ; writef(" (i32.const 10)) ;; abort*n")
-  writef("    (i32.store ") ; emit_g_addr(34) ; writef(" (i32.const 11)) ;; randno*n")
-  writef("    (i32.store ") ; emit_g_addr(96) ; writef(" (i32.const 12)) ;; capitalch*n")
-  writef("    (i32.store ") ; emit_g_addr(97) ; writef(" (i32.const 13)) ;; compch*n")
-  writef("    (i32.store ") ; emit_g_addr(98) ; writef(" (i32.const 14)) ;; compstring*n")
-  writef("    (i32.store ") ; emit_g_addr(49) ; writef(" (i32.const 15)) ;; findoutput*n")
-  writef("    (i32.store ") ; emit_g_addr(48) ; writef(" (i32.const 16)) ;; findinput*n")
-  writef("    (i32.store ") ; emit_g_addr(57) ; writef(" (i32.const 17)) ;; selectoutput*n")
-  writef("    (i32.store ") ; emit_g_addr(56) ; writef(" (i32.const 18)) ;; selectinput*n")
-  writef("    (i32.store ") ; emit_g_addr(62) ; writef(" (i32.const 19)) ;; endstream*n")
-  writef("    (i32.store ") ; emit_g_addr(60) ; writef(" (i32.const 20)) ;; endread*n")
-  writef("    (i32.store ") ; emit_g_addr(61) ; writef(" (i32.const 21)) ;; endwrite*n")
-  // Set G!n = table index for each user function global.
-  FOR i = 0 TO ginit_n-1 BY 2 DO
-  { LET gnum = ginit_v!i
-    LET lab  = ginit_v!(i+1)
-    LET tidx = 0
-    FOR j = 0 TO ftab_n-1 DO IF ftab_v!j=lab DO { tidx:=j; BREAK }
-    writef("    (i32.store ")
-    emit_g_addr(gnum)
-    writef(" (i32.const %n)) ;; G!%n = fn_L%n*n", tidx+stdlib_count, gnum, lab)
-  }
-  writef("  )*n")
-  writef("  (start $__init)*n*n")
-
-  // Emit static data
   IF stat_n > 0 DO
-  { writef("  ;; static data (%n words at word addr %n)*n", stat_n, wasm_stat_base)
-    writef("  (data (i32.const %n) *"", wasm_stat_base * 4)
+  { writef("  ;; static data — passive segment (%n words)*n", stat_n)
+    writef("  (data $stat *"")
     FOR i = 0 TO stat_n-1 DO
     { LET v = stat_words!i
       writef("\%X2\%X2\%X2\%X2",
@@ -437,7 +401,32 @@ AND emit_mod_footer() BE
     writef("*")*n*n")
   }
 
-  writef("  (export *"__init*" (func $__init))*n")
+  writef("  (func $register (export *"register*")*n")
+  // Copy static data into shared memory at byte_addr = SB * 4.
+  IF stat_n > 0 DO
+  { writef("    (memory.init $stat*n")
+    writef("      (i32.shl (global.get $SB) (i32.const 2))*n")
+    writef("      (i32.const 0)*n")
+    writef("      (i32.const %n))*n", stat_n * 4)
+    writef("    (data.drop $stat)*n")
+  }
+  // Record per-function tidx in the BCPL global vector.
+  FOR i = 0 TO ginit_n-1 BY 2 DO
+  { LET gnum       = ginit_v!i
+    LET local_tidx = ginit_v!(i+1)
+    writef("    (i32.store ")
+    emit_g_addr(gnum)
+    writef(" (i32.add (global.get $TB) (i32.const %n))) ;; G!%n*n",
+           local_tidx, gnum)
+  }
+  writef("  )*n")
+
+  // Expose sizes so the loader can allocate $SB and $TB slots.
+  writef("  (func $stat_words (export *"stat_words*") (result i32)*n")
+  writef("    (i32.const %n))*n", stat_n)
+  writef("  (func $fn_count (export *"fn_count*") (result i32)*n")
+  writef("    (i32.const %n))*n", ftab_n)
+
   writef(")*n ;; end module*n")
   selectoutput(sysprint)
 }
@@ -835,17 +824,24 @@ AND scan_emit() BE
           writef("    )) ;; end last block*n")
           writef("    ) ;; end $__dispatch*n")
           writef("    (i32.const 0)*n")
-          writef("  ) ;; end func $fn_L%n*n*n", fn_entrylab)
+          writef("  ) ;; end func $fn_S%n_L%n*n*n", section_id, fn_entrylab)
           selectoutput(sysprint)
           fn_entrylab := 0
         }
         FOR i = 1 TO n DO
         { LET gnum = rdgn()
           LET ll   = rdl()
+          // Resolve (section_id, ll) -> local_tidx (0-based index
+          // within this module's function slice). The loader adds
+          // $TB at register() time.
+          LET local_tidx = 0
+          FOR j = 0 TO ftab_n-1 DO
+            IF (ftab_v!(j*2) = section_id) & (ftab_v!(j*2+1) = ll) DO
+            { local_tidx := j; BREAK }
           IF ginit_n < 512 DO
           { ginit_v!ginit_n := gnum
             ginit_n := ginit_n + 1
-            ginit_v!ginit_n := ll
+            ginit_v!ginit_n := local_tidx
             ginit_n := ginit_n + 1
           }
         }
@@ -1062,21 +1058,27 @@ prescan_done:
           // function body.
         }
 
-        // Register function in table (unless already there via queue_inner).
+        // Register (section_id, l) in ftab_v unless already present
+        // (queue_inner or register_entries might have added it).
         { LET seen = FALSE
-          FOR i = 0 TO ftab_n-1 DO IF ftab_v!i=l DO { seen := TRUE; BREAK }
+          FOR i = 0 TO ftab_n-1 DO
+            IF (ftab_v!(i*2) = section_id) & (ftab_v!(i*2+1) = l) DO
+            { seen := TRUE; BREAK }
           UNLESS seen DO
             IF ftab_n < 512 DO
-            { ftab_v!ftab_n := l
+            { ftab_v!(ftab_n*2)     := section_id
+              ftab_v!(ftab_n*2 + 1) := l
               ftab_n := ftab_n + 1
             }
         }
 
         // Emit function header. Locals: one i32 per expression-stack
         // slot the body actually uses — fn_peak was computed by the
-        // prescan above.
+        // prescan above. Name is namespaced by section id so labels
+        // from separate BCPL sections don't collide.
         selectoutput(tostream)
-        writef("  (func $fn_L%n (export *"fn_L%n*") (type $bcpl_fn)*n", l, l)
+        writef("  (func $fn_S%n_L%n (export *"fn_S%n_L%n*") (type $bcpl_fn)*n",
+               section_id, l, section_id, l)
         writef("    (local $__lab i32)*n")
         FOR i = 0 TO fn_peak-1 DO writef("    (local $t%n i32)*n", i)
         writef("    (loop $__dispatch*n")
@@ -1103,7 +1105,7 @@ prescan_done:
         writef("    )) ;; end last block*n")
         writef("    ) ;; end $__dispatch*n")
         writef("    (i32.const 0) ;; unreachable return*n")
-        writef("  ) ;; end func $fn_L%n*n*n", fn_entrylab)
+        writef("  ) ;; end func $fn_S%n_L%n*n*n", section_id, fn_entrylab)
         selectoutput(sysprint)
         fn_entrylab := 0
         terminated := FALSE
@@ -1152,23 +1154,22 @@ prescan_done:
       { LET l = rdl()
         cgpendingop_wasm()
         selectoutput(tostream)
-        // LF can refer to a function label (use it via FNAP/RTAP ->
-        // needs table index) or a local dispatch label (use it via
-        // computed GOTO -> needs dispatch index). Prefer ftab lookup;
-        // fall back to labmap. The two namespaces don't overlap:
-        // s_entry populates ftab_v, s_lab populates labmap.
+        // LF of a function label: tidx = TB + local_fn_index (loader
+        // assigned TB at instantiate time). LF of a local dispatch
+        // label: idx = labmap!l (no TB involved).
         { LET tidx = 0
-          LET kind = "tidx"
-          LET found = FALSE
-          FOR i = 0 TO ftab_n-1 DO IF ftab_v!i=l DO
-          { tidx := i + stdlib_count; found := TRUE; BREAK
-          }
-          UNLESS found DO
+          LET is_fn = FALSE
+          FOR i = 0 TO ftab_n-1 DO
+            IF (ftab_v!(i*2) = section_id) & (ftab_v!(i*2+1) = l) DO
+            { tidx := i; is_fn := TRUE; BREAK }
+          UNLESS is_fn DO
             IF l >= 0 & l < nlabmap & labmap!l >= 0 DO
-            { tidx := labmap!l; kind := "dispatch-idx"; found := TRUE
-            }
-          writef("    (local.set $t%n (i32.const %n)) ;; LF L%n -> %s %n*n",
-                 cssp, tidx, l, kind, tidx)
+              tidx := labmap!l
+          TEST is_fn
+          THEN writef("    (local.set $t%n (i32.add (global.get $TB) (i32.const %n))) ;; LF L%n*n",
+                      cssp, tidx, l)
+          ELSE writef("    (local.set $t%n (i32.const %n)) ;; LF L%n (disp)*n",
+                      cssp, tidx, l)
         }
         selectoutput(sysprint)
         cssp := cssp + 1
@@ -1179,13 +1180,14 @@ prescan_done:
       CASE s_ll:
       { LET l = rdl()
         cgpendingop_wasm()
-        // Push BCPL word address of label l (static data)
         selectoutput(tostream)
-        { LET addr = VALOF
+        // LL of a data label: value = SB + local word offset.
+        { LET offset = VALOF
           { IF l >= 0 & l < nlabmap & labmap!l >= 0 RESULTIS labmap!l
-            RESULTIS wasm_stat_base  // fallback
+            RESULTIS 0
           }
-          writef("    (local.set $t%n (i32.const %n)) ;; LL L%n*n", cssp, addr, l)
+          writef("    (local.set $t%n (i32.add (global.get $SB) (i32.const %n))) ;; LL L%n*n",
+                 cssp, offset, l)
         }
         selectoutput(sysprint)
         cssp := cssp + 1
@@ -1221,11 +1223,12 @@ prescan_done:
       { LET l = rdl()
         cgpendingop_wasm()
         selectoutput(tostream)
-        { LET addr = VALOF
+        { LET offset = VALOF
           { IF l >= 0 & l < nlabmap & labmap!l >= 0 RESULTIS labmap!l
-            RESULTIS wasm_stat_base
+            RESULTIS 0
           }
-          writef("    (local.set $t%n (i32.const %n)) ;; LLL L%n*n", cssp, addr, l)
+          writef("    (local.set $t%n (i32.add (global.get $SB) (i32.const %n))) ;; LLL L%n*n",
+                 cssp, offset, l)
         }
         selectoutput(sysprint)
         cssp := cssp + 1
@@ -1304,13 +1307,16 @@ prescan_done:
       { LET l = rdl()
         cgpendingop_wasm()
         selectoutput(tostream)
-        { LET addr = VALOF
+        { LET offset = VALOF
           { IF l >= 0 & l < nlabmap & labmap!l >= 0 RESULTIS labmap!l
-            RESULTIS wasm_stat_base
+            RESULTIS 0
           }
           cssp := cssp - 1
-          writef("    (i32.store (i32.shl (i32.const %n) (i32.const 2)) (local.get $t%n))*n",
-                 addr, cssp)
+          // byte_addr = (SB + offset) * 4.
+          writef("    (i32.store*n")
+          writef("      (i32.shl (i32.add (global.get $SB) (i32.const %n)) (i32.const 2))*n",
+                 offset)
+          writef("      (local.get $t%n))*n", cssp)
         }
         selectoutput(sysprint)
         terminated := FALSE
@@ -1504,10 +1510,8 @@ prescan_done:
       CASE s_lstr:
       { LET n = rdn()
         cgpendingop_wasm()
-        // Allocate static string: first word = length, then chars packed
-        { LET str_addr = wasm_stat_base + stat_n
-          alloc_static(-1, n)  // length word
-          // Pack characters into words (bytesperword=4)
+        { LET str_offset = stat_n   // module-local word offset
+          alloc_static(-1, n)       // length word
           { LET i = 1
             { LET w = 0
               FOR b = 0 TO 3 DO
@@ -1523,8 +1527,8 @@ prescan_done:
             } REPEAT
           }
           selectoutput(tostream)
-          writef("    (local.set $t%n (i32.const %n)) ;; LSTR at word %n*n",
-                 cssp, str_addr, str_addr)
+          writef("    (local.set $t%n (i32.add (global.get $SB) (i32.const %n))) ;; LSTR*n",
+                 cssp, str_offset)
           selectoutput(sysprint)
           cssp := cssp + 1
         }
@@ -1584,9 +1588,9 @@ prescan_done:
 
       CASE s_datalab:
       { LET l = rdl()
-        // Mark next static item with this label
-        IF l >= 0 & l < nlabmap DO
-          labmap!l := wasm_stat_base + stat_n  // BCPL word address
+        // Mark next static item with this label (module-local word
+        // offset; resolved at emit via (i32.add (global.get $SB) ...)).
+        IF l >= 0 & l < nlabmap DO labmap!l := stat_n
         ENDCASE
       }
 
@@ -1656,13 +1660,16 @@ prescan_done:
   } REPEAT
 }
 
+// Linker mode: return a MODULE-LOCAL word offset instead of an
+// absolute word address. Callers combine with (global.get $SB) at
+// emit time to form the full address.
 AND alloc_static(bcpl_lab, val) = VALOF
-{ LET addr = wasm_stat_base + stat_n
+{ LET offset = stat_n
   IF stat_n < 2048 DO
   { stat_words!stat_n := val
     stat_n := stat_n + 1
   }
   IF bcpl_lab >= 0 & bcpl_lab < nlabmap DO
-    labmap!bcpl_lab := addr
-  RESULTIS addr
+    labmap!bcpl_lab := offset
+  RESULTIS offset
 }
