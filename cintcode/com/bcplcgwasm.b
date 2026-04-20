@@ -121,7 +121,7 @@ LET codegenerate(workspace, workspacesize) BE
   }
 
   labmap      := p;  p := p + maxlabs;   nlabmap := maxlabs
-  stat_words  := p;  p := p + 2048
+  stat_words  := p;  p := p + 32768
   stat_labmap := p;  p := p + maxlabs * 2; stat_labmap_n := maxlabs
   ginit_v     := p;  p := p + 512
   ftab_v      := p;  p := p + 1536
@@ -1659,7 +1659,7 @@ prescan_done:
 // address). Emit sites add (global.get $SB) to form the full addr.
 AND alloc_static(bcpl_lab, val) = VALOF
 { LET offset = stat_n
-  IF stat_n < 2048 DO
+  IF stat_n < 32768 DO
   { stat_words!stat_n := val
     stat_n := stat_n + 1
   }
