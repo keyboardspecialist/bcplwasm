@@ -28,6 +28,14 @@
   (import "env" "bcpl_endstream"    (func $imp_endstream    (type $bcpl_fn)))
   (import "env" "bcpl_endread"      (func $imp_endread      (type $bcpl_fn)))
   (import "env" "bcpl_endwrite"     (func $imp_endwrite     (type $bcpl_fn)))
+  (import "env" "bcpl_output"       (func $imp_output       (type $bcpl_fn)))
+  (import "env" "bcpl_input"        (func $imp_input        (type $bcpl_fn)))
+  (import "env" "bcpl_rdargs"       (func $imp_rdargs       (type $bcpl_fn)))
+  (import "env" "bcpl_unrdch"       (func $imp_unrdch       (type $bcpl_fn)))
+  (import "env" "bcpl_rewindstream" (func $imp_rewindstream (type $bcpl_fn)))
+  (import "env" "bcpl_findinoutput" (func $imp_findinoutput (type $bcpl_fn)))
+  (import "env" "bcpl_errwrch"      (func $imp_errwrch      (type $bcpl_fn)))
+  (import "env" "bcpl_sawritef"     (func $imp_sawritef     (type $bcpl_fn)))
 
   (memory $mem    (export "mem")    16)                    ;; 1 MB — room for the compiler self-hosting
   (table  $ftable (export "ftable") 512 funcref)
@@ -42,7 +50,9 @@
     $imp_capitalch    $imp_compch       $imp_compstring
     $imp_findoutput   $imp_findinput
     $imp_selectoutput $imp_selectinput
-    $imp_endstream    $imp_endread      $imp_endwrite)
+    $imp_endstream    $imp_endread      $imp_endwrite
+    $imp_output       $imp_input        $imp_rdargs       $imp_unrdch
+    $imp_rewindstream $imp_findinoutput $imp_errwrch      $imp_sawritef)
 
   ;; init(stack_base_word): writes stdlib G entries + sets $P.
   ;; Call AFTER all programs have been registered.
@@ -72,4 +82,17 @@
     (i32.store (i32.const 388) (i32.const 12)) ;; G!96 capitalch
     (i32.store (i32.const 392) (i32.const 13)) ;; G!97 compch
     (i32.store (i32.const 396) (i32.const 14)) ;; G!98 compstring
+    ;; Extra stdlib slots (22..29) placed after the originals.
+    (i32.store (i32.const 236) (i32.const 23)) ;; G!58 input
+    (i32.store (i32.const 240) (i32.const 22)) ;; G!59 output
+    (i32.store (i32.const 412) (i32.const 24)) ;; G!102 rdargs
+    (i32.store (i32.const 164) (i32.const 25)) ;; G!40 unrdch
+    (i32.store (i32.const 264) (i32.const 26)) ;; G!65 rewindstream
+    (i32.store (i32.const 204) (i32.const 27)) ;; G!50 findinoutput
+    (i32.store (i32.const 768) (i32.const 28)) ;; G!191 errwrch
+    (i32.store (i32.const 384) (i32.const 29)) ;; G!95 sawritef
+    ;; Aliased to existing slots.
+    (i32.store (i32.const 160) (i32.const  1)) ;; G!39 binrdch = rdch
+    (i32.store (i32.const 172) (i32.const  2)) ;; G!42 binwrch = wrch
+    (i32.store (i32.const 352) (i32.const  6)) ;; G!87 writeoct = writef
   ))
