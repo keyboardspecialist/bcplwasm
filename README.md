@@ -58,6 +58,23 @@ on `PATH` (or set `WAT2WASM=/path/to/wat2wasm`).
 
 Each `examples/<name>.b` yields `<name>.wat` and `<name>.wasm`.
 
+## Bootstrap from a fresh clone
+
+The `cin/` directory is gitignored (Cintcode is a build artifact).
+One-time steps after cloning:
+
+```bash
+cd cintcode
+make                                               # builds bin/cintsys
+export BCPLROOT=$PWD  BCPLPATH=$PWD/cin \
+       BCPLHDRS=$PWD/g  BCPLSCRIPTS=$PWD/s
+export PATH=$PATH:$PWD/bin
+echo "bcpl com/bcplwasm.b to cin/bcplwasm" | bin/cintsys   # build the backend
+./site/build.sh                                     # build all examples
+```
+
+Then `./bcpl2wasm.sh my.b` compiles a single file end-to-end.
+
 ## Adding an example
 
 1. Drop `foo.b` in `examples/`.

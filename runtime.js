@@ -78,8 +78,7 @@ export class BcplRuntime {
     return this.memView.getUint8(byteAddr);
   }
 
-  get P() { return this.instance.exports.P.value; }
-  set P(v) { this.instance.exports.P.value = v | 0; }
+  // P/G accessors defined below via master.exports (see loader).
 
   // BCPL string at wordAddr: first word = length, then chars packed
   // 4-per-word little-endian.
@@ -468,26 +467,101 @@ export class BcplRuntime {
     };
   }
 
-  async load(url) {
+  // Loader state for linker-mode programs. Master instantiated once;
+  // every program module is instantiated against master's exports
+  // plus per-module SB/TB globals.
+  static STDLIB_TABLE_SLOTS = 22;
+  static STATIC_WORD_BASE   = 1001;   // first word past G (1..1000)
+
+  // Fetch + instantiate the master scaffolding module. Must run
+  // before loadProgram(). Idempotent.
+  async loadMaster(url = "master.wasm") {
+    if (this.master) return this.master;
     const resp = await fetch(url);
     if (!resp.ok) throw new Error(`fetch ${url}: ${resp.status}`);
     const bytes = await resp.arrayBuffer();
     const { instance } = await WebAssembly.instantiate(bytes, this.imports());
-    this.instance = instance;
+    this.master = instance;
     this.mem = instance.exports.mem;
     this.refresh();
-    this.finished = false;
+    // Bump state for sub-allocating static regions and table slots
+    // to each program module.
+    this.nextStaticWord = BcplRuntime.STATIC_WORD_BASE;
+    this.nextTableSlot  = BcplRuntime.STDLIB_TABLE_SLOTS;
+    this.programs = [];
     return instance;
   }
 
-  // Call the user's start() function. BCPL convention: start lives
-  // at global 1; after $__init runs, G!1 holds its table index.
-  // Look that up via the exported ftable (works regardless of which
-  // fn_L<n> the compiler assigned to start).
+  // Instantiate a program module against the master. Returns the
+  // program's instance. The program's `register` function is called
+  // before returning, so G slots + static data are live.
+  async loadProgram(url) {
+    if (!this.master) await this.loadMaster();
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error(`fetch ${url}: ${resp.status}`);
+    const bytes = await resp.arrayBuffer();
+    // Provisional instantiate to read sizes — but module wants SB/TB
+    // before it will instantiate (imports required). Compile first,
+    // then ask exported stat_words/fn_count via... no, instance is
+    // needed. Workaround: instantiate with zero SB/TB, read sizes,
+    // THEN register with the real bases. That works because the
+    // functions that query sizes don't use SB/TB, and register() is
+    // only called after we've set the real globals via reinstantiate.
+    // Simpler: just instantiate with allocated bases up front using
+    // a fixed estimate, then verify sizes match. Cleanest: two-pass.
+    const module = await WebAssembly.compile(bytes);
+    // Pass 1: probe for sizes with dummy globals.
+    const probeEnv = this._envFor(new WebAssembly.Global({ value: "i32" }, 0),
+                                  new WebAssembly.Global({ value: "i32" }, 0));
+    const probe = await WebAssembly.instantiate(module, { env: probeEnv });
+    const stat_words = probe.exports.stat_words();
+    const fn_count   = probe.exports.fn_count();
+    // Pass 2: real instantiate with allocated bases.
+    const sb = this.nextStaticWord;
+    const tb = this.nextTableSlot;
+    this.nextStaticWord += stat_words;
+    this.nextTableSlot  += fn_count;
+    const realEnv = this._envFor(new WebAssembly.Global({ value: "i32" }, sb),
+                                 new WebAssembly.Global({ value: "i32" }, tb));
+    const real = await WebAssembly.instantiate(module, { env: realEnv });
+    real.exports.register();
+    this.programs.push({ instance: real, sb, tb, stat_words, fn_count });
+    this.finished = false;
+    return real;
+  }
+
+  _envFor(sbGlobal, tbGlobal) {
+    const m = this.master.exports;
+    return {
+      mem:    m.mem,
+      ftable: m.ftable,
+      P:      m.P,
+      G:      m.G,
+      static_base: sbGlobal,
+      table_base:  tbGlobal,
+      ...this.imports().env,
+    };
+  }
+
+  // Call init() on master to seed G[stdlib_nums] and set $P past all
+  // static allocations. Pass optional stack base override.
+  initMaster(stackBaseWord) {
+    const base = stackBaseWord ?? ((this.nextStaticWord + 3) & ~3);
+    this.master.exports.init(base);
+  }
+
+  // Back-compat single-step loader: load master + one program + init.
+  async load(url) {
+    await this.loadMaster();
+    await this.loadProgram(url);
+    this.initMaster();
+    return this.programs.at(-1).instance;
+  }
+
+  // Call the user's start() function via G!1.
   run() {
-    const tidx = this.loadWord(2);  // G+1 word addr = byte 8
-    const table = this.instance.exports.ftable;
-    const fn = table.get(tidx);
+    const tidx = this.loadWord(2);
+    const fn = this.master.exports.ftable.get(tidx);
     if (!fn) throw new Error(`start (G!1 tidx=${tidx}) not in table`);
     try {
       return fn();
@@ -496,6 +570,10 @@ export class BcplRuntime {
       throw e;
     }
   }
+
+  // P/G accessors now route through master's exported globals.
+  get P() { return this.master.exports.P.value; }
+  set P(v) { this.master.exports.P.value = v | 0; }
 }
 
 export class BcplHalt {
