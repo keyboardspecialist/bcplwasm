@@ -186,11 +186,9 @@ AND register_entries() BE
           IF ftab_n < 512 DO
           { LET seen = FALSE
             FOR i = 0 TO ftab_n-1 DO
-              IF (ftab_v!(i*2) = section_id) & (ftab_v!(i*2+1) = l) DO
-              { seen := TRUE; BREAK }
+              IF ftab_v!i = l DO { seen := TRUE; BREAK }
             UNLESS seen DO
-            { ftab_v!(ftab_n*2)     := section_id
-              ftab_v!(ftab_n*2 + 1) := l
+            { ftab_v!ftab_n := l
               ftab_n := ftab_n + 1
             }
           }
@@ -313,8 +311,7 @@ AND queue_inner(start, ebd, lab) BE
   pend_v!pend_n := ebd;   pend_n := pend_n + 1
   pend_v!pend_n := lab;   pend_n := pend_n + 1
   IF ftab_n < 512 DO
-  { ftab_v!(ftab_n*2)     := section_id
-    ftab_v!(ftab_n*2 + 1) := lab
+  { ftab_v!ftab_n := lab
     ftab_n := ftab_n + 1
   }
 }
@@ -347,30 +344,22 @@ AND drain_pending() BE
 // Module header and footer
 // ------------------------------------------------------------------
 
-// Linker-mode header: the program module imports shared memory,
-// function table, and P/G globals from a pre-instantiated "master"
-// module supplied by the host runtime. Each program additionally
-// imports two i32 globals from the host:
-//   $SB (static_base): word address where this module's static data
-//                      lives (assigned by the loader, used for LSTR/
-//                      LL/LLL references).
-//   $TB (table_base):  base index into $ftable where this module's
-//                      functions are placed. LF translates to
-//                      (i32.add (global.get $TB) (i32.const <localidx>)).
-// Stdlib still comes in via env.bcpl_* — master sets G[gnum] for
-// those once at startup; the program module never touches them.
+// Linker-mode header. Program modules import shared memory, table,
+// globals (P, G) and two loader-supplied i32 globals:
+//   $SB  word address of this module's static-data region.
+//   $TB  table index base for this module's function slice.
+// Stdlib is reached via G[gnum] set by master.init(); program modules
+// don't import imp_* directly.
 AND emit_mod_header() BE
 { selectoutput(tostream)
   writef("(module*n")
   writef("  (type $bcpl_fn (func (result i32)))*n")
   writef("  (import *"env*" *"mem*"    (memory 4))*n")
   writef("  (import *"env*" *"ftable*" (table $ftable 256 funcref))*n")
-  writef("  (import *"env*" *"P*" (global $P  (mut i32)))*n")
-  writef("  (import *"env*" *"G*" (global $G  i32))*n")
+  writef("  (import *"env*" *"P*" (global $P (mut i32)))*n")
+  writef("  (import *"env*" *"G*" (global $G i32))*n")
   writef("  (import *"env*" *"static_base*" (global $SB i32))*n")
   writef("  (import *"env*" *"table_base*"  (global $TB i32))*n*n")
-  // Stdlib is reached via G[gnum] set by master.init(); the program
-  // module never calls imp_* directly, so no imports needed here.
   selectoutput(sysprint)
 }
 
@@ -384,10 +373,9 @@ AND emit_mod_header() BE
 //     to write G[gnum] := TB + local_tidx for every s_global pair.
 AND emit_mod_footer() BE
 { selectoutput(tostream)
-  writef("  ;; --- function table (this module's slice) ---*n")
+  writef("  ;; --- function table slice ---*n")
   writef("  (elem (table $ftable) (global.get $TB) func")
-  FOR i = 0 TO ftab_n-1 DO
-    writef(" $fn_S%n_L%n", ftab_v!(i*2), ftab_v!(i*2+1))
+  FOR i = 0 TO ftab_n-1 DO writef(" $fn_L%n", ftab_v!i)
   writef(")*n*n")
 
   IF stat_n > 0 DO
@@ -401,8 +389,9 @@ AND emit_mod_footer() BE
     writef("*")*n*n")
   }
 
+  // Loader calls register() after instantiate to copy static data
+  // into shared memory and to write G[gnum] := TB + local_tidx.
   writef("  (func $register (export *"register*")*n")
-  // Copy static data into shared memory at byte_addr = SB * 4.
   IF stat_n > 0 DO
   { writef("    (memory.init $stat*n")
     writef("      (i32.shl (global.get $SB) (i32.const 2))*n")
@@ -410,7 +399,6 @@ AND emit_mod_footer() BE
     writef("      (i32.const %n))*n", stat_n * 4)
     writef("    (data.drop $stat)*n")
   }
-  // Record per-function tidx in the BCPL global vector.
   FOR i = 0 TO ginit_n-1 BY 2 DO
   { LET gnum       = ginit_v!i
     LET local_tidx = ginit_v!(i+1)
@@ -421,7 +409,6 @@ AND emit_mod_footer() BE
   }
   writef("  )*n")
 
-  // Expose sizes so the loader can allocate $SB and $TB slots.
   writef("  (func $stat_words (export *"stat_words*") (result i32)*n")
   writef("    (i32.const %n))*n", stat_n)
   writef("  (func $fn_count (export *"fn_count*") (result i32)*n")
@@ -804,7 +791,12 @@ AND scan_emit() BE
   // We will switch to tostream when emitting function text.
   // scan_emit processes the entire section (may contain multiple functions).
 
-  { SWITCHON op INTO
+  { // FLT-flagged ops (op | s_fltbit) have the same semantics as
+    // their non-FLT counterparts under the typeless Wasm backend —
+    // a word is a word. Strip the bit for dispatch.
+    IF (op & s_fltbit) ~= 0 DO op := op & s_fltmask
+
+    SWITCHON op INTO
     { DEFAULT:
         writef("*nWASM CG: unhandled op %n*n", op)
         ENDCASE
@@ -824,20 +816,18 @@ AND scan_emit() BE
           writef("    )) ;; end last block*n")
           writef("    ) ;; end $__dispatch*n")
           writef("    (i32.const 0)*n")
-          writef("  ) ;; end func $fn_S%n_L%n*n*n", section_id, fn_entrylab)
+          writef("  ) ;; end func $fn_L%n*n*n", fn_entrylab)
           selectoutput(sysprint)
           fn_entrylab := 0
         }
         FOR i = 1 TO n DO
         { LET gnum = rdgn()
           LET ll   = rdl()
-          // Resolve (section_id, ll) -> local_tidx (0-based index
-          // within this module's function slice). The loader adds
-          // $TB at register() time.
+          // Resolve label -> local_tidx (0-based within this module's
+          // function slice). $TB is added at register() time.
           LET local_tidx = 0
           FOR j = 0 TO ftab_n-1 DO
-            IF (ftab_v!(j*2) = section_id) & (ftab_v!(j*2+1) = ll) DO
-            { local_tidx := j; BREAK }
+            IF ftab_v!j = ll DO { local_tidx := j; BREAK }
           IF ginit_n < 512 DO
           { ginit_v!ginit_n := gnum
             ginit_n := ginit_n + 1
@@ -1058,16 +1048,14 @@ prescan_done:
           // function body.
         }
 
-        // Register (section_id, l) in ftab_v unless already present
-        // (queue_inner or register_entries might have added it).
+        // Register label in ftab_v unless already present
+        // (register_entries or queue_inner may have added it).
         { LET seen = FALSE
           FOR i = 0 TO ftab_n-1 DO
-            IF (ftab_v!(i*2) = section_id) & (ftab_v!(i*2+1) = l) DO
-            { seen := TRUE; BREAK }
+            IF ftab_v!i = l DO { seen := TRUE; BREAK }
           UNLESS seen DO
             IF ftab_n < 512 DO
-            { ftab_v!(ftab_n*2)     := section_id
-              ftab_v!(ftab_n*2 + 1) := l
+            { ftab_v!ftab_n := l
               ftab_n := ftab_n + 1
             }
         }
@@ -1077,8 +1065,7 @@ prescan_done:
         // prescan above. Name is namespaced by section id so labels
         // from separate BCPL sections don't collide.
         selectoutput(tostream)
-        writef("  (func $fn_S%n_L%n (export *"fn_S%n_L%n*") (type $bcpl_fn)*n",
-               section_id, l, section_id, l)
+        writef("  (func $fn_L%n (export *"fn_L%n*") (type $bcpl_fn)*n", l, l)
         writef("    (local $__lab i32)*n")
         FOR i = 0 TO fn_peak-1 DO writef("    (local $t%n i32)*n", i)
         writef("    (loop $__dispatch*n")
@@ -1105,7 +1092,7 @@ prescan_done:
         writef("    )) ;; end last block*n")
         writef("    ) ;; end $__dispatch*n")
         writef("    (i32.const 0) ;; unreachable return*n")
-        writef("  ) ;; end func $fn_S%n_L%n*n*n", section_id, fn_entrylab)
+        writef("  ) ;; end func $fn_L%n*n*n", fn_entrylab)
         selectoutput(sysprint)
         fn_entrylab := 0
         terminated := FALSE
@@ -1154,14 +1141,12 @@ prescan_done:
       { LET l = rdl()
         cgpendingop_wasm()
         selectoutput(tostream)
-        // LF of a function label: tidx = TB + local_fn_index (loader
-        // assigned TB at instantiate time). LF of a local dispatch
-        // label: idx = labmap!l (no TB involved).
+        // LF of function label: tidx = TB + local_fn_index.
+        // LF of local dispatch label: plain dispatch index.
         { LET tidx = 0
           LET is_fn = FALSE
-          FOR i = 0 TO ftab_n-1 DO
-            IF (ftab_v!(i*2) = section_id) & (ftab_v!(i*2+1) = l) DO
-            { tidx := i; is_fn := TRUE; BREAK }
+          FOR i = 0 TO ftab_n-1 DO IF ftab_v!i = l DO
+          { tidx := i; is_fn := TRUE; BREAK }
           UNLESS is_fn DO
             IF l >= 0 & l < nlabmap & labmap!l >= 0 DO
               tidx := labmap!l
@@ -1181,7 +1166,7 @@ prescan_done:
       { LET l = rdl()
         cgpendingop_wasm()
         selectoutput(tostream)
-        // LL of a data label: value = SB + local word offset.
+        // LL data-label: SB + local offset.
         { LET offset = VALOF
           { IF l >= 0 & l < nlabmap & labmap!l >= 0 RESULTIS labmap!l
             RESULTIS 0
@@ -1312,7 +1297,6 @@ prescan_done:
             RESULTIS 0
           }
           cssp := cssp - 1
-          // byte_addr = (SB + offset) * 4.
           writef("    (i32.store*n")
           writef("      (i32.shl (i32.add (global.get $SB) (i32.const %n)) (i32.const 2))*n",
                  offset)
@@ -1510,8 +1494,8 @@ prescan_done:
       CASE s_lstr:
       { LET n = rdn()
         cgpendingop_wasm()
-        { LET str_offset = stat_n   // module-local word offset
-          alloc_static(-1, n)       // length word
+        { LET str_offset = stat_n
+          alloc_static(-1, n)
           { LET i = 1
             { LET w = 0
               FOR b = 0 TO 3 DO
@@ -1660,9 +1644,8 @@ prescan_done:
   } REPEAT
 }
 
-// Linker mode: return a MODULE-LOCAL word offset instead of an
-// absolute word address. Callers combine with (global.get $SB) at
-// emit time to form the full address.
+// Linker mode: return module-local word offset (not absolute
+// address). Emit sites add (global.get $SB) to form the full addr.
 AND alloc_static(bcpl_lab, val) = VALOF
 { LET offset = stat_n
   IF stat_n < 2048 DO
