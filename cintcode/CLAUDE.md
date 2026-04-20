@@ -187,15 +187,30 @@ BCPL words are untyped bit patterns. All expression-stack locals and memory are 
 
 | tidx | import | global | purpose |
 |------|--------|--------|---------|
-| 0 | `bcpl_stop` | 2 | halt |
-| 1 | `bcpl_rdch` | 38 | read char from stdin |
-| 2 | `bcpl_wrch` | 41 | write char |
-| 3 | `bcpl_newline` | 84 | write newline |
-| 4 | `bcpl_writen` | 86 | write integer |
-| 5 | `bcpl_writes` | 89 | write BCPL string |
-| 6 | `bcpl_writef` | 94 | formatted write |
-| 7 | `bcpl_getvec` | 25 | allocate n+1 words |
-| 8 | `bcpl_freevec` | 27 | free vector |
+| 0  | `bcpl_stop`       |  2 | halt (BcplHalt) |
+| 1  | `bcpl_rdch`       | 38 | read char from stdin |
+| 2  | `bcpl_wrch`       | 41 | write char |
+| 3  | `bcpl_newline`    | 84 | write newline |
+| 4  | `bcpl_writen`     | 86 | write integer |
+| 5  | `bcpl_writes`     | 89 | write BCPL string |
+| 6  | `bcpl_writef`     | 94 | formatted write |
+| 7  | `bcpl_getvec`     | 25 | allocate n+1 words |
+| 8  | `bcpl_freevec`    | 27 | free vector |
+| 9  | `bcpl_muldiv`     |  5 | (a*b)/c with 64-bit intermediate |
+| 10 | `bcpl_abort`      | 28 | halt with error flag (BcplHalt isAbort) |
+| 11 | `bcpl_randno`     | 34 | random integer in [1..n] |
+| 12 | `bcpl_capitalch`  | 96 | uppercase a-z |
+| 13 | `bcpl_compch`     | 97 | case-insensitive char compare |
+| 14 | `bcpl_compstring` | 98 | BCPL string compare |
+| 15 | `bcpl_findoutput` | 49 | open named write stream (browser storage-backed) |
+| 16 | `bcpl_findinput`  | 48 | open named read stream |
+| 17 | `bcpl_selectoutput` | 57 | set current output stream, return previous |
+| 18 | `bcpl_selectinput`  | 56 | set current input stream, return previous |
+| 19 | `bcpl_endstream`  | 62 | close stream; write streams commit to storage |
+| 20 | `bcpl_endread`    | 60 | close current input stream |
+| 21 | `bcpl_endwrite`   | 61 | close current output stream |
+
+Named streams persist across page loads via `localStorage` (keys prefixed `bcpl:`). In Node test harness falls back to an in-memory `Map`.
 
 ### Playground
 

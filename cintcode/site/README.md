@@ -28,6 +28,8 @@ site/
     echo.b         — rdch, reads from stdin pane
     match.b        — MATCH expression (MCPL pattern matching)
     every.b        — EVERY expression (sum of all matching arms)
+    stdlib.b       — muldiv, randno, capitalch, compch, compstring, %z
+    streams.b      — findoutput/findinput round-trip via localStorage
     *.wat, *.wasm  — built artifacts
 ```
 
@@ -82,15 +84,32 @@ rt.run();                            // calls fn_L10 (the start function)
 
 | Global | Function | Notes |
 |--------|----------|-------|
-| 2  | `stop(n)`      | halts execution (throws `BcplHalt`) |
-| 25 | `getvec(n)`    | returns n+1 word block, 0 on OOM |
-| 27 | `freevec(p)`   | links block to free list for reuse |
-| 38 | `rdch()`       | returns next char from stdin buffer, −1 at EOF |
-| 41 | `wrch(c)`      | writes one char |
-| 84 | `newline()`    | writes `\n` |
-| 86 | `writen(n)`    | writes signed decimal |
-| 89 | `writes(s)`    | writes BCPL string (length-prefixed) |
-| 94 | `writef(fmt, a, b, c, d)` | formatted output — supports `%n`, `%d`, `%i`, `%u`, `%c`, `%s`, `%x`, `%o`, `%b`, `%f`, `%e`, `%g` with BCPL's two width conventions (`%i4` and `%5.2f`) |
+|  2 | `stop(n)`       | halts, throws `BcplHalt` |
+|  5 | `muldiv(a,b,c)` | `(a*b)/c` with 64-bit intermediate |
+| 25 | `getvec(n)`     | n+1 word block, 0 on OOM |
+| 27 | `freevec(p)`    | links block to free list |
+| 28 | `abort(n)`      | halts with `BcplHalt.isAbort = true` |
+| 34 | `randno(n)`     | random int in `[1..n]` |
+| 38 | `rdch()`        | next stdin char, −1 at EOF |
+| 41 | `wrch(c)`       | write one char |
+| 84 | `newline()`     | write `\n` |
+| 86 | `writen(n)`     | signed decimal |
+| 89 | `writes(s)`     | BCPL string |
+| 94 | `writef(fmt, a, b, c, d)` | formatted write |
+| 96 | `capitalch(c)`  | uppercase a-z |
+| 97 | `compch(a,b)`   | case-insensitive compare, −1/0/+1 |
+| 98 | `compstring(s1,s2)` | BCPL string compare, −1/0/+1 |
+| 48 | `findinput(name)`   | open named read stream (browser storage) |
+| 49 | `findoutput(name)`  | open named write stream |
+| 56 | `selectinput(h)`    | switch current input stream, returns previous |
+| 57 | `selectoutput(h)`   | switch current output stream, returns previous |
+| 60 | `endread()`         | close current input stream |
+| 61 | `endwrite()`        | close current output stream (commits to storage) |
+| 62 | `endstream(h)`      | close a specific stream handle |
+
+Named streams are backed by `localStorage` under keys `bcpl:<name>`. They persist across page reloads. In Node (tests), an in-memory `Map` is used instead.
+
+`writef` format codes: `%n`, `%d`, `%i`, `%u`, `%c`, `%s`, `%x`, `%o`, `%b`, `%z` (zero-padded decimal), `%t` (string, left-justified), `%f`, `%e`, `%g`. BCPL's two width conventions both work: `%i4`/`%X8` (single-char width after code) and `%5.2f`/`%8.3e` (width.precision before code).
 
 ## Calling convention
 

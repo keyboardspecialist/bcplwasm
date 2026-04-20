@@ -41,7 +41,7 @@ MANIFEST {
   // Wasm function-table slot at the front of the table, and __init
   // writes that slot into its BCPL global number so indirect calls
   // (FNAP via G!n) reach the host.
-  stdlib_count = 9
+  stdlib_count = 22
 }
 
 GLOBAL {
@@ -344,6 +344,19 @@ AND emit_mod_header() BE
   writef("  (import *"env*" *"bcpl_writef*"  (func $imp_writef  (type $bcpl_fn)))*n")
   writef("  (import *"env*" *"bcpl_getvec*"  (func $imp_getvec  (type $bcpl_fn)))*n")
   writef("  (import *"env*" *"bcpl_freevec*" (func $imp_freevec (type $bcpl_fn)))*n")
+  writef("  (import *"env*" *"bcpl_muldiv*"  (func $imp_muldiv  (type $bcpl_fn)))*n")
+  writef("  (import *"env*" *"bcpl_abort*"   (func $imp_abort   (type $bcpl_fn)))*n")
+  writef("  (import *"env*" *"bcpl_randno*"  (func $imp_randno  (type $bcpl_fn)))*n")
+  writef("  (import *"env*" *"bcpl_capitalch*"(func $imp_capitalch (type $bcpl_fn)))*n")
+  writef("  (import *"env*" *"bcpl_compch*"  (func $imp_compch  (type $bcpl_fn)))*n")
+  writef("  (import *"env*" *"bcpl_compstring*" (func $imp_compstring (type $bcpl_fn)))*n")
+  writef("  (import *"env*" *"bcpl_findoutput*"  (func $imp_findoutput  (type $bcpl_fn)))*n")
+  writef("  (import *"env*" *"bcpl_findinput*"   (func $imp_findinput   (type $bcpl_fn)))*n")
+  writef("  (import *"env*" *"bcpl_selectoutput*"(func $imp_selectoutput(type $bcpl_fn)))*n")
+  writef("  (import *"env*" *"bcpl_selectinput*" (func $imp_selectinput (type $bcpl_fn)))*n")
+  writef("  (import *"env*" *"bcpl_endstream*"   (func $imp_endstream   (type $bcpl_fn)))*n")
+  writef("  (import *"env*" *"bcpl_endread*"     (func $imp_endread     (type $bcpl_fn)))*n")
+  writef("  (import *"env*" *"bcpl_endwrite*"    (func $imp_endwrite    (type $bcpl_fn)))*n")
   writef("  (memory (export *"mem*") 4) ;; 4 pages = 256KB*n")
   writef("  (global $G (export *"G*") i32 (i32.const %n))*n", wasm_glob_base)
   writef("  (global $P (export *"P*") (mut i32) (i32.const 0))*n")
@@ -360,6 +373,11 @@ AND emit_mod_footer() BE
   writef(" $imp_stop $imp_rdch $imp_wrch $imp_newline")
   writef(" $imp_writen $imp_writes $imp_writef")
   writef(" $imp_getvec $imp_freevec")
+  writef(" $imp_muldiv $imp_abort $imp_randno")
+  writef(" $imp_capitalch $imp_compch $imp_compstring")
+  writef(" $imp_findoutput $imp_findinput")
+  writef(" $imp_selectoutput $imp_selectinput")
+  writef(" $imp_endstream $imp_endread $imp_endwrite")
   FOR i = 0 TO ftab_n-1 DO writef(" $fn_L%n", ftab_v!i)
   writef(")*n*n")
 
@@ -381,6 +399,19 @@ AND emit_mod_footer() BE
   writef("    (i32.store ") ; emit_g_addr(94) ; writef(" (i32.const 6)) ;; writef*n")
   writef("    (i32.store ") ; emit_g_addr(25) ; writef(" (i32.const 7)) ;; getvec*n")
   writef("    (i32.store ") ; emit_g_addr(27) ; writef(" (i32.const 8)) ;; freevec*n")
+  writef("    (i32.store ") ; emit_g_addr( 5) ; writef(" (i32.const 9)) ;; muldiv*n")
+  writef("    (i32.store ") ; emit_g_addr(28) ; writef(" (i32.const 10)) ;; abort*n")
+  writef("    (i32.store ") ; emit_g_addr(34) ; writef(" (i32.const 11)) ;; randno*n")
+  writef("    (i32.store ") ; emit_g_addr(96) ; writef(" (i32.const 12)) ;; capitalch*n")
+  writef("    (i32.store ") ; emit_g_addr(97) ; writef(" (i32.const 13)) ;; compch*n")
+  writef("    (i32.store ") ; emit_g_addr(98) ; writef(" (i32.const 14)) ;; compstring*n")
+  writef("    (i32.store ") ; emit_g_addr(49) ; writef(" (i32.const 15)) ;; findoutput*n")
+  writef("    (i32.store ") ; emit_g_addr(48) ; writef(" (i32.const 16)) ;; findinput*n")
+  writef("    (i32.store ") ; emit_g_addr(57) ; writef(" (i32.const 17)) ;; selectoutput*n")
+  writef("    (i32.store ") ; emit_g_addr(56) ; writef(" (i32.const 18)) ;; selectinput*n")
+  writef("    (i32.store ") ; emit_g_addr(62) ; writef(" (i32.const 19)) ;; endstream*n")
+  writef("    (i32.store ") ; emit_g_addr(60) ; writef(" (i32.const 20)) ;; endread*n")
+  writef("    (i32.store ") ; emit_g_addr(61) ; writef(" (i32.const 21)) ;; endwrite*n")
   // Set G!n = table index for each user function global.
   FOR i = 0 TO ginit_n-1 BY 2 DO
   { LET gnum = ginit_v!i
@@ -549,6 +580,11 @@ AND store_p(n) BE
   writef("    (i32.store ")
   emit_p_addr(n)
   writef(" (local.get $t%n))*n", cssp)
+  // Mirror into $t{n} so a later STORE that re-flushes the ssp=n
+  // slot writes the updated value rather than a stale original.
+  // Only meaningful when n refers to an in-function local slot.
+  IF n >= 3 & n < fn_peak & n ~= cssp DO
+    writef("    (local.set $t%n (local.get $t%n))*n", n, cssp)
 }
 
 AND store_g(n) BE

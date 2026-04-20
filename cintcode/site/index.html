@@ -85,6 +85,8 @@
       <option value="echo">echo</option>
       <option value="match">match</option>
       <option value="every">every</option>
+      <option value="stdlib">stdlib</option>
+      <option value="streams">streams</option>
     </select>
     <button id="run">Run</button>
   </div>
@@ -121,7 +123,10 @@
   </footer>
 
   <script type="module">
-    import { BcplRuntime } from "./runtime.js";
+    // Cache-bust during development. Remove the query if you want the
+    // browser to serve runtime.js / examples/*.wasm from HTTP cache.
+    const V = Date.now();
+    const { BcplRuntime } = await import(`./runtime.js?v=${V}`);
 
     const sourceEl  = document.getElementById("source");
     const outputEl  = document.getElementById("output");
@@ -139,9 +144,10 @@
       outputEl.textContent = "";
       sourceEl.textContent = "Loading…";
       watEl.textContent    = "Loading…";
+      const bust = `?v=${Date.now()}`;
       const [src, wat] = await Promise.all([
-        fetchText(`examples/${name}.b`,   "(source unavailable)"),
-        fetchText(`examples/${name}.wat`, "(wat unavailable)"),
+        fetchText(`examples/${name}.b${bust}`,   "(source unavailable)"),
+        fetchText(`examples/${name}.wat${bust}`, "(wat unavailable)"),
       ]);
       sourceEl.textContent = src;
       watEl.textContent    = wat;
@@ -155,7 +161,7 @@
         stdinEl.value
       );
       try {
-        await rt.load(`examples/${name}.wasm`);
+        await rt.load(`examples/${name}.wasm?v=${Date.now()}`);
         rt.run();
       } catch (err) {
         outputEl.textContent += `\n[runtime error] ${err.message ?? err}`;
