@@ -150,7 +150,7 @@
   (elem $ftab funcref (ref.func $fn_L10))
 
   ;; static data — passive segment (4 words)
-  (data $stat "\0C\00\00\00\25\69\32\5E\32\20\3D\20\25\69\33\0A")
+  (data $stat "\0C\25\69\32\5E\32\20\3D\20\25\69\33\0A\00\00\00")
 
   (func $register (export "register")
     (memory.init $stat

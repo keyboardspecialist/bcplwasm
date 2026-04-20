@@ -182,16 +182,15 @@ AND register_entries() BE
       { LET l = rdl()
         LET nn = rdn()
         FOR i=1 TO nn DO rdn()
-        IF depth = 0 DO
-          IF ftab_n < 512 DO
-          { LET seen = FALSE
-            FOR i = 0 TO ftab_n-1 DO
-              IF ftab_v!i = l DO { seen := TRUE; BREAK }
-            UNLESS seen DO
-            { ftab_v!ftab_n := l
-              ftab_n := ftab_n + 1
-            }
+        IF ftab_n < 512 DO
+        { LET seen = FALSE
+          FOR i = 0 TO ftab_n-1 DO
+            IF ftab_v!i = l DO { seen := TRUE; BREAK }
+          UNLESS seen DO
+          { ftab_v!ftab_n := l
+            ftab_n := ftab_n + 1
           }
+        }
         depth := depth + 1
         ENDCASE
       }
@@ -199,8 +198,7 @@ AND register_entries() BE
         depth := depth - 1
         ENDCASE
       CASE s_lp: CASE s_lg: CASE s_sp: CASE s_sg:
-      CASE s_stack: CASE s_store: CASE s_save:
-      CASE s_query: CASE s_rstack:
+      CASE s_stack: CASE s_save:
       CASE s_ln: CASE s_lflt: CASE s_fnap: CASE s_rtap: CASE s_fnum:
         rdn(); ENDCASE
       CASE s_lf: CASE s_ll: CASE s_llp: CASE s_llg: CASE s_lll: CASE s_sl:
@@ -278,8 +276,7 @@ AND skip_inner_body() BE
         IF depth = 0 RETURN
         ENDCASE
       CASE s_lp: CASE s_lg: CASE s_sp: CASE s_sg:
-      CASE s_stack: CASE s_store: CASE s_save:
-      CASE s_query: CASE s_rstack:
+      CASE s_stack: CASE s_save:
       CASE s_ln: CASE s_lflt: CASE s_fnap: CASE s_rtap: CASE s_fnum:
         rdn(); ENDCASE
       CASE s_lf: CASE s_ll: CASE s_llp: CASE s_llg: CASE s_lll: CASE s_sl:
@@ -1503,24 +1500,25 @@ prescan_done:
         ENDCASE
 
       CASE s_lstr:
-      { LET n = rdn()
+      { // BCPL string layout: byte 0 = length, bytes 1..n = chars.
+        // Pack all (length + chars) into successive words — length
+        // shares word 0 with the first 3 chars.
+        LET n = rdn()
         cgpendingop_wasm()
         { LET str_offset = stat_n
-          alloc_static(-1, n)
-          { LET i = 1
-            { LET w = 0
-              FOR b = 0 TO 3 DO
-              { LET ch = VALOF
-                { IF i > n RESULTIS 0
-                  i := i + 1
-                  RESULTIS rdn()
-                }
-                w := w | (ch << (b * 8))
-              }
-              alloc_static(-1, w)
-              IF i > n BREAK
-            } REPEAT
+          LET total = n + 1        // length byte + n char bytes
+          LET words = (total + 3) / 4
+          LET i = 0                // byte index in the composite
+          LET w = 0
+          LET b = 0
+          UNTIL i = total DO
+          { LET ch = i=0 -> n, rdn()
+            w := w | ((ch & #xFF) << (b * 8))
+            i := i + 1
+            b := b + 1
+            IF b = 4 DO { alloc_static(-1, w); w := 0; b := 0 }
           }
+          IF b > 0 DO alloc_static(-1, w)   // flush final partial word
           selectoutput(tostream)
           writef("    (local.set $t%n (i32.add (global.get $SB) (i32.const %n))) ;; LSTR*n",
                  cssp, str_offset)
@@ -1547,14 +1545,20 @@ prescan_done:
       }
 
       CASE s_putbyte:
-      { cgpendingop_wasm()
-        { LET vt = cssp-1
-          LET bt = cssp-2
-          LET ba = cssp-3
+      { // OCODE order matches cintcode F_pbyt (a=byte-offset, b=word-
+        // addr, c=value). Stack after push sequence [V, WA, BO] is:
+        //   cssp-1 = BO (byte offset)
+        //   cssp-2 = WA (word address)
+        //   cssp-3 = V  (value)
+        // Store byte at (WA<<2)+BO = V.
+        cgpendingop_wasm()
+        { LET bo = cssp - 1
+          LET wa = cssp - 2
+          LET vt = cssp - 3
           selectoutput(tostream)
           cssp := cssp - 3
           writef("    (i32.store8 (i32.add (i32.shl (local.get $t%n) (i32.const 2)) (local.get $t%n)) (local.get $t%n))*n",
-                 ba, bt, vt)
+                 wa, bo, vt)
           selectoutput(sysprint)
         }
         terminated := FALSE

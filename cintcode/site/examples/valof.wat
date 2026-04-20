@@ -98,14 +98,14 @@
   ;; --- function table slice (passive) ---
   (elem $ftab funcref (ref.func $fn_L10))
 
-  ;; static data — passive segment (6 words)
-  (data $stat "\11\00\00\00\61\3D\25\6E\20\62\3D\25\6E\20\61\2B\62\3D\25\6E\0A\00\00\00")
+  ;; static data — passive segment (5 words)
+  (data $stat "\11\61\3D\25\6E\20\62\3D\25\6E\20\61\2B\62\3D\25\6E\0A\00\00")
 
   (func $register (export "register")
     (memory.init $stat
       (i32.shl (global.get $SB) (i32.const 2))
       (i32.const 0)
-      (i32.const 24))
+      (i32.const 20))
     (data.drop $stat)
     (table.init $ftable $ftab
       (global.get $TB)
@@ -115,7 +115,7 @@
     (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 4)) (i32.add (global.get $TB) (i32.const 0))) ;; G!1
   )
   (func $stat_words (export "stat_words") (result i32)
-    (i32.const 6))
+    (i32.const 5))
   (func $fn_count (export "fn_count") (result i32)
     (i32.const 1))
 )
