@@ -8,6 +8,7 @@
   (import "env" "table_base"  (global $TB i32))
 
   ;; SECTION: shifts
+  ;; BCPL fn start       (L10)
   (func $fn_L10 (export "fn_L10") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -102,8 +103,8 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L10
 
-  ;; --- function table slice ---
-  (elem (table $ftable) (global.get $TB) func $fn_L10)
+  ;; --- function table slice (passive) ---
+  (elem $ftab funcref (ref.func $fn_L10))
 
   ;; static data — passive segment (29 words)
   (data $stat "\2C\00\00\00\2D\31\36\20\3E\3E\20\32\20\20\20\20\20\3D\20\25\6E\20\28\77\61\6E\74\20\31\30\37\33\37\34\31\38\32\30\20\6C\6F\67\69\63\61\6C\29\0A\26\00\00\00\23\78\38\30\30\30\30\30\30\30\20\3E\3E\20\34\20\3D\20\25\58\38\20\28\77\61\6E\74\20\30\38\30\30\30\30\30\30\29\0A\00\00\12\00\00\00\34\20\3C\3C\20\32\20\20\20\20\20\20\20\3D\20\25\6E\0A\00\00")
@@ -114,6 +115,11 @@
       (i32.const 0)
       (i32.const 116))
     (data.drop $stat)
+    (table.init $ftable $ftab
+      (global.get $TB)
+      (i32.const 0)
+      (i32.const 1))
+    (elem.drop $ftab)
     (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 4)) (i32.add (global.get $TB) (i32.const 0))) ;; G!1
   )
   (func $stat_words (export "stat_words") (result i32)

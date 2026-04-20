@@ -16,7 +16,7 @@
 // Browser storage shim. Uses localStorage when available (browser),
 // otherwise an in-memory Map (Node tests). Keys namespaced under
 // "bcpl:" so other app data isn't touched.
-const storageBackend = (() => {
+export const storageBackend = (() => {
   try {
     if (typeof localStorage !== "undefined") {
       return {
@@ -392,6 +392,48 @@ export class BcplRuntime {
   // the underlying output rather than via selectoutput).
   imp_sawritef() { return this.imp_writef(); }
 
+  // sys(op, a, b, c, ...) — BCPL low-level dispatcher. Called for
+  // everything from float arithmetic (fl_mk, fl_add, ...) to
+  // low-level memory ops. Covers just what's needed to get through
+  // compiler initialisation: make a flt constant, return it.
+  imp_sys() {
+    const op = this.arg(0);  // Sys_* selector
+    // Sys_flt = 85 (ish), and within fl_mk = 1.
+    // Float constructors: fl_mk(mantissa, exponent). For our typeless
+    // backend we return the bit pattern of the i32 value as if it
+    // were a float. start() uses flt0 = sys(Sys_flt, fl_mk, 0, 0) and
+    // similar — return 0 for those.
+    this.restoreP();
+    if (op === 85) {                      // Sys_flt
+      const sub = this.arg(1);            // fl_mk, fl_add, ...
+      if (sub === 1) {                    // fl_mk(m, e)
+        const m = this.arg(2);
+        // Produce IEEE-754 single precision bit pattern of (m).
+        const f = new Float32Array(1);
+        f[0] = m;
+        return new Int32Array(f.buffer)[0];
+      }
+    }
+    return 0;
+  }
+
+  // level() — BCPL captures current stack frame pointer for later
+  // longjump. We return the current $P (a word address) as a
+  // "level" handle. longjump restores $P to that value.
+  imp_level() {
+    this.restoreP();
+    return this.P;
+  }
+
+  // longjump(p, l) — non-local transfer. For simplicity, we treat
+  // this as a hard halt with the given label code.
+  imp_longjump() {
+    const p = this.arg(0);
+    const l = this.arg(1);
+    this.restoreP();
+    throw new BcplHalt(l, /*isAbort*/ true);
+  }
+
   // rdargs(argform, argv, argvsize) — very minimal parser. Reads
   // an input line (or storage slot "_argv_line"), splits on spaces,
   // fills argv[0..] with BCPL-string pointers to the tokens.
@@ -572,6 +614,9 @@ export class BcplRuntime {
         bcpl_findinoutput: () => this.imp_findinoutput(),
         bcpl_errwrch:      () => this.imp_errwrch(),
         bcpl_sawritef:     () => this.imp_sawritef(),
+        bcpl_sys:          () => this.imp_sys(),
+        bcpl_level:        () => this.imp_level(),
+        bcpl_longjump:     () => this.imp_longjump(),
       }
     };
   }
@@ -583,7 +628,7 @@ export class BcplRuntime {
   // table_base) and export register()/stat_words()/fn_count(). The
   // loader two-pass-instantiates each program: probe sizes, bump-
   // allocate bases, then real instantiate + register.
-  static STDLIB_TABLE_SLOTS = 30;
+  static STDLIB_TABLE_SLOTS = 33;
   static STATIC_WORD_BASE   = 1001;  // first word past G
 
   async loadMaster(url = "master.wasm") {

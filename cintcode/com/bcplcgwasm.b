@@ -373,9 +373,12 @@ AND emit_mod_header() BE
 //     to write G[gnum] := TB + local_tidx for every s_global pair.
 AND emit_mod_footer() BE
 { selectoutput(tostream)
-  writef("  ;; --- function table slice ---*n")
-  writef("  (elem (table $ftable) (global.get $TB) func")
-  FOR i = 0 TO ftab_n-1 DO writef(" $fn_L%n", ftab_v!i)
+  // Passive elem segment: NOT installed at instantiate time so the
+  // two-pass loader's probe instance doesn't clobber the shared
+  // table. register() issues table.init at the real TB.
+  writef("  ;; --- function table slice (passive) ---*n")
+  writef("  (elem $ftab funcref")
+  FOR i = 0 TO ftab_n-1 DO writef(" (ref.func $fn_L%n)", ftab_v!i)
   writef(")*n*n")
 
   IF stat_n > 0 DO
@@ -389,8 +392,8 @@ AND emit_mod_footer() BE
     writef("*")*n*n")
   }
 
-  // Loader calls register() after instantiate to copy static data
-  // into shared memory and to write G[gnum] := TB + local_tidx.
+  // Loader calls register() after instantiate. It copies static data
+  // into memory, populates the table slice, and writes G entries.
   writef("  (func $register (export *"register*")*n")
   IF stat_n > 0 DO
   { writef("    (memory.init $stat*n")
@@ -398,6 +401,13 @@ AND emit_mod_footer() BE
     writef("      (i32.const 0)*n")
     writef("      (i32.const %n))*n", stat_n * 4)
     writef("    (data.drop $stat)*n")
+  }
+  IF ftab_n > 0 DO
+  { writef("    (table.init $ftable $ftab*n")
+    writef("      (global.get $TB)*n")
+    writef("      (i32.const 0)*n")
+    writef("      (i32.const %n))*n", ftab_n)
+    writef("    (elem.drop $ftab)*n")
   }
   FOR i = 0 TO ginit_n-1 BY 2 DO
   { LET gnum       = ginit_v!i
@@ -1062,9 +1072,10 @@ prescan_done:
 
         // Emit function header. Locals: one i32 per expression-stack
         // slot the body actually uses — fn_peak was computed by the
-        // prescan above. Name is namespaced by section id so labels
-        // from separate BCPL sections don't collide.
+        // prescan above.
         selectoutput(tostream)
+        // Debug-friendly comment: BCPL function name next to label.
+        writef("  ;; BCPL fn %s (L%n)*n", nam, l)
         writef("  (func $fn_L%n (export *"fn_L%n*") (type $bcpl_fn)*n", l, l)
         writef("    (local $__lab i32)*n")
         FOR i = 0 TO fn_peak-1 DO writef("    (local $t%n i32)*n", i)

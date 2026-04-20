@@ -36,6 +36,9 @@
   (import "env" "bcpl_findinoutput" (func $imp_findinoutput (type $bcpl_fn)))
   (import "env" "bcpl_errwrch"      (func $imp_errwrch      (type $bcpl_fn)))
   (import "env" "bcpl_sawritef"     (func $imp_sawritef     (type $bcpl_fn)))
+  (import "env" "bcpl_sys"          (func $imp_sys          (type $bcpl_fn)))
+  (import "env" "bcpl_level"        (func $imp_level        (type $bcpl_fn)))
+  (import "env" "bcpl_longjump"     (func $imp_longjump     (type $bcpl_fn)))
 
   (memory $mem    (export "mem")    16)                    ;; 1 MB — room for the compiler self-hosting
   (table  $ftable (export "ftable") 512 funcref)
@@ -52,7 +55,8 @@
     $imp_selectoutput $imp_selectinput
     $imp_endstream    $imp_endread      $imp_endwrite
     $imp_output       $imp_input        $imp_rdargs       $imp_unrdch
-    $imp_rewindstream $imp_findinoutput $imp_errwrch      $imp_sawritef)
+    $imp_rewindstream $imp_findinoutput $imp_errwrch      $imp_sawritef
+    $imp_sys          $imp_level        $imp_longjump)
 
   ;; init(stack_base_word): writes stdlib G entries + sets $P.
   ;; Call AFTER all programs have been registered.
@@ -95,4 +99,8 @@
     (i32.store (i32.const 160) (i32.const  1)) ;; G!39 binrdch = rdch
     (i32.store (i32.const 172) (i32.const  2)) ;; G!42 binwrch = wrch
     (i32.store (i32.const 352) (i32.const  6)) ;; G!87 writeoct = writef
+    ;; Low-level: sys(Sys_*, ...), level(), longjump(p, l).
+    (i32.store (i32.const  16) (i32.const 30)) ;; G!3   sys
+    (i32.store (i32.const 120) (i32.const 31)) ;; G!29  level
+    (i32.store (i32.const 124) (i32.const 32)) ;; G!30  longjump
   ))
