@@ -194,7 +194,7 @@
     (local.set $t3 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)))) ;; stack-fill t3 from P!3
     (local.set $t4 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)))) ;; stack-fill t4 from P!4
     (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)))) ;; stack-fill t5 from P!5
-    (local.set $t6 (i32.add (global.get $SB) (i32.const 6))) ;; LSTR
+    (local.set $t6 (i32.add (global.get $SB) (i32.const 5))) ;; LSTR
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
@@ -232,14 +232,14 @@
   ;; --- function table slice (passive) ---
   (elem $ftab funcref (ref.func $fn_L10) (ref.func $fn_L20))
 
-  ;; static data — passive segment (18 words)
-  (data $stat "\11\00\00\00\74\61\6C\6C\79\28\25\69\33\29\20\3D\20\25\69\34\0A\00\00\00\29\00\00\00\74\61\6C\6C\79\28\20\20\32\29\20\3D\20\25\69\34\20\20\28\65\78\70\65\63\74\20\31\2B\31\30\30\30\20\3D\20\31\30\30\31\29\0A\00\00\00")
+  ;; static data — passive segment (16 words)
+  (data $stat "\11\74\61\6C\6C\79\28\25\69\33\29\20\3D\20\25\69\34\0A\00\00\29\74\61\6C\6C\79\28\20\20\32\29\20\3D\20\25\69\34\20\20\28\65\78\70\65\63\74\20\31\2B\31\30\30\30\20\3D\20\31\30\30\31\29\0A\00\00")
 
   (func $register (export "register")
     (memory.init $stat
       (i32.shl (global.get $SB) (i32.const 2))
       (i32.const 0)
-      (i32.const 72))
+      (i32.const 64))
     (data.drop $stat)
     (table.init $ftable $ftab
       (global.get $TB)
@@ -249,7 +249,7 @@
     (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 4)) (i32.add (global.get $TB) (i32.const 1))) ;; G!1
   )
   (func $stat_words (export "stat_words") (result i32)
-    (i32.const 18))
+    (i32.const 16))
   (func $fn_count (export "fn_count") (result i32)
     (i32.const 2))
 )

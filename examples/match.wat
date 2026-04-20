@@ -72,7 +72,7 @@
     (if (i32.gt_s (local.get $t5) (local.get $t6)) (then
       (local.set $__lab (i32.const 5)) (br $__dispatch)
     ))
-    (local.set $t5 (i32.add (global.get $SB) (i32.const 5))) ;; LSTR
+    (local.set $t5 (i32.add (global.get $SB) (i32.const 4))) ;; LSTR
     ;; FNRN
     (local.set $t0 (local.get $t5))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
@@ -89,14 +89,14 @@
     (if (i32.gt_s (local.get $t5) (local.get $t6)) (then
       (local.set $__lab (i32.const 6)) (br $__dispatch)
     ))
-    (local.set $t5 (i32.add (global.get $SB) (i32.const 8))) ;; LSTR
+    (local.set $t5 (i32.add (global.get $SB) (i32.const 6))) ;; LSTR
     ;; FNRN
     (local.set $t0 (local.get $t5))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
     (return (local.get $t0))
     )) ;; end block / LAB L20 = idx 6
     (if (i32.eq (local.get $__lab) (i32.const 6)) (then ;; L20
-    (local.set $t5 (i32.add (global.get $SB) (i32.const 10))) ;; LSTR
+    (local.set $t5 (i32.add (global.get $SB) (i32.const 7))) ;; LSTR
     ;; FNRN
     (local.set $t0 (local.get $t5))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
@@ -161,7 +161,7 @@
     (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)))) ;; stack-fill t5 from P!5
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
-    (local.set $t8 (i32.add (global.get $SB) (i32.const 12))) ;; LSTR
+    (local.set $t8 (i32.add (global.get $SB) (i32.const 9))) ;; LSTR
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
     (local.set $t9 (i32.mul (local.get $t9) (local.get $t10)))
@@ -220,14 +220,14 @@
   ;; --- function table slice (passive) ---
   (elem $ftab funcref (ref.func $fn_L10) (ref.func $fn_L23))
 
-  ;; static data — passive segment (16 words)
-  (data $stat "\04\00\00\00\7A\65\72\6F\05\00\00\00\73\6D\61\6C\6C\00\00\00\06\00\00\00\6D\65\64\69\75\6D\00\00\03\00\00\00\62\69\67\00\04\00\00\00\68\75\67\65\0A\00\00\00\25\69\33\20\2D\3E\20\25\73\0A\00\00")
+  ;; static data — passive segment (12 words)
+  (data $stat "\04\7A\65\72\6F\00\00\00\05\73\6D\61\6C\6C\00\00\06\6D\65\64\69\75\6D\00\03\62\69\67\04\68\75\67\65\00\00\00\0A\25\69\33\20\2D\3E\20\25\73\0A\00")
 
   (func $register (export "register")
     (memory.init $stat
       (i32.shl (global.get $SB) (i32.const 2))
       (i32.const 0)
-      (i32.const 64))
+      (i32.const 48))
     (data.drop $stat)
     (table.init $ftable $ftab
       (global.get $TB)
@@ -237,7 +237,7 @@
     (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 4)) (i32.add (global.get $TB) (i32.const 1))) ;; G!1
   )
   (func $stat_words (export "stat_words") (result i32)
-    (i32.const 16))
+    (i32.const 12))
   (func $fn_count (export "fn_count") (result i32)
     (i32.const 2))
 )

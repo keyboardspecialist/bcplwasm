@@ -88,7 +88,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 4))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 3))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
     (local.set $t10 (i32.load (i32.shl (local.get $t10) (i32.const 2))))
     (local.set $t10 (i32.and (local.get $t10) (i32.const 255)))
@@ -103,7 +103,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 8))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 6))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
     (local.set $t10 (i32.load (i32.shl (local.get $t10) (i32.const 2))))
     (local.set $t10 (i32.shr_u (local.get $t10) (i32.const 8)))
@@ -119,7 +119,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 12))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 9))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
     (local.set $t10 (i32.load (i32.shl (local.get $t10) (i32.const 2))))
     (local.set $t10 (i32.shr_u (local.get $t10) (i32.const 16)))
@@ -153,14 +153,14 @@
   ;; --- function table slice (passive) ---
   (elem $ftab funcref (ref.func $fn_L10))
 
-  ;; static data — passive segment (16 words)
-  (data $stat "\0B\00\00\00\76\21\30\20\20\3D\20\25\58\38\0A\00\0B\00\00\00\6C\6F\20\20\20\3D\20\25\58\32\0A\00\0B\00\00\00\68\69\20\20\20\3D\20\25\58\32\0A\00\0B\00\00\00\68\69\31\36\20\3D\20\25\58\34\0A\00")
+  ;; static data — passive segment (12 words)
+  (data $stat "\0B\76\21\30\20\20\3D\20\25\58\38\0A\0B\6C\6F\20\20\20\3D\20\25\58\32\0A\0B\68\69\20\20\20\3D\20\25\58\32\0A\0B\68\69\31\36\20\3D\20\25\58\34\0A")
 
   (func $register (export "register")
     (memory.init $stat
       (i32.shl (global.get $SB) (i32.const 2))
       (i32.const 0)
-      (i32.const 64))
+      (i32.const 48))
     (data.drop $stat)
     (table.init $ftable $ftab
       (global.get $TB)
@@ -170,7 +170,7 @@
     (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 4)) (i32.add (global.get $TB) (i32.const 0))) ;; G!1
   )
   (func $stat_words (export "stat_words") (result i32)
-    (i32.const 16))
+    (i32.const 12))
   (func $fn_count (export "fn_count") (result i32)
     (i32.const 1))
 )

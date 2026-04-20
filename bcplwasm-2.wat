@@ -95,13 +95,13 @@
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
-    (local.set $t13 (i32.add (global.get $SB) (i32.const 3))) ;; LSTR
+    (local.set $t13 (i32.add (global.get $SB) (i32.const 2))) ;; LSTR
     (local.set $t14 (i32.const 158))
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1688))))
     (if (i32.ne  (local.get $t14) (local.get $t15)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     ))
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 7))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 5))) ;; LSTR
     ;; RES L15: save result, jump to RSTACK
     (local.set $t0 (local.get $t14))
       (local.set $__lab (i32.const 4)) (br $__dispatch)
@@ -113,14 +113,14 @@
     (if (i32.ne  (local.get $t14) (local.get $t15)) (then
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     ))
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 10))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 7))) ;; LSTR
     ;; RES L17: save result, jump to RSTACK
     (local.set $t0 (local.get $t14))
       (local.set $__lab (i32.const 3)) (br $__dispatch)
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     )) ;; end block / LAB L18 = idx 2
     (if (i32.eq (local.get $__lab) (i32.const 2)) (then ;; L18
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 13))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 10))) ;; LSTR
     ;; RES L17: save result, jump to RSTACK
     (local.set $t0 (local.get $t14))
       (local.set $__lab (i32.const 3)) (br $__dispatch)
@@ -153,7 +153,7 @@
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
-    (local.set $t13 (i32.add (global.get $SB) (i32.const 15))) ;; LSTR
+    (local.set $t13 (i32.add (global.get $SB) (i32.const 11))) ;; LSTR
     (local.set $t14 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)) (local.get $t13))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (global.get $P)) ;; save P
@@ -168,7 +168,7 @@
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
-    (local.set $t13 (i32.add (global.get $SB) (i32.const 18))) ;; LSTR
+    (local.set $t13 (i32.add (global.get $SB) (i32.const 13))) ;; LSTR
     (local.set $t14 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)) (local.get $t13))
@@ -184,7 +184,7 @@
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
-    (local.set $t13 (i32.add (global.get $SB) (i32.const 20))) ;; LSTR
+    (local.set $t13 (i32.add (global.get $SB) (i32.const 14))) ;; LSTR
     (local.set $t14 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)) (local.get $t13))
@@ -250,7 +250,7 @@
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
-    (local.set $t13 (i32.add (global.get $SB) (i32.const 23))) ;; LSTR
+    (local.set $t13 (i32.add (global.get $SB) (i32.const 16))) ;; LSTR
     (local.set $t14 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 356))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)) (local.get $t13))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (global.get $P)) ;; save P
@@ -321,7 +321,7 @@
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 30))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 22))) ;; LSTR
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (global.get $P)) ;; save P
@@ -394,7 +394,7 @@
     (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)))) ;; stack-fill t5 from P!5
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
-    (local.set $t8 (i32.add (global.get $SB) (i32.const 37))) ;; LSTR
+    (local.set $t8 (i32.add (global.get $SB) (i32.const 28))) ;; LSTR
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
     (local.set $t10 (i32.const 450))
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
@@ -902,7 +902,7 @@
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
-    (local.set $t12 (i32.add (global.get $SB) (i32.const 48))) ;; LSTR
+    (local.set $t12 (i32.add (global.get $SB) (i32.const 38))) ;; LSTR
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
     (local.set $t14 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)))) ;; stack-fill t14 from P!14
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60)))) ;; stack-fill t15 from P!15
@@ -1030,7 +1030,7 @@
     (local.set $t14 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)))) ;; stack-fill t14 from P!14
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60)))) ;; stack-fill t15 from P!15
     (local.set $t16 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 64)))) ;; stack-fill t16 from P!16
-    (local.set $t17 (i32.add (global.get $SB) (i32.const 57))) ;; LSTR
+    (local.set $t17 (i32.add (global.get $SB) (i32.const 46))) ;; LSTR
     (local.set $t18 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 68)) (local.get $t17))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (global.get $P)) ;; save P
@@ -1409,7 +1409,7 @@
     (local.set $t18 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 72)))) ;; stack-fill t18 from P!18
     (local.set $t19 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 76)))) ;; stack-fill t19 from P!19
     (local.set $t20 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 80)))) ;; stack-fill t20 from P!20
-    (local.set $t21 (i32.add (global.get $SB) (i32.const 64))) ;; LSTR
+    (local.set $t21 (i32.add (global.get $SB) (i32.const 53))) ;; LSTR
     (local.set $t22 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 84)) (local.get $t21))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 72)) (global.get $P)) ;; save P
@@ -1751,7 +1751,7 @@
     (local.set $t18 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 72)))) ;; stack-fill t18 from P!18
     (local.set $t19 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 76)))) ;; stack-fill t19 from P!19
     (local.set $t20 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 80)))) ;; stack-fill t20 from P!20
-    (local.set $t21 (i32.add (global.get $SB) (i32.const 71))) ;; LSTR
+    (local.set $t21 (i32.add (global.get $SB) (i32.const 59))) ;; LSTR
     (local.set $t22 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48))))
     (local.set $t23 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 64))))
     (local.set $t24 (i32.const 2))
@@ -1804,7 +1804,7 @@
     (if (i32.ne  (local.get $t22) (local.get $t23)) (then
       (local.set $__lab (i32.const 44)) (br $__dispatch)
     ))
-    (local.set $t22 (i32.add (global.get $SB) (i32.const 81))) ;; LSTR
+    (local.set $t22 (i32.add (global.get $SB) (i32.const 68))) ;; LSTR
     ;; RES L87: save result, jump to RSTACK
     (local.set $t0 (local.get $t22))
       (local.set $__lab (i32.const 55)) (br $__dispatch)
@@ -1816,7 +1816,7 @@
     (if (i32.ne  (local.get $t22) (local.get $t23)) (then
       (local.set $__lab (i32.const 45)) (br $__dispatch)
     ))
-    (local.set $t22 (i32.add (global.get $SB) (i32.const 83))) ;; LSTR
+    (local.set $t22 (i32.add (global.get $SB) (i32.const 69))) ;; LSTR
     ;; RES L89: save result, jump to RSTACK
     (local.set $t0 (local.get $t22))
       (local.set $__lab (i32.const 54)) (br $__dispatch)
@@ -1828,7 +1828,7 @@
     (if (i32.ne  (local.get $t22) (local.get $t23)) (then
       (local.set $__lab (i32.const 46)) (br $__dispatch)
     ))
-    (local.set $t22 (i32.add (global.get $SB) (i32.const 85))) ;; LSTR
+    (local.set $t22 (i32.add (global.get $SB) (i32.const 70))) ;; LSTR
     ;; RES L91: save result, jump to RSTACK
     (local.set $t0 (local.get $t22))
       (local.set $__lab (i32.const 53)) (br $__dispatch)
@@ -1840,7 +1840,7 @@
     (if (i32.ne  (local.get $t22) (local.get $t23)) (then
       (local.set $__lab (i32.const 47)) (br $__dispatch)
     ))
-    (local.set $t22 (i32.add (global.get $SB) (i32.const 87))) ;; LSTR
+    (local.set $t22 (i32.add (global.get $SB) (i32.const 71))) ;; LSTR
     ;; RES L93: save result, jump to RSTACK
     (local.set $t0 (local.get $t22))
       (local.set $__lab (i32.const 52)) (br $__dispatch)
@@ -1852,7 +1852,7 @@
     (if (i32.ne  (local.get $t22) (local.get $t23)) (then
       (local.set $__lab (i32.const 48)) (br $__dispatch)
     ))
-    (local.set $t22 (i32.add (global.get $SB) (i32.const 89))) ;; LSTR
+    (local.set $t22 (i32.add (global.get $SB) (i32.const 72))) ;; LSTR
     ;; RES L95: save result, jump to RSTACK
     (local.set $t0 (local.get $t22))
       (local.set $__lab (i32.const 51)) (br $__dispatch)
@@ -1864,14 +1864,14 @@
     (if (i32.ne  (local.get $t22) (local.get $t23)) (then
       (local.set $__lab (i32.const 49)) (br $__dispatch)
     ))
-    (local.set $t22 (i32.add (global.get $SB) (i32.const 91))) ;; LSTR
+    (local.set $t22 (i32.add (global.get $SB) (i32.const 73))) ;; LSTR
     ;; RES L97: save result, jump to RSTACK
     (local.set $t0 (local.get $t22))
       (local.set $__lab (i32.const 50)) (br $__dispatch)
       (local.set $__lab (i32.const 49)) (br $__dispatch)
     )) ;; end block / LAB L98 = idx 49
     (if (i32.eq (local.get $__lab) (i32.const 49)) (then ;; L98
-    (local.set $t22 (i32.add (global.get $SB) (i32.const 93))) ;; LSTR
+    (local.set $t22 (i32.add (global.get $SB) (i32.const 74))) ;; LSTR
     ;; RES L97: save result, jump to RSTACK
     (local.set $t0 (local.get $t22))
       (local.set $__lab (i32.const 50)) (br $__dispatch)
@@ -2864,7 +2864,7 @@
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 95))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 75))) ;; LSTR
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
     (local.set $t16 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
     (local.set $t17 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 380))))
@@ -2998,7 +2998,7 @@
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 102))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 81))) ;; LSTR
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
     (local.set $t16 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
     (local.set $t17 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 380))))
@@ -3246,7 +3246,7 @@
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
-    (local.set $t12 (i32.add (global.get $SB) (i32.const 109))) ;; LSTR
+    (local.set $t12 (i32.add (global.get $SB) (i32.const 87))) ;; LSTR
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t12))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (global.get $P)) ;; save P
@@ -4272,7 +4272,7 @@
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
     (local.set $t14 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)))) ;; stack-fill t14 from P!14
-    (local.set $t15 (i32.add (global.get $SB) (i32.const 116))) ;; LSTR
+    (local.set $t15 (i32.add (global.get $SB) (i32.const 93))) ;; LSTR
     (local.set $t16 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60)) (local.get $t15))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (global.get $P)) ;; save P
@@ -4301,7 +4301,7 @@
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
     (local.set $t14 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)))) ;; stack-fill t14 from P!14
-    (local.set $t15 (i32.add (global.get $SB) (i32.const 124))) ;; LSTR
+    (local.set $t15 (i32.add (global.get $SB) (i32.const 100))) ;; LSTR
     (local.set $t16 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40))))
     (local.set $t17 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60)) (local.get $t15))
@@ -4333,7 +4333,7 @@
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
     (local.set $t14 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)))) ;; stack-fill t14 from P!14
-    (local.set $t15 (i32.add (global.get $SB) (i32.const 131))) ;; LSTR
+    (local.set $t15 (i32.add (global.get $SB) (i32.const 106))) ;; LSTR
     (local.set $t16 (i32.const 65535))
     (local.set $t17 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40))))
     (local.set $t16 (i32.and (local.get $t16) (local.get $t17)))
@@ -4434,7 +4434,7 @@
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
-    (local.set $t12 (i32.add (global.get $SB) (i32.const 145))) ;; LSTR
+    (local.set $t12 (i32.add (global.get $SB) (i32.const 119))) ;; LSTR
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t12))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (global.get $P)) ;; save P
@@ -4452,7 +4452,7 @@
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
-    (local.set $t12 (i32.add (global.get $SB) (i32.const 152))) ;; LSTR
+    (local.set $t12 (i32.add (global.get $SB) (i32.const 125))) ;; LSTR
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t12))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (global.get $P)) ;; save P
@@ -4722,7 +4722,7 @@
     (local.set $t4 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)))) ;; stack-fill t4 from P!4
     (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)))) ;; stack-fill t5 from P!5
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
-    (local.set $t7 (i32.add (global.get $SB) (i32.const 159))) ;; LSTR
+    (local.set $t7 (i32.add (global.get $SB) (i32.const 131))) ;; LSTR
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
@@ -4771,7 +4771,7 @@
     (local.set $t4 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)))) ;; stack-fill t4 from P!4
     (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)))) ;; stack-fill t5 from P!5
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
-    (local.set $t7 (i32.add (global.get $SB) (i32.const 169))) ;; LSTR
+    (local.set $t7 (i32.add (global.get $SB) (i32.const 140))) ;; LSTR
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (global.get $P)) ;; save P
@@ -5139,14 +5139,14 @@
     (if (i32.ne  (local.get $t9) (local.get $t10)) (then
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     ))
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 180))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 150))) ;; LSTR
     ;; RES L242: save result, jump to RSTACK
     (local.set $t0 (local.get $t9))
       (local.set $__lab (i32.const 3)) (br $__dispatch)
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     )) ;; end block / LAB L243 = idx 2
     (if (i32.eq (local.get $__lab) (i32.const 2)) (then ;; L243
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 182))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 151))) ;; LSTR
     ;; RES L242: save result, jump to RSTACK
     (local.set $t0 (local.get $t9))
       (local.set $__lab (i32.const 3)) (br $__dispatch)
@@ -5222,7 +5222,7 @@
     (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)))) ;; stack-fill t5 from P!5
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
-    (local.set $t8 (i32.add (global.get $SB) (i32.const 184))) ;; LSTR
+    (local.set $t8 (i32.add (global.get $SB) (i32.const 152))) ;; LSTR
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (global.get $P)) ;; save P
@@ -5320,7 +5320,7 @@
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
-    (local.set $t13 (i32.add (global.get $SB) (i32.const 192))) ;; LSTR
+    (local.set $t13 (i32.add (global.get $SB) (i32.const 159))) ;; LSTR
     (local.set $t14 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)) (local.get $t13))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (global.get $P)) ;; save P
@@ -5342,7 +5342,7 @@
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
-    (local.set $t13 (i32.add (global.get $SB) (i32.const 213))) ;; LSTR
+    (local.set $t13 (i32.add (global.get $SB) (i32.const 179))) ;; LSTR
     (local.set $t14 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)) (local.get $t13))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (global.get $P)) ;; save P
@@ -5406,14 +5406,14 @@
     (if (i32.ne  (local.get $t14) (local.get $t15)) (then
       (local.set $__lab (i32.const 5)) (br $__dispatch)
     ))
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 234))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 200))) ;; LSTR
     ;; RES L252: save result, jump to RSTACK
     (local.set $t0 (local.get $t14))
       (local.set $__lab (i32.const 6)) (br $__dispatch)
       (local.set $__lab (i32.const 5)) (br $__dispatch)
     )) ;; end block / LAB L253 = idx 5
     (if (i32.eq (local.get $__lab) (i32.const 5)) (then ;; L253
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 236))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 201))) ;; LSTR
     ;; RES L252: save result, jump to RSTACK
     (local.set $t0 (local.get $t14))
       (local.set $__lab (i32.const 6)) (br $__dispatch)
@@ -5446,7 +5446,7 @@
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
-    (local.set $t13 (i32.add (global.get $SB) (i32.const 238))) ;; LSTR
+    (local.set $t13 (i32.add (global.get $SB) (i32.const 202))) ;; LSTR
     (local.set $t14 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
     (local.set $t16 (i32.const 2))
@@ -5519,14 +5519,14 @@
     (if (i32.eqz (local.get $t13)) (then
       (local.set $__lab (i32.const 12)) (br $__dispatch)
     ))
-    (local.set $t13 (i32.add (global.get $SB) (i32.const 242))) ;; LSTR
+    (local.set $t13 (i32.add (global.get $SB) (i32.const 205))) ;; LSTR
     ;; RES L258: save result, jump to RSTACK
     (local.set $t0 (local.get $t13))
       (local.set $__lab (i32.const 13)) (br $__dispatch)
       (local.set $__lab (i32.const 12)) (br $__dispatch)
     )) ;; end block / LAB L259 = idx 12
     (if (i32.eq (local.get $__lab) (i32.const 12)) (then ;; L259
-    (local.set $t13 (i32.add (global.get $SB) (i32.const 244))) ;; LSTR
+    (local.set $t13 (i32.add (global.get $SB) (i32.const 206))) ;; LSTR
     ;; RES L258: save result, jump to RSTACK
     (local.set $t0 (local.get $t13))
       (local.set $__lab (i32.const 13)) (br $__dispatch)
@@ -5691,7 +5691,7 @@
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
-    (local.set $t13 (i32.add (global.get $SB) (i32.const 246))) ;; LSTR
+    (local.set $t13 (i32.add (global.get $SB) (i32.const 207))) ;; LSTR
     (local.set $t14 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
     (local.set $t15 (i32.const 2))
     (local.set $t14 (i32.add (local.get $t14) (local.get $t15)))
@@ -5785,7 +5785,7 @@
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
-    (local.set $t11 (i32.add (global.get $SB) (i32.const 253))) ;; LSTR
+    (local.set $t11 (i32.add (global.get $SB) (i32.const 213))) ;; LSTR
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (global.get $P)) ;; save P
@@ -5836,7 +5836,7 @@
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
-    (local.set $t11 (i32.add (global.get $SB) (i32.const 260))) ;; LSTR
+    (local.set $t11 (i32.add (global.get $SB) (i32.const 219))) ;; LSTR
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1640))))
     (local.set $t13 (i32.const 4))
     (local.set $t12 (i32.sub (local.get $t12) (local.get $t13)))
@@ -6080,7 +6080,7 @@
     (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)))) ;; stack-fill t5 from P!5
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
-    (local.set $t8 (i32.add (global.get $SB) (i32.const 273))) ;; LSTR
+    (local.set $t8 (i32.add (global.get $SB) (i32.const 231))) ;; LSTR
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (global.get $P)) ;; save P
@@ -7485,7 +7485,7 @@
     (local.set $t3 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)))) ;; stack-fill t3 from P!3
     (local.set $t4 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)))) ;; stack-fill t4 from P!4
     (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)))) ;; stack-fill t5 from P!5
-    (local.set $t6 (i32.add (global.get $SB) (i32.const 282))) ;; LSTR
+    (local.set $t6 (i32.add (global.get $SB) (i32.const 240))) ;; LSTR
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)) (global.get $P)) ;; save P
@@ -7806,7 +7806,7 @@
     (local.set $t3 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)))) ;; stack-fill t3 from P!3
     (local.set $t4 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)))) ;; stack-fill t4 from P!4
     (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)))) ;; stack-fill t5 from P!5
-    (local.set $t6 (i32.add (global.get $SB) (i32.const 288))) ;; LSTR
+    (local.set $t6 (i32.add (global.get $SB) (i32.const 246))) ;; LSTR
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)) (global.get $P)) ;; save P
@@ -7827,7 +7827,7 @@
     (local.set $t3 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)))) ;; stack-fill t3 from P!3
     (local.set $t4 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)))) ;; stack-fill t4 from P!4
     (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)))) ;; stack-fill t5 from P!5
-    (local.set $t6 (i32.add (global.get $SB) (i32.const 294))) ;; LSTR
+    (local.set $t6 (i32.add (global.get $SB) (i32.const 251))) ;; LSTR
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1668))))
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6))
@@ -7939,7 +7939,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 305))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 261))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1668))))
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
@@ -7983,7 +7983,7 @@
     (local.set $t3 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)))) ;; stack-fill t3 from P!3
     (local.set $t4 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)))) ;; stack-fill t4 from P!4
     (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)))) ;; stack-fill t5 from P!5
-    (local.set $t6 (i32.add (global.get $SB) (i32.const 315))) ;; LSTR
+    (local.set $t6 (i32.add (global.get $SB) (i32.const 270))) ;; LSTR
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)) (global.get $P)) ;; save P
@@ -8288,7 +8288,7 @@
     (local.set $t3 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)))) ;; stack-fill t3 from P!3
     (local.set $t4 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)))) ;; stack-fill t4 from P!4
     (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)))) ;; stack-fill t5 from P!5
-    (local.set $t6 (i32.add (global.get $SB) (i32.const 322))) ;; LSTR
+    (local.set $t6 (i32.add (global.get $SB) (i32.const 276))) ;; LSTR
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)) (global.get $P)) ;; save P
@@ -8564,7 +8564,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 328))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 281))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
@@ -8644,7 +8644,7 @@
     (local.set $t3 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)))) ;; stack-fill t3 from P!3
     (local.set $t4 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)))) ;; stack-fill t4 from P!4
     (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)))) ;; stack-fill t5 from P!5
-    (local.set $t6 (i32.add (global.get $SB) (i32.const 338))) ;; LSTR
+    (local.set $t6 (i32.add (global.get $SB) (i32.const 290))) ;; LSTR
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)) (global.get $P)) ;; save P
@@ -8982,7 +8982,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 344))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 295))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
@@ -9274,7 +9274,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 354))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 304))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
@@ -9343,7 +9343,7 @@
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
-    (local.set $t11 (i32.add (global.get $SB) (i32.const 364))) ;; LSTR
+    (local.set $t11 (i32.add (global.get $SB) (i32.const 313))) ;; LSTR
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11))
@@ -10131,7 +10131,7 @@
     (local.set $t18 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 72)))) ;; stack-fill t18 from P!18
     (local.set $t19 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 76)))) ;; stack-fill t19 from P!19
     (local.set $t20 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 80)))) ;; stack-fill t20 from P!20
-    (local.set $t21 (i32.add (global.get $SB) (i32.const 375))) ;; LSTR
+    (local.set $t21 (i32.add (global.get $SB) (i32.const 323))) ;; LSTR
     (local.set $t22 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 84)) (local.get $t21))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 72)) (global.get $P)) ;; save P
@@ -10565,7 +10565,7 @@
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60)))) ;; stack-fill t15 from P!15
     (local.set $t16 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 64)))) ;; stack-fill t16 from P!16
     (local.set $t17 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 68)))) ;; stack-fill t17 from P!17
-    (local.set $t18 (i32.add (global.get $SB) (i32.const 384))) ;; LSTR
+    (local.set $t18 (i32.add (global.get $SB) (i32.const 331))) ;; LSTR
     (local.set $t19 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 72)) (local.get $t18))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60)) (global.get $P)) ;; save P
@@ -11112,7 +11112,7 @@
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
-    (local.set $t12 (i32.add (global.get $SB) (i32.const 393))) ;; LSTR
+    (local.set $t12 (i32.add (global.get $SB) (i32.const 339))) ;; LSTR
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t12))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (global.get $P)) ;; save P
@@ -11133,7 +11133,7 @@
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
-    (local.set $t12 (i32.add (global.get $SB) (i32.const 407))) ;; LSTR
+    (local.set $t12 (i32.add (global.get $SB) (i32.const 352))) ;; LSTR
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t12))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (global.get $P)) ;; save P
@@ -11175,7 +11175,7 @@
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
-    (local.set $t12 (i32.add (global.get $SB) (i32.const 415))) ;; LSTR
+    (local.set $t12 (i32.add (global.get $SB) (i32.const 360))) ;; LSTR
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t12))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (global.get $P)) ;; save P
@@ -11256,14 +11256,14 @@
     (if (i32.ne  (local.get $t14) (local.get $t15)) (then
       (local.set $__lab (i32.const 8)) (br $__dispatch)
     ))
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 430))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 375))) ;; LSTR
     ;; RES L463: save result, jump to RSTACK
     (local.set $t0 (local.get $t14))
       (local.set $__lab (i32.const 9)) (br $__dispatch)
       (local.set $__lab (i32.const 8)) (br $__dispatch)
     )) ;; end block / LAB L464 = idx 8
     (if (i32.eq (local.get $__lab) (i32.const 8)) (then ;; L464
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 432))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 376))) ;; LSTR
     ;; RES L463: save result, jump to RSTACK
     (local.set $t0 (local.get $t14))
       (local.set $__lab (i32.const 9)) (br $__dispatch)
@@ -11346,14 +11346,14 @@
     (if (i32.ne  (local.get $t14) (local.get $t15)) (then
       (local.set $__lab (i32.const 14)) (br $__dispatch)
     ))
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 434))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 377))) ;; LSTR
     ;; RES L469: save result, jump to RSTACK
     (local.set $t0 (local.get $t14))
       (local.set $__lab (i32.const 15)) (br $__dispatch)
       (local.set $__lab (i32.const 14)) (br $__dispatch)
     )) ;; end block / LAB L470 = idx 14
     (if (i32.eq (local.get $__lab) (i32.const 14)) (then ;; L470
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 436))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 378))) ;; LSTR
     ;; RES L469: save result, jump to RSTACK
     (local.set $t0 (local.get $t14))
       (local.set $__lab (i32.const 15)) (br $__dispatch)
@@ -11688,7 +11688,7 @@
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
     (local.set $t14 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)))) ;; stack-fill t14 from P!14
-    (local.set $t15 (i32.add (global.get $SB) (i32.const 438))) ;; LSTR
+    (local.set $t15 (i32.add (global.get $SB) (i32.const 379))) ;; LSTR
     (local.set $t16 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
     (local.set $t17 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60)) (local.get $t15))
@@ -11723,7 +11723,7 @@
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
     (local.set $t14 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)))) ;; stack-fill t14 from P!14
-    (local.set $t15 (i32.add (global.get $SB) (i32.const 448))) ;; LSTR
+    (local.set $t15 (i32.add (global.get $SB) (i32.const 388))) ;; LSTR
     (local.set $t16 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60)) (local.get $t15))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (global.get $P)) ;; save P
@@ -13408,7 +13408,7 @@
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
-    (local.set $t11 (i32.add (global.get $SB) (i32.const 467))) ;; LSTR
+    (local.set $t11 (i32.add (global.get $SB) (i32.const 406))) ;; LSTR
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (global.get $P)) ;; save P
@@ -14363,7 +14363,7 @@
     (local.set $t20 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 80)))) ;; stack-fill t20 from P!20
     (local.set $t21 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 84)))) ;; stack-fill t21 from P!21
     (local.set $t22 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 88)))) ;; stack-fill t22 from P!22
-    (local.set $t23 (i32.add (global.get $SB) (i32.const 474))) ;; LSTR
+    (local.set $t23 (i32.add (global.get $SB) (i32.const 412))) ;; LSTR
     (local.set $t24 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 80)) (global.get $P)) ;; save P
@@ -15906,7 +15906,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 488))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 425))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
@@ -19327,7 +19327,7 @@
     (local.set $t4 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)))) ;; stack-fill t4 from P!4
     (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)))) ;; stack-fill t5 from P!5
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
-    (local.set $t7 (i32.add (global.get $SB) (i32.const 497))) ;; LSTR
+    (local.set $t7 (i32.add (global.get $SB) (i32.const 433))) ;; LSTR
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (global.get $P)) ;; save P
@@ -19480,7 +19480,7 @@
     (local.set $t4 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)))) ;; stack-fill t4 from P!4
     (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)))) ;; stack-fill t5 from P!5
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
-    (local.set $t7 (i32.add (global.get $SB) (i32.const 504))) ;; LSTR
+    (local.set $t7 (i32.add (global.get $SB) (i32.const 439))) ;; LSTR
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
@@ -19721,7 +19721,7 @@
     (local.set $t4 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)))) ;; stack-fill t4 from P!4
     (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)))) ;; stack-fill t5 from P!5
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
-    (local.set $t7 (i32.add (global.get $SB) (i32.const 515))) ;; LSTR
+    (local.set $t7 (i32.add (global.get $SB) (i32.const 449))) ;; LSTR
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
@@ -19956,7 +19956,7 @@
     (local.set $t4 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)))) ;; stack-fill t4 from P!4
     (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)))) ;; stack-fill t5 from P!5
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
-    (local.set $t7 (i32.add (global.get $SB) (i32.const 525))) ;; LSTR
+    (local.set $t7 (i32.add (global.get $SB) (i32.const 458))) ;; LSTR
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
@@ -20143,7 +20143,7 @@
     (local.set $t4 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)))) ;; stack-fill t4 from P!4
     (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)))) ;; stack-fill t5 from P!5
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
-    (local.set $t7 (i32.add (global.get $SB) (i32.const 535))) ;; LSTR
+    (local.set $t7 (i32.add (global.get $SB) (i32.const 467))) ;; LSTR
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
@@ -20994,7 +20994,7 @@
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
-    (local.set $t11 (i32.add (global.get $SB) (i32.const 546))) ;; LSTR
+    (local.set $t11 (i32.add (global.get $SB) (i32.const 477))) ;; LSTR
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 380))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (global.get $P)) ;; save P
@@ -21016,7 +21016,7 @@
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
-    (local.set $t11 (i32.add (global.get $SB) (i32.const 554))) ;; LSTR
+    (local.set $t11 (i32.add (global.get $SB) (i32.const 485))) ;; LSTR
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (global.get $P)) ;; save P
@@ -21117,14 +21117,14 @@
     (if (i32.ne  (local.get $t15) (local.get $t16)) (then
       (local.set $__lab (i32.const 4)) (br $__dispatch)
     ))
-    (local.set $t15 (i32.add (global.get $SB) (i32.const 562))) ;; LSTR
+    (local.set $t15 (i32.add (global.get $SB) (i32.const 492))) ;; LSTR
     ;; RES L997: save result, jump to RSTACK
     (local.set $t0 (local.get $t15))
       (local.set $__lab (i32.const 5)) (br $__dispatch)
       (local.set $__lab (i32.const 4)) (br $__dispatch)
     )) ;; end block / LAB L998 = idx 4
     (if (i32.eq (local.get $__lab) (i32.const 4)) (then ;; L998
-    (local.set $t15 (i32.add (global.get $SB) (i32.const 564))) ;; LSTR
+    (local.set $t15 (i32.add (global.get $SB) (i32.const 493))) ;; LSTR
     ;; RES L997: save result, jump to RSTACK
     (local.set $t0 (local.get $t15))
       (local.set $__lab (i32.const 5)) (br $__dispatch)
@@ -21161,7 +21161,7 @@
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 566))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 494))) ;; LSTR
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
     (local.set $t16 (i32.const 2))
     (local.set $t15 (i32.add (local.get $t15) (local.get $t16)))
@@ -21179,7 +21179,7 @@
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 575))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 502))) ;; LSTR
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
     (local.set $t16 (i32.const 2))
     (local.set $t15 (i32.add (local.get $t15) (local.get $t16)))
@@ -21414,7 +21414,7 @@
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 583))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 509))) ;; LSTR
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (global.get $P)) ;; save P
@@ -22879,7 +22879,7 @@
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
-    (local.set $t11 (i32.add (global.get $SB) (i32.const 594))) ;; LSTR
+    (local.set $t11 (i32.add (global.get $SB) (i32.const 519))) ;; LSTR
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
     (local.set $t14 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)))) ;; stack-fill t14 from P!14
@@ -23819,7 +23819,7 @@
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 605))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 529))) ;; LSTR
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (global.get $P)) ;; save P
@@ -23904,7 +23904,7 @@
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
-    (local.set $t11 (i32.add (global.get $SB) (i32.const 611))) ;; LSTR
+    (local.set $t11 (i32.add (global.get $SB) (i32.const 535))) ;; LSTR
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 944))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (global.get $P)) ;; save P
@@ -24003,7 +24003,7 @@
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
     (local.set $t14 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)))) ;; stack-fill t14 from P!14
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60)))) ;; stack-fill t15 from P!15
-    (local.set $t16 (i32.add (global.get $SB) (i32.const 618))) ;; LSTR
+    (local.set $t16 (i32.add (global.get $SB) (i32.const 541))) ;; LSTR
     (local.set $t17 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
     (local.set $t18 (i32.const 2))
     (local.set $t17 (i32.add (local.get $t17) (local.get $t18)))
@@ -24049,14 +24049,14 @@
     (if (i32.ne  (local.get $t17) (local.get $t18)) (then
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     ))
-    (local.set $t17 (i32.add (global.get $SB) (i32.const 625))) ;; LSTR
+    (local.set $t17 (i32.add (global.get $SB) (i32.const 547))) ;; LSTR
     ;; RES L1147: save result, jump to RSTACK
     (local.set $t0 (local.get $t17))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     )) ;; end block / LAB L1148 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1148
-    (local.set $t17 (i32.add (global.get $SB) (i32.const 627))) ;; LSTR
+    (local.set $t17 (i32.add (global.get $SB) (i32.const 548))) ;; LSTR
     ;; RES L1147: save result, jump to RSTACK
     (local.set $t0 (local.get $t17))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
@@ -24095,7 +24095,7 @@
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
     (local.set $t14 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)))) ;; stack-fill t14 from P!14
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60)))) ;; stack-fill t15 from P!15
-    (local.set $t16 (i32.add (global.get $SB) (i32.const 629))) ;; LSTR
+    (local.set $t16 (i32.add (global.get $SB) (i32.const 549))) ;; LSTR
     (local.set $t17 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
     (local.set $t18 (i32.const 2))
     (local.set $t17 (i32.add (local.get $t17) (local.get $t18)))
@@ -24157,7 +24157,7 @@
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
     (local.set $t14 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)))) ;; stack-fill t14 from P!14
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60)))) ;; stack-fill t15 from P!15
-    (local.set $t16 (i32.add (global.get $SB) (i32.const 638))) ;; LSTR
+    (local.set $t16 (i32.add (global.get $SB) (i32.const 557))) ;; LSTR
     (local.set $t17 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
     (local.set $t18 (i32.const 2))
     (local.set $t17 (i32.add (local.get $t17) (local.get $t18)))
@@ -24231,14 +24231,14 @@
     (if (i32.ne  (local.get $t17) (local.get $t18)) (then
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     ))
-    (local.set $t17 (i32.add (global.get $SB) (i32.const 647))) ;; LSTR
+    (local.set $t17 (i32.add (global.get $SB) (i32.const 565))) ;; LSTR
     ;; RES L1164: save result, jump to RSTACK
     (local.set $t0 (local.get $t17))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     )) ;; end block / LAB L1165 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1165
-    (local.set $t17 (i32.add (global.get $SB) (i32.const 649))) ;; LSTR
+    (local.set $t17 (i32.add (global.get $SB) (i32.const 566))) ;; LSTR
     ;; RES L1164: save result, jump to RSTACK
     (local.set $t0 (local.get $t17))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
@@ -24277,7 +24277,7 @@
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
     (local.set $t14 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)))) ;; stack-fill t14 from P!14
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60)))) ;; stack-fill t15 from P!15
-    (local.set $t16 (i32.add (global.get $SB) (i32.const 651))) ;; LSTR
+    (local.set $t16 (i32.add (global.get $SB) (i32.const 567))) ;; LSTR
     (local.set $t17 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
     (local.set $t18 (i32.const 2))
     (local.set $t17 (i32.add (local.get $t17) (local.get $t18)))
@@ -24323,14 +24323,14 @@
     (if (i32.ne  (local.get $t17) (local.get $t18)) (then
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     ))
-    (local.set $t17 (i32.add (global.get $SB) (i32.const 659))) ;; LSTR
+    (local.set $t17 (i32.add (global.get $SB) (i32.const 574))) ;; LSTR
     ;; RES L1170: save result, jump to RSTACK
     (local.set $t0 (local.get $t17))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     )) ;; end block / LAB L1171 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1171
-    (local.set $t17 (i32.add (global.get $SB) (i32.const 661))) ;; LSTR
+    (local.set $t17 (i32.add (global.get $SB) (i32.const 575))) ;; LSTR
     ;; RES L1170: save result, jump to RSTACK
     (local.set $t0 (local.get $t17))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
@@ -24369,7 +24369,7 @@
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
     (local.set $t14 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)))) ;; stack-fill t14 from P!14
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60)))) ;; stack-fill t15 from P!15
-    (local.set $t16 (i32.add (global.get $SB) (i32.const 663))) ;; LSTR
+    (local.set $t16 (i32.add (global.get $SB) (i32.const 576))) ;; LSTR
     (local.set $t17 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
     (local.set $t18 (i32.const 2))
     (local.set $t17 (i32.add (local.get $t17) (local.get $t18)))
@@ -24415,14 +24415,14 @@
     (if (i32.ne  (local.get $t17) (local.get $t18)) (then
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     ))
-    (local.set $t17 (i32.add (global.get $SB) (i32.const 671))) ;; LSTR
+    (local.set $t17 (i32.add (global.get $SB) (i32.const 584))) ;; LSTR
     ;; RES L1176: save result, jump to RSTACK
     (local.set $t0 (local.get $t17))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     )) ;; end block / LAB L1177 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1177
-    (local.set $t17 (i32.add (global.get $SB) (i32.const 673))) ;; LSTR
+    (local.set $t17 (i32.add (global.get $SB) (i32.const 585))) ;; LSTR
     ;; RES L1176: save result, jump to RSTACK
     (local.set $t0 (local.get $t17))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
@@ -24553,7 +24553,7 @@
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 675))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 586))) ;; LSTR
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
     (local.set $t16 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
     (local.set $t17 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
@@ -24578,7 +24578,7 @@
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 678))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 588))) ;; LSTR
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
     (local.set $t16 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14))
@@ -24594,7 +24594,7 @@
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 680))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 589))) ;; LSTR
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
     (local.set $t16 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14))
@@ -24616,7 +24616,7 @@
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 683))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 591))) ;; LSTR
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
     (local.set $t16 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14))
@@ -24632,7 +24632,7 @@
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 685))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 593))) ;; LSTR
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (global.get $P)) ;; save P
@@ -24646,7 +24646,7 @@
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 687))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 594))) ;; LSTR
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (global.get $P)) ;; save P
@@ -24660,7 +24660,7 @@
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 689))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 595))) ;; LSTR
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (global.get $P)) ;; save P
@@ -24674,7 +24674,7 @@
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 691))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 596))) ;; LSTR
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (global.get $P)) ;; save P
@@ -24688,7 +24688,7 @@
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 693))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 597))) ;; LSTR
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (global.get $P)) ;; save P
@@ -24702,7 +24702,7 @@
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 695))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 598))) ;; LSTR
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (global.get $P)) ;; save P
@@ -24716,7 +24716,7 @@
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 697))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 599))) ;; LSTR
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (global.get $P)) ;; save P
@@ -24730,7 +24730,7 @@
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 699))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 600))) ;; LSTR
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (global.get $P)) ;; save P
@@ -24744,7 +24744,7 @@
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 701))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 601))) ;; LSTR
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (global.get $P)) ;; save P
@@ -24758,7 +24758,7 @@
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 703))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 602))) ;; LSTR
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (global.get $P)) ;; save P
@@ -24772,7 +24772,7 @@
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 705))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 603))) ;; LSTR
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (global.get $P)) ;; save P
@@ -24786,7 +24786,7 @@
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 707))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 604))) ;; LSTR
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (global.get $P)) ;; save P
@@ -24800,7 +24800,7 @@
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 709))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 605))) ;; LSTR
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (global.get $P)) ;; save P
@@ -24814,7 +24814,7 @@
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 711))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 606))) ;; LSTR
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (global.get $P)) ;; save P
@@ -24828,7 +24828,7 @@
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 713))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 607))) ;; LSTR
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (global.get $P)) ;; save P
@@ -24842,7 +24842,7 @@
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 715))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 608))) ;; LSTR
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (global.get $P)) ;; save P
@@ -24856,7 +24856,7 @@
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 717))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 609))) ;; LSTR
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (global.get $P)) ;; save P
@@ -24870,7 +24870,7 @@
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 719))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 610))) ;; LSTR
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (global.get $P)) ;; save P
@@ -24884,7 +24884,7 @@
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 721))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 611))) ;; LSTR
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (global.get $P)) ;; save P
@@ -24957,7 +24957,7 @@
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 723))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 612))) ;; LSTR
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40))))
     (local.set $t16 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14))
@@ -24973,7 +24973,7 @@
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
-    (local.set $t14 (i32.add (global.get $SB) (i32.const 725))) ;; LSTR
+    (local.set $t14 (i32.add (global.get $SB) (i32.const 613))) ;; LSTR
     (local.set $t15 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
     (local.set $t16 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14))
@@ -25044,7 +25044,7 @@
     (local.set $t5 (i32.const 0))
     (local.set $t4 (i32.add (local.get $t4) (local.get $t5)))
     (local.set $t4 (i32.load (i32.shl (local.get $t4) (i32.const 2))))
-    (local.set $t5 (i32.add (global.get $SB) (i32.const 728))) ;; LSTR
+    (local.set $t5 (i32.add (global.get $SB) (i32.const 615))) ;; LSTR
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (local.get $t4)) ;; STORE slot 4
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t5)) ;; STORE slot 5
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
@@ -25076,7 +25076,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 730))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 616))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -25134,7 +25134,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 732))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 618))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -25150,7 +25150,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 734))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 620))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -25208,7 +25208,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 736))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 622))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -25224,7 +25224,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 739))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 624))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -25253,7 +25253,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 741))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 626))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -25287,7 +25287,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 743))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 627))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -25316,7 +25316,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 745))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 629))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -25368,7 +25368,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 748))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 631))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -25402,7 +25402,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 750))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 632))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -25429,7 +25429,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 752))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 634))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -25461,7 +25461,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 754))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 635))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -25477,7 +25477,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 757))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 638))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -25493,7 +25493,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 760))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 641))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -25506,7 +25506,7 @@
     (return (i32.const 0))
     )) ;; end block / LAB L1217 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1217
-    (local.set $t6 (i32.add (global.get $SB) (i32.const 764))) ;; LSTR
+    (local.set $t6 (i32.add (global.get $SB) (i32.const 644))) ;; LSTR
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t6))
     (local.set $t5 (local.get $t6))
     (local.set $t6 (i32.const 0)) ;; LF L1205 (disp)
@@ -25514,7 +25514,7 @@
       (br $__dispatch) ;; GOTO (computed)
     )) ;; end block / LAB L1218 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1218
-    (local.set $t6 (i32.add (global.get $SB) (i32.const 766))) ;; LSTR
+    (local.set $t6 (i32.add (global.get $SB) (i32.const 645))) ;; LSTR
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t6))
     (local.set $t5 (local.get $t6))
     (local.set $t6 (i32.const 0)) ;; LF L1205 (disp)
@@ -25522,7 +25522,7 @@
       (br $__dispatch) ;; GOTO (computed)
     )) ;; end block / LAB L1219 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1219
-    (local.set $t6 (i32.add (global.get $SB) (i32.const 768))) ;; LSTR
+    (local.set $t6 (i32.add (global.get $SB) (i32.const 646))) ;; LSTR
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t6))
     (local.set $t5 (local.get $t6))
     (local.set $t6 (i32.const 0)) ;; LF L1205 (disp)
@@ -25530,7 +25530,7 @@
       (br $__dispatch) ;; GOTO (computed)
     )) ;; end block / LAB L1220 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1220
-    (local.set $t6 (i32.add (global.get $SB) (i32.const 770))) ;; LSTR
+    (local.set $t6 (i32.add (global.get $SB) (i32.const 647))) ;; LSTR
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t6))
     (local.set $t5 (local.get $t6))
     (local.set $t6 (i32.const 0)) ;; LF L1205 (disp)
@@ -25538,7 +25538,7 @@
       (br $__dispatch) ;; GOTO (computed)
     )) ;; end block / LAB L1221 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1221
-    (local.set $t6 (i32.add (global.get $SB) (i32.const 772))) ;; LSTR
+    (local.set $t6 (i32.add (global.get $SB) (i32.const 649))) ;; LSTR
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t6))
     (local.set $t5 (local.get $t6))
     (local.set $t6 (i32.const 0)) ;; LF L1205 (disp)
@@ -25546,7 +25546,7 @@
       (br $__dispatch) ;; GOTO (computed)
     )) ;; end block / LAB L1222 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1222
-    (local.set $t6 (i32.add (global.get $SB) (i32.const 774))) ;; LSTR
+    (local.set $t6 (i32.add (global.get $SB) (i32.const 650))) ;; LSTR
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t6))
     (local.set $t5 (local.get $t6))
     (local.set $t6 (i32.const 0)) ;; LF L1205 (disp)
@@ -25554,7 +25554,7 @@
       (br $__dispatch) ;; GOTO (computed)
     )) ;; end block / LAB L1223 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1223
-    (local.set $t6 (i32.add (global.get $SB) (i32.const 776))) ;; LSTR
+    (local.set $t6 (i32.add (global.get $SB) (i32.const 651))) ;; LSTR
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t6))
     (local.set $t5 (local.get $t6))
     (local.set $t6 (i32.const 0)) ;; LF L1205 (disp)
@@ -25562,7 +25562,7 @@
       (br $__dispatch) ;; GOTO (computed)
     )) ;; end block / LAB L1224 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1224
-    (local.set $t6 (i32.add (global.get $SB) (i32.const 778))) ;; LSTR
+    (local.set $t6 (i32.add (global.get $SB) (i32.const 652))) ;; LSTR
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t6))
     (local.set $t5 (local.get $t6))
     (local.set $t6 (i32.const 0)) ;; LF L1205 (disp)
@@ -25570,7 +25570,7 @@
       (br $__dispatch) ;; GOTO (computed)
     )) ;; end block / LAB L1225 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1225
-    (local.set $t6 (i32.add (global.get $SB) (i32.const 780))) ;; LSTR
+    (local.set $t6 (i32.add (global.get $SB) (i32.const 653))) ;; LSTR
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t6))
     (local.set $t5 (local.get $t6))
     (local.set $t6 (i32.const 0)) ;; LF L1205 (disp)
@@ -25578,7 +25578,7 @@
       (br $__dispatch) ;; GOTO (computed)
     )) ;; end block / LAB L1226 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1226
-    (local.set $t6 (i32.add (global.get $SB) (i32.const 782))) ;; LSTR
+    (local.set $t6 (i32.add (global.get $SB) (i32.const 654))) ;; LSTR
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t6))
     (local.set $t5 (local.get $t6))
     (local.set $t6 (i32.const 0)) ;; LF L1205 (disp)
@@ -25586,7 +25586,7 @@
       (br $__dispatch) ;; GOTO (computed)
     )) ;; end block / LAB L1227 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1227
-    (local.set $t6 (i32.add (global.get $SB) (i32.const 784))) ;; LSTR
+    (local.set $t6 (i32.add (global.get $SB) (i32.const 655))) ;; LSTR
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t6))
     (local.set $t5 (local.get $t6))
     (local.set $t6 (i32.const 0)) ;; LF L1205 (disp)
@@ -25594,7 +25594,7 @@
       (br $__dispatch) ;; GOTO (computed)
     )) ;; end block / LAB L1228 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1228
-    (local.set $t6 (i32.add (global.get $SB) (i32.const 786))) ;; LSTR
+    (local.set $t6 (i32.add (global.get $SB) (i32.const 656))) ;; LSTR
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t6))
     (local.set $t5 (local.get $t6))
     (local.set $t6 (i32.const 0)) ;; LF L1205 (disp)
@@ -25602,7 +25602,7 @@
       (br $__dispatch) ;; GOTO (computed)
     )) ;; end block / LAB L1229 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1229
-    (local.set $t6 (i32.add (global.get $SB) (i32.const 788))) ;; LSTR
+    (local.set $t6 (i32.add (global.get $SB) (i32.const 657))) ;; LSTR
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t6))
     (local.set $t5 (local.get $t6))
     (local.set $t6 (i32.const 0)) ;; LF L1205 (disp)
@@ -25610,7 +25610,7 @@
       (br $__dispatch) ;; GOTO (computed)
     )) ;; end block / LAB L1230 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1230
-    (local.set $t6 (i32.add (global.get $SB) (i32.const 790))) ;; LSTR
+    (local.set $t6 (i32.add (global.get $SB) (i32.const 658))) ;; LSTR
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t6))
     (local.set $t5 (local.get $t6))
     (local.set $t6 (i32.const 0)) ;; LF L1205 (disp)
@@ -25618,7 +25618,7 @@
       (br $__dispatch) ;; GOTO (computed)
     )) ;; end block / LAB L1231 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1231
-    (local.set $t6 (i32.add (global.get $SB) (i32.const 792))) ;; LSTR
+    (local.set $t6 (i32.add (global.get $SB) (i32.const 659))) ;; LSTR
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t6))
     (local.set $t5 (local.get $t6))
     (local.set $t6 (i32.const 0)) ;; LF L1205 (disp)
@@ -25626,7 +25626,7 @@
       (br $__dispatch) ;; GOTO (computed)
     )) ;; end block / LAB L1232 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1232
-    (local.set $t6 (i32.add (global.get $SB) (i32.const 794))) ;; LSTR
+    (local.set $t6 (i32.add (global.get $SB) (i32.const 660))) ;; LSTR
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t6))
     (local.set $t5 (local.get $t6))
     (local.set $t6 (i32.const 0)) ;; LF L1205 (disp)
@@ -25634,7 +25634,7 @@
       (br $__dispatch) ;; GOTO (computed)
     )) ;; end block / LAB L1233 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1233
-    (local.set $t6 (i32.add (global.get $SB) (i32.const 796))) ;; LSTR
+    (local.set $t6 (i32.add (global.get $SB) (i32.const 661))) ;; LSTR
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t6))
     (local.set $t5 (local.get $t6))
     (local.set $t6 (i32.const 0)) ;; LF L1205 (disp)
@@ -25642,7 +25642,7 @@
       (br $__dispatch) ;; GOTO (computed)
     )) ;; end block / LAB L1234 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1234
-    (local.set $t6 (i32.add (global.get $SB) (i32.const 798))) ;; LSTR
+    (local.set $t6 (i32.add (global.get $SB) (i32.const 662))) ;; LSTR
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t6))
     (local.set $t5 (local.get $t6))
     (local.set $t6 (i32.const 0)) ;; LF L1205 (disp)
@@ -25650,7 +25650,7 @@
       (br $__dispatch) ;; GOTO (computed)
     )) ;; end block / LAB L1235 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1235
-    (local.set $t6 (i32.add (global.get $SB) (i32.const 800))) ;; LSTR
+    (local.set $t6 (i32.add (global.get $SB) (i32.const 663))) ;; LSTR
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t6))
     (local.set $t5 (local.get $t6))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
@@ -25677,7 +25677,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 802))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 664))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
@@ -25731,7 +25731,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 804))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 666))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -25760,7 +25760,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 806))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 667))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -25776,7 +25776,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 808))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 668))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -25828,7 +25828,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 811))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 670))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -25874,7 +25874,7 @@
     (if (i32.ne  (local.get $t9) (local.get $t10)) (then
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     ))
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 813))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 671))) ;; LSTR
     ;; RES L1243: save result, jump to RSTACK
     (local.set $t0 (local.get $t9))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
@@ -25886,7 +25886,7 @@
     (if (i32.ne  (local.get $t9) (local.get $t10)) (then
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     ))
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 816))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 673))) ;; LSTR
     ;; RES L1245: save result, jump to RSTACK
     (local.set $t0 (local.get $t9))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
@@ -25898,14 +25898,14 @@
     (if (i32.ne  (local.get $t9) (local.get $t10)) (then
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     ))
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 818))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 674))) ;; LSTR
     ;; RES L1247: save result, jump to RSTACK
     (local.set $t0 (local.get $t9))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     )) ;; end block / LAB L1248 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1248
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 821))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 676))) ;; LSTR
     ;; RES L1247: save result, jump to RSTACK
     (local.set $t0 (local.get $t9))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
@@ -25955,7 +25955,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 824))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 678))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -25987,7 +25987,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 826))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 680))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -26016,7 +26016,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 829))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 682))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -26043,7 +26043,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 832))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 684))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -26075,7 +26075,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 835))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 686))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -26091,7 +26091,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 837))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 688))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -26107,7 +26107,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 839))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 690))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -26123,7 +26123,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 841))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 692))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -26139,7 +26139,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 843))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 693))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -26155,7 +26155,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 846))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 695))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -26171,7 +26171,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 849))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 697))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -26187,7 +26187,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 852))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 699))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -26245,14 +26245,14 @@
     (if (i32.ne  (local.get $t9) (local.get $t10)) (then
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     ))
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 856))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 702))) ;; LSTR
     ;; RES L1260: save result, jump to RSTACK
     (local.set $t0 (local.get $t9))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     )) ;; end block / LAB L1261 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1261
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 861))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 706))) ;; LSTR
     ;; RES L1260: save result, jump to RSTACK
     (local.set $t0 (local.get $t9))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
@@ -26309,7 +26309,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 866))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 710))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -26325,7 +26325,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 869))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 712))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -26354,7 +26354,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 872))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 714))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -26370,7 +26370,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 874))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 716))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -26386,7 +26386,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 878))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 719))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -26402,7 +26402,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 881))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 721))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -26431,7 +26431,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 885))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 724))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -26447,7 +26447,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 888))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 726))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -26476,7 +26476,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 890))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 728))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -26505,7 +26505,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 892))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 729))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -26541,7 +26541,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 894))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 731))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -26573,7 +26573,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 896))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 733))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -26605,7 +26605,7 @@
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
-    (local.set $t9 (i32.add (global.get $SB) (i32.const 899))) ;; LSTR
+    (local.set $t9 (i32.add (global.get $SB) (i32.const 735))) ;; LSTR
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
@@ -26778,7 +26778,7 @@
     (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)))) ;; stack-fill t5 from P!5
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
-    (local.set $t8 (i32.add (global.get $SB) (i32.const 901))) ;; LSTR
+    (local.set $t8 (i32.add (global.get $SB) (i32.const 736))) ;; LSTR
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (global.get $P)) ;; save P
@@ -26815,7 +26815,7 @@
     (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)))) ;; stack-fill t5 from P!5
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
-    (local.set $t8 (i32.add (global.get $SB) (i32.const 903))) ;; LSTR
+    (local.set $t8 (i32.add (global.get $SB) (i32.const 737))) ;; LSTR
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (global.get $P)) ;; save P
@@ -26880,7 +26880,7 @@
     (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)))) ;; stack-fill t5 from P!5
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
-    (local.set $t8 (i32.add (global.get $SB) (i32.const 905))) ;; LSTR
+    (local.set $t8 (i32.add (global.get $SB) (i32.const 738))) ;; LSTR
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8))
@@ -26961,7 +26961,7 @@
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
-    (local.set $t11 (i32.add (global.get $SB) (i32.const 907))) ;; LSTR
+    (local.set $t11 (i32.add (global.get $SB) (i32.const 739))) ;; LSTR
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11))
@@ -27000,7 +27000,7 @@
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
-    (local.set $t11 (i32.add (global.get $SB) (i32.const 909))) ;; LSTR
+    (local.set $t11 (i32.add (global.get $SB) (i32.const 740))) ;; LSTR
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (global.get $P)) ;; save P
@@ -27038,7 +27038,7 @@
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
-    (local.set $t11 (i32.add (global.get $SB) (i32.const 911))) ;; LSTR
+    (local.set $t11 (i32.add (global.get $SB) (i32.const 741))) ;; LSTR
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11))
@@ -27058,7 +27058,7 @@
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 914))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 743))) ;; LSTR
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
     (local.set $t12 (i32.const 1))
     (local.set $t11 (i32.add (local.get $t11) (local.get $t12)))
@@ -27081,7 +27081,7 @@
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 917))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 745))) ;; LSTR
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
     (local.set $t12 (i32.const 2))
     (local.set $t11 (i32.add (local.get $t11) (local.get $t12)))
@@ -27101,7 +27101,7 @@
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 919))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 746))) ;; LSTR
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (global.get $P)) ;; save P
@@ -27117,7 +27117,7 @@
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 921))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 748))) ;; LSTR
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (global.get $P)) ;; save P
@@ -27205,7 +27205,7 @@
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
     (local.set $t14 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)))) ;; stack-fill t14 from P!14
-    (local.set $t15 (i32.add (global.get $SB) (i32.const 924))) ;; LSTR
+    (local.set $t15 (i32.add (global.get $SB) (i32.const 750))) ;; LSTR
     (local.set $t16 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60)) (local.get $t15))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (global.get $P)) ;; save P
@@ -27240,7 +27240,7 @@
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
     (local.set $t14 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)))) ;; stack-fill t14 from P!14
-    (local.set $t15 (i32.add (global.get $SB) (i32.const 926))) ;; LSTR
+    (local.set $t15 (i32.add (global.get $SB) (i32.const 751))) ;; LSTR
     (local.set $t16 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60)) (local.get $t15))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (global.get $P)) ;; save P
@@ -27254,7 +27254,7 @@
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
     (local.set $t14 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)))) ;; stack-fill t14 from P!14
-    (local.set $t15 (i32.add (global.get $SB) (i32.const 928))) ;; LSTR
+    (local.set $t15 (i32.add (global.get $SB) (i32.const 752))) ;; LSTR
     (local.set $t16 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60)) (local.get $t15))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (global.get $P)) ;; save P
@@ -27268,7 +27268,7 @@
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
     (local.set $t14 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)))) ;; stack-fill t14 from P!14
-    (local.set $t15 (i32.add (global.get $SB) (i32.const 930))) ;; LSTR
+    (local.set $t15 (i32.add (global.get $SB) (i32.const 753))) ;; LSTR
     (local.set $t16 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60)) (local.get $t15))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (global.get $P)) ;; save P
@@ -27392,7 +27392,7 @@
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 932))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 754))) ;; LSTR
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (global.get $P)) ;; save P
@@ -27595,7 +27595,7 @@
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 934))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 755))) ;; LSTR
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 356))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (global.get $P)) ;; save P
@@ -27626,7 +27626,7 @@
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 937))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 757))) ;; LSTR
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 356))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (global.get $P)) ;; save P
@@ -27657,7 +27657,7 @@
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 939))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 758))) ;; LSTR
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 356))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (global.get $P)) ;; save P
@@ -27724,7 +27724,7 @@
     (if (i32.ne  (local.get $t10) (local.get $t11)) (then
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     ))
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 941))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 759))) ;; LSTR
     ;; RES L1314: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
@@ -27736,14 +27736,14 @@
     (if (i32.ne  (local.get $t10) (local.get $t11)) (then
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     ))
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 943))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 760))) ;; LSTR
     ;; RES L1316: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     )) ;; end block / LAB L1317 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1317
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 945))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 761))) ;; LSTR
     ;; RES L1316: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
@@ -27807,7 +27807,7 @@
     (if (i32.ne  (local.get $t10) (local.get $t11)) (then
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     ))
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 947))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 762))) ;; LSTR
     ;; RES L1322: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
@@ -27819,7 +27819,7 @@
     (if (i32.ne  (local.get $t10) (local.get $t11)) (then
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     ))
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 950))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 764))) ;; LSTR
     ;; RES L1324: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
@@ -27831,14 +27831,14 @@
     (if (i32.ne  (local.get $t10) (local.get $t11)) (then
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     ))
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 952))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 766))) ;; LSTR
     ;; RES L1326: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     )) ;; end block / LAB L1327 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1327
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 954))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 767))) ;; LSTR
     ;; RES L1326: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
@@ -28004,7 +28004,7 @@
     (if (i32.ne  (local.get $t10) (local.get $t11)) (then
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     ))
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 956))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 768))) ;; LSTR
     ;; RES L1335: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
@@ -28016,14 +28016,14 @@
     (if (i32.ne  (local.get $t10) (local.get $t11)) (then
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     ))
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 958))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 769))) ;; LSTR
     ;; RES L1337: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     )) ;; end block / LAB L1338 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1338
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 960))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 770))) ;; LSTR
     ;; RES L1337: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
@@ -28104,7 +28104,7 @@
     (if (i32.ne  (local.get $t10) (local.get $t11)) (then
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     ))
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 963))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 772))) ;; LSTR
     ;; RES L1342: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
@@ -28116,14 +28116,14 @@
     (if (i32.ne  (local.get $t10) (local.get $t11)) (then
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     ))
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 965))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 773))) ;; LSTR
     ;; RES L1344: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     )) ;; end block / LAB L1345 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1345
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 967))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 774))) ;; LSTR
     ;; RES L1344: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
@@ -28275,14 +28275,14 @@
     (if (i32.ne  (local.get $t10) (local.get $t11)) (then
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     ))
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 970))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 776))) ;; LSTR
     ;; RES L1352: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     )) ;; end block / LAB L1353 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1353
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 972))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 777))) ;; LSTR
     ;; RES L1352: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
@@ -28353,14 +28353,14 @@
     (if (i32.ne  (local.get $t10) (local.get $t11)) (then
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     ))
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 974))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 778))) ;; LSTR
     ;; RES L1356: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     )) ;; end block / LAB L1357 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1357
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 976))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 779))) ;; LSTR
     ;; RES L1356: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
@@ -28420,7 +28420,7 @@
     (if (i32.ne  (local.get $t10) (local.get $t11)) (then
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     ))
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 978))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 780))) ;; LSTR
     ;; RES L1363: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
@@ -28432,7 +28432,7 @@
     (if (i32.ne  (local.get $t10) (local.get $t11)) (then
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     ))
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 980))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 781))) ;; LSTR
     ;; RES L1365: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
@@ -28444,7 +28444,7 @@
     (if (i32.ne  (local.get $t10) (local.get $t11)) (then
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     ))
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 982))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 782))) ;; LSTR
     ;; RES L1367: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
@@ -28456,14 +28456,14 @@
     (if (i32.ne  (local.get $t10) (local.get $t11)) (then
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     ))
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 984))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 783))) ;; LSTR
     ;; RES L1369: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     )) ;; end block / LAB L1370 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1370
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 987))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 785))) ;; LSTR
     ;; RES L1369: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
@@ -28635,14 +28635,14 @@
     (if (i32.ne  (local.get $t10) (local.get $t11)) (then
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     ))
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 989))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 787))) ;; LSTR
     ;; RES L1377: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     )) ;; end block / LAB L1378 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1378
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 991))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 788))) ;; LSTR
     ;; RES L1377: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
@@ -28713,14 +28713,14 @@
     (if (i32.ne  (local.get $t10) (local.get $t11)) (then
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     ))
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 993))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 789))) ;; LSTR
     ;; RES L1381: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     )) ;; end block / LAB L1382 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1382
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 995))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 790))) ;; LSTR
     ;; RES L1381: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
@@ -28791,14 +28791,14 @@
     (if (i32.ne  (local.get $t10) (local.get $t11)) (then
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     ))
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 997))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 791))) ;; LSTR
     ;; RES L1385: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     )) ;; end block / LAB L1386 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1386
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 999))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 792))) ;; LSTR
     ;; RES L1385: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
@@ -28869,14 +28869,14 @@
     (if (i32.ne  (local.get $t10) (local.get $t11)) (then
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     ))
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 1001))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 793))) ;; LSTR
     ;; RES L1389: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     )) ;; end block / LAB L1390 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1390
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 1003))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 794))) ;; LSTR
     ;; RES L1389: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
@@ -28947,14 +28947,14 @@
     (if (i32.ne  (local.get $t10) (local.get $t11)) (then
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     ))
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 1005))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 795))) ;; LSTR
     ;; RES L1393: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     )) ;; end block / LAB L1394 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1394
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 1007))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 796))) ;; LSTR
     ;; RES L1393: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
@@ -29025,14 +29025,14 @@
     (if (i32.ne  (local.get $t10) (local.get $t11)) (then
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     ))
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 1009))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 797))) ;; LSTR
     ;; RES L1397: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     )) ;; end block / LAB L1398 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1398
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 1011))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 798))) ;; LSTR
     ;; RES L1397: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
@@ -29189,14 +29189,14 @@
     (if (i32.ne  (local.get $t10) (local.get $t11)) (then
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     ))
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 1013))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 799))) ;; LSTR
     ;; RES L1405: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     )) ;; end block / LAB L1406 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1406
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 1015))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 800))) ;; LSTR
     ;; RES L1405: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
@@ -29673,14 +29673,14 @@
     (if (i32.ne  (local.get $t10) (local.get $t11)) (then
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     ))
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 1017))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 801))) ;; LSTR
     ;; RES L1428: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     )) ;; end block / LAB L1429 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1429
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 1020))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 803))) ;; LSTR
     ;; RES L1428: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
@@ -29817,14 +29817,14 @@
     (if (i32.ne  (local.get $t10) (local.get $t11)) (then
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     ))
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 1023))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 805))) ;; LSTR
     ;; RES L1436: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
       (local.set $__lab (i32.const 0)) (br $__dispatch)
     )) ;; end block / LAB L1437 = idx 0
     (if (i32.eq (local.get $__lab) (i32.const 0)) (then ;; L1437
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 1025))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 806))) ;; LSTR
     ;; RES L1436: save result, jump to RSTACK
     (local.set $t0 (local.get $t10))
       (local.set $__lab (i32.const 0)) (br $__dispatch)
@@ -29862,7 +29862,7 @@
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 1027))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 807))) ;; LSTR
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (global.get $P)) ;; save P
@@ -29961,7 +29961,7 @@
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 1029))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 808))) ;; LSTR
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10))
@@ -29979,7 +29979,7 @@
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 1031))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 810))) ;; LSTR
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (global.get $P)) ;; save P
@@ -30015,7 +30015,7 @@
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 1034))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 812))) ;; LSTR
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (global.get $P)) ;; save P
@@ -30080,7 +30080,7 @@
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 1037))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 814))) ;; LSTR
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (global.get $P)) ;; save P
@@ -30461,7 +30461,7 @@
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
-    (local.set $t12 (i32.add (global.get $SB) (i32.const 1039))) ;; LSTR
+    (local.set $t12 (i32.add (global.get $SB) (i32.const 815))) ;; LSTR
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 196))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t12))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (global.get $P)) ;; save P
@@ -30663,14 +30663,14 @@
   ;; --- function table slice (passive) ---
   (elem $ftab funcref (ref.func $fn_L10) (ref.func $fn_L11) (ref.func $fn_L12) (ref.func $fn_L13) (ref.func $fn_L33) (ref.func $fn_L37) (ref.func $fn_L194) (ref.func $fn_L195) (ref.func $fn_L196) (ref.func $fn_L197) (ref.func $fn_L198) (ref.func $fn_L199) (ref.func $fn_L200) (ref.func $fn_L201) (ref.func $fn_L202) (ref.func $fn_L203) (ref.func $fn_L204) (ref.func $fn_L205) (ref.func $fn_L206) (ref.func $fn_L207) (ref.func $fn_L208) (ref.func $fn_L209) (ref.func $fn_L210) (ref.func $fn_L211) (ref.func $fn_L212) (ref.func $fn_L213) (ref.func $fn_L214) (ref.func $fn_L215) (ref.func $fn_L216) (ref.func $fn_L217) (ref.func $fn_L218) (ref.func $fn_L219) (ref.func $fn_L220) (ref.func $fn_L221) (ref.func $fn_L222) (ref.func $fn_L223) (ref.func $fn_L224) (ref.func $fn_L570) (ref.func $fn_L571) (ref.func $fn_L572) (ref.func $fn_L573) (ref.func $fn_L651) (ref.func $fn_L682) (ref.func $fn_L683) (ref.func $fn_L684) (ref.func $fn_L685) (ref.func $fn_L686) (ref.func $fn_L687) (ref.func $fn_L688) (ref.func $fn_L689) (ref.func $fn_L921) (ref.func $fn_L973) (ref.func $fn_L975) (ref.func $fn_L976) (ref.func $fn_L977) (ref.func $fn_L978) (ref.func $fn_L979) (ref.func $fn_L980) (ref.func $fn_L981) (ref.func $fn_L982) (ref.func $fn_L983) (ref.func $fn_L984) (ref.func $fn_L985) (ref.func $fn_L986) (ref.func $fn_L987) (ref.func $fn_L988) (ref.func $fn_L989))
 
-  ;; static data — passive segment (1041 words)
-  (data $stat "\06\00\00\00\45\72\72\6F\72\20\00\00\09\00\00\00\69\6E\20\25\73\20\25\73\20\00\00\00\07\00\00\00\72\6F\75\74\69\6E\65\00\08\00\00\00\66\75\6E\63\74\69\6F\6E\00\00\00\00\00\00\00\00\05\00\00\00\6E\65\61\72\20\00\00\00\02\00\00\00\25\73\00\00\06\00\00\00\5B\25\6E\5D\3A\20\00\00\15\00\00\00\0A\43\6F\6D\70\69\6C\61\74\69\6F\6E\20\61\62\6F\72\74\65\64\0A\00\00\00\15\00\00\00\4D\6F\72\65\20\77\6F\72\6B\73\70\61\63\65\20\6E\65\65\64\65\64\00\00\00\26\00\00\00\53\59\53\54\45\4D\20\45\52\52\4F\52\3A\20\6C\61\73\74\74\72\6E\67\6E\3D\25\69\33\20\20\20\63\67\67\3D\25\69\33\0A\00\00\1E\00\00\00\53\79\73\74\65\6D\20\65\72\72\6F\72\20\69\6E\20\54\72\61\6E\73\2C\20\6F\70\20\3D\20\25\73\00\00\18\00\00\00\4C\68\73\20\61\6E\64\20\72\68\73\20\64\6F\20\6E\6F\74\20\6D\61\74\63\68\15\00\00\00\53\79\73\74\65\6D\20\65\72\72\6F\72\20\69\6E\20\74\72\61\6E\73\00\00\00\23\00\00\00\47\6C\6F\62\61\6C\20\6E\75\6D\62\65\72\20\25\6E\20\74\6F\6F\20\6C\61\72\67\65\20\66\6F\72\3A\20\25\73\0A\00\02\00\00\00\47\3A\00\00\03\00\00\00\46\47\3A\00\02\00\00\00\53\3A\00\00\03\00\00\00\46\53\3A\00\02\00\00\00\4D\3A\00\00\03\00\00\00\46\4D\3A\00\03\00\00\00\3F\3F\3A\00\17\00\00\00\54\65\73\74\3A\20\6E\65\78\74\3D\25\6E\20\63\32\6C\61\62\3D\25\6E\0A\00\17\00\00\00\54\65\73\74\3A\20\6E\65\78\74\3D\25\6E\20\63\32\6C\61\62\3D\25\62\0A\00\17\00\00\00\52\45\53\55\4C\54\49\53\20\6F\75\74\20\6F\66\20\63\6F\6E\74\65\78\74\00\19\00\00\00\43\41\53\45\20\6C\61\62\65\6C\20\6F\75\74\20\6F\66\20\63\6F\6E\74\65\78\74\00\00\00\17\00\00\00\27\43\41\53\45\20\25\6E\3A\27\20\6F\63\63\75\72\73\20\74\77\69\63\65\00\32\00\00\00\27\43\41\53\45\20\25\6E\3A\27\20\6F\63\63\75\72\73\20\74\77\69\63\65\20\77\68\65\6E\20\63\6F\6D\70\69\6C\69\6E\67\20\31\36\20\62\69\74\20\42\43\50\4C\00\00\16\00\00\00\44\45\46\41\55\4C\54\20\6F\75\74\20\6F\66\20\63\6F\6E\74\65\78\74\00\00\15\00\00\00\44\45\46\41\55\4C\54\20\64\65\66\69\6E\65\64\20\74\77\69\63\65\00\00\00\22\00\00\00\43\6F\6D\70\69\6C\65\72\20\65\72\72\6F\72\20\69\6E\20\44\65\63\6C\6E\61\6D\65\73\2C\20\6F\70\3D\25\73\00\00\25\00\00\00\56\65\63\74\6F\72\20\6E\61\6D\65\20\6D\75\73\74\20\6E\6F\74\20\68\61\76\65\20\74\68\65\20\46\4C\54\20\74\61\67\00\00\00\02\00\00\00\50\3A\00\00\03\00\00\00\46\50\3A\00\19\00\00\00\43\6F\6D\70\69\6C\65\72\20\65\72\72\6F\72\20\69\6E\20\64\65\63\6C\64\79\6E\00\00\00\4F\00\00\00\41\6E\20\46\4C\54\20\66\75\6E\63\74\69\6F\6E\20\64\65\66\69\6E\69\74\69\6F\6E\20\69\6E\20\74\68\65\0A\73\63\6F\70\65\20\6F\66\20\61\20\6E\6F\6E\20\46\4C\54\20\67\6C\6F\62\61\6C\20\77\69\74\68\20\74\68\65\20\73\61\6D\65\20\6E\61\6D\65\2E\00\50\00\00\00\41\6E\20\6E\6F\6E\20\46\4C\54\20\66\75\6E\63\74\69\6F\6E\20\64\65\66\69\6E\69\74\69\6F\6E\20\69\6E\20\74\68\65\0A\73\63\6F\70\65\20\6F\66\20\61\6E\20\46\4C\54\20\67\6C\6F\62\61\6C\20\77\69\74\68\20\74\68\65\20\73\61\6D\65\20\6E\61\6D\65\2E\03\00\00\00\46\47\3A\00\02\00\00\00\47\3A\00\00\0A\00\00\00\47\25\69\33\20\3D\20\25\73\0A\00\00\03\00\00\00\46\46\3A\00\02\00\00\00\46\3A\00\00\15\00\00\00\4E\61\6D\65\20\25\73\20\64\65\66\69\6E\65\64\20\74\77\69\63\65\00\00\00\15\00\00\00\4D\6F\72\65\20\77\6F\72\6B\73\70\61\63\65\20\6E\65\65\64\65\64\00\00\00\2F\00\00\00\61\64\64\6E\61\6D\65\3A\20\6E\61\6D\65\20\63\65\6C\6C\20\61\74\3D\25\6E\20\25\73\20\6B\3D\25\73\20\61\3D\25\6E\20\70\61\74\68\3D\25\78\38\0A\00\20\00\00\00\41\20\6C\61\62\65\6C\20\6D\61\79\20\6E\6F\74\20\68\61\76\65\20\74\68\65\20\46\4C\54\20\74\61\67\14\00\00\00\42\52\45\41\4B\20\6F\75\74\20\6F\66\20\63\6F\6E\74\65\78\74\13\00\00\00\4C\4F\4F\50\20\6F\75\74\20\6F\66\20\63\6F\6E\74\65\78\74\00\25\00\00\00\53\79\73\74\65\6D\20\65\72\72\6F\72\20\69\6E\20\74\72\61\6E\73\6C\6F\6F\70\2C\20\6C\6F\6F\70\6C\61\62\3D\25\6E\00\00\00\23\00\00\00\53\79\73\74\65\6D\20\65\72\72\6F\72\20\69\6E\20\63\6F\6E\64\6C\6F\6F\70\2C\6C\6F\6F\70\6C\61\62\3D\25\6E\00\16\00\00\00\45\4E\44\43\41\53\45\20\6F\75\74\20\6F\66\20\63\6F\6E\74\65\78\74\00\00\13\00\00\00\4E\45\58\54\20\6F\75\74\20\6F\66\20\63\6F\6E\74\65\78\74\00\21\00\00\00\53\79\73\74\65\6D\20\65\72\72\6F\72\20\69\6E\20\63\6F\6E\64\6E\65\78\74\2C\20\6E\65\78\74\3D\25\6E\00\00\00\13\00\00\00\45\58\49\54\20\6F\75\74\20\6F\66\20\63\6F\6E\74\65\78\74\00\21\00\00\00\53\79\73\74\65\6D\20\65\72\72\6F\72\20\69\6E\20\63\6F\6E\64\65\78\69\74\2C\20\6E\65\78\74\3D\25\6E\00\00\00\22\00\00\00\53\79\73\74\65\6D\20\65\72\72\6F\72\20\69\6E\20\63\6F\6E\64\72\65\74\75\72\6E\2C\20\6E\78\74\3D\25\6E\00\00\25\00\00\00\53\59\53\54\45\4D\20\45\52\52\4F\52\20\69\6E\20\74\72\61\6E\73\6D\61\74\63\68\6C\69\73\74\2C\20\6F\70\3D\25\6E\00\00\00\1E\00\00\00\53\59\53\54\45\4D\20\45\52\52\4F\52\20\69\6E\20\74\72\61\6E\73\6D\61\74\63\68\6C\69\73\74\00\00\1E\00\00\00\53\59\53\54\45\4D\20\45\52\52\4F\52\20\69\6E\20\74\72\61\6E\73\6D\61\74\63\68\6C\69\73\74\00\00\31\00\00\00\50\61\74\74\65\72\6E\20\64\65\70\74\68\20\69\73\20\6E\6F\74\20\61\6C\6C\6F\77\65\64\20\74\6F\20\62\65\20\67\72\65\61\74\65\72\20\74\68\61\6E\20\34\00\00\00\1C\00\00\00\54\68\65\20\70\61\74\74\65\72\6E\20\6C\69\73\74\20\69\73\20\74\6F\6F\20\6C\6F\6E\67\38\00\00\00\53\59\53\54\45\4D\20\45\52\52\4F\52\20\69\6E\20\64\65\63\6C\70\61\74\6E\61\6D\65\73\2C\20\46\4C\54\20\6E\6F\74\20\66\6F\6C\6C\6F\77\65\64\20\62\79\20\61\20\6E\61\6D\65\02\00\00\00\50\3A\00\00\03\00\00\00\46\50\3A\00\02\00\00\00\49\3A\00\00\03\00\00\00\46\49\3A\00\23\00\00\00\53\79\73\74\65\6D\20\65\72\72\6F\72\20\69\6E\20\74\72\61\6E\73\70\61\74\74\65\72\6E\2C\20\6F\70\3D\25\6E\00\45\00\00\00\0A\54\68\65\20\6E\61\6D\65\20\66\6F\6C\6C\6F\77\69\6E\67\20\46\4C\54\20\69\6E\20\61\20\70\61\74\74\65\72\6E\20\6D\75\73\74\20\6E\6F\74\20\62\65\0A\20\61\20\6D\61\6E\69\66\65\73\74\20\63\6F\6E\73\74\61\6E\74\00\00\00\17\00\00\00\53\59\53\54\45\4D\20\45\52\52\4F\52\3A\20\69\6E\20\6F\70\70\61\74\68\00\33\00\00\00\46\4F\52\20\6C\6F\6F\70\20\63\6F\6E\74\72\6F\6C\20\76\61\72\69\61\62\6C\65\20\6D\75\73\74\20\6E\6F\74\20\68\61\76\65\20\74\68\65\20\46\4C\54\20\74\61\67\00\1D\00\00\00\43\6F\6D\70\69\6C\65\72\20\65\72\72\6F\72\20\69\6E\20\4C\6F\61\64\2C\20\6F\70\3D\25\73\00\00\00\17\00\00\00\4C\74\79\70\65\20\65\78\70\72\65\73\73\69\6F\6E\20\6E\65\65\64\65\64\00\26\00\00\00\53\59\53\54\45\4D\20\45\52\52\4F\52\20\69\6E\20\6F\70\32\73\66\6F\70\20\69\6E\76\61\6C\69\64\20\6F\70\3D\25\73\0A\00\00\21\00\00\00\53\79\73\65\72\72\20\69\6E\20\61\73\73\6F\70\32\6F\70\20\75\6E\6B\6E\6F\77\6E\20\6F\70\3D\25\73\0A\00\00\00\22\00\00\00\53\59\53\54\45\4D\20\45\52\52\4F\52\3A\20\69\6E\20\70\61\74\72\65\6C\32\72\65\6C\20\6F\70\3D\25\73\0A\00\00\25\00\00\00\53\79\73\65\72\72\20\69\6E\20\63\76\32\66\6C\74\20\6F\70\3D\25\73\20\6E\6F\74\20\69\6E\20\73\77\69\74\63\68\0A\00\00\00\1C\00\00\00\43\6F\6D\70\69\6C\65\72\20\65\72\72\6F\72\20\69\6E\20\45\76\61\6C\63\6F\6E\73\74\0A\1B\00\00\00\43\6F\6D\70\69\6C\65\72\20\65\72\72\6F\72\20\69\6E\20\45\76\61\6C\63\6F\6E\73\74\00\02\00\00\00\4D\3A\00\00\03\00\00\00\46\4D\3A\00\1E\00\00\00\25\73\20\6D\75\73\74\20\62\65\20\61\20\4D\41\4E\49\46\45\53\54\20\63\6F\6E\73\74\61\6E\74\00\00\19\00\00\00\4E\61\6D\65\20\27\25\73\27\20\69\73\20\6E\6F\74\20\64\65\63\6C\61\72\65\64\00\00\00\26\00\00\00\41\20\66\69\65\6C\64\20\74\6F\6F\20\6C\61\72\67\65\20\69\6E\20\61\20\53\4C\43\54\20\65\78\70\72\65\73\73\69\6F\6E\00\00\25\00\00\00\45\72\72\6F\72\20\69\6E\20\6D\61\6E\69\66\65\73\74\20\65\78\70\72\65\73\73\69\6F\6E\2C\20\6F\70\20\3D\20\25\73\00\00\00\14\00\00\00\42\61\64\20\6F\70\20\69\6E\20\45\25\45\20\6F\70\3A\3D\20\45\17\00\00\00\4C\74\79\70\65\20\65\78\70\72\65\73\73\69\6F\6E\20\6E\65\65\64\65\64\00\16\00\00\00\4E\61\6D\65\20\27\25\73\27\20\6E\6F\74\20\64\65\63\6C\61\72\65\64\00\00\02\00\00\00\47\3A\00\00\03\00\00\00\46\47\3A\00\1F\00\00\00\44\79\6E\61\6D\69\63\20\66\72\65\65\20\76\61\72\69\61\62\6C\65\20\27\25\73\27\20\75\73\65\64\00\1F\00\00\00\44\79\6E\61\6D\69\63\20\66\72\65\65\20\76\61\72\69\61\62\6C\65\20\27\25\73\27\20\75\73\65\64\00\02\00\00\00\53\3A\00\00\03\00\00\00\46\53\3A\00\19\00\00\00\4D\69\73\75\73\65\20\6F\66\20\65\6E\74\72\79\20\6E\61\6D\65\20\27\25\73\27\00\00\00\02\00\00\00\46\3A\00\00\03\00\00\00\46\46\3A\00\1C\00\00\00\4D\69\73\75\73\65\20\6F\66\20\4D\41\4E\49\46\45\53\54\20\6E\61\6D\65\20\27\25\73\27\02\00\00\00\4D\3A\00\00\03\00\00\00\46\4D\3A\00\05\00\00\00\25\73\20\25\73\00\00\00\03\00\00\00\25\6E\20\00\06\00\00\00\23\78\25\38\78\20\00\00\04\00\00\00\6F\70\25\6E\02\00\00\00\46\4E\00\00\02\00\00\00\52\54\00\00\03\00\00\00\4C\4F\43\00\03\00\00\00\56\41\4C\00\03\00\00\00\56\45\43\00\03\00\00\00\44\45\46\00\03\00\00\00\4D\41\4E\00\03\00\00\00\4C\41\42\00\02\00\00\00\53\50\00\00\02\00\00\00\53\47\00\00\02\00\00\00\53\4C\00\00\03\00\00\00\4C\4C\50\00\03\00\00\00\4C\4C\47\00\03\00\00\00\4C\4C\4C\00\02\00\00\00\4C\50\00\00\02\00\00\00\4C\47\00\00\02\00\00\00\4C\4C\00\00\02\00\00\00\4C\46\00\00\02\00\00\00\4C\4E\00\00\02\00\00\00\25\73\00\00\05\00\00\00\5B\25\6E\5D\20\00\00\00\00\00\00\00\00\00\00\00\04\00\00\00\4C\45\54\20\04\00\00\00\29\3D\2E\2E\04\00\00\00\4C\45\54\20\05\00\00\00\29\42\45\2E\2E\00\00\00\04\00\00\00\4C\45\54\20\01\00\00\00\3D\00\00\00\04\00\00\00\4C\45\54\20\05\00\00\00\3D\56\45\43\20\00\00\00\01\00\00\00\3D\00\00\00\04\00\00\00\4C\45\54\20\02\00\00\00\3B\20\00\00\08\00\00\00\53\54\41\54\49\43\2E\2E\08\00\00\00\47\4C\4F\42\41\4C\2E\2E\0A\00\00\00\4D\41\4E\49\46\45\53\54\2E\2E\00\00\01\00\00\00\21\00\00\00\02\00\00\00\23\2A\00\00\02\00\00\00\23\2F\00\00\04\00\00\00\23\4D\4F\44\02\00\00\00\23\2B\00\00\02\00\00\00\23\2D\00\00\01\00\00\00\2A\00\00\00\01\00\00\00\2F\00\00\00\03\00\00\00\4D\4F\44\00\01\00\00\00\2B\00\00\00\01\00\00\00\2D\00\00\00\02\00\00\00\3C\3C\00\00\02\00\00\00\3E\3E\00\00\01\00\00\00\26\00\00\00\01\00\00\00\7C\00\00\00\03\00\00\00\45\51\56\00\03\00\00\00\58\4F\52\00\01\00\00\00\23\00\00\00\00\00\00\00\00\00\00\00\04\00\00\00\25\73\3A\3D\01\00\00\00\28\00\00\00\01\00\00\00\29\00\00\00\05\00\00\00\47\4F\54\4F\20\00\00\00\01\00\00\00\3A\00\00\00\07\00\00\00\55\4E\4C\45\53\53\20\00\03\00\00\00\49\46\20\00\06\00\00\00\55\4E\54\49\4C\20\00\00\06\00\00\00\57\48\49\4C\45\20\00\00\04\00\00\00\20\44\4F\20\05\00\00\00\54\45\53\54\20\00\00\00\06\00\00\00\20\54\48\45\4E\20\00\00\06\00\00\00\20\45\4C\53\45\20\00\00\04\00\00\00\4C\4F\4F\50\04\00\00\00\45\58\49\54\04\00\00\00\4E\45\58\54\02\00\00\00\7B\7D\00\00\05\00\00\00\42\52\45\41\4B\00\00\00\06\00\00\00\52\45\54\55\52\4E\00\00\06\00\00\00\46\49\4E\49\53\48\00\00\09\00\00\00\52\45\53\55\4C\54\49\53\20\00\00\00\0D\00\00\00\20\52\45\50\45\41\54\57\48\49\4C\45\20\00\00\00\0D\00\00\00\20\52\45\50\45\41\54\55\4E\54\49\4C\20\00\00\00\07\00\00\00\20\52\45\50\45\41\54\00\05\00\00\00\43\41\53\45\20\00\00\00\04\00\00\00\3A\2E\2E\20\0A\00\00\00\44\45\46\41\55\4C\54\3A\2E\2E\00\00\07\00\00\00\45\4E\44\43\41\53\45\00\09\00\00\00\53\57\49\54\43\48\4F\4E\20\00\00\00\07\00\00\00\20\49\4E\54\4F\2E\2E\00\04\00\00\00\46\4F\52\20\01\00\00\00\3D\00\00\00\04\00\00\00\20\54\4F\20\04\00\00\00\20\42\59\20\05\00\00\00\20\44\4F\2E\2E\00\00\00\01\00\00\00\3B\00\00\00\02\00\00\00\2E\2E\00\00\02\00\00\00\2E\2E\00\00\03\00\00\00\25\32\78\00\02\00\00\00\25\6E\00\00\02\00\00\00\23\78\00\00\05\00\00\00\25\35\2E\33\66\00\00\00\06\00\00\00\46\4C\54\20\25\73\00\00\02\00\00\00\25\73\00\00\04\00\00\00\54\52\55\45\05\00\00\00\46\41\4C\53\45\00\00\00\01\00\00\00\27\00\00\00\02\00\00\00\2A\2A\00\00\02\00\00\00\2A\22\00\00\02\00\00\00\2A\6E\00\00\03\00\00\00\2E\2E\2E\00\05\00\00\00\53\4C\43\54\20\00\00\00\01\00\00\00\3A\00\00\00\01\00\00\00\3A\00\00\00\02\00\00\00\3A\3A\00\00\01\00\00\00\25\00\00\00\01\00\00\00\21\00\00\00\06\00\00\00\46\4C\4F\41\54\20\00\00\04\00\00\00\46\49\58\20\01\00\00\00\21\00\00\00\01\00\00\00\40\00\00\00\01\00\00\00\2A\00\00\00\01\00\00\00\2F\00\00\00\05\00\00\00\20\4D\4F\44\20\00\00\00\02\00\00\00\23\2A\00\00\02\00\00\00\23\2F\00\00\05\00\00\00\23\4D\4F\44\20\00\00\00\01\00\00\00\2B\00\00\00\01\00\00\00\2D\00\00\00\02\00\00\00\23\2B\00\00\02\00\00\00\23\2D\00\00\01\00\00\00\2B\00\00\00\01\00\00\00\2D\00\00\00\02\00\00\00\23\2D\00\00\05\00\00\00\23\41\42\53\20\00\00\00\04\00\00\00\41\42\53\20\01\00\00\00\3D\00\00\00\02\00\00\00\7E\3D\00\00\02\00\00\00\23\3D\00\00\03\00\00\00\23\7E\3D\00\01\00\00\00\3C\00\00\00\01\00\00\00\3E\00\00\00\02\00\00\00\23\3C\00\00\02\00\00\00\23\3E\00\00\02\00\00\00\3C\3D\00\00\02\00\00\00\3E\3D\00\00\03\00\00\00\23\3C\3D\00\03\00\00\00\23\3E\3D\00\02\00\00\00\3C\3C\00\00\02\00\00\00\3E\3E\00\00\05\00\00\00\20\45\51\56\20\00\00\00\05\00\00\00\20\58\4F\52\20\00\00\00\02\00\00\00\2D\3E\00\00\03\00\00\00\23\2D\3E\00\01\00\00\00\2C\00\00\00\04\00\00\00\4F\70\25\6E\06\00\00\00\54\41\42\4C\45\20\00\00\06\00\00\00\56\41\4C\4F\46\7B\00\00\01\00\00\00\2C\00\00\00\04\00\00\00\52\41\4D\3A")
+  ;; static data — passive segment (817 words)
+  (data $stat "\06\45\72\72\6F\72\20\00\09\69\6E\20\25\73\20\25\73\20\00\00\07\72\6F\75\74\69\6E\65\08\66\75\6E\63\74\69\6F\6E\00\00\00\00\00\00\00\05\6E\65\61\72\20\00\00\02\25\73\00\06\5B\25\6E\5D\3A\20\00\15\0A\43\6F\6D\70\69\6C\61\74\69\6F\6E\20\61\62\6F\72\74\65\64\0A\00\00\15\4D\6F\72\65\20\77\6F\72\6B\73\70\61\63\65\20\6E\65\65\64\65\64\00\00\26\53\59\53\54\45\4D\20\45\52\52\4F\52\3A\20\6C\61\73\74\74\72\6E\67\6E\3D\25\69\33\20\20\20\63\67\67\3D\25\69\33\0A\00\1E\53\79\73\74\65\6D\20\65\72\72\6F\72\20\69\6E\20\54\72\61\6E\73\2C\20\6F\70\20\3D\20\25\73\00\18\4C\68\73\20\61\6E\64\20\72\68\73\20\64\6F\20\6E\6F\74\20\6D\61\74\63\68\00\00\00\15\53\79\73\74\65\6D\20\65\72\72\6F\72\20\69\6E\20\74\72\61\6E\73\00\00\23\47\6C\6F\62\61\6C\20\6E\75\6D\62\65\72\20\25\6E\20\74\6F\6F\20\6C\61\72\67\65\20\66\6F\72\3A\20\25\73\0A\02\47\3A\00\03\46\47\3A\02\53\3A\00\03\46\53\3A\02\4D\3A\00\03\46\4D\3A\03\3F\3F\3A\17\54\65\73\74\3A\20\6E\65\78\74\3D\25\6E\20\63\32\6C\61\62\3D\25\6E\0A\17\54\65\73\74\3A\20\6E\65\78\74\3D\25\6E\20\63\32\6C\61\62\3D\25\62\0A\17\52\45\53\55\4C\54\49\53\20\6F\75\74\20\6F\66\20\63\6F\6E\74\65\78\74\19\43\41\53\45\20\6C\61\62\65\6C\20\6F\75\74\20\6F\66\20\63\6F\6E\74\65\78\74\00\00\17\27\43\41\53\45\20\25\6E\3A\27\20\6F\63\63\75\72\73\20\74\77\69\63\65\32\27\43\41\53\45\20\25\6E\3A\27\20\6F\63\63\75\72\73\20\74\77\69\63\65\20\77\68\65\6E\20\63\6F\6D\70\69\6C\69\6E\67\20\31\36\20\62\69\74\20\42\43\50\4C\00\16\44\45\46\41\55\4C\54\20\6F\75\74\20\6F\66\20\63\6F\6E\74\65\78\74\00\15\44\45\46\41\55\4C\54\20\64\65\66\69\6E\65\64\20\74\77\69\63\65\00\00\22\43\6F\6D\70\69\6C\65\72\20\65\72\72\6F\72\20\69\6E\20\44\65\63\6C\6E\61\6D\65\73\2C\20\6F\70\3D\25\73\00\25\56\65\63\74\6F\72\20\6E\61\6D\65\20\6D\75\73\74\20\6E\6F\74\20\68\61\76\65\20\74\68\65\20\46\4C\54\20\74\61\67\00\00\02\50\3A\00\03\46\50\3A\19\43\6F\6D\70\69\6C\65\72\20\65\72\72\6F\72\20\69\6E\20\64\65\63\6C\64\79\6E\00\00\4F\41\6E\20\46\4C\54\20\66\75\6E\63\74\69\6F\6E\20\64\65\66\69\6E\69\74\69\6F\6E\20\69\6E\20\74\68\65\0A\73\63\6F\70\65\20\6F\66\20\61\20\6E\6F\6E\20\46\4C\54\20\67\6C\6F\62\61\6C\20\77\69\74\68\20\74\68\65\20\73\61\6D\65\20\6E\61\6D\65\2E\50\41\6E\20\6E\6F\6E\20\46\4C\54\20\66\75\6E\63\74\69\6F\6E\20\64\65\66\69\6E\69\74\69\6F\6E\20\69\6E\20\74\68\65\0A\73\63\6F\70\65\20\6F\66\20\61\6E\20\46\4C\54\20\67\6C\6F\62\61\6C\20\77\69\74\68\20\74\68\65\20\73\61\6D\65\20\6E\61\6D\65\2E\00\00\00\03\46\47\3A\02\47\3A\00\0A\47\25\69\33\20\3D\20\25\73\0A\00\03\46\46\3A\02\46\3A\00\15\4E\61\6D\65\20\25\73\20\64\65\66\69\6E\65\64\20\74\77\69\63\65\00\00\15\4D\6F\72\65\20\77\6F\72\6B\73\70\61\63\65\20\6E\65\65\64\65\64\00\00\2F\61\64\64\6E\61\6D\65\3A\20\6E\61\6D\65\20\63\65\6C\6C\20\61\74\3D\25\6E\20\25\73\20\6B\3D\25\73\20\61\3D\25\6E\20\70\61\74\68\3D\25\78\38\0A\20\41\20\6C\61\62\65\6C\20\6D\61\79\20\6E\6F\74\20\68\61\76\65\20\74\68\65\20\46\4C\54\20\74\61\67\00\00\00\14\42\52\45\41\4B\20\6F\75\74\20\6F\66\20\63\6F\6E\74\65\78\74\00\00\00\13\4C\4F\4F\50\20\6F\75\74\20\6F\66\20\63\6F\6E\74\65\78\74\25\53\79\73\74\65\6D\20\65\72\72\6F\72\20\69\6E\20\74\72\61\6E\73\6C\6F\6F\70\2C\20\6C\6F\6F\70\6C\61\62\3D\25\6E\00\00\23\53\79\73\74\65\6D\20\65\72\72\6F\72\20\69\6E\20\63\6F\6E\64\6C\6F\6F\70\2C\6C\6F\6F\70\6C\61\62\3D\25\6E\16\45\4E\44\43\41\53\45\20\6F\75\74\20\6F\66\20\63\6F\6E\74\65\78\74\00\13\4E\45\58\54\20\6F\75\74\20\6F\66\20\63\6F\6E\74\65\78\74\21\53\79\73\74\65\6D\20\65\72\72\6F\72\20\69\6E\20\63\6F\6E\64\6E\65\78\74\2C\20\6E\65\78\74\3D\25\6E\00\00\13\45\58\49\54\20\6F\75\74\20\6F\66\20\63\6F\6E\74\65\78\74\21\53\79\73\74\65\6D\20\65\72\72\6F\72\20\69\6E\20\63\6F\6E\64\65\78\69\74\2C\20\6E\65\78\74\3D\25\6E\00\00\22\53\79\73\74\65\6D\20\65\72\72\6F\72\20\69\6E\20\63\6F\6E\64\72\65\74\75\72\6E\2C\20\6E\78\74\3D\25\6E\00\25\53\59\53\54\45\4D\20\45\52\52\4F\52\20\69\6E\20\74\72\61\6E\73\6D\61\74\63\68\6C\69\73\74\2C\20\6F\70\3D\25\6E\00\00\1E\53\59\53\54\45\4D\20\45\52\52\4F\52\20\69\6E\20\74\72\61\6E\73\6D\61\74\63\68\6C\69\73\74\00\1E\53\59\53\54\45\4D\20\45\52\52\4F\52\20\69\6E\20\74\72\61\6E\73\6D\61\74\63\68\6C\69\73\74\00\31\50\61\74\74\65\72\6E\20\64\65\70\74\68\20\69\73\20\6E\6F\74\20\61\6C\6C\6F\77\65\64\20\74\6F\20\62\65\20\67\72\65\61\74\65\72\20\74\68\61\6E\20\34\00\00\1C\54\68\65\20\70\61\74\74\65\72\6E\20\6C\69\73\74\20\69\73\20\74\6F\6F\20\6C\6F\6E\67\00\00\00\38\53\59\53\54\45\4D\20\45\52\52\4F\52\20\69\6E\20\64\65\63\6C\70\61\74\6E\61\6D\65\73\2C\20\46\4C\54\20\6E\6F\74\20\66\6F\6C\6C\6F\77\65\64\20\62\79\20\61\20\6E\61\6D\65\00\00\00\02\50\3A\00\03\46\50\3A\02\49\3A\00\03\46\49\3A\23\53\79\73\74\65\6D\20\65\72\72\6F\72\20\69\6E\20\74\72\61\6E\73\70\61\74\74\65\72\6E\2C\20\6F\70\3D\25\6E\45\0A\54\68\65\20\6E\61\6D\65\20\66\6F\6C\6C\6F\77\69\6E\67\20\46\4C\54\20\69\6E\20\61\20\70\61\74\74\65\72\6E\20\6D\75\73\74\20\6E\6F\74\20\62\65\0A\20\61\20\6D\61\6E\69\66\65\73\74\20\63\6F\6E\73\74\61\6E\74\00\00\17\53\59\53\54\45\4D\20\45\52\52\4F\52\3A\20\69\6E\20\6F\70\70\61\74\68\33\46\4F\52\20\6C\6F\6F\70\20\63\6F\6E\74\72\6F\6C\20\76\61\72\69\61\62\6C\65\20\6D\75\73\74\20\6E\6F\74\20\68\61\76\65\20\74\68\65\20\46\4C\54\20\74\61\67\1D\43\6F\6D\70\69\6C\65\72\20\65\72\72\6F\72\20\69\6E\20\4C\6F\61\64\2C\20\6F\70\3D\25\73\00\00\17\4C\74\79\70\65\20\65\78\70\72\65\73\73\69\6F\6E\20\6E\65\65\64\65\64\26\53\59\53\54\45\4D\20\45\52\52\4F\52\20\69\6E\20\6F\70\32\73\66\6F\70\20\69\6E\76\61\6C\69\64\20\6F\70\3D\25\73\0A\00\21\53\79\73\65\72\72\20\69\6E\20\61\73\73\6F\70\32\6F\70\20\75\6E\6B\6E\6F\77\6E\20\6F\70\3D\25\73\0A\00\00\22\53\59\53\54\45\4D\20\45\52\52\4F\52\3A\20\69\6E\20\70\61\74\72\65\6C\32\72\65\6C\20\6F\70\3D\25\73\0A\00\25\53\79\73\65\72\72\20\69\6E\20\63\76\32\66\6C\74\20\6F\70\3D\25\73\20\6E\6F\74\20\69\6E\20\73\77\69\74\63\68\0A\00\00\1C\43\6F\6D\70\69\6C\65\72\20\65\72\72\6F\72\20\69\6E\20\45\76\61\6C\63\6F\6E\73\74\0A\00\00\00\1B\43\6F\6D\70\69\6C\65\72\20\65\72\72\6F\72\20\69\6E\20\45\76\61\6C\63\6F\6E\73\74\02\4D\3A\00\03\46\4D\3A\1E\25\73\20\6D\75\73\74\20\62\65\20\61\20\4D\41\4E\49\46\45\53\54\20\63\6F\6E\73\74\61\6E\74\00\19\4E\61\6D\65\20\27\25\73\27\20\69\73\20\6E\6F\74\20\64\65\63\6C\61\72\65\64\00\00\26\41\20\66\69\65\6C\64\20\74\6F\6F\20\6C\61\72\67\65\20\69\6E\20\61\20\53\4C\43\54\20\65\78\70\72\65\73\73\69\6F\6E\00\25\45\72\72\6F\72\20\69\6E\20\6D\61\6E\69\66\65\73\74\20\65\78\70\72\65\73\73\69\6F\6E\2C\20\6F\70\20\3D\20\25\73\00\00\14\42\61\64\20\6F\70\20\69\6E\20\45\25\45\20\6F\70\3A\3D\20\45\00\00\00\17\4C\74\79\70\65\20\65\78\70\72\65\73\73\69\6F\6E\20\6E\65\65\64\65\64\16\4E\61\6D\65\20\27\25\73\27\20\6E\6F\74\20\64\65\63\6C\61\72\65\64\00\02\47\3A\00\03\46\47\3A\1F\44\79\6E\61\6D\69\63\20\66\72\65\65\20\76\61\72\69\61\62\6C\65\20\27\25\73\27\20\75\73\65\64\1F\44\79\6E\61\6D\69\63\20\66\72\65\65\20\76\61\72\69\61\62\6C\65\20\27\25\73\27\20\75\73\65\64\02\53\3A\00\03\46\53\3A\19\4D\69\73\75\73\65\20\6F\66\20\65\6E\74\72\79\20\6E\61\6D\65\20\27\25\73\27\00\00\02\46\3A\00\03\46\46\3A\1C\4D\69\73\75\73\65\20\6F\66\20\4D\41\4E\49\46\45\53\54\20\6E\61\6D\65\20\27\25\73\27\00\00\00\02\4D\3A\00\03\46\4D\3A\05\25\73\20\25\73\00\00\03\25\6E\20\06\23\78\25\38\78\20\00\04\6F\70\25\6E\00\00\00\02\46\4E\00\02\52\54\00\03\4C\4F\43\03\56\41\4C\03\56\45\43\03\44\45\46\03\4D\41\4E\03\4C\41\42\02\53\50\00\02\53\47\00\02\53\4C\00\03\4C\4C\50\03\4C\4C\47\03\4C\4C\4C\02\4C\50\00\02\4C\47\00\02\4C\4C\00\02\4C\46\00\02\4C\4E\00\02\25\73\00\05\5B\25\6E\5D\20\00\00\00\00\00\00\04\4C\45\54\20\00\00\00\04\29\3D\2E\2E\00\00\00\04\4C\45\54\20\00\00\00\05\29\42\45\2E\2E\00\00\04\4C\45\54\20\00\00\00\01\3D\00\00\04\4C\45\54\20\00\00\00\05\3D\56\45\43\20\00\00\01\3D\00\00\04\4C\45\54\20\00\00\00\02\3B\20\00\08\53\54\41\54\49\43\2E\2E\00\00\00\08\47\4C\4F\42\41\4C\2E\2E\00\00\00\0A\4D\41\4E\49\46\45\53\54\2E\2E\00\01\21\00\00\02\23\2A\00\02\23\2F\00\04\23\4D\4F\44\00\00\00\02\23\2B\00\02\23\2D\00\01\2A\00\00\01\2F\00\00\03\4D\4F\44\01\2B\00\00\01\2D\00\00\02\3C\3C\00\02\3E\3E\00\01\26\00\00\01\7C\00\00\03\45\51\56\03\58\4F\52\01\23\00\00\00\00\00\00\04\25\73\3A\3D\00\00\00\01\28\00\00\01\29\00\00\05\47\4F\54\4F\20\00\00\01\3A\00\00\07\55\4E\4C\45\53\53\20\03\49\46\20\06\55\4E\54\49\4C\20\00\06\57\48\49\4C\45\20\00\04\20\44\4F\20\00\00\00\05\54\45\53\54\20\00\00\06\20\54\48\45\4E\20\00\06\20\45\4C\53\45\20\00\04\4C\4F\4F\50\00\00\00\04\45\58\49\54\00\00\00\04\4E\45\58\54\00\00\00\02\7B\7D\00\05\42\52\45\41\4B\00\00\06\52\45\54\55\52\4E\00\06\46\49\4E\49\53\48\00\09\52\45\53\55\4C\54\49\53\20\00\00\0D\20\52\45\50\45\41\54\57\48\49\4C\45\20\00\00\0D\20\52\45\50\45\41\54\55\4E\54\49\4C\20\00\00\07\20\52\45\50\45\41\54\05\43\41\53\45\20\00\00\04\3A\2E\2E\20\00\00\00\0A\44\45\46\41\55\4C\54\3A\2E\2E\00\07\45\4E\44\43\41\53\45\09\53\57\49\54\43\48\4F\4E\20\00\00\07\20\49\4E\54\4F\2E\2E\04\46\4F\52\20\00\00\00\01\3D\00\00\04\20\54\4F\20\00\00\00\04\20\42\59\20\00\00\00\05\20\44\4F\2E\2E\00\00\01\3B\00\00\02\2E\2E\00\02\2E\2E\00\03\25\32\78\02\25\6E\00\02\23\78\00\05\25\35\2E\33\66\00\00\06\46\4C\54\20\25\73\00\02\25\73\00\04\54\52\55\45\00\00\00\05\46\41\4C\53\45\00\00\01\27\00\00\02\2A\2A\00\02\2A\22\00\02\2A\6E\00\03\2E\2E\2E\05\53\4C\43\54\20\00\00\01\3A\00\00\01\3A\00\00\02\3A\3A\00\01\25\00\00\01\21\00\00\06\46\4C\4F\41\54\20\00\04\46\49\58\20\00\00\00\01\21\00\00\01\40\00\00\01\2A\00\00\01\2F\00\00\05\20\4D\4F\44\20\00\00\02\23\2A\00\02\23\2F\00\05\23\4D\4F\44\20\00\00\01\2B\00\00\01\2D\00\00\02\23\2B\00\02\23\2D\00\01\2B\00\00\01\2D\00\00\02\23\2D\00\05\23\41\42\53\20\00\00\04\41\42\53\20\00\00\00\01\3D\00\00\02\7E\3D\00\02\23\3D\00\03\23\7E\3D\01\3C\00\00\01\3E\00\00\02\23\3C\00\02\23\3E\00\02\3C\3D\00\02\3E\3D\00\03\23\3C\3D\03\23\3E\3D\02\3C\3C\00\02\3E\3E\00\05\20\45\51\56\20\00\00\05\20\58\4F\52\20\00\00\02\2D\3E\00\03\23\2D\3E\01\2C\00\00\04\4F\70\25\6E\00\00\00\06\54\41\42\4C\45\20\00\06\56\41\4C\4F\46\7B\00\01\2C\00\00\04\52\41\4D\3A\00\00\00")
 
   (func $register (export "register")
     (memory.init $stat
       (i32.shl (global.get $SB) (i32.const 2))
       (i32.const 0)
-      (i32.const 4164))
+      (i32.const 3268))
     (data.drop $stat)
     (table.init $ftable $ftab
       (global.get $TB)
@@ -30732,7 +30732,7 @@
     (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1624)) (i32.add (global.get $TB) (i32.const 0))) ;; G!406
   )
   (func $stat_words (export "stat_words") (result i32)
-    (i32.const 1041))
+    (i32.const 817))
   (func $fn_count (export "fn_count") (result i32)
     (i32.const 67))
 )

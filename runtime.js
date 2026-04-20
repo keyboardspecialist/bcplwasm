@@ -81,14 +81,13 @@ export class BcplRuntime {
   get P() { return this.master.exports.P.value; }
   set P(v) { this.master.exports.P.value = v | 0; }
 
-  // BCPL string at wordAddr: first word = length, then chars packed
-  // 4-per-word little-endian.
+  // BCPL string at wordAddr: byte 0 = length, bytes 1..len = chars.
   readBcplString(wordAddr) {
-    const len = this.loadWord(wordAddr);
+    const baseByte = wordAddr * 4;
+    const len = this.loadByte(baseByte);
     let s = "";
-    const baseByte = (wordAddr + 1) * 4;
     for (let i = 0; i < len; i++) {
-      s += String.fromCharCode(this.loadByte(baseByte + i));
+      s += String.fromCharCode(this.loadByte(baseByte + 1 + i));
     }
     return s;
   }
@@ -499,19 +498,19 @@ export class BcplRuntime {
     // pointers written into a scratch region of memory. Other slots
     // left zero.
     //
-    // Allocate strings in a small scratch region — reuse heap.
+    // BCPL string layout: byte 0 = length, bytes 1..len = chars.
     const writeBcplString = (s) => {
-      const words = 1 + Math.ceil(s.length / 4);
+      const total = s.length + 1;        // len byte + chars
+      const words = Math.ceil(total / 4);
       this.heapTop -= words;
       const base = this.heapTop;
-      this.storeWord(base, s.length);
+      const baseByte = base * 4;
+      this.memView.setUint8(baseByte, s.length & 0xFF);
       for (let i = 0; i < s.length; i++) {
-        const byteAddr = (base + 1) * 4 + i;
-        this.memView.setUint8(byteAddr, s.charCodeAt(i) & 0xFF);
+        this.memView.setUint8(baseByte + 1 + i, s.charCodeAt(i) & 0xFF);
       }
-      // zero-pad remaining bytes in the final word.
-      for (let i = s.length; i < (words - 1) * 4; i++) {
-        this.memView.setUint8((base + 1) * 4 + i, 0);
+      for (let i = total; i < words * 4; i++) {
+        this.memView.setUint8(baseByte + i, 0);
       }
       return base;
     };

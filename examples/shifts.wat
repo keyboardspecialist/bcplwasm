@@ -74,7 +74,7 @@
     (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)))) ;; stack-fill t5 from P!5
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
-    (local.set $t8 (i32.add (global.get $SB) (i32.const 23))) ;; LSTR
+    (local.set $t8 (i32.add (global.get $SB) (i32.const 22))) ;; LSTR
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
     (local.set $t9 (i32.shl (local.get $t9) (local.get $t10)))
@@ -106,14 +106,14 @@
   ;; --- function table slice (passive) ---
   (elem $ftab funcref (ref.func $fn_L10))
 
-  ;; static data — passive segment (29 words)
-  (data $stat "\2C\00\00\00\2D\31\36\20\3E\3E\20\32\20\20\20\20\20\3D\20\25\6E\20\28\77\61\6E\74\20\31\30\37\33\37\34\31\38\32\30\20\6C\6F\67\69\63\61\6C\29\0A\26\00\00\00\23\78\38\30\30\30\30\30\30\30\20\3E\3E\20\34\20\3D\20\25\58\38\20\28\77\61\6E\74\20\30\38\30\30\30\30\30\30\29\0A\00\00\12\00\00\00\34\20\3C\3C\20\32\20\20\20\20\20\20\20\3D\20\25\6E\0A\00\00")
+  ;; static data — passive segment (27 words)
+  (data $stat "\2C\2D\31\36\20\3E\3E\20\32\20\20\20\20\20\3D\20\25\6E\20\28\77\61\6E\74\20\31\30\37\33\37\34\31\38\32\30\20\6C\6F\67\69\63\61\6C\29\0A\00\00\00\26\23\78\38\30\30\30\30\30\30\30\20\3E\3E\20\34\20\3D\20\25\58\38\20\28\77\61\6E\74\20\30\38\30\30\30\30\30\30\29\0A\00\12\34\20\3C\3C\20\32\20\20\20\20\20\20\20\3D\20\25\6E\0A\00")
 
   (func $register (export "register")
     (memory.init $stat
       (i32.shl (global.get $SB) (i32.const 2))
       (i32.const 0)
-      (i32.const 116))
+      (i32.const 108))
     (data.drop $stat)
     (table.init $ftable $ftab
       (global.get $TB)
@@ -123,7 +123,7 @@
     (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 4)) (i32.add (global.get $TB) (i32.const 0))) ;; G!1
   )
   (func $stat_words (export "stat_words") (result i32)
-    (i32.const 29))
+    (i32.const 27))
   (func $fn_count (export "fn_count") (result i32)
     (i32.const 1))
 )
