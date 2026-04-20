@@ -8,6 +8,7 @@
   (import "env" "table_base"  (global $TB i32))
 
   ;; SECTION: nested
+  ;; BCPL fn start       (L10)
   (func $fn_L10 (export "fn_L10") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -66,6 +67,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L10
 
+  ;; BCPL fn inner       (L11)
   (func $fn_L11 (export "fn_L11") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -110,6 +112,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L11
 
+  ;; BCPL fn deep        (L13)
   (func $fn_L13 (export "fn_L13") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -137,8 +140,8 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L13
 
-  ;; --- function table slice ---
-  (elem (table $ftable) (global.get $TB) func $fn_L10 $fn_L11 $fn_L13)
+  ;; --- function table slice (passive) ---
+  (elem $ftab funcref (ref.func $fn_L10) (ref.func $fn_L11) (ref.func $fn_L13))
 
   ;; static data — passive segment (5 words)
   (data $stat "\0E\00\00\00\69\6E\6E\65\72\28\33\29\20\3D\20\25\6E\0A\00\00")
@@ -149,6 +152,11 @@
       (i32.const 0)
       (i32.const 20))
     (data.drop $stat)
+    (table.init $ftable $ftab
+      (global.get $TB)
+      (i32.const 0)
+      (i32.const 3))
+    (elem.drop $ftab)
     (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 4)) (i32.add (global.get $TB) (i32.const 0))) ;; G!1
   )
   (func $stat_words (export "stat_words") (result i32)

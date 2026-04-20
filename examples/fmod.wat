@@ -8,6 +8,7 @@
   (import "env" "table_base"  (global $TB i32))
 
   ;; SECTION: fmod
+  ;; BCPL fn start       (L10)
   (func $fn_L10 (export "fn_L10") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -83,8 +84,8 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L10
 
-  ;; --- function table slice ---
-  (elem (table $ftable) (global.get $TB) func $fn_L10)
+  ;; --- function table slice (passive) ---
+  (elem $ftab funcref (ref.func $fn_L10))
 
   ;; static data — passive segment (7 words)
   (data $stat "\16\00\00\00\31\30\2E\35\20\66\6D\6F\64\20\33\2E\30\20\3D\20\25\39\2E\34\66\0A\00\00")
@@ -95,6 +96,11 @@
       (i32.const 0)
       (i32.const 28))
     (data.drop $stat)
+    (table.init $ftable $ftab
+      (global.get $TB)
+      (i32.const 0)
+      (i32.const 1))
+    (elem.drop $ftab)
     (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 4)) (i32.add (global.get $TB) (i32.const 0))) ;; G!1
   )
   (func $stat_words (export "stat_words") (result i32)

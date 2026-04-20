@@ -8,6 +8,7 @@
   (import "env" "table_base"  (global $TB i32))
 
   ;; SECTION: TRN
+  ;; BCPL fn genlab      (L10)
   (func $fn_L10 (export "fn_L10") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -36,6 +37,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L10
 
+  ;; BCPL fn trnerr      (L11)
   (func $fn_L11 (export "fn_L11") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -288,6 +290,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L11
 
+  ;; BCPL fn newblk      (L12)
   (func $fn_L12 (export "fn_L12") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -362,6 +365,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L12
 
+  ;; BCPL fn translate   (L13)
   (func $fn_L13 (export "fn_L13") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -714,6 +718,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L13
 
+  ;; BCPL fn trnext      (L33)
   (func $fn_L33 (export "fn_L33") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -817,6 +822,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L33
 
+  ;; BCPL fn trans       (L37)
   (func $fn_L37 (export "fn_L37") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -4681,6 +4687,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L37
 
+  ;; BCPL fn declnames   (L194)
   (func $fn_L194 (export "fn_L194") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -5049,6 +5056,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L194
 
+  ;; BCPL fn decldyn     (L195)
   (func $fn_L195 (export "fn_L195") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -5240,6 +5248,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L195
 
+  ;; BCPL fn declstat    (L196)
   (func $fn_L196 (export "fn_L196") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -5559,6 +5568,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L196
 
+  ;; BCPL fn decllabels  (L197)
   (func $fn_L197 (export "fn_L197") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -5609,6 +5619,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L197
 
+  ;; BCPL fn check'tinct (L198)
   (func $fn_L198 (export "fn_L198") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -5738,6 +5749,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L198
 
+  ;; BCPL fn addname     (L199)
   (func $fn_L199 (export "fn_L199") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -5873,6 +5885,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L199
 
+  ;; BCPL fn undeclare   (L200)
   (func $fn_L200 (export "fn_L200") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -5937,6 +5950,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L200
 
+  ;; BCPL fn cellw'hname (L201)
   (func $fn_L201 (export "fn_L201") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -6019,6 +6033,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L201
 
+  ;; BCPL fn scanlabels  (L202)
   (func $fn_L202 (export "fn_L202") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -6299,6 +6314,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L202
 
+  ;; BCPL fn transdef    (L203)
   (func $fn_L203 (export "fn_L203") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -6455,6 +6471,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L203
 
+  ;; BCPL fn trans'ndefs (L204)
   (func $fn_L204 (export "fn_L204") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -6639,6 +6656,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L204
 
+  ;; BCPL fn trans'tdefs (L205)
   (func $fn_L205 (export "fn_L205") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -7268,6 +7286,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L205
 
+  ;; BCPL fn arglength   (L206)
   (func $fn_L206 (export "fn_L206") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -7358,6 +7377,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L206
 
+  ;; BCPL fn patar'ength (L207)
   (func $fn_L207 (export "fn_L207") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -7442,6 +7462,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L207
 
+  ;; BCPL fn transbreak  (L208)
   (func $fn_L208 (export "fn_L208") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -7566,6 +7587,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L208
 
+  ;; BCPL fn condbreak   (L209)
   (func $fn_L209 (export "fn_L209") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -7745,6 +7767,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L209
 
+  ;; BCPL fn transloop   (L210)
   (func $fn_L210 (export "fn_L210") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -7841,6 +7864,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L210
 
+  ;; BCPL fn condloop    (L211)
   (func $fn_L211 (export "fn_L211") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -7936,6 +7960,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L211
 
+  ;; BCPL fn trans'dcase (L212)
   (func $fn_L212 (export "fn_L212") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -8060,6 +8085,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L212
 
+  ;; BCPL fn condendcase (L213)
   (func $fn_L213 (export "fn_L213") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -8239,6 +8265,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L213
 
+  ;; BCPL fn transnext   (L214)
   (func $fn_L214 (export "fn_L214") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -8363,6 +8390,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L214
 
+  ;; BCPL fn condnext    (L215)
   (func $fn_L215 (export "fn_L215") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -8592,6 +8620,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L215
 
+  ;; BCPL fn transexit   (L216)
   (func $fn_L216 (export "fn_L216") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -8779,6 +8808,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L216
 
+  ;; BCPL fn condexit    (L217)
   (func $fn_L217 (export "fn_L217") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -9008,6 +9038,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L217
 
+  ;; BCPL fn transreturn (L218)
   (func $fn_L218 (export "fn_L218") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -9069,6 +9100,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L218
 
+  ;; BCPL fn condreturn  (L219)
   (func $fn_L219 (export "fn_L219") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -9263,6 +9295,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L219
 
+  ;; BCPL fn trans'hlist (L220)
   (func $fn_L220 (export "fn_L220") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -11035,6 +11068,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L220
 
+  ;; BCPL fn declp'names (L221)
   (func $fn_L221 (export "fn_L221") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -11567,6 +11601,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L221
 
+  ;; BCPL fn trans'ttern (L222)
   (func $fn_L222 (export "fn_L222") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -13218,6 +13253,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L222
 
+  ;; BCPL fn oppath      (L223)
   (func $fn_L223 (export "fn_L223") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -13392,6 +13428,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L223
 
+  ;; BCPL fn statdefs    (L224)
   (func $fn_L224 (export "fn_L224") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -13524,6 +13561,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L224
 
+  ;; BCPL fn jumpcond    (L570)
   (func $fn_L570 (export "fn_L570") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -13809,6 +13847,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L570
 
+  ;; BCPL fn transswitch (L571)
   (func $fn_L571 (export "fn_L571") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -14137,6 +14176,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L571
 
+  ;; BCPL fn transfor    (L572)
   (func $fn_L572 (export "fn_L572") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -15128,6 +15168,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L572
 
+  ;; BCPL fn smallexp    (L573)
   (func $fn_L573 (export "fn_L573") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -15408,6 +15449,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L573
 
+  ;; BCPL fn isflt       (L651)
   (func $fn_L651 (export "fn_L651") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -15725,6 +15767,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L651
 
+  ;; BCPL fn load        (L682)
   (func $fn_L682 (export "fn_L682") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -18515,6 +18558,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L682
 
+  ;; BCPL fn fnbody      (L683)
   (func $fn_L683 (export "fn_L683") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -19060,6 +19104,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L683
 
+  ;; BCPL fn loadlv      (L684)
   (func $fn_L684 (export "fn_L684") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -19318,6 +19363,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L684
 
+  ;; BCPL fn loadlist    (L685)
   (func $fn_L685 (export "fn_L685") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -19407,6 +19453,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L685
 
+  ;; BCPL fn op2sfop     (L686)
   (func $fn_L686 (export "fn_L686") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -19647,6 +19694,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L686
 
+  ;; BCPL fn assop2op    (L687)
   (func $fn_L687 (export "fn_L687") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -19881,6 +19929,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L687
 
+  ;; BCPL fn patrel2rel  (L688)
   (func $fn_L688 (export "fn_L688") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -20067,6 +20116,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L688
 
+  ;; BCPL fn cv2flt      (L689)
   (func $fn_L689 (export "fn_L689") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -20395,6 +20445,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L689
 
+  ;; BCPL fn isconst     (L921)
   (func $fn_L921 (export "fn_L921") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -20836,6 +20887,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L921
 
+  ;; BCPL fn iszero      (L973)
   (func $fn_L973 (export "fn_L973") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -20904,6 +20956,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L973
 
+  ;; BCPL fn evalconst   (L975)
   (func $fn_L975 (export "fn_L975") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -22867,6 +22920,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L975
 
+  ;; BCPL fn assign      (L976)
   (func $fn_L976 (export "fn_L976") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -23886,6 +23940,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L976
 
+  ;; BCPL fn transname   (L977)
   (func $fn_L977 (export "fn_L977") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -24449,6 +24504,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L977
 
+  ;; BCPL fn xref        (L978)
   (func $fn_L978 (export "fn_L978") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -24962,6 +25018,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L978
 
+  ;; BCPL fn prctxt      (L979)
   (func $fn_L979 (export "fn_L979") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -26703,6 +26760,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L979
 
+  ;; BCPL fn prctxtd     (L980)
   (func $fn_L980 (export "fn_L980") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -26739,6 +26797,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L980
 
+  ;; BCPL fn prctxtc     (L981)
   (func $fn_L981 (export "fn_L981") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -26775,6 +26834,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L981
 
+  ;; BCPL fn wrhexval    (L982)
   (func $fn_L982 (export "fn_L982") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -26842,6 +26902,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L982
 
+  ;; BCPL fn prctxte     (L983)
   (func $fn_L983 (export "fn_L983") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -30077,6 +30138,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L983
 
+  ;; BCPL fn out1        (L984)
   (func $fn_L984 (export "fn_L984") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -30112,6 +30174,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L984
 
+  ;; BCPL fn out2        (L985)
   (func $fn_L985 (export "fn_L985") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -30159,6 +30222,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L985
 
+  ;; BCPL fn out3        (L986)
   (func $fn_L986 (export "fn_L986") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -30218,6 +30282,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L986
 
+  ;; BCPL fn out4        (L987)
   (func $fn_L987 (export "fn_L987") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -30289,6 +30354,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L987
 
+  ;; BCPL fn outstring   (L988)
   (func $fn_L988 (export "fn_L988") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -30352,6 +30418,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L988
 
+  ;; BCPL fn outcomment  (L989)
   (func $fn_L989 (export "fn_L989") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -30593,8 +30660,8 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L989
 
-  ;; --- function table slice ---
-  (elem (table $ftable) (global.get $TB) func $fn_L10 $fn_L11 $fn_L12 $fn_L13 $fn_L33 $fn_L37 $fn_L194 $fn_L195 $fn_L196 $fn_L197 $fn_L198 $fn_L199 $fn_L200 $fn_L201 $fn_L202 $fn_L203 $fn_L204 $fn_L205 $fn_L206 $fn_L207 $fn_L208 $fn_L209 $fn_L210 $fn_L211 $fn_L212 $fn_L213 $fn_L214 $fn_L215 $fn_L216 $fn_L217 $fn_L218 $fn_L219 $fn_L220 $fn_L221 $fn_L222 $fn_L223 $fn_L224 $fn_L570 $fn_L571 $fn_L572 $fn_L573 $fn_L651 $fn_L682 $fn_L683 $fn_L684 $fn_L685 $fn_L686 $fn_L687 $fn_L688 $fn_L689 $fn_L921 $fn_L973 $fn_L975 $fn_L976 $fn_L977 $fn_L978 $fn_L979 $fn_L980 $fn_L981 $fn_L982 $fn_L983 $fn_L984 $fn_L985 $fn_L986 $fn_L987 $fn_L988 $fn_L989)
+  ;; --- function table slice (passive) ---
+  (elem $ftab funcref (ref.func $fn_L10) (ref.func $fn_L11) (ref.func $fn_L12) (ref.func $fn_L13) (ref.func $fn_L33) (ref.func $fn_L37) (ref.func $fn_L194) (ref.func $fn_L195) (ref.func $fn_L196) (ref.func $fn_L197) (ref.func $fn_L198) (ref.func $fn_L199) (ref.func $fn_L200) (ref.func $fn_L201) (ref.func $fn_L202) (ref.func $fn_L203) (ref.func $fn_L204) (ref.func $fn_L205) (ref.func $fn_L206) (ref.func $fn_L207) (ref.func $fn_L208) (ref.func $fn_L209) (ref.func $fn_L210) (ref.func $fn_L211) (ref.func $fn_L212) (ref.func $fn_L213) (ref.func $fn_L214) (ref.func $fn_L215) (ref.func $fn_L216) (ref.func $fn_L217) (ref.func $fn_L218) (ref.func $fn_L219) (ref.func $fn_L220) (ref.func $fn_L221) (ref.func $fn_L222) (ref.func $fn_L223) (ref.func $fn_L224) (ref.func $fn_L570) (ref.func $fn_L571) (ref.func $fn_L572) (ref.func $fn_L573) (ref.func $fn_L651) (ref.func $fn_L682) (ref.func $fn_L683) (ref.func $fn_L684) (ref.func $fn_L685) (ref.func $fn_L686) (ref.func $fn_L687) (ref.func $fn_L688) (ref.func $fn_L689) (ref.func $fn_L921) (ref.func $fn_L973) (ref.func $fn_L975) (ref.func $fn_L976) (ref.func $fn_L977) (ref.func $fn_L978) (ref.func $fn_L979) (ref.func $fn_L980) (ref.func $fn_L981) (ref.func $fn_L982) (ref.func $fn_L983) (ref.func $fn_L984) (ref.func $fn_L985) (ref.func $fn_L986) (ref.func $fn_L987) (ref.func $fn_L988) (ref.func $fn_L989))
 
   ;; static data — passive segment (1041 words)
   (data $stat "\06\00\00\00\45\72\72\6F\72\20\00\00\09\00\00\00\69\6E\20\25\73\20\25\73\20\00\00\00\07\00\00\00\72\6F\75\74\69\6E\65\00\08\00\00\00\66\75\6E\63\74\69\6F\6E\00\00\00\00\00\00\00\00\05\00\00\00\6E\65\61\72\20\00\00\00\02\00\00\00\25\73\00\00\06\00\00\00\5B\25\6E\5D\3A\20\00\00\15\00\00\00\0A\43\6F\6D\70\69\6C\61\74\69\6F\6E\20\61\62\6F\72\74\65\64\0A\00\00\00\15\00\00\00\4D\6F\72\65\20\77\6F\72\6B\73\70\61\63\65\20\6E\65\65\64\65\64\00\00\00\26\00\00\00\53\59\53\54\45\4D\20\45\52\52\4F\52\3A\20\6C\61\73\74\74\72\6E\67\6E\3D\25\69\33\20\20\20\63\67\67\3D\25\69\33\0A\00\00\1E\00\00\00\53\79\73\74\65\6D\20\65\72\72\6F\72\20\69\6E\20\54\72\61\6E\73\2C\20\6F\70\20\3D\20\25\73\00\00\18\00\00\00\4C\68\73\20\61\6E\64\20\72\68\73\20\64\6F\20\6E\6F\74\20\6D\61\74\63\68\15\00\00\00\53\79\73\74\65\6D\20\65\72\72\6F\72\20\69\6E\20\74\72\61\6E\73\00\00\00\23\00\00\00\47\6C\6F\62\61\6C\20\6E\75\6D\62\65\72\20\25\6E\20\74\6F\6F\20\6C\61\72\67\65\20\66\6F\72\3A\20\25\73\0A\00\02\00\00\00\47\3A\00\00\03\00\00\00\46\47\3A\00\02\00\00\00\53\3A\00\00\03\00\00\00\46\53\3A\00\02\00\00\00\4D\3A\00\00\03\00\00\00\46\4D\3A\00\03\00\00\00\3F\3F\3A\00\17\00\00\00\54\65\73\74\3A\20\6E\65\78\74\3D\25\6E\20\63\32\6C\61\62\3D\25\6E\0A\00\17\00\00\00\54\65\73\74\3A\20\6E\65\78\74\3D\25\6E\20\63\32\6C\61\62\3D\25\62\0A\00\17\00\00\00\52\45\53\55\4C\54\49\53\20\6F\75\74\20\6F\66\20\63\6F\6E\74\65\78\74\00\19\00\00\00\43\41\53\45\20\6C\61\62\65\6C\20\6F\75\74\20\6F\66\20\63\6F\6E\74\65\78\74\00\00\00\17\00\00\00\27\43\41\53\45\20\25\6E\3A\27\20\6F\63\63\75\72\73\20\74\77\69\63\65\00\32\00\00\00\27\43\41\53\45\20\25\6E\3A\27\20\6F\63\63\75\72\73\20\74\77\69\63\65\20\77\68\65\6E\20\63\6F\6D\70\69\6C\69\6E\67\20\31\36\20\62\69\74\20\42\43\50\4C\00\00\16\00\00\00\44\45\46\41\55\4C\54\20\6F\75\74\20\6F\66\20\63\6F\6E\74\65\78\74\00\00\15\00\00\00\44\45\46\41\55\4C\54\20\64\65\66\69\6E\65\64\20\74\77\69\63\65\00\00\00\22\00\00\00\43\6F\6D\70\69\6C\65\72\20\65\72\72\6F\72\20\69\6E\20\44\65\63\6C\6E\61\6D\65\73\2C\20\6F\70\3D\25\73\00\00\25\00\00\00\56\65\63\74\6F\72\20\6E\61\6D\65\20\6D\75\73\74\20\6E\6F\74\20\68\61\76\65\20\74\68\65\20\46\4C\54\20\74\61\67\00\00\00\02\00\00\00\50\3A\00\00\03\00\00\00\46\50\3A\00\19\00\00\00\43\6F\6D\70\69\6C\65\72\20\65\72\72\6F\72\20\69\6E\20\64\65\63\6C\64\79\6E\00\00\00\4F\00\00\00\41\6E\20\46\4C\54\20\66\75\6E\63\74\69\6F\6E\20\64\65\66\69\6E\69\74\69\6F\6E\20\69\6E\20\74\68\65\0A\73\63\6F\70\65\20\6F\66\20\61\20\6E\6F\6E\20\46\4C\54\20\67\6C\6F\62\61\6C\20\77\69\74\68\20\74\68\65\20\73\61\6D\65\20\6E\61\6D\65\2E\00\50\00\00\00\41\6E\20\6E\6F\6E\20\46\4C\54\20\66\75\6E\63\74\69\6F\6E\20\64\65\66\69\6E\69\74\69\6F\6E\20\69\6E\20\74\68\65\0A\73\63\6F\70\65\20\6F\66\20\61\6E\20\46\4C\54\20\67\6C\6F\62\61\6C\20\77\69\74\68\20\74\68\65\20\73\61\6D\65\20\6E\61\6D\65\2E\03\00\00\00\46\47\3A\00\02\00\00\00\47\3A\00\00\0A\00\00\00\47\25\69\33\20\3D\20\25\73\0A\00\00\03\00\00\00\46\46\3A\00\02\00\00\00\46\3A\00\00\15\00\00\00\4E\61\6D\65\20\25\73\20\64\65\66\69\6E\65\64\20\74\77\69\63\65\00\00\00\15\00\00\00\4D\6F\72\65\20\77\6F\72\6B\73\70\61\63\65\20\6E\65\65\64\65\64\00\00\00\2F\00\00\00\61\64\64\6E\61\6D\65\3A\20\6E\61\6D\65\20\63\65\6C\6C\20\61\74\3D\25\6E\20\25\73\20\6B\3D\25\73\20\61\3D\25\6E\20\70\61\74\68\3D\25\78\38\0A\00\20\00\00\00\41\20\6C\61\62\65\6C\20\6D\61\79\20\6E\6F\74\20\68\61\76\65\20\74\68\65\20\46\4C\54\20\74\61\67\14\00\00\00\42\52\45\41\4B\20\6F\75\74\20\6F\66\20\63\6F\6E\74\65\78\74\13\00\00\00\4C\4F\4F\50\20\6F\75\74\20\6F\66\20\63\6F\6E\74\65\78\74\00\25\00\00\00\53\79\73\74\65\6D\20\65\72\72\6F\72\20\69\6E\20\74\72\61\6E\73\6C\6F\6F\70\2C\20\6C\6F\6F\70\6C\61\62\3D\25\6E\00\00\00\23\00\00\00\53\79\73\74\65\6D\20\65\72\72\6F\72\20\69\6E\20\63\6F\6E\64\6C\6F\6F\70\2C\6C\6F\6F\70\6C\61\62\3D\25\6E\00\16\00\00\00\45\4E\44\43\41\53\45\20\6F\75\74\20\6F\66\20\63\6F\6E\74\65\78\74\00\00\13\00\00\00\4E\45\58\54\20\6F\75\74\20\6F\66\20\63\6F\6E\74\65\78\74\00\21\00\00\00\53\79\73\74\65\6D\20\65\72\72\6F\72\20\69\6E\20\63\6F\6E\64\6E\65\78\74\2C\20\6E\65\78\74\3D\25\6E\00\00\00\13\00\00\00\45\58\49\54\20\6F\75\74\20\6F\66\20\63\6F\6E\74\65\78\74\00\21\00\00\00\53\79\73\74\65\6D\20\65\72\72\6F\72\20\69\6E\20\63\6F\6E\64\65\78\69\74\2C\20\6E\65\78\74\3D\25\6E\00\00\00\22\00\00\00\53\79\73\74\65\6D\20\65\72\72\6F\72\20\69\6E\20\63\6F\6E\64\72\65\74\75\72\6E\2C\20\6E\78\74\3D\25\6E\00\00\25\00\00\00\53\59\53\54\45\4D\20\45\52\52\4F\52\20\69\6E\20\74\72\61\6E\73\6D\61\74\63\68\6C\69\73\74\2C\20\6F\70\3D\25\6E\00\00\00\1E\00\00\00\53\59\53\54\45\4D\20\45\52\52\4F\52\20\69\6E\20\74\72\61\6E\73\6D\61\74\63\68\6C\69\73\74\00\00\1E\00\00\00\53\59\53\54\45\4D\20\45\52\52\4F\52\20\69\6E\20\74\72\61\6E\73\6D\61\74\63\68\6C\69\73\74\00\00\31\00\00\00\50\61\74\74\65\72\6E\20\64\65\70\74\68\20\69\73\20\6E\6F\74\20\61\6C\6C\6F\77\65\64\20\74\6F\20\62\65\20\67\72\65\61\74\65\72\20\74\68\61\6E\20\34\00\00\00\1C\00\00\00\54\68\65\20\70\61\74\74\65\72\6E\20\6C\69\73\74\20\69\73\20\74\6F\6F\20\6C\6F\6E\67\38\00\00\00\53\59\53\54\45\4D\20\45\52\52\4F\52\20\69\6E\20\64\65\63\6C\70\61\74\6E\61\6D\65\73\2C\20\46\4C\54\20\6E\6F\74\20\66\6F\6C\6C\6F\77\65\64\20\62\79\20\61\20\6E\61\6D\65\02\00\00\00\50\3A\00\00\03\00\00\00\46\50\3A\00\02\00\00\00\49\3A\00\00\03\00\00\00\46\49\3A\00\23\00\00\00\53\79\73\74\65\6D\20\65\72\72\6F\72\20\69\6E\20\74\72\61\6E\73\70\61\74\74\65\72\6E\2C\20\6F\70\3D\25\6E\00\45\00\00\00\0A\54\68\65\20\6E\61\6D\65\20\66\6F\6C\6C\6F\77\69\6E\67\20\46\4C\54\20\69\6E\20\61\20\70\61\74\74\65\72\6E\20\6D\75\73\74\20\6E\6F\74\20\62\65\0A\20\61\20\6D\61\6E\69\66\65\73\74\20\63\6F\6E\73\74\61\6E\74\00\00\00\17\00\00\00\53\59\53\54\45\4D\20\45\52\52\4F\52\3A\20\69\6E\20\6F\70\70\61\74\68\00\33\00\00\00\46\4F\52\20\6C\6F\6F\70\20\63\6F\6E\74\72\6F\6C\20\76\61\72\69\61\62\6C\65\20\6D\75\73\74\20\6E\6F\74\20\68\61\76\65\20\74\68\65\20\46\4C\54\20\74\61\67\00\1D\00\00\00\43\6F\6D\70\69\6C\65\72\20\65\72\72\6F\72\20\69\6E\20\4C\6F\61\64\2C\20\6F\70\3D\25\73\00\00\00\17\00\00\00\4C\74\79\70\65\20\65\78\70\72\65\73\73\69\6F\6E\20\6E\65\65\64\65\64\00\26\00\00\00\53\59\53\54\45\4D\20\45\52\52\4F\52\20\69\6E\20\6F\70\32\73\66\6F\70\20\69\6E\76\61\6C\69\64\20\6F\70\3D\25\73\0A\00\00\21\00\00\00\53\79\73\65\72\72\20\69\6E\20\61\73\73\6F\70\32\6F\70\20\75\6E\6B\6E\6F\77\6E\20\6F\70\3D\25\73\0A\00\00\00\22\00\00\00\53\59\53\54\45\4D\20\45\52\52\4F\52\3A\20\69\6E\20\70\61\74\72\65\6C\32\72\65\6C\20\6F\70\3D\25\73\0A\00\00\25\00\00\00\53\79\73\65\72\72\20\69\6E\20\63\76\32\66\6C\74\20\6F\70\3D\25\73\20\6E\6F\74\20\69\6E\20\73\77\69\74\63\68\0A\00\00\00\1C\00\00\00\43\6F\6D\70\69\6C\65\72\20\65\72\72\6F\72\20\69\6E\20\45\76\61\6C\63\6F\6E\73\74\0A\1B\00\00\00\43\6F\6D\70\69\6C\65\72\20\65\72\72\6F\72\20\69\6E\20\45\76\61\6C\63\6F\6E\73\74\00\02\00\00\00\4D\3A\00\00\03\00\00\00\46\4D\3A\00\1E\00\00\00\25\73\20\6D\75\73\74\20\62\65\20\61\20\4D\41\4E\49\46\45\53\54\20\63\6F\6E\73\74\61\6E\74\00\00\19\00\00\00\4E\61\6D\65\20\27\25\73\27\20\69\73\20\6E\6F\74\20\64\65\63\6C\61\72\65\64\00\00\00\26\00\00\00\41\20\66\69\65\6C\64\20\74\6F\6F\20\6C\61\72\67\65\20\69\6E\20\61\20\53\4C\43\54\20\65\78\70\72\65\73\73\69\6F\6E\00\00\25\00\00\00\45\72\72\6F\72\20\69\6E\20\6D\61\6E\69\66\65\73\74\20\65\78\70\72\65\73\73\69\6F\6E\2C\20\6F\70\20\3D\20\25\73\00\00\00\14\00\00\00\42\61\64\20\6F\70\20\69\6E\20\45\25\45\20\6F\70\3A\3D\20\45\17\00\00\00\4C\74\79\70\65\20\65\78\70\72\65\73\73\69\6F\6E\20\6E\65\65\64\65\64\00\16\00\00\00\4E\61\6D\65\20\27\25\73\27\20\6E\6F\74\20\64\65\63\6C\61\72\65\64\00\00\02\00\00\00\47\3A\00\00\03\00\00\00\46\47\3A\00\1F\00\00\00\44\79\6E\61\6D\69\63\20\66\72\65\65\20\76\61\72\69\61\62\6C\65\20\27\25\73\27\20\75\73\65\64\00\1F\00\00\00\44\79\6E\61\6D\69\63\20\66\72\65\65\20\76\61\72\69\61\62\6C\65\20\27\25\73\27\20\75\73\65\64\00\02\00\00\00\53\3A\00\00\03\00\00\00\46\53\3A\00\19\00\00\00\4D\69\73\75\73\65\20\6F\66\20\65\6E\74\72\79\20\6E\61\6D\65\20\27\25\73\27\00\00\00\02\00\00\00\46\3A\00\00\03\00\00\00\46\46\3A\00\1C\00\00\00\4D\69\73\75\73\65\20\6F\66\20\4D\41\4E\49\46\45\53\54\20\6E\61\6D\65\20\27\25\73\27\02\00\00\00\4D\3A\00\00\03\00\00\00\46\4D\3A\00\05\00\00\00\25\73\20\25\73\00\00\00\03\00\00\00\25\6E\20\00\06\00\00\00\23\78\25\38\78\20\00\00\04\00\00\00\6F\70\25\6E\02\00\00\00\46\4E\00\00\02\00\00\00\52\54\00\00\03\00\00\00\4C\4F\43\00\03\00\00\00\56\41\4C\00\03\00\00\00\56\45\43\00\03\00\00\00\44\45\46\00\03\00\00\00\4D\41\4E\00\03\00\00\00\4C\41\42\00\02\00\00\00\53\50\00\00\02\00\00\00\53\47\00\00\02\00\00\00\53\4C\00\00\03\00\00\00\4C\4C\50\00\03\00\00\00\4C\4C\47\00\03\00\00\00\4C\4C\4C\00\02\00\00\00\4C\50\00\00\02\00\00\00\4C\47\00\00\02\00\00\00\4C\4C\00\00\02\00\00\00\4C\46\00\00\02\00\00\00\4C\4E\00\00\02\00\00\00\25\73\00\00\05\00\00\00\5B\25\6E\5D\20\00\00\00\00\00\00\00\00\00\00\00\04\00\00\00\4C\45\54\20\04\00\00\00\29\3D\2E\2E\04\00\00\00\4C\45\54\20\05\00\00\00\29\42\45\2E\2E\00\00\00\04\00\00\00\4C\45\54\20\01\00\00\00\3D\00\00\00\04\00\00\00\4C\45\54\20\05\00\00\00\3D\56\45\43\20\00\00\00\01\00\00\00\3D\00\00\00\04\00\00\00\4C\45\54\20\02\00\00\00\3B\20\00\00\08\00\00\00\53\54\41\54\49\43\2E\2E\08\00\00\00\47\4C\4F\42\41\4C\2E\2E\0A\00\00\00\4D\41\4E\49\46\45\53\54\2E\2E\00\00\01\00\00\00\21\00\00\00\02\00\00\00\23\2A\00\00\02\00\00\00\23\2F\00\00\04\00\00\00\23\4D\4F\44\02\00\00\00\23\2B\00\00\02\00\00\00\23\2D\00\00\01\00\00\00\2A\00\00\00\01\00\00\00\2F\00\00\00\03\00\00\00\4D\4F\44\00\01\00\00\00\2B\00\00\00\01\00\00\00\2D\00\00\00\02\00\00\00\3C\3C\00\00\02\00\00\00\3E\3E\00\00\01\00\00\00\26\00\00\00\01\00\00\00\7C\00\00\00\03\00\00\00\45\51\56\00\03\00\00\00\58\4F\52\00\01\00\00\00\23\00\00\00\00\00\00\00\00\00\00\00\04\00\00\00\25\73\3A\3D\01\00\00\00\28\00\00\00\01\00\00\00\29\00\00\00\05\00\00\00\47\4F\54\4F\20\00\00\00\01\00\00\00\3A\00\00\00\07\00\00\00\55\4E\4C\45\53\53\20\00\03\00\00\00\49\46\20\00\06\00\00\00\55\4E\54\49\4C\20\00\00\06\00\00\00\57\48\49\4C\45\20\00\00\04\00\00\00\20\44\4F\20\05\00\00\00\54\45\53\54\20\00\00\00\06\00\00\00\20\54\48\45\4E\20\00\00\06\00\00\00\20\45\4C\53\45\20\00\00\04\00\00\00\4C\4F\4F\50\04\00\00\00\45\58\49\54\04\00\00\00\4E\45\58\54\02\00\00\00\7B\7D\00\00\05\00\00\00\42\52\45\41\4B\00\00\00\06\00\00\00\52\45\54\55\52\4E\00\00\06\00\00\00\46\49\4E\49\53\48\00\00\09\00\00\00\52\45\53\55\4C\54\49\53\20\00\00\00\0D\00\00\00\20\52\45\50\45\41\54\57\48\49\4C\45\20\00\00\00\0D\00\00\00\20\52\45\50\45\41\54\55\4E\54\49\4C\20\00\00\00\07\00\00\00\20\52\45\50\45\41\54\00\05\00\00\00\43\41\53\45\20\00\00\00\04\00\00\00\3A\2E\2E\20\0A\00\00\00\44\45\46\41\55\4C\54\3A\2E\2E\00\00\07\00\00\00\45\4E\44\43\41\53\45\00\09\00\00\00\53\57\49\54\43\48\4F\4E\20\00\00\00\07\00\00\00\20\49\4E\54\4F\2E\2E\00\04\00\00\00\46\4F\52\20\01\00\00\00\3D\00\00\00\04\00\00\00\20\54\4F\20\04\00\00\00\20\42\59\20\05\00\00\00\20\44\4F\2E\2E\00\00\00\01\00\00\00\3B\00\00\00\02\00\00\00\2E\2E\00\00\02\00\00\00\2E\2E\00\00\03\00\00\00\25\32\78\00\02\00\00\00\25\6E\00\00\02\00\00\00\23\78\00\00\05\00\00\00\25\35\2E\33\66\00\00\00\06\00\00\00\46\4C\54\20\25\73\00\00\02\00\00\00\25\73\00\00\04\00\00\00\54\52\55\45\05\00\00\00\46\41\4C\53\45\00\00\00\01\00\00\00\27\00\00\00\02\00\00\00\2A\2A\00\00\02\00\00\00\2A\22\00\00\02\00\00\00\2A\6E\00\00\03\00\00\00\2E\2E\2E\00\05\00\00\00\53\4C\43\54\20\00\00\00\01\00\00\00\3A\00\00\00\01\00\00\00\3A\00\00\00\02\00\00\00\3A\3A\00\00\01\00\00\00\25\00\00\00\01\00\00\00\21\00\00\00\06\00\00\00\46\4C\4F\41\54\20\00\00\04\00\00\00\46\49\58\20\01\00\00\00\21\00\00\00\01\00\00\00\40\00\00\00\01\00\00\00\2A\00\00\00\01\00\00\00\2F\00\00\00\05\00\00\00\20\4D\4F\44\20\00\00\00\02\00\00\00\23\2A\00\00\02\00\00\00\23\2F\00\00\05\00\00\00\23\4D\4F\44\20\00\00\00\01\00\00\00\2B\00\00\00\01\00\00\00\2D\00\00\00\02\00\00\00\23\2B\00\00\02\00\00\00\23\2D\00\00\01\00\00\00\2B\00\00\00\01\00\00\00\2D\00\00\00\02\00\00\00\23\2D\00\00\05\00\00\00\23\41\42\53\20\00\00\00\04\00\00\00\41\42\53\20\01\00\00\00\3D\00\00\00\02\00\00\00\7E\3D\00\00\02\00\00\00\23\3D\00\00\03\00\00\00\23\7E\3D\00\01\00\00\00\3C\00\00\00\01\00\00\00\3E\00\00\00\02\00\00\00\23\3C\00\00\02\00\00\00\23\3E\00\00\02\00\00\00\3C\3D\00\00\02\00\00\00\3E\3D\00\00\03\00\00\00\23\3C\3D\00\03\00\00\00\23\3E\3D\00\02\00\00\00\3C\3C\00\00\02\00\00\00\3E\3E\00\00\05\00\00\00\20\45\51\56\20\00\00\00\05\00\00\00\20\58\4F\52\20\00\00\00\02\00\00\00\2D\3E\00\00\03\00\00\00\23\2D\3E\00\01\00\00\00\2C\00\00\00\04\00\00\00\4F\70\25\6E\06\00\00\00\54\41\42\4C\45\20\00\00\06\00\00\00\56\41\4C\4F\46\7B\00\00\01\00\00\00\2C\00\00\00\04\00\00\00\52\41\4D\3A")
@@ -30605,6 +30672,11 @@
       (i32.const 0)
       (i32.const 4164))
     (data.drop $stat)
+    (table.init $ftable $ftab
+      (global.get $TB)
+      (i32.const 0)
+      (i32.const 67))
+    (elem.drop $ftab)
     (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1748)) (i32.add (global.get $TB) (i32.const 66))) ;; G!437
     (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1728)) (i32.add (global.get $TB) (i32.const 65))) ;; G!432
     (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1744)) (i32.add (global.get $TB) (i32.const 64))) ;; G!436
