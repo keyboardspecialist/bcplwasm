@@ -475,17 +475,20 @@ export class BcplRuntime {
     throw new BcplHalt(this.arg(0));
   }
 
-  // rdargs(argform, argv, argvsize) — very minimal parser. Reads
-  // an input line (or storage slot "_argv_line"), splits on spaces,
-  // fills argv[0..] with BCPL-string pointers to the tokens.
-  // Returns a non-zero success value (the length of argv used).
+  // rdargs(argform, argv, argvsize) — parse command-line style input
+  // (one line from stdin) against a BCPL argform spec. Supports /A
+  // (required positional), /K (keyword with value), /S (switch), /N
+  // (numeric). Writes BCPL-string pointers (or -1 for set switches,
+  // or raw integers for /N) into argv slots in declaration order.
+  //
+  // argform example: "FROM/A,TO/K,ERR/K,SIZE/K/N,NONAMES/S,..."
   imp_rdargs() {
     const argform = this.readBcplString(this.arg(0));
-    const argvWord = this.arg(1);       // word addr of argv vector
+    const argvWord = this.arg(1);
     const argvSize = this.arg(2);
     this.restoreP();
 
-    // Tokenise the current stdin as the command line.
+    // Read one stdin line as the command string.
     let line = "";
     let ch = this._readChar();
     while (ch !== -1 && ch !== 10) {
@@ -494,13 +497,15 @@ export class BcplRuntime {
     }
     const tokens = line.trim().split(/\s+/).filter(Boolean);
 
-    // For v1: fill argv slots 0..tokens.length-1 with BCPL-string
-    // pointers written into a scratch region of memory. Other slots
-    // left zero.
-    //
-    // BCPL string layout: byte 0 = length, bytes 1..len = chars.
+    // Parse argform into slots: [{name, flags:Set('A'|'K'|'S'|'N')}, ...]
+    const slots = argform.split(",").map((spec) => {
+      const parts = spec.trim().split("/");
+      return { name: parts[0].toUpperCase(), flags: new Set(parts.slice(1).map(p => p.toUpperCase())) };
+    });
+    const values = new Array(slots.length).fill(null);
+
     const writeBcplString = (s) => {
-      const total = s.length + 1;        // len byte + chars
+      const total = s.length + 1;
       const words = Math.ceil(total / 4);
       this.heapTop -= words;
       const base = this.heapTop;
@@ -515,12 +520,51 @@ export class BcplRuntime {
       return base;
     };
 
-    // Zero the argv vector first.
-    for (let i = 0; i < argvSize; i++) this.storeWord(argvWord + i, 0);
-    for (let i = 0; i < Math.min(tokens.length, argvSize); i++) {
-      this.storeWord(argvWord + i, writeBcplString(tokens[i]));
+    // Find slot by keyword name (case-insensitive).
+    const findSlot = (nm) => slots.findIndex(s => s.name === nm.toUpperCase());
+
+    let nextPositional = 0;
+    const advancePositional = () => {
+      while (nextPositional < slots.length
+             && (slots[nextPositional].flags.has("S")
+                 || (slots[nextPositional].flags.has("K") && !slots[nextPositional].flags.has("A"))
+                 || values[nextPositional] !== null)) {
+        nextPositional++;
+      }
+      return nextPositional < slots.length ? nextPositional++ : -1;
+    };
+
+    for (let i = 0; i < tokens.length; i++) {
+      const tok = tokens[i];
+      const keyIdx = findSlot(tok);
+      if (keyIdx >= 0) {
+        const slot = slots[keyIdx];
+        if (slot.flags.has("S")) { values[keyIdx] = -1; continue; }
+        // /K or /K/N or /A takes a following value.
+        if (i + 1 >= tokens.length) break;
+        const val = tokens[++i];
+        values[keyIdx] = slot.flags.has("N") ? (parseInt(val, 10) | 0) : val;
+        continue;
+      }
+      const pi = advancePositional();
+      if (pi < 0) break;
+      const slot = slots[pi];
+      values[pi] = slot.flags.has("N") ? (parseInt(tok, 10) | 0) : tok;
     }
-    return tokens.length || 1;  // non-zero = success
+
+    // Write into argv.
+    for (let i = 0; i < argvSize; i++) this.storeWord(argvWord + i, 0);
+    for (let i = 0; i < slots.length && i < argvSize; i++) {
+      const v = values[i];
+      if (v === null) { this.storeWord(argvWord + i, 0); continue; }
+      if (typeof v === "number") { this.storeWord(argvWord + i, v | 0); continue; }
+      this.storeWord(argvWord + i, writeBcplString(v));
+    }
+    // /A fields must be filled or rdargs fails.
+    for (let i = 0; i < slots.length; i++) {
+      if (slots[i].flags.has("A") && values[i] === null) return 0;
+    }
+    return argvWord || 1;  // non-zero = success
   }
 
   // Allocate a new stream slot, return its handle (index in
