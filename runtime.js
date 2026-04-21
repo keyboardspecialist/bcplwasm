@@ -552,12 +552,22 @@ export class BcplRuntime {
       values[pi] = slot.flags.has("N") ? (parseInt(tok, 10) | 0) : tok;
     }
 
-    // Write into argv.
+    // Write into argv. /N slots: allocate a word, write int there,
+    // store pointer (BCPL rdargs convention: argv!i -> int cell).
+    const writeIntCell = (n) => {
+      this.heapTop -= 1;
+      this.storeWord(this.heapTop, n | 0);
+      return this.heapTop;
+    };
     for (let i = 0; i < argvSize; i++) this.storeWord(argvWord + i, 0);
     for (let i = 0; i < slots.length && i < argvSize; i++) {
       const v = values[i];
       if (v === null) { this.storeWord(argvWord + i, 0); continue; }
-      if (typeof v === "number") { this.storeWord(argvWord + i, v | 0); continue; }
+      if (typeof v === "number") {
+        if (v === -1) { this.storeWord(argvWord + i, -1); continue; }  // /S switch
+        this.storeWord(argvWord + i, writeIntCell(v));
+        continue;
+      }
       this.storeWord(argvWord + i, writeBcplString(v));
     }
     // /A fields must be filled or rdargs fails.
