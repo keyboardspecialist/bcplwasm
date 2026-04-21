@@ -222,12 +222,25 @@ LET start() = VALOF
       statusEl.classList.toggle("err", isErr);
     }
 
+    // GET files the compiler resolves via pathfindinput. Seeded into
+    // storage so the lexer's findinput call succeeds without a real
+    // filesystem.
+    const HEADERS = ["libhdr.h", "bcplfecg.h"];
+    async function seedHeaders() {
+      for (const h of HEADERS) {
+        if (storageBackend.get(h)) continue;
+        const txt = await fetchText(`headers/${h}?v=${V}`, "");
+        if (txt) storageBackend.set(h, txt);
+      }
+    }
+
     // Run the self-hosted bcplwasm compiler over user-supplied BCPL
     // source. stdin feeds rdargs the FROM/TO command line; the source
     // is staged in storageBackend under a fixed key that findinput
     // will pick up; the compiler writes .wat to another storage key
     // via findoutput + endstream.
     async function compileBcpl(srcText) {
+      await seedHeaders();
       const srcKey = "__live_src.b";
       const watKey = "__live_out.wat";
       storageBackend.set(srcKey, srcText);
