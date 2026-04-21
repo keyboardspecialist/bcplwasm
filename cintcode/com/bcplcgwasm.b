@@ -35,7 +35,9 @@ MANIFEST {
   glob_base_bytes = wasm_glob_base * 4  // = 4 (Wasm byte addr of G!0)
 
   maxstack = 40    // max expression depth ($t0..$t39)
-  maxlabs  = 16384 // max BCPL labels per compilation unit
+  maxlabs  = 16384 // max BCPL labels per section. bcpltrn.b itself uses
+                   // ~1500 labels; 16384 gives 10x headroom. Direct-indexed
+                   // labmap — must exceed the highest label number emitted.
 
   // Imported stdlib: host-provided BCPL built-ins. Each gets a fixed
   // Wasm function-table slot at the front of the table, and __init
@@ -925,7 +927,7 @@ AND scan_emit() BE
 
               // ---- push ops: cssp += 1 ----
               CASE s_lp: CASE s_lg: CASE s_ln: CASE s_lflt:
-              CASE s_query: CASE s_fnum:
+              CASE s_fnum:
                 rdn()
                 IF depth = 1 DO sim_cssp := sim_cssp + 1
                 ENDCASE
@@ -933,7 +935,7 @@ AND scan_emit() BE
                 rdl()
                 IF depth = 1 DO sim_cssp := sim_cssp + 1
                 ENDCASE
-              CASE s_true: CASE s_false:
+              CASE s_true: CASE s_false: CASE s_query:
                 IF depth = 1 DO sim_cssp := sim_cssp + 1
                 ENDCASE
               CASE s_lstr:
@@ -1266,8 +1268,7 @@ prescan_done:
         ENDCASE
 
       CASE s_query:
-      { LET n = rdn()
-        cgpendingop_wasm()
+      { cgpendingop_wasm()
         selectoutput(tostream)
         writef("    (local.set $t%n (i32.const 0)) ;; QUERY (undefined)*n", cssp)
         selectoutput(sysprint)

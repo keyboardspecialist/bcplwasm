@@ -2353,8 +2353,8 @@ recover:
                 a := mk4(op, a, rdblockbody(outerlevel), ln)
                 ENDCASE
               }
- 
- 
+
+
     CASE s_let: lex()
                 a := rdef(outerlevel)
                 WHILE token=s_and DO
@@ -2364,19 +2364,19 @@ recover:
                 }
                 a := mk4(s_let, a, rdblockbody(outerlevel), ln)
                 ENDCASE
- 
+
     DEFAULT:    IF outerlevel DO
                 { errmax := 0 // Make it fatal.
                   synerr("Bad outer level declaration")
                 }
                 a := rdseq()
                 UNLESS token=s_rsect DO synerr("Error in command")
- 
+
     CASE s_rsect:IF outerlevel DO lex()
     CASE s_dot:
     CASE s_eof:
   }
- 
+
   rec_p, rec_l := p, l
   RESULTIS a
 }
