@@ -332,7 +332,7 @@ LET trans(x, next) BE
 
 { LET op, sfop, ff = ?, ?, FALSE
   LET sw = FALSE
-  
+
   IF x=0 DO { trnext(next) // next>0 compile JUMP next.
                            // next<0 compile code equivalent to
 			   //        LN 0; FNRN or RTRN.
@@ -1318,7 +1318,7 @@ AND transstatdefs(x) BE SWITCHON h1!x INTO
   // for all the fuctions in the current LET construct.
   // variables in this construct have already been declared
   // in dvec.
-  
+
   DEFAULT:     RETURN
 
   CASE s_and:  transstatdefs(h2!x)
@@ -1356,18 +1356,18 @@ AND transstatdefs(x) BE SWITCHON h1!x INTO
     TEST h1!x=s_rtdef
     THEN proccontext := s_rtrn
     ELSE proccontext := s_fnrn
-    
+
     procname := h2!x
     IF h1!procname=s_flt DO ff, procname := TRUE, h2!procname
-    
+
     context, comline := x, h6!x
 
     out2(s_entry, h5!x)      // The label allocated for the entry point.
     outstring(@h3!procname)
 
     dvecp := dvece           // To disallow dynamic free variables.
-    
-    
+
+
     ssp := savespacesize
     decldyn(h3!x)            // Declare the formal parameters.
     checkdistinct(prevdvece) // Check that they are distinct.
@@ -3436,7 +3436,7 @@ AND fnbody(x, ff) BE SWITCHON h1!x INTO
   // This is only used to compile the bodies of functions,
   // pattern functions and RESULTIS when the value is being returned
   // as the result of a function.
-  
+
   DEFAULT:
     load(x, ff)
     out1(s_fnrn)
@@ -3521,8 +3521,8 @@ AND fnbody(x, ff) BE SWITCHON h1!x INTO
     RETURN
   }
 }
- 
- 
+
+
 AND loadlv(x) BE
 { UNLESS x=0 SWITCHON h1!x INTO
   { DEFAULT:         ENDCASE

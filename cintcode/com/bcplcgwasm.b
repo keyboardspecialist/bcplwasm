@@ -35,7 +35,7 @@ MANIFEST {
   glob_base_bytes = wasm_glob_base * 4  // = 4 (Wasm byte addr of G!0)
 
   maxstack = 40    // max expression depth ($t0..$t39)
-  maxlabs  = 1024  // max BCPL labels per compilation unit
+  maxlabs  = 16384 // max BCPL labels per compilation unit
 
   // Imported stdlib: host-provided BCPL built-ins. Each gets a fixed
   // Wasm function-table slot at the front of the table, and __init
