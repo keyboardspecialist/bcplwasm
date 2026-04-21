@@ -45,7 +45,8 @@
     .wat-pane pre { max-height: 30rem; font-size: 0.78rem; }
     .stdin-pane { margin-top: 1rem; }
     .stdin-pane h3 { margin: 0 0 0.4rem 0; font-size: 0.95rem; color: #888; }
-    .stdin-pane textarea {
+    .stdin-pane textarea,
+    .edit-pane textarea {
       width: 100%;
       min-height: 4rem;
       font-family: ui-monospace, monospace;
@@ -58,6 +59,11 @@
       box-sizing: border-box;
       resize: vertical;
     }
+    .edit-pane { margin-top: 1.5rem; border-top: 1px solid #2a2f37; padding-top: 1rem; }
+    .edit-pane h2 { font-size: 1rem; margin: 0 0 0.5rem 0; }
+    .edit-pane textarea { min-height: 12rem; }
+    .compile-status { color: #888; font-size: 0.85rem; margin-left: 0.5rem; }
+    .compile-status.err { color: #e74c3c; }
     footer { margin-top: 2rem; color: #888; font-size: 0.85rem; }
     code { background: rgba(128,128,128,0.15); padding: 0 0.25rem; border-radius: 3px; }
   </style>
@@ -114,6 +120,34 @@
     </details>
   </div>
 
+  <div class="edit-pane">
+    <h2>Live compile <span id="compileStatus" class="compile-status"></span></h2>
+    <p class="sub">
+      Edit BCPL source below and hit <strong>Compile &amp; Run</strong>.
+      Source is sent through the self-hosted <code>bcplwasm</code>
+      compiler (3 wasm modules), the output <code>.wat</code> is
+      assembled in-browser via <code>wabt-js</code>, and the resulting
+      program runs with stdin/output piped into the panes above.
+    </p>
+    <textarea id="userSrc" spellcheck="false">GET "libhdr"
+
+LET start() = VALOF
+{ writef("hello from self-hosted bcplwasm!*n")
+  RESULTIS 0
+}
+</textarea>
+    <div class="row">
+      <button id="compileRun">Compile &amp; Run</button>
+      <button id="loadSelected">Load selected example into editor</button>
+    </div>
+    <div class="wat-pane">
+      <details>
+        <summary>Compiled WAT from live compile</summary>
+        <pre id="liveWat">(not yet compiled)</pre>
+      </details>
+    </div>
+  </div>
+
   <footer>
     <p>
       Compiled with <code>bcplwasm</code> (WAT backend in
@@ -126,14 +160,19 @@
     // Cache-bust during development. Remove the query if you want the
     // browser to serve runtime.js / examples/*.wasm from HTTP cache.
     const V = Date.now();
-    const { BcplRuntime } = await import(`./runtime.js?v=${V}`);
+    const { BcplRuntime, storageBackend } = await import(`./runtime.js?v=${V}`);
 
-    const sourceEl  = document.getElementById("source");
-    const outputEl  = document.getElementById("output");
-    const watEl     = document.getElementById("wat");
-    const stdinEl   = document.getElementById("stdin");
-    const selectEl  = document.getElementById("example");
-    const runBtn    = document.getElementById("run");
+    const sourceEl     = document.getElementById("source");
+    const outputEl     = document.getElementById("output");
+    const watEl        = document.getElementById("wat");
+    const stdinEl      = document.getElementById("stdin");
+    const selectEl     = document.getElementById("example");
+    const runBtn       = document.getElementById("run");
+    const userSrcEl    = document.getElementById("userSrc");
+    const compileBtn   = document.getElementById("compileRun");
+    const loadSelBtn   = document.getElementById("loadSelected");
+    const liveWatEl    = document.getElementById("liveWat");
+    const statusEl     = document.getElementById("compileStatus");
 
     async function fetchText(url, fallback) {
       const resp = await fetch(url);
@@ -169,8 +208,101 @@
       }
     }
 
+    // Lazy-load wabt-js from CDN. Kept out of initial page load so
+    // browsing pre-built examples stays zero-dependency.
+    let wabtPromise = null;
+    function getWabt() {
+      if (wabtPromise) return wabtPromise;
+      wabtPromise = import("https://esm.sh/wabt@1.0.36").then(m => m.default());
+      return wabtPromise;
+    }
+
+    function setStatus(text, isErr = false) {
+      statusEl.textContent = text;
+      statusEl.classList.toggle("err", isErr);
+    }
+
+    // Run the self-hosted bcplwasm compiler over user-supplied BCPL
+    // source. stdin feeds rdargs the FROM/TO command line; the source
+    // is staged in storageBackend under a fixed key that findinput
+    // will pick up; the compiler writes .wat to another storage key
+    // via findoutput + endstream.
+    async function compileBcpl(srcText) {
+      const srcKey = "__live_src.b";
+      const watKey = "__live_out.wat";
+      storageBackend.set(srcKey, srcText);
+      storageBackend.del?.(watKey);
+
+      const cmd = `FROM ${srcKey} TO ${watKey}\n`;
+      // Capture compiler diagnostics but don't surface unless it errors.
+      let diag = "";
+      const rt = new BcplRuntime((s) => { diag += s; }, cmd);
+      await rt.loadMaster("master.wasm?v=" + V);
+      for (const u of ["bcplwasm-1.wasm", "bcplwasm-2.wasm", "bcplwasm-3.wasm"]) {
+        await rt.loadProgram(u + "?v=" + V);
+      }
+      rt.initMaster();
+      let exitCode = 0;
+      try { exitCode = rt.run(); }
+      catch (e) {
+        throw new Error(`compiler runtime error: ${e.message ?? e}\n${diag}`);
+      }
+      const wat = storageBackend.get(watKey);
+      if (!wat) {
+        throw new Error(`compiler produced no .wat (exit=${exitCode})\n${diag}`);
+      }
+      return { wat, diag, exitCode };
+    }
+
+    async function assembleWat(watText) {
+      const wabt = await getWabt();
+      const mod  = wabt.parseWat("live.wat", watText);
+      mod.resolveNames();
+      mod.validate();
+      const { buffer } = mod.toBinary({ log: false });
+      mod.destroy();
+      return buffer;
+    }
+
+    async function compileAndRun() {
+      compileBtn.disabled = true;
+      outputEl.textContent = "";
+      liveWatEl.textContent = "(compiling…)";
+      setStatus("compiling…");
+      try {
+        const { wat } = await compileBcpl(userSrcEl.value);
+        liveWatEl.textContent = wat;
+        setStatus("assembling…");
+        const bytes = await assembleWat(wat);
+        setStatus("running…");
+        const rt = new BcplRuntime(
+          (s) => { outputEl.textContent += s; },
+          stdinEl.value
+        );
+        await rt.loadMaster("master.wasm?v=" + V);
+        await rt.loadProgramFromBytes(bytes);
+        rt.initMaster();
+        rt.run();
+        setStatus("ok");
+      } catch (err) {
+        setStatus(err.message ?? String(err), true);
+        outputEl.textContent += `\n[compile+run error] ${err.message ?? err}`;
+        console.error(err);
+      } finally {
+        compileBtn.disabled = false;
+      }
+    }
+
+    async function loadSelectedIntoEditor() {
+      const name = selectEl.value;
+      const src = await fetchText(`examples/${name}.b?v=${Date.now()}`, "");
+      if (src) userSrcEl.value = src;
+    }
+
     selectEl.addEventListener("change", () => loadExample(selectEl.value));
     runBtn.addEventListener("click", runExample);
+    compileBtn.addEventListener("click", compileAndRun);
+    loadSelBtn.addEventListener("click", loadSelectedIntoEditor);
     loadExample(selectEl.value);
   </script>
 </body>
