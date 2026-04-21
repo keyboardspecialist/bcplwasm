@@ -414,21 +414,23 @@ export class BcplRuntime {
         switch (sub) {
           case 1:  // fl_mk(m, e) — m * 10^e
             return toI(a2 * Math.pow(10, a3 | 0));
-          case 2:  return toI(toF(a2) + toF(a3));     // fl_add
-          case 3:  return toI(toF(a2) - toF(a3));     // fl_sub
-          case 4:  return toI(toF(a2) * toF(a3));     // fl_mul
-          case 5:  return toI(toF(a2) / toF(a3));     // fl_div
-          case 6:  return toI(toF(a2) % toF(a3));     // fl_mod
-          case 7:  return toF(a2) === toF(a3) ? -1 : 0; // fl_eq
-          case 8:  return toF(a2) !== toF(a3) ? -1 : 0; // fl_ne
-          case 9:  return toF(a2) <  toF(a3) ? -1 : 0;  // fl_ls
-          case 10: return toF(a2) >  toF(a3) ? -1 : 0;  // fl_gr
-          case 11: return toF(a2) <= toF(a3) ? -1 : 0;  // fl_le
-          case 12: return toF(a2) >= toF(a3) ? -1 : 0;  // fl_ge
-          case 13: return toI(-toF(a2));                // fl_neg
-          case 14: return toI(Math.abs(toF(a2)));       // fl_abs
-          case 15: return toI(a2 | 0);                  // fl_float i->f
-          case 16: return (toF(a2) | 0);                // fl_fix f->i
+          case 2:  return (toF(a2) | 0);                  // fl_unmk f->i
+          case 3:  return toI(a2 | 0);                    // fl_float i->f
+          case 4:  return (toF(a2) | 0);                  // fl_fix
+          case 5:  return toI(Math.abs(toF(a2)));         // fl_abs
+          case 6:  return toI(toF(a2) * toF(a3));         // fl_mul
+          case 7:  return toI(toF(a2) / toF(a3));         // fl_div
+          case 8:  return toI(toF(a2) % toF(a3));         // fl_mod
+          case 9:  return toI(toF(a2) + toF(a3));         // fl_add
+          case 10: return toI(toF(a2) - toF(a3));         // fl_sub
+          case 11: return a2;                             // fl_pos (identity)
+          case 12: return toI(-toF(a2));                  // fl_neg
+          case 13: return toF(a2) === toF(a3) ? -1 : 0;   // fl_eq
+          case 14: return toF(a2) !== toF(a3) ? -1 : 0;   // fl_ne
+          case 15: return toF(a2) <  toF(a3) ? -1 : 0;    // fl_ls
+          case 16: return toF(a2) >  toF(a3) ? -1 : 0;    // fl_gr
+          case 17: return toF(a2) <= toF(a3) ? -1 : 0;    // fl_le
+          case 18: return toF(a2) >= toF(a3) ? -1 : 0;    // fl_ge
           default: return 0;
         }
       }
