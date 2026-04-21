@@ -82,6 +82,10 @@ GLOBAL {
   op             // current OCODE opcode (shared across all cg functions)
   pendingop      // deferred binary/unary operator
   cssp           // compile-time OCODE stack pointer
+  cssp_sync      // slot below which all live data has already been
+                 // persisted to memory (via s_store or s_stack flush).
+                 // s_store flushes only [cssp_sync..cssp-1]. Push ops
+                 // leave cssp_sync unchanged.
   fn_peak        // peak cssp seen in current function (prescan output)
   terminated     // TRUE if current code block ended with terminal
   stat_words     // static data array (words)
@@ -790,6 +794,7 @@ AND cgpendingop_wasm() BE
 
 AND scan_emit() BE
 { cssp       := 3   // initial SSP: 0,1,2=save area, 3=first local
+  cssp_sync  := 3   // no live locals yet
   pendingop  := s_none
   terminated := FALSE
   fn_entrylab := 0
@@ -1083,6 +1088,7 @@ prescan_done:
         selectoutput(sysprint)
 
           cssp       := fn_save
+          cssp_sync  := fn_save
           terminated := FALSE
         }
         ENDCASE
@@ -1090,6 +1096,7 @@ prescan_done:
 
       CASE s_save:
       { cssp := rdn()
+        cssp_sync := cssp
         ENDCASE
       }
 
@@ -1443,26 +1450,33 @@ prescan_done:
 
       CASE s_stack:
       { LET n = rdn()
-        IF fn_entrylab = 0 DO { cssp := n; ENDCASE }
+        IF fn_entrylab = 0 DO { cssp := n; cssp_sync := n; ENDCASE }
         cgpendingop_wasm()
         selectoutput(tostream)
-        // Flush expression stack down to n if cssp > n.
+        IF cssp_sync > cssp DO cssp_sync := cssp
+        // Moving stack down (cssp > n): flush excess expression-stack
+        // items to their memory slots so caller can find them by LP.
         UNTIL cssp <= n DO
         { cssp := cssp - 1
-          writef("    (i32.store ")
-          emit_p_addr(cssp)
-          writef(" (local.get $t%n)) ;; flush t%n*n", cssp, cssp)
+          IF cssp >= cssp_sync DO
+          { writef("    (i32.store ")
+            emit_p_addr(cssp)
+            writef(" (local.get $t%n)) ;; flush t%n*n", cssp, cssp)
+          }
         }
-        // Load memory into expression stack if cssp < n.
-        // (Equivalent to cintcode's WHILE n>ssp DO loadt(k_loc,ssp) —
-        // materialises the stored values so later ops treat them
-        // like expression-stack items.)
-        WHILE cssp < n DO
-        { writef("    (local.set $t%n (i32.load ", cssp)
-          emit_p_addr(cssp)
-          writef(")) ;; stack-fill t%n from P!%n*n", cssp, cssp)
-          cssp := cssp + 1
+        // Moving stack up (cssp < n): flush any PENDING expression-
+        // stack values at slots cssp_sync..cssp-1 first, then advance
+        // cssp to n without reading memory. Slots cssp..n-1 are
+        // reserved (e.g. VEC decl) and contain no expr-stack data.
+        IF cssp < n DO
+        { FOR i = cssp_sync TO cssp-1 DO
+          { writef("    (i32.store ")
+            emit_p_addr(i)
+            writef(" (local.get $t%n)) ;; flush t%n (pre-stack-up)*n", i, i)
+          }
+          cssp := n
         }
+        cssp_sync := cssp
         selectoutput(sysprint)
         terminated := FALSE
         ENDCASE
@@ -1472,11 +1486,18 @@ prescan_done:
       { IF fn_entrylab = 0 DO ENDCASE
         cgpendingop_wasm()
         selectoutput(tostream)
-        FOR i = fn_save TO cssp-1 DO
+        // Flush live expression-stack slots. cssp_sync tracks where
+        // last sync boundary was (STACK or prior STORE). Slots below
+        // cssp_sync already persisted; slots cssp_sync..cssp-1 are
+        // the fresh pushes. Cap cssp_sync in case pops dropped cssp
+        // below a previous sync mark.
+        IF cssp_sync > cssp DO cssp_sync := cssp
+        FOR i = cssp_sync TO cssp-1 DO
         { writef("    (i32.store ")
           emit_p_addr(i)
           writef(" (local.get $t%n)) ;; STORE slot %n*n", i, i)
         }
+        cssp_sync := cssp
         selectoutput(sysprint)
         terminated := FALSE
         ENDCASE
