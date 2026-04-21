@@ -481,6 +481,7 @@ AND binop(wasm_op) BE
   writef("    (local.set $t%n (%s (local.get $t%n) (local.get $t%n)))*n",
          cssp, wasm_op, cssp, cssp+1)
   cssp := cssp + 1
+  IF cssp_sync > cssp DO cssp_sync := cssp
 }
 
 // Float binop: reinterpret i32 bits -> f32, apply op, reinterpret back.
@@ -490,6 +491,7 @@ AND fbinop(wasm_fop) BE
   writef("    (local.set $t%n (i32.reinterpret_f32 (%s (f32.reinterpret_i32 (local.get $t%n)) (f32.reinterpret_i32 (local.get $t%n)))))*n",
          cssp, wasm_fop, cssp, cssp+1)
   cssp := cssp + 1
+  IF cssp_sync > cssp DO cssp_sync := cssp
 }
 
 // Float compare: inputs are i32 bit patterns of floats, result is BCPL -1/0.
@@ -498,6 +500,7 @@ AND fcmp_op(wasm_fcmp) BE
   writef("    (local.set $t%n (i32.sub (i32.const 0) (%s (f32.reinterpret_i32 (local.get $t%n)) (f32.reinterpret_i32 (local.get $t%n)))))*n",
          cssp, wasm_fcmp, cssp, cssp+1)
   cssp := cssp + 1
+  IF cssp_sync > cssp DO cssp_sync := cssp
 }
 
 AND unop_neg() BE
@@ -562,6 +565,7 @@ AND cmp_op(wasm_cmp) BE
   writef("    (local.set $t%n (i32.sub (i32.const 0) (%s (local.get $t%n) (local.get $t%n))))*n",
          cssp, wasm_cmp, cssp, cssp+1)
   cssp := cssp + 1
+  IF cssp_sync > cssp DO cssp_sync := cssp
 }
 
 AND store_p(n) BE
@@ -574,6 +578,7 @@ AND store_p(n) BE
   // Only meaningful when n refers to an in-function local slot.
   IF n >= 3 & n < fn_peak & n ~= cssp DO
     writef("    (local.set $t%n (local.get $t%n))*n", n, cssp)
+  IF cssp_sync > cssp DO cssp_sync := cssp
 }
 
 AND store_g(n) BE
@@ -581,6 +586,7 @@ AND store_g(n) BE
   writef("    (i32.store ")
   emit_g_addr(n)
   writef(" (local.get $t%n))*n", cssp)
+  IF cssp_sync > cssp DO cssp_sync := cssp
 }
 
 AND store_ind() BE
@@ -589,6 +595,7 @@ AND store_ind() BE
   cssp := cssp - 2
   writef("    (i32.store (i32.shl (local.get $t%n) (i32.const 2)) (local.get $t%n))*n",
          cssp+1, cssp)
+  IF cssp_sync > cssp DO cssp_sync := cssp
 }
 
 // ------------------------------------------------------------------
@@ -663,6 +670,8 @@ AND emit_condjump(lab, is_jt) BE
   }
   pendingop := s_none
 
+  IF cssp_sync > cssp DO cssp_sync := cssp
+
   writef("      (local.set $__lab (i32.const %n)) (br $__dispatch)*n", idx)
   writef("    ))*n")
 }
@@ -709,12 +718,22 @@ AND emit_apply(op_kind, k) BE
   { // Capture result in $t{k} (result position in caller's frame).
     writef("    (local.set $t%n (call_indirect $ftable (type $bcpl_fn) (local.get $t%n)))*n",
            k, fn_t)
+    // Persist result to memory so later LP k reads the fresh value
+    // rather than the stale FNAP frame-save that overwrote P!k.
+    writef("    (i32.store ")
+    emit_p_addr(k)
+    writef(" (local.get $t%n)) ;; flush FNAP result*n", k)
     cssp := k + 1
+    // Slots k..k+2 were overwritten by FNAP frame-save; only slot k
+    // was restored (above). Any cssp_sync claim on k+1..k+2 is stale.
+    IF cssp_sync > k + 1 DO cssp_sync := k + 1
     RETURN
   }
   // RTAP: discard result.
   writef("    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t%n)))*n", fn_t)
   cssp := k
+  // Slots k..k+2 were overwritten by RTAP frame-save (no result saved).
+  IF cssp_sync > k DO cssp_sync := k
 }
 
 // ------------------------------------------------------------------
@@ -769,6 +788,7 @@ AND cgpendingop_wasm() BE
         writef("              (f32.reinterpret_i32 (local.get $t%n))*n", va)
         writef("              (f32.reinterpret_i32 (local.get $t%n))))*n", vb)
         writef("          (f32.reinterpret_i32 (local.get $t%n))))))*n", vb)
+        IF cssp_sync > cssp DO cssp_sync := cssp
       }
       ENDCASE
     CASE s_eq:  cmp_op("i32.eq");           ENDCASE
@@ -1313,6 +1333,7 @@ prescan_done:
             RESULTIS 0
           }
           cssp := cssp - 1
+          IF cssp_sync > cssp DO cssp_sync := cssp
           writef("    (i32.store*n")
           writef("      (i32.shl (i32.add (global.get $SB) (i32.const %n)) (i32.const 2))*n",
                  offset)
@@ -1390,6 +1411,7 @@ prescan_done:
         // Set $__lab and re-enter the dispatch loop.
         cgpendingop_wasm()
         cssp := cssp - 1
+        IF cssp_sync > cssp DO cssp_sync := cssp
         selectoutput(tostream)
         writef("      (local.set $__lab (local.get $t%n))*n", cssp)
         writef("      (br $__dispatch) ;; GOTO (computed)*n")
@@ -1419,6 +1441,7 @@ prescan_done:
           selectoutput(sysprint)
         }
         cssp := cssp - 1
+        IF cssp_sync > cssp DO cssp_sync := cssp
         terminated := TRUE
         ENDCASE
       }
@@ -1431,6 +1454,7 @@ prescan_done:
           writef("    ;; RES L%n: save result, jump to RSTACK*n", l)
           writef("    (local.set $t0 (local.get $t%n))*n", res_t)
           cssp := cssp - 1
+          IF cssp_sync > cssp DO cssp_sync := cssp
           emit_goto_lab(l)
           selectoutput(sysprint)
         }
@@ -1579,6 +1603,7 @@ prescan_done:
           LET vt = cssp - 3
           selectoutput(tostream)
           cssp := cssp - 3
+          IF cssp_sync > cssp DO cssp_sync := cssp
           writef("    (i32.store8 (i32.add (i32.shl (local.get $t%n) (i32.const 2)) (local.get $t%n)) (local.get $t%n))*n",
                  wa, bo, vt)
           selectoutput(sysprint)
@@ -1594,6 +1619,7 @@ prescan_done:
         { LET val_t = cssp - 1
           selectoutput(tostream)
           cssp := cssp - 1
+          IF cssp_sync > cssp DO cssp_sync := cssp
           writef("    ;; SWITCHON %n cases default L%n*n", n, dl)
           FOR i = 1 TO n DO
           { LET k  = rdn()
@@ -1672,6 +1698,7 @@ prescan_done:
           writef("          (i32.const %n))))*n", sh)
         }
         cssp := cssp - 2
+        IF cssp_sync > cssp DO cssp_sync := cssp
         selectoutput(sysprint)
         terminated := FALSE
         ENDCASE
