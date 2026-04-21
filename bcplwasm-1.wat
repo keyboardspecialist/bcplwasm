@@ -7265,6 +7265,217 @@
     )) ;; end block / LAB L95 = idx 71
     (if (i32.eq (local.get $__lab) (i32.const 71)) (then ;; L95
     (local.set $t215 (i32.const 0)) ;; QUERY (undefined)
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t5)) ;; STORE slot 5
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9)) ;; STORE slot 9
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10)) ;; STORE slot 10
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11)) ;; STORE slot 11
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t12)) ;; STORE slot 12
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)) (local.get $t13)) ;; STORE slot 13
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14)) ;; STORE slot 14
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60)) (local.get $t15)) ;; STORE slot 15
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 64)) (local.get $t16)) ;; STORE slot 16
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 68)) (local.get $t17)) ;; STORE slot 17
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 72)) (local.get $t18)) ;; STORE slot 18
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 76)) (local.get $t19)) ;; STORE slot 19
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 80)) (local.get $t20)) ;; STORE slot 20
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 84)) (local.get $t21)) ;; STORE slot 21
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 88)) (local.get $t22)) ;; STORE slot 22
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; STORE slot 23
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (local.get $t24)) ;; STORE slot 24
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t25)) ;; STORE slot 25
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26)) ;; STORE slot 26
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t27)) ;; STORE slot 27
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 112)) (local.get $t28)) ;; STORE slot 28
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 116)) (local.get $t29)) ;; STORE slot 29
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 120)) (local.get $t30)) ;; STORE slot 30
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 124)) (local.get $t31)) ;; STORE slot 31
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 128)) (local.get $t32)) ;; STORE slot 32
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 132)) (local.get $t33)) ;; STORE slot 33
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 136)) (local.get $t34)) ;; STORE slot 34
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 140)) (local.get $t35)) ;; STORE slot 35
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 144)) (local.get $t36)) ;; STORE slot 36
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (local.get $t37)) ;; STORE slot 37
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 152)) (local.get $t38)) ;; STORE slot 38
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156)) (local.get $t39)) ;; STORE slot 39
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 160)) (local.get $t40)) ;; STORE slot 40
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 164)) (local.get $t41)) ;; STORE slot 41
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 168)) (local.get $t42)) ;; STORE slot 42
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 172)) (local.get $t43)) ;; STORE slot 43
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 176)) (local.get $t44)) ;; STORE slot 44
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 180)) (local.get $t45)) ;; STORE slot 45
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 184)) (local.get $t46)) ;; STORE slot 46
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 188)) (local.get $t47)) ;; STORE slot 47
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 192)) (local.get $t48)) ;; STORE slot 48
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 196)) (local.get $t49)) ;; STORE slot 49
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 200)) (local.get $t50)) ;; STORE slot 50
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 204)) (local.get $t51)) ;; STORE slot 51
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 208)) (local.get $t52)) ;; STORE slot 52
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 212)) (local.get $t53)) ;; STORE slot 53
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 216)) (local.get $t54)) ;; STORE slot 54
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 220)) (local.get $t55)) ;; STORE slot 55
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 224)) (local.get $t56)) ;; STORE slot 56
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 228)) (local.get $t57)) ;; STORE slot 57
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 232)) (local.get $t58)) ;; STORE slot 58
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 236)) (local.get $t59)) ;; STORE slot 59
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 240)) (local.get $t60)) ;; STORE slot 60
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 244)) (local.get $t61)) ;; STORE slot 61
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 248)) (local.get $t62)) ;; STORE slot 62
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 252)) (local.get $t63)) ;; STORE slot 63
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 256)) (local.get $t64)) ;; STORE slot 64
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 260)) (local.get $t65)) ;; STORE slot 65
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 264)) (local.get $t66)) ;; STORE slot 66
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 268)) (local.get $t67)) ;; STORE slot 67
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 272)) (local.get $t68)) ;; STORE slot 68
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 276)) (local.get $t69)) ;; STORE slot 69
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 280)) (local.get $t70)) ;; STORE slot 70
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 284)) (local.get $t71)) ;; STORE slot 71
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 288)) (local.get $t72)) ;; STORE slot 72
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 292)) (local.get $t73)) ;; STORE slot 73
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 296)) (local.get $t74)) ;; STORE slot 74
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 300)) (local.get $t75)) ;; STORE slot 75
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 304)) (local.get $t76)) ;; STORE slot 76
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 308)) (local.get $t77)) ;; STORE slot 77
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 312)) (local.get $t78)) ;; STORE slot 78
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 316)) (local.get $t79)) ;; STORE slot 79
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 320)) (local.get $t80)) ;; STORE slot 80
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 324)) (local.get $t81)) ;; STORE slot 81
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 328)) (local.get $t82)) ;; STORE slot 82
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 332)) (local.get $t83)) ;; STORE slot 83
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 336)) (local.get $t84)) ;; STORE slot 84
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 340)) (local.get $t85)) ;; STORE slot 85
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 344)) (local.get $t86)) ;; STORE slot 86
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 348)) (local.get $t87)) ;; STORE slot 87
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 352)) (local.get $t88)) ;; STORE slot 88
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 356)) (local.get $t89)) ;; STORE slot 89
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 360)) (local.get $t90)) ;; STORE slot 90
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 364)) (local.get $t91)) ;; STORE slot 91
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 368)) (local.get $t92)) ;; STORE slot 92
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 372)) (local.get $t93)) ;; STORE slot 93
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 376)) (local.get $t94)) ;; STORE slot 94
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 380)) (local.get $t95)) ;; STORE slot 95
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 384)) (local.get $t96)) ;; STORE slot 96
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 388)) (local.get $t97)) ;; STORE slot 97
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 392)) (local.get $t98)) ;; STORE slot 98
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 396)) (local.get $t99)) ;; STORE slot 99
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 400)) (local.get $t100)) ;; STORE slot 100
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 404)) (local.get $t101)) ;; STORE slot 101
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 408)) (local.get $t102)) ;; STORE slot 102
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 412)) (local.get $t103)) ;; STORE slot 103
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 416)) (local.get $t104)) ;; STORE slot 104
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 420)) (local.get $t105)) ;; STORE slot 105
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 424)) (local.get $t106)) ;; STORE slot 106
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 428)) (local.get $t107)) ;; STORE slot 107
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 432)) (local.get $t108)) ;; STORE slot 108
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 436)) (local.get $t109)) ;; STORE slot 109
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 440)) (local.get $t110)) ;; STORE slot 110
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 444)) (local.get $t111)) ;; STORE slot 111
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 448)) (local.get $t112)) ;; STORE slot 112
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 452)) (local.get $t113)) ;; STORE slot 113
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 456)) (local.get $t114)) ;; STORE slot 114
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 460)) (local.get $t115)) ;; STORE slot 115
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 464)) (local.get $t116)) ;; STORE slot 116
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 468)) (local.get $t117)) ;; STORE slot 117
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 472)) (local.get $t118)) ;; STORE slot 118
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 476)) (local.get $t119)) ;; STORE slot 119
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 480)) (local.get $t120)) ;; STORE slot 120
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 484)) (local.get $t121)) ;; STORE slot 121
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 488)) (local.get $t122)) ;; STORE slot 122
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 492)) (local.get $t123)) ;; STORE slot 123
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 496)) (local.get $t124)) ;; STORE slot 124
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 500)) (local.get $t125)) ;; STORE slot 125
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 504)) (local.get $t126)) ;; STORE slot 126
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 508)) (local.get $t127)) ;; STORE slot 127
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 512)) (local.get $t128)) ;; STORE slot 128
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 516)) (local.get $t129)) ;; STORE slot 129
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 520)) (local.get $t130)) ;; STORE slot 130
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 524)) (local.get $t131)) ;; STORE slot 131
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 528)) (local.get $t132)) ;; STORE slot 132
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 532)) (local.get $t133)) ;; STORE slot 133
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 536)) (local.get $t134)) ;; STORE slot 134
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 540)) (local.get $t135)) ;; STORE slot 135
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 544)) (local.get $t136)) ;; STORE slot 136
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 548)) (local.get $t137)) ;; STORE slot 137
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 552)) (local.get $t138)) ;; STORE slot 138
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 556)) (local.get $t139)) ;; STORE slot 139
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 560)) (local.get $t140)) ;; STORE slot 140
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 564)) (local.get $t141)) ;; STORE slot 141
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 568)) (local.get $t142)) ;; STORE slot 142
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 572)) (local.get $t143)) ;; STORE slot 143
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 576)) (local.get $t144)) ;; STORE slot 144
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 580)) (local.get $t145)) ;; STORE slot 145
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 584)) (local.get $t146)) ;; STORE slot 146
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 588)) (local.get $t147)) ;; STORE slot 147
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 592)) (local.get $t148)) ;; STORE slot 148
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 596)) (local.get $t149)) ;; STORE slot 149
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 600)) (local.get $t150)) ;; STORE slot 150
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 604)) (local.get $t151)) ;; STORE slot 151
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 608)) (local.get $t152)) ;; STORE slot 152
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 612)) (local.get $t153)) ;; STORE slot 153
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 616)) (local.get $t154)) ;; STORE slot 154
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 620)) (local.get $t155)) ;; STORE slot 155
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 624)) (local.get $t156)) ;; STORE slot 156
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 628)) (local.get $t157)) ;; STORE slot 157
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 632)) (local.get $t158)) ;; STORE slot 158
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 636)) (local.get $t159)) ;; STORE slot 159
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 640)) (local.get $t160)) ;; STORE slot 160
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 644)) (local.get $t161)) ;; STORE slot 161
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 648)) (local.get $t162)) ;; STORE slot 162
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 652)) (local.get $t163)) ;; STORE slot 163
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 656)) (local.get $t164)) ;; STORE slot 164
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 660)) (local.get $t165)) ;; STORE slot 165
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 664)) (local.get $t166)) ;; STORE slot 166
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 668)) (local.get $t167)) ;; STORE slot 167
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 672)) (local.get $t168)) ;; STORE slot 168
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 676)) (local.get $t169)) ;; STORE slot 169
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 680)) (local.get $t170)) ;; STORE slot 170
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 684)) (local.get $t171)) ;; STORE slot 171
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 688)) (local.get $t172)) ;; STORE slot 172
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 692)) (local.get $t173)) ;; STORE slot 173
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 696)) (local.get $t174)) ;; STORE slot 174
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 700)) (local.get $t175)) ;; STORE slot 175
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 704)) (local.get $t176)) ;; STORE slot 176
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 708)) (local.get $t177)) ;; STORE slot 177
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 712)) (local.get $t178)) ;; STORE slot 178
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 716)) (local.get $t179)) ;; STORE slot 179
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 720)) (local.get $t180)) ;; STORE slot 180
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 724)) (local.get $t181)) ;; STORE slot 181
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 728)) (local.get $t182)) ;; STORE slot 182
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 732)) (local.get $t183)) ;; STORE slot 183
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 736)) (local.get $t184)) ;; STORE slot 184
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 740)) (local.get $t185)) ;; STORE slot 185
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 744)) (local.get $t186)) ;; STORE slot 186
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 748)) (local.get $t187)) ;; STORE slot 187
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 752)) (local.get $t188)) ;; STORE slot 188
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 756)) (local.get $t189)) ;; STORE slot 189
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 760)) (local.get $t190)) ;; STORE slot 190
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 764)) (local.get $t191)) ;; STORE slot 191
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 768)) (local.get $t192)) ;; STORE slot 192
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 772)) (local.get $t193)) ;; STORE slot 193
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 776)) (local.get $t194)) ;; STORE slot 194
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 780)) (local.get $t195)) ;; STORE slot 195
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 784)) (local.get $t196)) ;; STORE slot 196
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 788)) (local.get $t197)) ;; STORE slot 197
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 792)) (local.get $t198)) ;; STORE slot 198
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 796)) (local.get $t199)) ;; STORE slot 199
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 800)) (local.get $t200)) ;; STORE slot 200
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 804)) (local.get $t201)) ;; STORE slot 201
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 808)) (local.get $t202)) ;; STORE slot 202
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 812)) (local.get $t203)) ;; STORE slot 203
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 816)) (local.get $t204)) ;; STORE slot 204
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 820)) (local.get $t205)) ;; STORE slot 205
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 824)) (local.get $t206)) ;; STORE slot 206
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 828)) (local.get $t207)) ;; STORE slot 207
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 832)) (local.get $t208)) ;; STORE slot 208
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 836)) (local.get $t209)) ;; STORE slot 209
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 840)) (local.get $t210)) ;; STORE slot 210
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 844)) (local.get $t211)) ;; STORE slot 211
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 848)) (local.get $t212)) ;; STORE slot 212
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 852)) (local.get $t213)) ;; STORE slot 213
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 856)) (local.get $t214)) ;; STORE slot 214
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 860)) (local.get $t215)) ;; STORE slot 215
     (local.set $t216 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
     (local.set $t217 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 876))))
     (local.set $t216 (i32.add (local.get $t216) (local.get $t217)))
@@ -9041,6 +9252,7 @@
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     (local.set $t3 (i32.const 0)) ;; QUERY (undefined)
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)) (local.get $t3)) ;; STORE slot 3
     (local.set $t4 (i32.const 0))
     (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1228)) (local.get $t4))
       (local.set $__lab (i32.const 1)) (br $__dispatch)
@@ -13699,6 +13911,9 @@
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)) (local.get $t3)) ;; STORE slot 3
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (local.get $t4)) ;; STORE slot 4
     (local.set $t5 (i32.const 0)) ;; QUERY (undefined)
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)) (local.get $t3)) ;; STORE slot 3
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (local.get $t4)) ;; STORE slot 4
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t5)) ;; STORE slot 5
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     )) ;; end block / LAB L413 = idx 1
     (if (i32.eq (local.get $__lab) (i32.const 1)) (then ;; L413
@@ -14251,6 +14466,7 @@
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     (local.set $t3 (i32.const 0)) ;; QUERY (undefined)
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)) (local.get $t3)) ;; STORE slot 3
     (local.set $t4 (i32.const 0))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)) (local.get $t3)) ;; STORE slot 3
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (local.get $t4)) ;; STORE slot 4
@@ -17247,14 +17463,15 @@
     )) ;; end block / LAB L584 = idx 4
     (if (i32.eq (local.get $__lab) (i32.const 4)) (then ;; L584
     (local.set $t4 (i32.const 0)) ;; QUERY (undefined)
+    (local.set $t5 (i32.const 0)) ;; QUERY (undefined)
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)) (local.get $t3)) ;; STORE slot 3
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (local.get $t4)) ;; STORE slot 4
-    (local.set $t5 (i32.const 1048575))
-    (local.set $t6 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1264))))
-    (local.set $t5 (i32.and (local.get $t5) (local.get $t6)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (local.get $t5))
-    (local.set $t4 (local.get $t5))
-    (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)))) ;; stack-fill t5 from P!5
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t5)) ;; STORE slot 5
+    (local.set $t6 (i32.const 1048575))
+    (local.set $t7 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1264))))
+    (local.set $t6 (i32.and (local.get $t6) (local.get $t7)))
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (local.get $t6))
+    (local.set $t4 (local.get $t6))
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)))) ;; stack-fill t6 from P!6
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)))) ;; stack-fill t7 from P!7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
@@ -18273,6 +18490,10 @@
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t5)) ;; STORE slot 5
     (local.set $t6 (i32.const 0))
     (local.set $t7 (i32.const 0)) ;; QUERY (undefined)
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (local.get $t4)) ;; STORE slot 4
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t5)) ;; STORE slot 5
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
@@ -19194,6 +19415,7 @@
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     (local.set $t3 (i32.const 0)) ;; QUERY (undefined)
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)) (local.get $t3)) ;; STORE slot 3
     (local.set $t4 (i32.const 205))
     (local.set $t5 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1196))))
     (if (i32.ne  (local.get $t4) (local.get $t5)) (then

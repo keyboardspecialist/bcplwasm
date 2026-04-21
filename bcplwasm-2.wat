@@ -858,19 +858,21 @@
     )) ;; end block / LAB L38 = idx 1
     (if (i32.eq (local.get $__lab) (i32.const 1)) (then ;; L38
     (local.set $t5 (i32.const 0)) ;; QUERY (undefined)
-    (local.set $t6 (i32.const 0))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t5)) ;; STORE slot 5
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
+    (local.set $t6 (i32.const 0)) ;; QUERY (undefined)
     (local.set $t7 (i32.const 0))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t5)) ;; STORE slot 5
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
     (local.set $t8 (i32.const 0))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
-    (if (i32.ne  (local.get $t8) (local.get $t9)) (then
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t5)) ;; STORE slot 5
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
+    (local.set $t9 (i32.const 0))
+    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (if (i32.ne  (local.get $t9) (local.get $t10)) (then
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     ))
-    (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)))) ;; stack-fill t8 from P!8
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)))) ;; stack-fill t9 from P!9
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
@@ -4228,24 +4230,21 @@
     (global.set $P (i32.add (global.get $P) (i32.const 9)))
     (local.set $t9 (call_indirect $ftable (type $bcpl_fn) (local.get $t12)))
     (local.set $t10 (i32.const 0)) ;; QUERY (undefined)
-    ;; FNRN
-    (local.set $t0 (local.get $t10))
-    (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
-    (return (local.get $t0))
+    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1652))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t5)) ;; STORE slot 5
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9)) ;; STORE slot 9
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
-    (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1692)) (local.get $t10))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
-    (local.set $t11 (i32.const 3))
-    (local.set $t10 (i32.add (local.get $t10) (local.get $t11)))
-    (local.set $t10 (i32.load (i32.shl (local.get $t10) (i32.const 2))))
-    (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1696)) (local.get $t10))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)))) ;; stack-fill t10 from P!10
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)))) ;; stack-fill t11 from P!11
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10)) ;; STORE slot 10
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11)) ;; STORE slot 11
+    (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1692)) (local.get $t12))
+    (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t13 (i32.const 3))
+    (local.set $t12 (i32.add (local.get $t12) (local.get $t13)))
+    (local.set $t12 (i32.load (i32.shl (local.get $t12) (i32.const 2))))
+    (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1696)) (local.get $t12))
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)))) ;; stack-fill t12 from P!12
     (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)))) ;; stack-fill t13 from P!13
     (local.set $t14 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)))) ;; stack-fill t14 from P!14
