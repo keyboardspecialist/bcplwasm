@@ -77,6 +77,9 @@ export class BcplRuntime {
   loadByte(byteAddr) {
     return this.memView.getUint8(byteAddr);
   }
+  storeByte(byteAddr, v) {
+    this.memView.setUint8(byteAddr, v & 0xFF);
+  }
 
   get P() { return this.master.exports.P.value; }
   set P(v) { this.master.exports.P.value = v | 0; }
@@ -169,9 +172,11 @@ export class BcplRuntime {
   }
 
   imp_writef() {
-    // writef(fmt, a, b, c, d) — classic BCPL format codes.
+    // writef(fmt, a0..a10) — classic BCPL format codes. Standard blib
+    // supports 11 value args after the format string.
     const fmt = this.readBcplString(this.arg(0));
-    const args = [this.arg(1), this.arg(2), this.arg(3), this.arg(4)];
+    const args = [];
+    for (let k = 0; k < 11; k++) args.push(this.arg(1 + k));
     let ai = 0, out = "";
     const f32buf = new ArrayBuffer(4);
     const f32i = new Int32Array(f32buf);
@@ -681,6 +686,154 @@ export class BcplRuntime {
     return 0;
   }
 
+  // ------------------ Tier-A memory + bit ops ------------------
+
+  // copystring(from, to) — byte-copy BCPL string `from` to `to`
+  // (including length byte at index 0).
+  imp_copystring() {
+    const from = this.arg(0) * 4;
+    const to   = this.arg(1) * 4;
+    this.restoreP();
+    const len = this.memView.getUint8(from);
+    for (let i = 0; i <= len; i++) {
+      this.memView.setUint8(to + i, this.memView.getUint8(from + i));
+    }
+    return 0;
+  }
+
+  // copy_words(from, to, n) — word-copy n words.
+  imp_copy_words() {
+    const from = this.arg(0);
+    const to   = this.arg(1);
+    const n    = this.arg(2);
+    this.restoreP();
+    for (let i = 0; i < n; i++) this.storeWord(to + i, this.loadWord(from + i));
+    return 0;
+  }
+
+  // clear_words(v, n) — zero-fill n words.
+  imp_clear_words() {
+    const v = this.arg(0);
+    const n = this.arg(1);
+    this.restoreP();
+    for (let i = 0; i < n; i++) this.storeWord(v + i, 0);
+    return 0;
+  }
+
+  // copy_bytes(fromlen, from, fillch, tolen, to) — MOVC5 semantics.
+  // `from` and `to` are BYTE addresses (not word). Copy up to min(fromlen,
+  // tolen) bytes, fill remainder of tolen with fillch. Returns
+  // fromlen - copied.
+  imp_copy_bytes() {
+    const fromlen = this.arg(0);
+    const from    = this.arg(1);
+    const fillch  = this.arg(2);
+    const tolen   = this.arg(3);
+    const to      = this.arg(4);
+    this.restoreP();
+    const n = Math.min(fromlen, tolen);
+    for (let i = 0; i < n; i++)
+      this.memView.setUint8(to + i, this.memView.getUint8(from + i));
+    for (let i = n; i < tolen; i++)
+      this.memView.setUint8(to + i, fillch & 0xFF);
+    return fromlen - n;
+  }
+
+  // packstring(v, s) — pack byte-per-word vector v into byte-packed
+  // BCPL string s. Returns size = len/bytesperword.
+  imp_packstring() {
+    const v = this.arg(0);       // word addr of byte-per-word vec
+    const s = this.arg(1) * 4;   // byte addr of dest string
+    this.restoreP();
+    const n = this.loadWord(v) & 0xFF;
+    const bytesperword = 4;
+    const size = (n / bytesperword) | 0;
+    for (let i = 0; i <= n; i++) {
+      this.memView.setUint8(s + i, this.loadWord(v + i) & 0xFF);
+    }
+    // Pad remainder of (size+1) words with zeros.
+    for (let i = n + 1; i < (size + 1) * bytesperword; i++) {
+      this.memView.setUint8(s + i, 0);
+    }
+    return size;
+  }
+
+  // unpackstring(s, v) — expand byte-packed string s into byte-per-word
+  // vector v (v!0 = length, v!1 = byte 1, …).
+  imp_unpackstring() {
+    const s = this.arg(0) * 4;   // byte addr of source string
+    const v = this.arg(1);       // word addr of dest vec
+    this.restoreP();
+    const len = this.memView.getUint8(s);
+    for (let i = len; i >= 0; i--) {
+      this.storeWord(v + i, this.memView.getUint8(s + i));
+    }
+    return 0;
+  }
+
+  // getword(v, i) — fetch i'th 16-bit little-endian word from byte-
+  // indexed vector v (word-address). j = i*2.
+  imp_getword() {
+    const v = this.arg(0) * 4;   // byte addr
+    const i = this.arg(1);
+    this.restoreP();
+    const j = v + i * 2;
+    return this.memView.getUint8(j) | (this.memView.getUint8(j + 1) << 8);
+  }
+
+  // putword(v, i, w) — store low 16 bits of w into i'th 16-bit slot
+  // of byte vector v, little-endian.
+  imp_putword() {
+    const v = this.arg(0) * 4;
+    const i = this.arg(1);
+    const w = this.arg(2);
+    this.restoreP();
+    const j = v + i * 2;
+    this.memView.setUint8(j,     w         & 0xFF);
+    this.memView.setUint8(j + 1, (w >>> 8) & 0xFF);
+    return 0;
+  }
+
+  // setbit(bitno, bitvec, state) — set/clear bit, return previous.
+  imp_setbit() {
+    const bitno = this.arg(0);
+    const bitvec = this.arg(1);
+    const state  = this.arg(2);
+    this.restoreP();
+    const i = (bitno / 32) | 0;
+    const s = bitno % 32;
+    const mask = (1 << s) >>> 0;
+    const word = this.loadWord(bitvec + i);
+    const old  = word & mask;
+    const next = state ? (word | mask) : (word & ~mask);
+    this.storeWord(bitvec + i, next);
+    return old;
+  }
+
+  // testbit(bitno, bitvec) — return nonzero if bit set.
+  imp_testbit() {
+    const bitno = this.arg(0);
+    const bitvec = this.arg(1);
+    this.restoreP();
+    const i = (bitno / 32) | 0;
+    const s = bitno % 32;
+    return this.loadWord(bitvec + i) & ((1 << s) >>> 0);
+  }
+
+  // setvec(v, n, a0..a15) — copy up to 16 args into v!0..v!n-1.
+  // BCPL signature has 16 named args after n; we read P!3..P!19 and
+  // copy n of them. Excess args beyond available are zero.
+  imp_setvec() {
+    const v = this.arg(0);
+    const n = this.arg(1);
+    // Snapshot args before restoreP — P moves away after restore.
+    const vals = [];
+    for (let i = 0; i < 16; i++) vals.push(this.arg(2 + i));
+    this.restoreP();
+    for (let i = 0; i < n; i++) this.storeWord(v + i, vals[i] ?? 0);
+    return 0;
+  }
+
   // ------------------ loader ------------------
 
   imports() {
@@ -721,6 +874,17 @@ export class BcplRuntime {
         bcpl_longjump:     () => this.imp_longjump(),
         bcpl_pathfindinput:() => this.imp_pathfindinput(),
         bcpl_stop_fn:      () => this.imp_stop_fn(),
+        bcpl_copystring:   () => this.imp_copystring(),
+        bcpl_copy_words:   () => this.imp_copy_words(),
+        bcpl_clear_words:  () => this.imp_clear_words(),
+        bcpl_copy_bytes:   () => this.imp_copy_bytes(),
+        bcpl_packstring:   () => this.imp_packstring(),
+        bcpl_unpackstring: () => this.imp_unpackstring(),
+        bcpl_getword:      () => this.imp_getword(),
+        bcpl_putword:      () => this.imp_putword(),
+        bcpl_setbit:       () => this.imp_setbit(),
+        bcpl_testbit:      () => this.imp_testbit(),
+        bcpl_setvec:       () => this.imp_setvec(),
       }
     };
   }
@@ -732,7 +896,7 @@ export class BcplRuntime {
   // table_base) and export register()/stat_words()/fn_count(). The
   // loader two-pass-instantiates each program: probe sizes, bump-
   // allocate bases, then real instantiate + register.
-  static STDLIB_TABLE_SLOTS = 35;
+  static STDLIB_TABLE_SLOTS = 46;
   static STATIC_WORD_BASE   = 1001;  // first word past G
 
   async loadMaster(url = "master.wasm") {
