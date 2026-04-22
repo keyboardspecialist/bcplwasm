@@ -616,13 +616,15 @@ export class BcplRuntime {
   }
 
   // selectoutput(h) — make h the current output stream. Returns
-  // previous handle.
+  // previous handle. Mirrors to G!13 (cos) so BCPL code reading the
+  // global directly sees the current handle.
   imp_selectoutput() {
     const h = this.arg(0);
     this.restoreP();
     if (h < 0 || h >= this.streams.length || this.streams[h] === null) return 0;
     const prev = this.curOut;
     this.curOut = h;
+    this.storeWord(1 + 13, h);  // G!13 = cos
     return prev;
   }
 
@@ -632,6 +634,7 @@ export class BcplRuntime {
     if (h < 0 || h >= this.streams.length || this.streams[h] === null) return 0;
     const prev = this.curIn;
     this.curIn = h;
+    this.storeWord(1 + 12, h);  // G!12 = cis
     return prev;
   }
 
@@ -648,8 +651,8 @@ export class BcplRuntime {
       storageBackend.set(s.name, s.data);
     }
     this.streams[h] = null;
-    if (this.curOut === h) this.curOut = 1;
-    if (this.curIn  === h) this.curIn  = 2;
+    if (this.curOut === h) { this.curOut = 1; this.storeWord(1 + 13, 1); }
+    if (this.curIn  === h) { this.curIn  = 2; this.storeWord(1 + 12, 2); }
     return 0;
   }
 
@@ -662,6 +665,7 @@ export class BcplRuntime {
       this.streams[h] = null;
     }
     this.curIn = 2;
+    this.storeWord(1 + 12, 2);  // G!12 = cis
     return 0;
   }
   imp_endwrite() {
@@ -673,6 +677,7 @@ export class BcplRuntime {
       this.streams[h] = null;
     }
     this.curOut = 1;
+    this.storeWord(1 + 13, 1);  // G!13 = cos
     return 0;
   }
 
@@ -792,6 +797,25 @@ export class BcplRuntime {
   initMaster(stackBaseWord) {
     const base = stackBaseWord ?? ((this.nextStaticWord + 3) & ~3);
     this.master.exports.init(base);
+
+    // Phase 4: seed state globals libhdr reserves as read-only values
+    // programs can inspect directly (not function pointers).
+    //   G!12  cis         = default input  handle (stdin)
+    //   G!13  cos         = default output handle (stdout)
+    //   G!127 randseed    = PRNG seed
+    //   G!14  currentdir  = pointer to BCPL string "/"
+    // G!9 (rootnode), G!190 (current_language), G!7/8 (coroutine state)
+    // stay at 0 — unused by current feature set.
+    this.storeWord(1 + 12, this.curIn);   // cis
+    this.storeWord(1 + 13, this.curOut);  // cos
+    this.storeWord(1 + 127, (Date.now() | 1) >>> 0);  // randseed
+
+    // Allocate BCPL string "/" in heap and point G!14 at it.
+    const slashWord = this.heapTop - 1;
+    this.heapTop = slashWord;
+    this.memView.setUint8(slashWord * 4,     1);   // length byte
+    this.memView.setUint8(slashWord * 4 + 1, 47);  // '/'
+    this.storeWord(1 + 14, slashWord);    // currentdir
   }
 
   async load(url) {
