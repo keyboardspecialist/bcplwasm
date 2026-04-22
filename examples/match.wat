@@ -8,7 +8,7 @@
   (import "env" "table_base"  (global $TB i32))
 
   ;; SECTION: match
-  ;; BCPL fn classify    (L10)
+  ;; BCPL fn classify (L10)
   (func $fn_L10 (export "fn_L10") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -125,7 +125,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L10
 
-  ;; BCPL fn start       (L23)
+  ;; BCPL fn start (L23)
   (func $fn_L23 (export "fn_L23") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)

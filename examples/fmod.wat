@@ -8,7 +8,7 @@
   (import "env" "table_base"  (global $TB i32))
 
   ;; SECTION: fmod
-  ;; BCPL fn start       (L10)
+  ;; BCPL fn start (L10)
   (func $fn_L10 (export "fn_L10") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
