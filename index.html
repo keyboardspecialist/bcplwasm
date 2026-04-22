@@ -238,16 +238,16 @@
     .preview-note {
       background: var(--bg-3);
       color: var(--fg-dim);
-      font-size: 0.75rem;
-      padding: 0.3rem 0.6rem;
+      font-size: 0.78rem;
+      padding: 0.4rem 0.6rem;
       display: none;
       border-bottom: 1px solid var(--border);
       gap: 0.5rem;
-      align-items: center;
+      align-items: flex-start;
     }
     .preview-note.visible { display: flex; }
     .preview-note button {
-      padding: 0.15rem 0.4rem;
+      padding: 0.2rem 0.5rem;
       background: var(--accent);
       color: #000;
       border: 0;
@@ -255,7 +255,36 @@
       cursor: pointer;
       font: inherit;
       font-size: 0.75rem;
+      flex-shrink: 0;
     }
+    .preview-note button:disabled {
+      background: var(--bg-2);
+      color: var(--fg-dim);
+      cursor: not-allowed;
+    }
+    .preview-meta .title {
+      color: var(--fg);
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+    .preview-meta .badge {
+      display: inline-block;
+      margin-left: 0.4rem;
+      padding: 0 0.35rem;
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      font-size: 0.65rem;
+      color: var(--fg-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .preview-meta .summary { margin-top: 0.2rem; }
+    .preview-meta ul {
+      margin: 0.2rem 0 0 1.1rem;
+      padding: 0;
+    }
+    .preview-meta li { margin: 0; }
     .action-row {
       padding: 0.4rem 0.6rem;
       border-top: 1px solid var(--border);
@@ -370,7 +399,9 @@
     <main class="right-pane">
       <nav class="tabs source-tabs" id="sourceTabs"></nav>
       <div class="preview-note" id="previewNote">
-        <span id="previewNoteText"></span>
+        <div id="previewMeta" style="flex:1;"></div>
+        <button id="prevLesson" title="previous lesson">◀</button>
+        <button id="nextLesson" title="next lesson">▶</button>
         <button id="savePreview">Save as file</button>
       </div>
       <div class="editor-host">
@@ -397,12 +428,11 @@
     const { BcplRuntime, storageBackend } = await import(`./runtime.js?v=${V}`);
     const { slots, aliases } = await import(`./stdlib-manifest.mjs?v=${V}`);
     const { API_DOCS } = await import(`./api-docs.mjs?v=${V}`);
+    const { TRACK, LEVELS, BY_SLUG, nextSlug, prevSlug } =
+      await import(`./tutorial.mjs?v=${V}`);
 
-    const EXAMPLES = [
-      "hello", "fact", "nested", "valof", "bitfield", "cgoto",
-      "fmod", "shifts", "vec", "echo", "match", "every",
-      "stdlib", "streams",
-    ];
+    // Extras: examples not part of the tutorial track (e.g. stdlib demo).
+    const EXTRAS = ["stdlib"];
 
     // ------------------ DOM refs ------------------
     const fileListEl    = document.getElementById("fileList");
@@ -414,7 +444,9 @@
     const userSrcEl     = document.getElementById("userSrc");
     const liveWatEl     = document.getElementById("liveWat");
     const previewNoteEl = document.getElementById("previewNote");
-    const previewNoteText = document.getElementById("previewNoteText");
+    const previewMetaEl = document.getElementById("previewMeta");
+    const prevLessonBtn = document.getElementById("prevLesson");
+    const nextLessonBtn = document.getElementById("nextLesson");
     const savePreviewBtn = document.getElementById("savePreview");
     const outputEl      = document.getElementById("output");
     const stdinEl       = document.getElementById("stdin");
@@ -541,8 +573,7 @@ LET start() = VALOF
         userSrcEl.readOnly = true;
         userSrcEl.style.display = "block";
         liveWatEl.style.display = "none";
-        previewNoteText.textContent =
-          `Previewing example "${t.name}". Save to make it a regular file.`;
+        renderPreviewMeta(t.name);
         previewNoteEl.classList.add("visible");
       } else if (t.kind === "wat") {
         userSrcEl.style.display = "none";
@@ -713,22 +744,113 @@ LET start() = VALOF
       rebuildSourceTabs(false);
     }
 
-    // ------------------ Examples tab ------------------
-    let selectedExample = EXAMPLES[0];
+    // ------------------ Examples tab (tutorial track) ------------------
+    let selectedExample = TRACK[0]?.slug ?? EXTRAS[0];
+
+    async function openExamplePreview(slug) {
+      commitActiveEdit();
+      selectedExample = slug;
+      renderExampleList();
+      const src = await fetchText(`examples/${slug}.b?v=${Date.now()}`, "");
+      if (src) openPreviewTab(slug, src);
+    }
+
+    // Fill the preview note bar for a given preview slug. If the slug
+    // is in the tutorial TRACK, show title/level/summary/goals and
+    // enable prev/next navigation. Otherwise fall back to a minimal line.
+    function renderPreviewMeta(slug) {
+      const entry = BY_SLUG.get(slug);
+      previewMetaEl.className = "preview-meta";
+      if (!entry) {
+        previewMetaEl.innerHTML =
+          `<div class="title">${escapeHtml(slug)}</div>` +
+          `<div class="summary">Preview — save to make it a regular file.</div>`;
+        prevLessonBtn.disabled = true;
+        nextLessonBtn.disabled = true;
+        return;
+      }
+      const level = LEVELS.find(l => l.n === entry.level);
+      let html = `<div><span class="title">${escapeHtml(entry.title)}</span>` +
+        `<span class="badge">L${entry.level} · ${escapeHtml(entry.topic)}</span></div>` +
+        `<div class="summary">${escapeHtml(entry.summary)}</div>`;
+      if (entry.goals?.length) {
+        html += "<ul>";
+        for (const g of entry.goals) html += `<li>${escapeHtml(g)}</li>`;
+        html += "</ul>";
+      }
+      previewMetaEl.innerHTML = html;
+      prevLessonBtn.disabled = !prevSlug(slug);
+      nextLessonBtn.disabled = !nextSlug(slug);
+    }
+
+    function currentPreviewSlug() {
+      const t = sourceTabs[activeTab];
+      return (t && t.kind === "preview") ? t.name : null;
+    }
+    function goPrevLesson() {
+      const cur = currentPreviewSlug();
+      if (!cur) return;
+      const p = prevSlug(cur);
+      if (p) openExamplePreview(p);
+    }
+    function goNextLesson() {
+      const cur = currentPreviewSlug();
+      if (!cur) return;
+      const n = nextSlug(cur);
+      if (n) openExamplePreview(n);
+    }
+
     function renderExampleList() {
       exampleListEl.innerHTML = "";
-      for (const name of EXAMPLES) {
-        const li = document.createElement("li");
-        li.textContent = name;
-        if (name === selectedExample) li.classList.add("active");
-        li.onclick = async () => {
-          commitActiveEdit();
-          selectedExample = name;
-          renderExampleList();
-          const src = await fetchText(`examples/${name}.b?v=${Date.now()}`, "");
-          if (src) openPreviewTab(name, src);
-        };
-        exampleListEl.appendChild(li);
+
+      // "Start tutorial" button jumps to the first lesson.
+      const start = document.createElement("li");
+      start.innerHTML = "<span style='color: var(--accent);'>▶ Start tutorial</span>";
+      start.style.fontStyle = "italic";
+      start.onclick = () => openExamplePreview(TRACK[0].slug);
+      exampleListEl.appendChild(start);
+
+      // Group track entries by level.
+      for (const lv of LEVELS) {
+        const lessons = TRACK.filter(e => e.level === lv.n);
+        if (!lessons.length) continue;
+        const hdr = document.createElement("li");
+        hdr.style.pointerEvents = "none";
+        hdr.style.color = "var(--fg-dim)";
+        hdr.style.marginTop = "0.4rem";
+        hdr.style.fontSize = "0.72rem";
+        hdr.style.textTransform = "uppercase";
+        hdr.style.letterSpacing = "0.05em";
+        hdr.textContent = `Level ${lv.n} — ${lv.name}`;
+        exampleListEl.appendChild(hdr);
+        for (const e of lessons) {
+          const li = document.createElement("li");
+          li.textContent = e.title;
+          li.title = e.summary;
+          if (e.slug === selectedExample) li.classList.add("active");
+          li.onclick = () => openExamplePreview(e.slug);
+          exampleListEl.appendChild(li);
+        }
+      }
+
+      // Extras section (non-track demos).
+      if (EXTRAS.length) {
+        const hdr = document.createElement("li");
+        hdr.style.pointerEvents = "none";
+        hdr.style.color = "var(--fg-dim)";
+        hdr.style.marginTop = "0.6rem";
+        hdr.style.fontSize = "0.72rem";
+        hdr.style.textTransform = "uppercase";
+        hdr.style.letterSpacing = "0.05em";
+        hdr.textContent = "Extras";
+        exampleListEl.appendChild(hdr);
+        for (const name of EXTRAS) {
+          const li = document.createElement("li");
+          li.textContent = name;
+          if (name === selectedExample) li.classList.add("active");
+          li.onclick = () => openExamplePreview(name);
+          exampleListEl.appendChild(li);
+        }
       }
     }
 
@@ -923,6 +1045,8 @@ LET start() = VALOF
     document.getElementById("setEntryBtn").addEventListener("click", setEntry);
     document.getElementById("resetFiles").addEventListener("click", resetFiles);
     savePreviewBtn.addEventListener("click", promotePreview);
+    prevLessonBtn.addEventListener("click", goPrevLesson);
+    nextLessonBtn.addEventListener("click", goNextLesson);
     apiFilterEl.addEventListener("input", () => renderApiList(apiFilterEl.value));
     userSrcEl.addEventListener("input", () => {
       const i = activeFileIdx();
