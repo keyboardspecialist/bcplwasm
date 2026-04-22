@@ -2,290 +2,401 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>BCPL &rarr; WebAssembly</title>
+  <title>BCPL &rarr; WebAssembly playground</title>
   <style>
-    :root { color-scheme: light dark; }
+    :root {
+      color-scheme: dark;
+      --bg:       #0b0f15;
+      --bg-2:     #0e1116;
+      --bg-3:     #141a23;
+      --border:   #242a34;
+      --fg:       #e6edf3;
+      --fg-dim:   #8b95a5;
+      --accent:   #6cb6ff;
+      --entry:    #ffbe55;
+      --err:      #f07178;
+    }
+    * { box-sizing: border-box; }
     body {
-      font-family: system-ui, sans-serif;
-      max-width: 960px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-      line-height: 1.4;
-    }
-    h1 { font-size: 1.4rem; margin-bottom: 0.25rem; }
-    .sub { color: #888; margin-top: 0; font-size: 0.9rem; }
-    .row { display: flex; gap: 0.5rem; align-items: center; margin: 1rem 0; }
-    select, button { font: inherit; padding: 0.4rem 0.7rem; }
-    button { cursor: pointer; }
-    pre {
-      background: #0e1116;
-      color: #e6edf3;
-      padding: 1rem;
-      border-radius: 6px;
-      overflow: auto;
-      font-size: 0.85rem;
-      min-height: 4rem;
-      white-space: pre-wrap;
-    }
-    .panes {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-    }
-    .pane h3 { margin: 0 0 0.4rem 0; font-size: 0.95rem; color: #888; }
-    .wat-pane { margin-top: 1rem; }
-    .wat-pane details { background: transparent; }
-    .wat-pane summary {
-      cursor: pointer;
-      margin-bottom: 0.4rem;
-      font-size: 0.95rem;
-      color: #888;
-      user-select: none;
-    }
-    .wat-pane pre { max-height: 30rem; font-size: 0.78rem; }
-    .stdin-pane { margin-top: 1rem; }
-    .stdin-pane h3 { margin: 0 0 0.4rem 0; font-size: 0.95rem; color: #888; }
-    .stdin-pane textarea,
-    .edit-pane textarea {
-      width: 100%;
-      min-height: 4rem;
-      font-family: ui-monospace, monospace;
-      font-size: 0.85rem;
-      background: #0e1116;
-      color: #e6edf3;
-      border: 1px solid #2a2f37;
-      border-radius: 6px;
-      padding: 0.5rem;
-      box-sizing: border-box;
-      resize: vertical;
-    }
-    .edit-pane { margin-top: 1.5rem; border-top: 1px solid #2a2f37; padding-top: 1rem; }
-    .edit-pane h2 { font-size: 1rem; margin: 0 0 0.5rem 0; }
-    .edit-pane textarea { min-height: 12rem; }
-    .compile-status { color: #888; font-size: 0.85rem; margin-left: 0.5rem; }
-    .compile-status.err { color: #e74c3c; }
-    .file-bar { display: flex; gap: 0.5rem; align-items: stretch; margin-bottom: 0.5rem; }
-    .file-list {
-      flex: 0 0 14rem;
-      list-style: none;
-      padding: 0.25rem;
       margin: 0;
-      border: 1px solid #2a2f37;
-      border-radius: 6px;
-      background: #0e1116;
+      font-family: system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      font-size: 14px;
+      line-height: 1.4;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      flex-shrink: 0;
+    }
+    header h1 { font-size: 1.1rem; margin: 0; }
+    header .sub { color: var(--fg-dim); font-size: 0.8rem; }
+
+    .workspace {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 18rem 1fr;
+      grid-template-rows: 1fr 16rem;
+      gap: 1px;
+      background: var(--border);
+      overflow: hidden;
+    }
+    .left-pane, .right-pane, .output-pane {
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .output-pane { grid-column: 1 / -1; }
+
+    /* Tab strip shared styles */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-2);
+      flex-shrink: 0;
+    }
+    .tab {
+      padding: 0.4rem 0.9rem;
+      background: transparent;
+      border: 0;
+      border-right: 1px solid var(--border);
+      color: var(--fg-dim);
+      cursor: pointer;
+      font: inherit;
       font-size: 0.85rem;
-      max-height: 14rem;
+    }
+    .tab.active {
+      background: var(--bg);
+      color: var(--fg);
+      border-bottom: 2px solid var(--accent);
+      margin-bottom: -1px;
+    }
+    .tab:hover:not(.active) { color: var(--fg); }
+
+    .tab-body {
+      flex: 1;
+      overflow: auto;
+      padding: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .tab-body.hidden { display: none; }
+
+    /* File list */
+    .file-list, .example-list, .api-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-family: ui-monospace, monospace;
+      font-size: 0.82rem;
+      flex: 1;
       overflow: auto;
     }
-    .file-list li {
+    .file-list li, .example-list li, .api-list li {
       display: flex;
       align-items: center;
       gap: 0.25rem;
-      padding: 0.15rem 0.25rem;
+      padding: 0.2rem 0.4rem;
       border-radius: 3px;
       cursor: pointer;
     }
-    .file-list li.active { background: #1e2630; color: #fff; }
-    .file-list li .name { flex: 1; font-family: ui-monospace, monospace; }
-    .file-list li .name.entry::after { content: "  *"; color: #ffbe55; }
+    .file-list li:hover, .example-list li:hover, .api-list li:hover {
+      background: var(--bg-3);
+    }
+    .file-list li.active, .api-list li.active {
+      background: var(--bg-3);
+      color: var(--fg);
+    }
+    .file-list li .name { flex: 1; }
+    .file-list li .name.entry::after {
+      content: "  *";
+      color: var(--entry);
+    }
     .file-list li button {
       padding: 0 0.3rem;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       background: transparent;
-      color: #888;
-      border: 1px solid #2a2f37;
+      color: var(--fg-dim);
+      border: 1px solid var(--border);
       border-radius: 3px;
+      cursor: pointer;
     }
-    .file-list li button:hover { color: #fff; }
-    .file-editor { flex: 1; display: flex; flex-direction: column; }
-    .file-editor .active-name {
-      font-family: ui-monospace, monospace;
-      color: #888;
-      font-size: 0.85rem;
-      margin-bottom: 0.25rem;
+    .file-list li button:hover { color: var(--fg); }
+
+    .file-actions {
+      display: flex;
+      gap: 0.3rem;
+      flex-wrap: wrap;
     }
-    .file-editor textarea { flex: 1; min-height: 12rem; }
-    .file-actions { display: flex; gap: 0.4rem; margin-top: 0.4rem; }
     .file-actions button {
-      font: inherit;
       padding: 0.25rem 0.5rem;
-      font-size: 0.8rem;
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      color: var(--fg);
+      border-radius: 3px;
+      cursor: pointer;
+      font: inherit;
+      font-size: 0.75rem;
     }
-    footer { margin-top: 2rem; color: #888; font-size: 0.85rem; }
-    code { background: rgba(128,128,128,0.15); padding: 0 0.25rem; border-radius: 3px; }
+    .file-actions button:hover { border-color: var(--accent); }
+
+    /* API pane */
+    .api-filter {
+      width: 100%;
+      padding: 0.3rem 0.5rem;
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      color: var(--fg);
+      border-radius: 3px;
+      font: inherit;
+      font-size: 0.85rem;
+    }
+    .api-list { max-height: 16rem; }
+    .api-list .cat {
+      font-size: 0.65rem;
+      color: var(--fg-dim);
+      margin-left: auto;
+    }
+    .api-detail {
+      border-top: 1px solid var(--border);
+      padding: 0.5rem;
+      font-size: 0.82rem;
+    }
+    .api-detail .sig {
+      font-family: ui-monospace, monospace;
+      color: var(--accent);
+      margin-bottom: 0.3rem;
+    }
+    .api-detail .desc { color: var(--fg-dim); }
+
+    /* Right pane */
+    .right-pane { background: var(--bg-2); }
+    .right-pane .active-name {
+      padding: 0.25rem 0.6rem;
+      font-family: ui-monospace, monospace;
+      font-size: 0.78rem;
+      color: var(--fg-dim);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .rpane {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .rpane.hidden { display: none; }
+    #userSrc, #liveWat {
+      flex: 1;
+      width: 100%;
+      margin: 0;
+      border: 0;
+      padding: 0.6rem;
+      background: var(--bg-2);
+      color: var(--fg);
+      font-family: ui-monospace, monospace;
+      font-size: 0.8rem;
+      resize: none;
+      outline: none;
+      line-height: 1.5;
+    }
+    #liveWat {
+      white-space: pre-wrap;
+      overflow: auto;
+      margin: 0;
+    }
+    .action-row {
+      padding: 0.4rem 0.6rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-shrink: 0;
+      background: var(--bg);
+    }
+    .action-row button {
+      padding: 0.4rem 0.8rem;
+      font: inherit;
+      background: var(--accent);
+      color: #000;
+      border: 0;
+      border-radius: 3px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .action-row button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .compile-status {
+      font-size: 0.8rem;
+      color: var(--fg-dim);
+    }
+    .compile-status.err { color: var(--err); }
+
+    /* Output / stdin */
+    .output-pane {
+      display: grid;
+      grid-template-columns: 1fr 20rem;
+      grid-template-rows: auto 1fr;
+      gap: 1px;
+      background: var(--border);
+    }
+    .output-pane .pane-header {
+      padding: 0.3rem 0.6rem;
+      background: var(--bg-2);
+      font-size: 0.78rem;
+      color: var(--fg-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    #output, #stdin {
+      margin: 0;
+      padding: 0.5rem 0.6rem;
+      background: var(--bg-2);
+      color: var(--fg);
+      font-family: ui-monospace, monospace;
+      font-size: 0.8rem;
+      overflow: auto;
+      border: 0;
+      outline: none;
+      resize: none;
+      white-space: pre-wrap;
+    }
+
+    code {
+      background: rgba(128,128,128,0.15);
+      padding: 0 0.25rem;
+      border-radius: 3px;
+      font-family: ui-monospace, monospace;
+    }
   </style>
 </head>
 <body>
-  <h1>BCPL &rarr; WebAssembly playground</h1>
-  <p class="sub">
-    BCPL source compiled by the Cintcode system's new
-    <code>bcplwasm</code> backend, assembled to WebAssembly, executed
-    in-browser with a minimal host-provided stdlib.
-  </p>
+  <header>
+    <h1>BCPL &rarr; WebAssembly</h1>
+    <span class="sub">
+      self-hosted <code>bcplwasm</code> + browser runtime. multi-file programs supported.
+    </span>
+  </header>
 
-  <div class="row">
-    <label for="example">Example:</label>
-    <select id="example">
-      <option value="hello">hello</option>
-      <option value="fact">fact</option>
-      <option value="nested">nested</option>
-      <option value="valof">valof</option>
-      <option value="bitfield">bitfield</option>
-      <option value="cgoto">cgoto</option>
-      <option value="fmod">fmod</option>
-      <option value="shifts">shifts</option>
-      <option value="vec">vec</option>
-      <option value="echo">echo</option>
-      <option value="match">match</option>
-      <option value="every">every</option>
-      <option value="stdlib">stdlib</option>
-      <option value="streams">streams</option>
-    </select>
-    <button id="run">Run</button>
-  </div>
+  <div class="workspace">
+    <!-- LEFT PANE -->
+    <aside class="left-pane">
+      <nav class="tabs" id="leftTabs">
+        <button class="tab active" data-tab="files">Files</button>
+        <button class="tab"        data-tab="examples">Examples</button>
+        <button class="tab"        data-tab="api">API</button>
+      </nav>
 
-  <div class="panes">
-    <div class="pane">
-      <h3>Source (BCPL)</h3>
-      <pre id="source">Loading&hellip;</pre>
-    </div>
-    <div class="pane">
-      <h3>Output</h3>
-      <pre id="output"></pre>
-    </div>
-  </div>
+      <div class="tab-body" id="tab-files">
+        <ul id="fileList" class="file-list"></ul>
+        <div class="file-actions">
+          <button id="addFile">+ file</button>
+          <button id="renameFile">rename</button>
+          <button id="setEntryBtn">set entry</button>
+          <button id="resetFiles">reset</button>
+        </div>
+      </div>
 
-  <div class="stdin-pane">
-    <h3>Input (stdin — consumed by <code>rdch()</code>)</h3>
-    <textarea id="stdin" spellcheck="false" placeholder="type input here, then click Run"></textarea>
-  </div>
+      <div class="tab-body hidden" id="tab-examples">
+        <ul id="exampleList" class="example-list"></ul>
+        <div class="file-actions">
+          <button id="loadExample">load into editor</button>
+        </div>
+      </div>
 
-  <div class="wat-pane">
-    <details>
-      <summary>Generated WebAssembly (.wat)</summary>
-      <pre id="wat">Loading&hellip;</pre>
-    </details>
-  </div>
+      <div class="tab-body hidden" id="tab-api">
+        <input id="apiFilter" class="api-filter" placeholder="filter (name)…">
+        <ul id="apiList" class="api-list"></ul>
+        <div class="api-detail" id="apiDetail">
+          <div class="desc">Select a function to see its signature and description.</div>
+        </div>
+      </div>
+    </aside>
 
-  <div class="edit-pane">
-    <h2>Live compile <span id="compileStatus" class="compile-status"></span></h2>
-    <p class="sub">
-      Edit one or more files below and hit <strong>Compile &amp; Run</strong>.
-      <code>.b</code> files are BCPL sources; <code>.h</code> files are
-      header declarations (<code>GET "name"</code>). The file flagged
-      with <code>*</code> is the entry program (its <code>start</code>
-      becomes <code>G!1</code>). Libraries compile first, entry last.
-    </p>
-    <div class="file-bar">
-      <ul id="fileList" class="file-list"></ul>
-      <div class="file-editor">
-        <div class="active-name" id="activeFileName">—</div>
+    <!-- RIGHT PANE -->
+    <main class="right-pane">
+      <nav class="tabs" id="rightTabs">
+        <button class="tab active" data-rtab="editor">Editor</button>
+        <button class="tab"        data-rtab="wat">WAT</button>
+      </nav>
+      <div class="active-name" id="activeFileName">—</div>
+      <div id="rpane-editor" class="rpane">
         <textarea id="userSrc" spellcheck="false"></textarea>
       </div>
-    </div>
-    <div class="file-actions">
-      <button id="addFile">+ File</button>
-      <button id="renameFile">Rename</button>
-      <button id="setEntryBtn">Set as entry</button>
-      <button id="resetFiles">Reset to default</button>
-    </div>
-    <div class="row">
-      <button id="compileRun">Compile &amp; Run</button>
-      <button id="loadSelected">Load selected example into editor</button>
-    </div>
-    <div class="wat-pane">
-      <details>
-        <summary>Compiled WAT from live compile</summary>
+      <div id="rpane-wat" class="rpane hidden">
         <pre id="liveWat">(not yet compiled)</pre>
-      </details>
-    </div>
+      </div>
+      <div class="action-row">
+        <button id="compileRun">Compile &amp; Run</button>
+        <span id="compileStatus" class="compile-status"></span>
+      </div>
+    </main>
+
+    <!-- OUTPUT / STDIN -->
+    <section class="output-pane">
+      <div class="pane-header">Program output</div>
+      <div class="pane-header">Stdin (consumed by rdch)</div>
+      <pre id="output"></pre>
+      <textarea id="stdin" spellcheck="false" placeholder="type input here before Compile &amp; Run"></textarea>
+    </section>
   </div>
 
-  <footer>
-    <p>
-      Compiled with <code>bcplwasm</code> (WAT backend in
-      <code>com/bcplcgwasm.b</code>), assembled with
-      <code>wat2wasm</code>. Source and runtime on GitHub.
-    </p>
-  </footer>
-
   <script type="module">
-    // Cache-bust during development. Remove the query if you want the
-    // browser to serve runtime.js / examples/*.wasm from HTTP cache.
     const V = Date.now();
     const { BcplRuntime, storageBackend } = await import(`./runtime.js?v=${V}`);
+    const { slots, aliases } = await import(`./stdlib-manifest.mjs?v=${V}`);
+    const { API_DOCS } = await import(`./api-docs.mjs?v=${V}`);
 
-    const sourceEl     = document.getElementById("source");
-    const outputEl     = document.getElementById("output");
-    const watEl        = document.getElementById("wat");
-    const stdinEl      = document.getElementById("stdin");
-    const selectEl     = document.getElementById("example");
-    const runBtn       = document.getElementById("run");
-    const userSrcEl    = document.getElementById("userSrc");
-    const compileBtn   = document.getElementById("compileRun");
-    const loadSelBtn   = document.getElementById("loadSelected");
-    const liveWatEl    = document.getElementById("liveWat");
-    const statusEl     = document.getElementById("compileStatus");
-    const fileListEl   = document.getElementById("fileList");
-    const activeNameEl = document.getElementById("activeFileName");
-    const addFileBtn   = document.getElementById("addFile");
-    const renameBtn    = document.getElementById("renameFile");
-    const setEntryBtn  = document.getElementById("setEntryBtn");
-    const resetBtn     = document.getElementById("resetFiles");
+    const EXAMPLES = [
+      "hello", "fact", "nested", "valof", "bitfield", "cgoto",
+      "fmod", "shifts", "vec", "echo", "match", "every",
+      "stdlib", "streams",
+    ];
 
-    async function fetchText(url, fallback) {
-      const resp = await fetch(url);
-      return resp.ok ? await resp.text() : fallback;
+    // ------------------ DOM refs ------------------
+    const fileListEl    = document.getElementById("fileList");
+    const exampleListEl = document.getElementById("exampleList");
+    const apiListEl     = document.getElementById("apiList");
+    const apiFilterEl   = document.getElementById("apiFilter");
+    const apiDetailEl   = document.getElementById("apiDetail");
+    const activeNameEl  = document.getElementById("activeFileName");
+    const userSrcEl     = document.getElementById("userSrc");
+    const liveWatEl     = document.getElementById("liveWat");
+    const outputEl      = document.getElementById("output");
+    const stdinEl       = document.getElementById("stdin");
+    const compileBtn    = document.getElementById("compileRun");
+    const statusEl      = document.getElementById("compileStatus");
+
+    // ------------------ Tab switching ------------------
+    function bindTabs(stripId, bodyPrefix, attr) {
+      const strip = document.getElementById(stripId);
+      strip.addEventListener("click", (e) => {
+        const btn = e.target.closest(".tab");
+        if (!btn) return;
+        strip.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        btn.classList.add("active");
+        const key = btn.getAttribute(attr);
+        document.querySelectorAll(`[id^="${bodyPrefix}"]`).forEach(el => {
+          el.classList.toggle("hidden", el.id !== bodyPrefix + key);
+        });
+      });
     }
+    bindTabs("leftTabs",  "tab-",    "data-tab");
+    bindTabs("rightTabs", "rpane-",  "data-rtab");
 
-    async function loadExample(name) {
-      outputEl.textContent = "";
-      sourceEl.textContent = "Loading…";
-      watEl.textContent    = "Loading…";
-      const bust = `?v=${Date.now()}`;
-      const [src, wat] = await Promise.all([
-        fetchText(`examples/${name}.b${bust}`,   "(source unavailable)"),
-        fetchText(`examples/${name}.wat${bust}`, "(wat unavailable)"),
-      ]);
-      sourceEl.textContent = src;
-      watEl.textContent    = wat;
-    }
-
-    async function runExample() {
-      const name = selectEl.value;
-      outputEl.textContent = "";
-      const rt = new BcplRuntime(
-        (s) => { outputEl.textContent += s; },
-        stdinEl.value
-      );
-      try {
-        await rt.load(`examples/${name}.wasm?v=${Date.now()}`);
-        rt.run();
-      } catch (err) {
-        outputEl.textContent += `\n[runtime error] ${err.message ?? err}`;
-        console.error(err);
-      }
-    }
-
-    // Lazy-load wabt-js from CDN. Kept out of initial page load so
-    // browsing pre-built examples stays zero-dependency.
-    let wabtPromise = null;
-    function getWabt() {
-      if (wabtPromise) return wabtPromise;
-      wabtPromise = import("https://esm.sh/wabt@1.0.36").then(m => m.default());
-      return wabtPromise;
-    }
-
-    function setStatus(text, isErr = false) {
-      statusEl.textContent = text;
-      statusEl.classList.toggle("err", isErr);
-    }
-
-    // ------------------ Multi-file editor state ------------------
-
-    // In-memory file list. Each entry: { name, content, entry }.
-    // `entry` marks the source whose `start` should end up as G!1.
-    // Persisted to localStorage so user work survives reload.
+    // ------------------ Files tab ------------------
     const FILES_LS_KEY = "bcpl-playground-files-v1";
     const DEFAULT_FILES = [
       {
@@ -310,14 +421,12 @@ LET start() = VALOF
           const parsed = JSON.parse(raw);
           if (Array.isArray(parsed) && parsed.length) return parsed;
         }
-      } catch { /* fall through */ }
+      } catch {}
       return structuredClone(DEFAULT_FILES);
     }
     function persistFiles() {
-      try { localStorage.setItem(FILES_LS_KEY, JSON.stringify(files)); }
-      catch { /* localStorage may be disabled — ignore */ }
+      try { localStorage.setItem(FILES_LS_KEY, JSON.stringify(files)); } catch {}
     }
-
     function commitActiveEdit() {
       if (files[activeIdx]) files[activeIdx].content = userSrcEl.value;
     }
@@ -349,19 +458,16 @@ LET start() = VALOF
     }
     function addFile() {
       commitActiveEdit();
-      const name = prompt("New file name (ends with .b or .h):", "mylib.b");
+      const name = prompt("New file name (.b or .h):", "mylib.b");
       if (!name) return;
-      if (files.some(f => f.name === name)) {
-        alert(`file "${name}" already exists`);
-        return;
-      }
-      const isSource = name.endsWith(".b");
+      if (files.some(f => f.name === name)) { alert(`"${name}" already exists`); return; }
+      const isSrc = name.endsWith(".b");
       files.push({
         name,
-        content: isSource
+        entry: false,
+        content: isSrc
           ? `SECTION "${name.replace(/\.b$/, "")}"\n\nGET "libhdr"\n\n`
           : "// BCPL header — declare globals here\n\nGLOBAL {\n}\n",
-        entry: false,
       });
       activeIdx = files.length - 1;
       userSrcEl.value = files[activeIdx].content;
@@ -374,10 +480,9 @@ LET start() = VALOF
       if (!confirm(`delete "${files[i].name}"?`)) return;
       const wasEntry = files[i].entry;
       files.splice(i, 1);
-      // Keep entry valid.
       if (wasEntry) {
-        const firstB = files.findIndex(f => f.name.endsWith(".b"));
-        if (firstB >= 0) files[firstB].entry = true;
+        const b = files.findIndex(f => f.name.endsWith(".b"));
+        if (b >= 0) files[b].entry = true;
       }
       if (activeIdx >= files.length) activeIdx = files.length - 1;
       userSrcEl.value = files[activeIdx].content;
@@ -390,8 +495,7 @@ LET start() = VALOF
       const name = prompt("New name:", cur.name);
       if (!name || name === cur.name) return;
       if (files.some((f, j) => j !== activeIdx && f.name === name)) {
-        alert(`file "${name}" already exists`);
-        return;
+        alert(`"${name}" already exists`); return;
       }
       cur.name = name;
       renderFileList();
@@ -400,16 +504,13 @@ LET start() = VALOF
     function setEntry() {
       commitActiveEdit();
       const cur = files[activeIdx];
-      if (!cur.name.endsWith(".b")) {
-        alert("entry must be a .b source file");
-        return;
-      }
+      if (!cur.name.endsWith(".b")) { alert("entry must be a .b file"); return; }
       for (const f of files) f.entry = (f === cur);
       renderFileList();
       persistFiles();
     }
     function resetFiles() {
-      if (!confirm("Discard all files and reset to the default?")) return;
+      if (!confirm("Reset to default file list?")) return;
       files = structuredClone(DEFAULT_FILES);
       activeIdx = 0;
       userSrcEl.value = files[0].content;
@@ -417,10 +518,79 @@ LET start() = VALOF
       persistFiles();
     }
 
-    // ------------------ GET resolution + compile ------------------
+    // ------------------ Examples tab ------------------
+    function renderExampleList() {
+      exampleListEl.innerHTML = "";
+      for (const name of EXAMPLES) {
+        const li = document.createElement("li");
+        li.textContent = name;
+        li.onclick = () => { selectedExample = name; renderExampleList(); };
+        if (name === selectedExample) li.classList.add("active");
+        exampleListEl.appendChild(li);
+      }
+    }
+    let selectedExample = EXAMPLES[0];
 
-    // Builtin stdlib headers that must always be present for the
-    // compiler to parse user code.
+    async function loadSelectedExample() {
+      commitActiveEdit();
+      const src = await fetchText(`examples/${selectedExample}.b?v=${Date.now()}`, "");
+      if (!src) return;
+      files[activeIdx].content = src;
+      userSrcEl.value = src;
+      persistFiles();
+    }
+
+    // ------------------ API tab ------------------
+    function renderApiList(filter = "") {
+      apiListEl.innerHTML = "";
+      const seen = new Set();
+      const allNames = [
+        ...slots.map(s => s.name).filter(n => n !== "stop_fn"),
+        ...aliases.map(a => a.name),
+      ].filter(n => !seen.has(n) && (seen.add(n), true));
+      allNames.sort();
+      const f = filter.toLowerCase();
+      for (const name of allNames) {
+        if (f && !name.toLowerCase().includes(f)) continue;
+        const doc = API_DOCS[name];
+        const li = document.createElement("li");
+        const lbl = document.createElement("span");
+        lbl.textContent = name;
+        li.appendChild(lbl);
+        if (doc?.cat) {
+          const c = document.createElement("span");
+          c.className = "cat";
+          c.textContent = doc.cat;
+          li.appendChild(c);
+        }
+        li.onclick = () => showApi(name, li);
+        apiListEl.appendChild(li);
+      }
+    }
+    function showApi(name, li) {
+      apiListEl.querySelectorAll("li").forEach(x => x.classList.remove("active"));
+      li?.classList.add("active");
+      const doc = API_DOCS[name];
+      if (!doc) {
+        apiDetailEl.innerHTML =
+          `<div class="sig">${name}</div>` +
+          `<div class="desc">(no help available — see g/libhdr.h or BCPL manual)</div>`;
+        return;
+      }
+      apiDetailEl.innerHTML =
+        `<div class="sig">${escapeHtml(doc.sig)}</div>` +
+        `<div class="desc">${escapeHtml(doc.desc)}</div>`;
+    }
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+    }
+
+    // ------------------ GET + compile ------------------
+    async function fetchText(url, fallback) {
+      const r = await fetch(url);
+      return r.ok ? await r.text() : fallback;
+    }
+
     const BUILTIN_HEADERS = ["libhdr.h", "bcplfecg.h"];
     async function seedBuiltinHeaders() {
       for (const h of BUILTIN_HEADERS) {
@@ -429,15 +599,38 @@ LET start() = VALOF
         if (txt) storageBackend.set(h, txt);
       }
     }
-    // Seed user-authored .h files (and .b too — their names double as
-    // storage keys so the compiler's FROM lookup + any `GET "other"`
-    // reference can find them).
     function seedUserFiles() {
       for (const f of files) storageBackend.set(f.name, f.content);
     }
 
-    // Run the self-hosted bcplwasm compiler over ONE BCPL source file.
-    // The source must already be in storageBackend under `fromName`.
+    let wabtPromise = null;
+    function getWabt() {
+      if (!wabtPromise) {
+        wabtPromise = import("https://esm.sh/wabt@1.0.36").then(m => m.default());
+      }
+      return wabtPromise;
+    }
+
+    async function assembleWat(watText, label = "live.wat") {
+      const wabt = await getWabt();
+      const mod  = wabt.parseWat(label, watText);
+      mod.resolveNames();
+      mod.validate();
+      const { buffer } = mod.toBinary({ log: false });
+      mod.destroy();
+      return buffer;
+    }
+
+    function splitModules(watText) {
+      const out = []; let cur = null;
+      for (const line of watText.split("\n")) {
+        if (/^\(module\b/.test(line)) { if (cur) out.push(cur); cur = line + "\n"; }
+        else if (cur) cur += line + "\n";
+      }
+      if (cur) out.push(cur);
+      return out;
+    }
+
     async function compileBcplFile(fromName, toName) {
       storageBackend.del?.(toName);
       const cmd = `FROM ${fromName} TO ${toName}\n`;
@@ -451,41 +644,16 @@ LET start() = VALOF
       let exitCode = 0;
       try { exitCode = rt.run(); }
       catch (e) {
-        throw new Error(`compiling ${fromName}: runtime error: ${e.message ?? e}\n${diag}`);
+        throw new Error(`${fromName}: runtime error: ${e.message ?? e}\n${diag}`);
       }
       const wat = storageBackend.get(toName);
-      if (!wat) {
-        throw new Error(`compiling ${fromName}: no .wat (exit=${exitCode})\n${diag}`);
-      }
+      if (!wat) throw new Error(`${fromName}: no .wat (exit=${exitCode})\n${diag}`);
       return { wat, diag, exitCode };
     }
 
-    async function assembleWat(watText, label = "live.wat") {
-      const wabt = await getWabt();
-      const mod  = wabt.parseWat(label, watText);
-      mod.resolveNames();
-      mod.validate();
-      const { buffer } = mod.toBinary({ log: false });
-      mod.destroy();
-      return buffer;
-    }
-
-    // A single .wat produced by the compiler may contain multiple
-    // `(module ...)` sections (for BCPL sources with `.` separators).
-    // Split on `^(module` and hand each chunk to wat2wasm individually.
-    function splitModules(watText) {
-      const parts = [];
-      let current = null;
-      for (const line of watText.split("\n")) {
-        if (/^\(module\b/.test(line)) {
-          if (current !== null) parts.push(current);
-          current = line + "\n";
-        } else if (current !== null) {
-          current += line + "\n";
-        }
-      }
-      if (current !== null) parts.push(current);
-      return parts;
+    function setStatus(text, isErr = false) {
+      statusEl.textContent = text;
+      statusEl.classList.toggle("err", isErr);
     }
 
     async function compileAndRun() {
@@ -504,7 +672,6 @@ LET start() = VALOF
         const entry = sources.find(f => f.entry) ?? sources[0];
         const libs  = sources.filter(f => f !== entry);
 
-        // Compile every source; collect its .wat.
         const watByName = new Map();
         for (const f of sources) {
           setStatus(`compiling ${f.name}…`);
@@ -513,11 +680,9 @@ LET start() = VALOF
           watByName.set(f.name, wat);
         }
 
-        // Show entry program's WAT (usually most interesting).
         liveWatEl.textContent = watByName.get(entry.name);
 
         setStatus("assembling…");
-        // Assemble per source, preserving module-splits within a source.
         const assemble = async (src) => {
           const chunks = splitModules(watByName.get(src.name));
           const bufs = [];
@@ -533,23 +698,19 @@ LET start() = VALOF
           stdinEl.value
         );
         await rt.loadMaster("master.wasm?v=" + V);
-        // Libraries first so their register() runs before the entry
-        // module overwrites G!1.
         const modulesPerSource = [];
         for (const lib of libs) {
           const bufs = await assemble(lib);
           modulesPerSource.push(bufs.length);
-          for (const bytes of bufs) await rt.loadProgramFromBytes(bytes);
+          for (const b of bufs) await rt.loadProgramFromBytes(b);
         }
         {
           const bufs = await assemble(entry);
           modulesPerSource.push(bufs.length);
-          for (const bytes of bufs) await rt.loadProgramFromBytes(bytes);
+          for (const b of bufs) await rt.loadProgramFromBytes(b);
         }
         const warn = rt.checkEntryOrdering(modulesPerSource);
-        if (warn) {
-          outputEl.textContent += `[warn] ${warn}\n`;
-        }
+        if (warn) outputEl.textContent += `[warn] ${warn}\n`;
         rt.initMaster();
         setStatus("running…");
         rt.run();
@@ -563,29 +724,14 @@ LET start() = VALOF
       }
     }
 
-    async function loadSelectedIntoEditor() {
-      commitActiveEdit();
-      const name = selectEl.value;
-      const src = await fetchText(`examples/${name}.b?v=${Date.now()}`, "");
-      if (src) {
-        // Replace the current file's content (not always main.b — respect
-        // the user's active selection).
-        files[activeIdx].content = src;
-        userSrcEl.value = src;
-        persistFiles();
-      }
-    }
-
-    // ------------------ wiring ------------------
-
-    selectEl.addEventListener("change", () => loadExample(selectEl.value));
-    runBtn.addEventListener("click", runExample);
+    // ------------------ Wiring ------------------
     compileBtn.addEventListener("click", compileAndRun);
-    loadSelBtn.addEventListener("click", loadSelectedIntoEditor);
-    addFileBtn.addEventListener("click", addFile);
-    renameBtn.addEventListener("click", renameFile);
-    setEntryBtn.addEventListener("click", setEntry);
-    resetBtn.addEventListener("click", resetFiles);
+    document.getElementById("addFile").addEventListener("click", addFile);
+    document.getElementById("renameFile").addEventListener("click", renameFile);
+    document.getElementById("setEntryBtn").addEventListener("click", setEntry);
+    document.getElementById("resetFiles").addEventListener("click", resetFiles);
+    document.getElementById("loadExample").addEventListener("click", loadSelectedExample);
+    apiFilterEl.addEventListener("input", () => renderApiList(apiFilterEl.value));
     userSrcEl.addEventListener("input", () => {
       if (files[activeIdx]) files[activeIdx].content = userSrcEl.value;
       persistFiles();
@@ -594,7 +740,8 @@ LET start() = VALOF
     // Initial render.
     userSrcEl.value = files[activeIdx]?.content ?? "";
     renderFileList();
-    loadExample(selectEl.value);
+    renderExampleList();
+    renderApiList();
   </script>
 </body>
 </html>
