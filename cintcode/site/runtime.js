@@ -1151,6 +1151,50 @@ export class BcplRuntime {
     return -1;
   }
 
+  // ------------------ Tier-A diagnostic + aliases ------------------
+
+  // memoryfree(x) — return number of free words on the heap.
+  // result2 = total Cintcode memory size (words).
+  // x param ignored (blib uses it for check-chain mode).
+  imp_memoryfree() {
+    this.restoreP();
+    const totalWords = this.mem.buffer.byteLength >> 2;
+    // heapTop is the lowest used heap address (grows downward).
+    // Everything between static_base and heapTop is "free".
+    const free = Math.max(0, this.heapTop - this.nextStaticWord);
+    this._setResult2(totalWords);
+    return free;
+  }
+
+  // stackfree(hwm) — return free stack words. For browser playground
+  // the BCPL stack lives in a fixed slab; report a large constant
+  // minus the distance P has advanced since stack base.
+  imp_stackfree() {
+    this.restoreP();
+    // Heuristic: delta from initial static-past boundary. Programs
+    // typically just log this; exact accuracy not essential.
+    const stackBase = ((this.nextStaticWord + 3) & ~3);
+    const free = Math.max(0, 100000 - (this.P - stackBase));
+    this._setResult2(100000);
+    return free;
+  }
+
+  // intflag() — TRUE if user pressed interrupt. Browser playground
+  // has no such signal; always FALSE.
+  imp_intflag() {
+    this.restoreP();
+    return 0;
+  }
+
+  // setseed(newseed) — replace randseed at G!127, return old.
+  imp_setseed() {
+    const newseed = this.arg(0) | 0;
+    this.restoreP();
+    const old = this.loadWord(1 + 127);
+    this.storeWord(1 + 127, newseed);
+    return old;
+  }
+
   // findarg(keys, w) — search the rdargs key-spec string for an arg
   // matching BCPL string w. Returns arg index (0-based), or -1.
   imp_findarg() {
@@ -1248,6 +1292,10 @@ export class BcplRuntime {
         bcpl_str2numb:        () => this.imp_str2numb(),
         bcpl_string_to_number:() => this.imp_string_to_number(),
         bcpl_findarg:         () => this.imp_findarg(),
+        bcpl_memoryfree:      () => this.imp_memoryfree(),
+        bcpl_stackfree:       () => this.imp_stackfree(),
+        bcpl_intflag:         () => this.imp_intflag(),
+        bcpl_setseed:         () => this.imp_setseed(),
       }
     };
   }
@@ -1259,7 +1307,7 @@ export class BcplRuntime {
   // table_base) and export register()/stat_words()/fn_count(). The
   // loader two-pass-instantiates each program: probe sizes, bump-
   // allocate bases, then real instantiate + register.
-  static STDLIB_TABLE_SLOTS = 63;
+  static STDLIB_TABLE_SLOTS = 67;
   static STATIC_WORD_BASE   = 1001;  // first word past G
 
   async loadMaster(url = "master.wasm") {
