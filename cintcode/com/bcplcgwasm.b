@@ -101,11 +101,12 @@ GLOBAL {
   pend_n         // number of words used in pend_v (multiple of 3)
   pend_max       // capacity (words)
   sect_open      // TRUE if module header has been emitted
-  section_id     // monotonic counter, incremented per codegenerate
-                 // call; used to namespace function names and ftab_v
-                 // entries so BCPL labels (L10.. reset per section)
-                 // don't collide when multiple sections share one
-                 // Wasm module.
+  // section_id removed: each BCPL source section (between `.`
+  // separators) is its own codegenerate() call, so the frontend
+  // loop in bcplsyn.b drives one (module ...) per section. The
+  // bcpl2wasm.sh splitter partitions the combined .wat output on
+  // `^(module` boundaries into separate .wasm files sharing one
+  // master. Namespacing-across-sections is therefore unnecessary.
   workspace_base // saved for reuse across codegenerate calls
   workspace_size
   queue_inner    // helper: queue a nested function range
@@ -140,7 +141,6 @@ LET codegenerate(workspace, workspacesize) BE
   ftab_n    := 0
   pend_n    := 0
   sect_open := FALSE
-  section_id := 1   // single-section; multi-section support deferred
 
   op := rdn()
   cgsects(workspace + 4096, workspacesize - 4096)
@@ -251,15 +251,15 @@ AND rdl()  = rdn()
 AND rdgn() = rdn()
 
 AND rdname(n, v) BE
-{ TEST n<=11
-  THEN { FOR i = 1 TO n    DO v%i := rdn()
-         FOR i = n+1 TO 11 DO v%i := '*s'
-       }
-  ELSE { FOR i = 1 TO 5    DO v%i := rdn()
-         FOR i = 6 TO n-6  DO rdn()
-         FOR i = 6 TO 11   DO v%i := rdn()
-         IF n>11 DO v%6 := '*''
-       }
+{ // v is a VEC 16 byte buffer: v%0 = actual stored length (<=63),
+//   v%1..v%63 = name chars. OCODE carries the full name bytes;
+//   we copy up to 63 chars verbatim and discard any overflow so the
+//   OCODE stream is fully consumed.
+  LET cap = 63
+  LET keep = n <= cap -> n, cap
+  FOR i = 1 TO keep    DO v%i := rdn()
+  FOR i = keep+1 TO n  DO rdn()
+  v%0 := keep
 }
 
 // Fast-forward over one inner function's OCODE body.
@@ -897,7 +897,7 @@ AND scan_emit() BE
         { LET inner_start = obufp - 1
           LET lab = rdl()
           LET nn  = rdn()
-          LET nbuf = VEC 4; nbuf%0 := 11
+          LET nbuf = VEC 16
           rdname(nn, nbuf)
           skip_inner_body()
           queue_inner(inner_start, obufp, lab)
@@ -906,7 +906,7 @@ AND scan_emit() BE
 
         { LET l = rdl()
           LET n = rdn()
-          LET nam = VEC 4; nam%0 := 11
+          LET nam = VEC 16
           rdname(n, nam)
 
         // Pre-scan: collect labels, record SAVE size, and simulate

@@ -8,7 +8,7 @@
   (import "env" "table_base"  (global $TB i32))
 
   ;; SECTION: every
-  ;; BCPL fn tally       (L10)
+  ;; BCPL fn tally (L10)
   (func $fn_L10 (export "fn_L10") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -108,7 +108,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L10
 
-  ;; BCPL fn start       (L20)
+  ;; BCPL fn start (L20)
   (func $fn_L20 (export "fn_L20") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)

@@ -8,7 +8,7 @@
   (import "env" "table_base"  (global $TB i32))
 
   ;; SECTION: fact
-  ;; BCPL fn start       (L10)
+  ;; BCPL fn start (L10)
   (func $fn_L10 (export "fn_L10") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -90,7 +90,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L10
 
-  ;; BCPL fn fact        (L11)
+  ;; BCPL fn fact (L11)
   (func $fn_L11 (export "fn_L11") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)

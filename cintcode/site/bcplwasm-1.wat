@@ -8,7 +8,7 @@
   (import "env" "table_base"  (global $TB i32))
 
   ;; SECTION: BCPL
-  ;; BCPL fn defau'_hdrs (L10)
+  ;; BCPL fn default_hdrs (L10)
   (func $fn_L10 (export "fn_L10") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -60,7 +60,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L10
 
-  ;; BCPL fn chkglobals  (L13)
+  ;; BCPL fn chkglobals (L13)
   (func $fn_L13 (export "fn_L13") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -148,7 +148,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L13
 
-  ;; BCPL fn start       (L16)
+  ;; BCPL fn start (L16)
   (func $fn_L16 (export "fn_L16") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -2668,7 +2668,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L16
 
-  ;; BCPL fn rdn         (L17)
+  ;; BCPL fn rdn (L17)
   (func $fn_L17 (export "fn_L17") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -2754,7 +2754,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L17
 
-  ;; BCPL fn write'bytes (L18)
+  ;; BCPL fn writeocodebytes (L18)
   (func $fn_L18 (export "fn_L18") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -2851,7 +2851,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L18
 
-  ;; BCPL fn rdnbytes    (L19)
+  ;; BCPL fn rdnbytes (L19)
   (func $fn_L19 (export "fn_L19") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -2948,7 +2948,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L19
 
-  ;; BCPL fn wrn         (L20)
+  ;; BCPL fn wrn (L20)
   (func $fn_L20 (export "fn_L20") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -3051,7 +3051,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L20
 
-  ;; BCPL fn calib       (L130)
+  ;; BCPL fn calib (L130)
   (func $fn_L130 (export "fn_L130") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -3086,7 +3086,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L130
 
-  ;; BCPL fn lex         (L131)
+  ;; BCPL fn lex (L131)
   (func $fn_L131 (export "fn_L131") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -5755,7 +5755,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L131
 
-  ;; BCPL fn lookupword  (L362)
+  ;; BCPL fn lookupword (L362)
   (func $fn_L362 (export "fn_L362") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -5965,7 +5965,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L362
 
-  ;; BCPL fn eqloo'pword (L374)
+  ;; BCPL fn eqlookupword (L374)
   (func $fn_L374 (export "fn_L374") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -6188,7 +6188,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L374
 
-  ;; BCPL fn dsw         (L375)
+  ;; BCPL fn dsw (L375)
   (func $fn_L375 (export "fn_L375") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -6227,7 +6227,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L375
 
-  ;; BCPL fn decls'words (L376)
+  ;; BCPL fn declsyswords (L376)
   (func $fn_L376 (export "fn_L376") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -6964,7 +6964,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L376
 
-  ;; BCPL fn rch         (L388)
+  ;; BCPL fn rch (L388)
   (func $fn_L388 (export "fn_L388") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -7005,7 +7005,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L388
 
-  ;; BCPL fn numrch      (L389)
+  ;; BCPL fn numrch (L389)
   (func $fn_L389 (export "fn_L389") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -7045,7 +7045,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L389
 
-  ;; BCPL fn unrch       (L390)
+  ;; BCPL fn unrch (L390)
   (func $fn_L390 (export "fn_L390") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -7077,7 +7077,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L390
 
-  ;; BCPL fn wrchbuf     (L391)
+  ;; BCPL fn wrchbuf (L391)
   (func $fn_L391 (export "fn_L391") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -7469,7 +7469,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L392
 
-  ;; BCPL fn rdtag       (L393)
+  ;; BCPL fn rdtag (L393)
   (func $fn_L393 (export "fn_L393") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -7608,7 +7608,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L393
 
-  ;; BCPL fn catstr      (L394)
+  ;; BCPL fn catstr (L394)
   (func $fn_L394 (export "fn_L394") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -7696,7 +7696,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L394
 
-  ;; BCPL fn performget  (L395)
+  ;; BCPL fn performget (L395)
   (func $fn_L395 (export "fn_L395") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -8189,7 +8189,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L395
 
-  ;; BCPL fn numbrdch    (L396)
+  ;; BCPL fn numbrdch (L396)
   (func $fn_L396 (export "fn_L396") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -8885,7 +8885,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L397
 
-  ;; BCPL fn readnumber  (L398)
+  ;; BCPL fn readnumber (L398)
   (func $fn_L398 (export "fn_L398") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -8987,7 +8987,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L398
 
-  ;; BCPL fn value       (L399)
+  ;; BCPL fn value (L399)
   (func $fn_L399 (export "fn_L399") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -9074,7 +9074,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L399
 
-  ;; BCPL fn rdstrch     (L400)
+  ;; BCPL fn rdstrch (L400)
   (func $fn_L400 (export "fn_L400") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -9654,7 +9654,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L400
 
-  ;; BCPL fn newvec      (L562)
+  ;; BCPL fn newvec (L562)
   (func $fn_L562 (export "fn_L562") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -9707,7 +9707,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L562
 
-  ;; BCPL fn mk1         (L563)
+  ;; BCPL fn mk1 (L563)
   (func $fn_L563 (export "fn_L563") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -9750,7 +9750,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L563
 
-  ;; BCPL fn mk2         (L564)
+  ;; BCPL fn mk2 (L564)
   (func $fn_L564 (export "fn_L564") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -9799,7 +9799,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L564
 
-  ;; BCPL fn mk3         (L565)
+  ;; BCPL fn mk3 (L565)
   (func $fn_L565 (export "fn_L565") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -9874,7 +9874,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L565
 
-  ;; BCPL fn unmk3       (L566)
+  ;; BCPL fn unmk3 (L566)
   (func $fn_L566 (export "fn_L566") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -9904,7 +9904,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L566
 
-  ;; BCPL fn mk4         (L567)
+  ;; BCPL fn mk4 (L567)
   (func $fn_L567 (export "fn_L567") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -9965,7 +9965,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L567
 
-  ;; BCPL fn mk5         (L568)
+  ;; BCPL fn mk5 (L568)
   (func $fn_L568 (export "fn_L568") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -10032,7 +10032,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L568
 
-  ;; BCPL fn mk6         (L569)
+  ;; BCPL fn mk6 (L569)
   (func $fn_L569 (export "fn_L569") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -10105,7 +10105,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L569
 
-  ;; BCPL fn mk7         (L570)
+  ;; BCPL fn mk7 (L570)
   (func $fn_L570 (export "fn_L570") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -10184,7 +10184,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L570
 
-  ;; BCPL fn formtree    (L571)
+  ;; BCPL fn formtree (L571)
   (func $fn_L571 (export "fn_L571") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -10688,7 +10688,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L571
 
-  ;; BCPL fn rprog       (L572)
+  ;; BCPL fn rprog (L572)
   (func $fn_L572 (export "fn_L572") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -10808,7 +10808,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L572
 
-  ;; BCPL fn synerr      (L573)
+  ;; BCPL fn synerr (L573)
   (func $fn_L573 (export "fn_L573") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -11022,7 +11022,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L573
 
-  ;; BCPL fn paterr      (L574)
+  ;; BCPL fn paterr (L574)
   (func $fn_L574 (export "fn_L574") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -11512,7 +11512,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L621
 
-  ;; BCPL fn rdseq       (L622)
+  ;; BCPL fn rdseq (L622)
   (func $fn_L622 (export "fn_L622") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -11615,7 +11615,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L622
 
-  ;; BCPL fn rdcdefs     (L623)
+  ;; BCPL fn rdcdefs (L623)
   (func $fn_L623 (export "fn_L623") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -11772,7 +11772,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L623
 
-  ;; BCPL fn rdsect      (L624)
+  ;; BCPL fn rdsect (L624)
   (func $fn_L624 (export "fn_L624") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -11900,7 +11900,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L624
 
-  ;; BCPL fn rnamelist   (L625)
+  ;; BCPL fn rnamelist (L625)
   (func $fn_L625 (export "fn_L625") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -11978,7 +11978,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L625
 
-  ;; BCPL fn rname       (L626)
+  ;; BCPL fn rname (L626)
   (func $fn_L626 (export "fn_L626") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -12095,7 +12095,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L626
 
-  ;; BCPL fn rdconst     (L667)
+  ;; BCPL fn rdconst (L667)
   (func $fn_L667 (export "fn_L667") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -12205,7 +12205,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L667
 
-  ;; BCPL fn rnbexp      (L677)
+  ;; BCPL fn rnbexp (L677)
   (func $fn_L677 (export "fn_L677") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -12244,7 +12244,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L677
 
-  ;; BCPL fn rbexp       (L678)
+  ;; BCPL fn rbexp (L678)
   (func $fn_L678 (export "fn_L678") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -13050,7 +13050,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L678
 
-  ;; BCPL fn rnexp       (L679)
+  ;; BCPL fn rnexp (L679)
   (func $fn_L679 (export "fn_L679") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -13093,7 +13093,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L679
 
-  ;; BCPL fn rexp        (L680)
+  ;; BCPL fn rexp (L680)
   (func $fn_L680 (export "fn_L680") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -13849,7 +13849,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L680
 
-  ;; BCPL fn rnexplist   (L785)
+  ;; BCPL fn rnexplist (L785)
   (func $fn_L785 (export "fn_L785") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -13888,7 +13888,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L785
 
-  ;; BCPL fn rexplist    (L786)
+  ;; BCPL fn rexplist (L786)
   (func $fn_L786 (export "fn_L786") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -13985,7 +13985,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L786
 
-  ;; BCPL fn rdef        (L789)
+  ;; BCPL fn rdef (L789)
   (func $fn_L789 (export "fn_L789") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -14767,7 +14767,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L791
 
-  ;; BCPL fn rnbpat      (L792)
+  ;; BCPL fn rnbpat (L792)
   (func $fn_L792 (export "fn_L792") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -14806,7 +14806,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L792
 
-  ;; BCPL fn rbpat       (L793)
+  ;; BCPL fn rbpat (L793)
   (func $fn_L793 (export "fn_L793") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -15047,7 +15047,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L793
 
-  ;; BCPL fn rspat       (L794)
+  ;; BCPL fn rspat (L794)
   (func $fn_L794 (export "fn_L794") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -15559,7 +15559,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L794
 
-  ;; BCPL fn rnpat       (L795)
+  ;; BCPL fn rnpat (L795)
   (func $fn_L795 (export "fn_L795") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -15602,7 +15602,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L795
 
-  ;; BCPL fn rpat        (L796)
+  ;; BCPL fn rpat (L796)
   (func $fn_L796 (export "fn_L796") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -15810,7 +15810,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L796
 
-  ;; BCPL fn rel2patrel  (L797)
+  ;; BCPL fn rel2patrel (L797)
   (func $fn_L797 (export "fn_L797") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -15990,7 +15990,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L797
 
-  ;; BCPL fn cvvaldef    (L798)
+  ;; BCPL fn cvvaldef (L798)
   (func $fn_L798 (export "fn_L798") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -16172,7 +16172,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L798
 
-  ;; BCPL fn cvassign    (L799)
+  ;; BCPL fn cvassign (L799)
   (func $fn_L799 (export "fn_L799") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -16355,7 +16355,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L799
 
-  ;; BCPL fn rbcom       (L800)
+  ;; BCPL fn rbcom (L800)
   (func $fn_L800 (export "fn_L800") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -17571,7 +17571,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L800
 
-  ;; BCPL fn rbseq       (L801)
+  ;; BCPL fn rbseq (L801)
   (func $fn_L801 (export "fn_L801") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -17661,7 +17661,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L801
 
-  ;; BCPL fn rncom       (L802)
+  ;; BCPL fn rncom (L802)
   (func $fn_L802 (export "fn_L802") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -17700,7 +17700,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L802
 
-  ;; BCPL fn rcom        (L803)
+  ;; BCPL fn rcom (L803)
   (func $fn_L803 (export "fn_L803") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -17892,7 +17892,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L803
 
-  ;; BCPL fn plist1      (L1027)
+  ;; BCPL fn plist1 (L1027)
   (func $fn_L1027 (export "fn_L1027") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -18043,7 +18043,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L1027
 
-  ;; BCPL fn plist       (L1034)
+  ;; BCPL fn plist (L1034)
   (func $fn_L1034 (export "fn_L1034") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -19366,7 +19366,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L1034
 
-  ;; BCPL fn opname      (L1035)
+  ;; BCPL fn opname (L1035)
   (func $fn_L1035 (export "fn_L1035") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -21299,7 +21299,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L1035
 
-  ;; BCPL fn flopname    (L1036)
+  ;; BCPL fn flopname (L1036)
   (func $fn_L1036 (export "fn_L1036") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -21503,7 +21503,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L1036
 
-  ;; BCPL fn sfname      (L1037)
+  ;; BCPL fn sfname (L1037)
   (func $fn_L1037 (export "fn_L1037") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -21717,7 +21717,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L1037
 
-  ;; BCPL fn writeocode  (L1038)
+  ;; BCPL fn writeocode (L1038)
   (func $fn_L1038 (export "fn_L1038") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -21864,7 +21864,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L1038
 
-  ;; BCPL fn procode     (L1039)
+  ;; BCPL fn procode (L1039)
   (func $fn_L1039 (export "fn_L1039") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
@@ -21893,7 +21893,7 @@
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L1039
 
-  ;; BCPL fn scanocode   (L1040)
+  ;; BCPL fn scanocode (L1040)
   (func $fn_L1040 (export "fn_L1040") (type $bcpl_fn)
     (local $__lab i32)
     (local $t0 i32)
