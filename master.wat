@@ -68,6 +68,10 @@
   (import "env" "bcpl_str2numb"          (func $imp_str2numb (type $bcpl_fn)))
   (import "env" "bcpl_string_to_number"  (func $imp_string_to_number (type $bcpl_fn)))
   (import "env" "bcpl_findarg"           (func $imp_findarg (type $bcpl_fn)))
+  (import "env" "bcpl_memoryfree"        (func $imp_memoryfree (type $bcpl_fn)))
+  (import "env" "bcpl_stackfree"         (func $imp_stackfree (type $bcpl_fn)))
+  (import "env" "bcpl_intflag"           (func $imp_intflag (type $bcpl_fn)))
+  (import "env" "bcpl_setseed"           (func $imp_setseed (type $bcpl_fn)))
 
   (memory $mem    (export "mem")    64)                    ;; 4 MB — room for compiler self-hosting
   (table  $ftable (export "ftable") 512 funcref)
@@ -90,7 +94,8 @@
     $imp_writet  $imp_writez  $imp_writehex  $imp_writeoct
     $imp_writee  $imp_writeflt  $imp_newpage  $imp_codewrch
     $imp_errwritef  $imp_readn  $imp_readflt  $imp_rditem
-    $imp_str2numb  $imp_string_to_number  $imp_findarg)
+    $imp_str2numb  $imp_string_to_number  $imp_findarg  $imp_memoryfree
+    $imp_stackfree  $imp_intflag  $imp_setseed)
 
   (func $init (export "init") (param $stack_base i32)
     (global.set $P (local.get $stack_base))
@@ -108,6 +113,9 @@
     (i32.store (i32.const  132) (i32.const 41)) ;; G!32 getword
     (i32.store (i32.const  136) (i32.const 42)) ;; G!33 putword
     (i32.store (i32.const  140) (i32.const 11)) ;; G!34 randno
+    (i32.store (i32.const  144) (i32.const 66)) ;; G!35 setseed
+    (i32.store (i32.const  148) (i32.const  1)) ;; G!36 sardch = rdch
+    (i32.store (i32.const  152) (i32.const  2)) ;; G!37 sawrch = wrch
     (i32.store (i32.const  156) (i32.const  1)) ;; G!38 rdch
     (i32.store (i32.const  160) (i32.const  1)) ;; G!39 binrdch = rdch
     (i32.store (i32.const  164) (i32.const 25)) ;; G!40 unrdch
@@ -153,8 +161,11 @@
     (i32.store (i32.const  460) (i32.const 36)) ;; G!114 copy_words
     (i32.store (i32.const  464) (i32.const 37)) ;; G!115 clear_words
     (i32.store (i32.const  468) (i32.const 38)) ;; G!116 copy_bytes
+    (i32.store (i32.const  480) (i32.const 65)) ;; G!119 intflag
     (i32.store (i32.const  484) (i32.const 54)) ;; G!120 newpage
+    (i32.store (i32.const  496) (i32.const 64)) ;; G!123 stackfree
     (i32.store (i32.const  508) (i32.const 55)) ;; G!126 codewrch
+    (i32.store (i32.const  528) (i32.const 63)) ;; G!131 memoryfree
     (i32.store (i32.const  724) (i32.const 52)) ;; G!180 writee
     (i32.store (i32.const  728) (i32.const 45)) ;; G!181 setvec
     (i32.store (i32.const  768) (i32.const 28)) ;; G!191 errwrch

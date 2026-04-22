@@ -83,6 +83,11 @@ export const slots = [
   { tidx: 60, name: "str2numb",       impl: "imp_str2numb"          },
   { tidx: 61, name: "string_to_number", impl: "imp_string_to_number" },
   { tidx: 62, name: "findarg",        impl: "imp_findarg"           },
+  // Phase 2D — Tier-A diagnostic
+  { tidx: 63, name: "memoryfree",     impl: "imp_memoryfree"        },
+  { tidx: 64, name: "stackfree",      impl: "imp_stackfree"         },
+  { tidx: 65, name: "intflag",        impl: "imp_intflag"           },
+  { tidx: 66, name: "setseed",        impl: "imp_setseed"           },
 ];
 
 // Extra BCPL globals that share a table slot with another entry.
@@ -90,6 +95,8 @@ export const slots = [
 export const aliases = [
   { name: "binrdch",  tidx: 1 },   // → rdch
   { name: "binwrch",  tidx: 2 },   // → wrch
+  { name: "sardch",   tidx: 1 },   // → rdch (no distinct "screen" mode)
+  { name: "sawrch",   tidx: 2 },   // → wrch
 ];
 
 // Force a specific global to point at a specific tidx regardless of
