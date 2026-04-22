@@ -52,6 +52,18 @@ export const slots = [
   { tidx: 33, name: "pathfindinput",  impl: "imp_pathfindinput" },
   // tidx 34 is the diagnostic stop_fn — routed via G!2 override below.
   { tidx: 34, name: "stop_fn",        impl: "imp_stop_fn"       },
+  // Phase 2A — Tier-A memory + bit ops
+  { tidx: 35, name: "copystring",     impl: "imp_copystring"    },
+  { tidx: 36, name: "copy_words",     impl: "imp_copy_words"    },
+  { tidx: 37, name: "clear_words",    impl: "imp_clear_words"   },
+  { tidx: 38, name: "copy_bytes",     impl: "imp_copy_bytes"    },
+  { tidx: 39, name: "packstring",     impl: "imp_packstring"    },
+  { tidx: 40, name: "unpackstring",   impl: "imp_unpackstring"  },
+  { tidx: 41, name: "getword",        impl: "imp_getword"       },
+  { tidx: 42, name: "putword",        impl: "imp_putword"       },
+  { tidx: 43, name: "setbit",         impl: "imp_setbit"        },
+  { tidx: 44, name: "testbit",        impl: "imp_testbit"       },
+  { tidx: 45, name: "setvec",         impl: "imp_setvec"        },
 ];
 
 // Extra BCPL globals that share a table slot with another entry.
