@@ -396,51 +396,290 @@ export class BcplRuntime {
   // the underlying output rather than via selectoutput).
   imp_sawritef() { return this.imp_writef(); }
 
-  // sys(op, a, b, c, ...) — BCPL low-level dispatcher. Called for
-  // everything from float arithmetic (fl_mk, fl_add, ...) to
-  // low-level memory ops. Covers just what's needed to get through
-  // compiler initialisation: make a flt constant, return it.
+  // sys(op, a, b, c, ...) — BCPL low-level dispatcher.
+  //
+  // Covers opcodes defined in g/libhdr.h under "Sys_*". Ones marked
+  // NOOP return 0 silently; out-of-scope ones (graphics/audio, Cintpos
+  // IRQ, segment loader, native bridge) also return 0. See
+  // CLAUDE.md "WebAssembly Backend" for scope rules.
   imp_sys() {
     const op = this.arg(0);
-    // Must capture all args BEFORE restoreP since it rewrites P.
+    // Capture up to 7 extra args BEFORE restoreP since it rewrites P.
     const a1 = this.arg(1), a2 = this.arg(2), a3 = this.arg(3);
+    const a4 = this.arg(4), a5 = this.arg(5), a6 = this.arg(6);
+    const a7 = this.arg(7);
     this.restoreP();
+
     switch (op) {
-      case 0:   // Sys_quit(code) — hard abort.
-        throw new BcplHalt(a1 | 0, /*isAbort*/ true);
-      case 30:  // Sys_cputime — return 0 (no timer).
+      // ---- process lifecycle ----
+      case -1: return 0;                                // Sys_setcount NOOP
+      case  0: throw new BcplHalt(a1 | 0, /*isAbort*/ true);  // Sys_quit
+      case  1: case  2: case  3: return 0;              // Sys_rti/saveregs/setst NOOP
+      case  4: return 0;                                // Sys_tracing NOOP
+      case  5: return 0;                                // Sys_watch NOOP
+      case  6: return 0;                                // Sys_tally NOOP
+      case  7: return 0;                                // Sys_interpret NOOP
+
+      // ---- direct-screen char I/O ----
+      case 10: return this._readChar();                 // Sys_sardch
+      case 11: this._writeChar(a1); return 0;           // Sys_sawrch(ch)
+
+      // ---- byte-granular stream read/write ----
+      case 12: { // Sys_read(fd) — next byte (or -1)
+        const prevIn = this.curIn;
+        this.curIn = a1 || this.curIn;
+        const ch = this._readChar();
+        this.curIn = prevIn;
+        return ch;
+      }
+      case 13: { // Sys_write(fd, ch)
+        const prevOut = this.curOut;
+        this.curOut = a1 || this.curOut;
+        this._writeChar(a2);
+        this.curOut = prevOut;
         return 0;
-      case 63: { // Sys_flt(subop, a, b)
+      }
+
+      // ---- file open/close (delegate to stream imp_* helpers) ----
+      case 14: { // Sys_openread(name)
+        const name = this.readBcplString(a1);
+        if (!name) return 0;
+        const data = storageBackend.get(name);
+        if (data === null) return 0;
+        return this._allocStream({ kind: "file", mode: "r", name, data, pos: 0 });
+      }
+      case 15: { // Sys_openwrite(name)
+        const name = this.readBcplString(a1);
+        if (!name) return 0;
+        return this._allocStream({ kind: "file", mode: "w", name, data: "", pos: 0 });
+      }
+      case 16: { // Sys_close(h)
+        const h = a1;
+        if (h <= 0 || h >= this.streams.length) return 0;
+        const s = this.streams[h];
+        if (!s) return 0;
+        if (s.kind === "file" && s.mode === "w") storageBackend.set(s.name, s.data);
+        this.streams[h] = null;
+        if (this.curOut === h) { this.curOut = 1; this.storeWord(1 + 13, 1); }
+        if (this.curIn  === h) { this.curIn  = 2; this.storeWord(1 + 12, 2); }
+        return 0;
+      }
+      case 19: { // Sys_openappend(name)
+        const name = this.readBcplString(a1);
+        if (!name) return 0;
+        const existing = storageBackend.get(name) ?? "";
+        return this._allocStream({ kind: "file", mode: "w", name, data: existing, pos: existing.length });
+      }
+      case 47: { // Sys_openreadwrite(name)
+        const name = this.readBcplString(a1);
+        if (!name) return 0;
+        const data = storageBackend.get(name) ?? "";
+        return this._allocStream({ kind: "file", mode: "rw", name, data, pos: 0 });
+      }
+
+      // ---- file ops on storageBackend ----
+      case 17: { // Sys_deletefile(name) → TRUE/FALSE
+        const name = this.readBcplString(a1);
+        if (!name || storageBackend.get(name) === null) return 0;
+        storageBackend.del?.(name);
+        return -1;
+      }
+      case 18: { // Sys_renamefile(old, new) → TRUE/FALSE
+        const oldName = this.readBcplString(a1);
+        const newName = this.readBcplString(a2);
+        const data = storageBackend.get(oldName);
+        if (data === null) return 0;
+        storageBackend.set(newName, data);
+        storageBackend.del?.(oldName);
+        return -1;
+      }
+      case 46: { // Sys_filesize(name) → bytes, or -1 if missing
+        const name = this.readBcplString(a1);
+        const data = storageBackend.get(name);
+        return data === null ? -1 : data.length;
+      }
+
+      // ---- memory ----
+      case 21: return 0;  // Sys_getvec NOOP (delegate via imp_getvec at G!25)
+      case 22: return 0;  // Sys_freevec NOOP
+      case 24: return 0;  // Sys_globin NOOP (no seg loader)
+
+      // ---- loader / native bridge (out of scope) ----
+      case 23: case 25: return 0;                       // loadseg/unloadseg
+      case 53: case 59: return 0;                       // callnative/callc
+
+      // ---- muldiv ----
+      case 26: { // Sys_muldiv(a, b, c)
+        const a = BigInt.asIntN(64, BigInt(a1));
+        const b = BigInt.asIntN(64, BigInt(a2));
+        const c = BigInt.asIntN(64, BigInt(a3));
+        if (c === 0n) { this._setResult2(0); return 0; }
+        const q = (a * b) / c;
+        const r = (a * b) - q * c;
+        this._setResult2(Number(BigInt.asIntN(32, r)));
+        return Number(BigInt.asIntN(32, q));
+      }
+      case 28: return 0;                                // Sys_intflag FALSE
+      case 29: return 0;                                // Sys_setraster NOOP
+      case 30: return 0;                                // Sys_cputime stub
+      case 31: return 0;                                // Sys_filemodtime NOOP
+
+      // ---- prefix (currentdir) ----
+      case 32: {  // Sys_setprefix(s) — copy s to currentdir
+        const name = this.readBcplString(a1);
+        // Rewrite the currentdir string in place.
+        const cd = this.loadWord(1 + 14);    // G!14 = currentdir word-addr
+        if (!cd) return 0;
+        const base = cd * 4;
+        this.memView.setUint8(base, name.length & 0xFF);
+        for (let i = 0; i < name.length; i++)
+          this.memView.setUint8(base + 1 + i, name.charCodeAt(i) & 0xFF);
+        return 0;
+      }
+      case 33: return this.loadWord(1 + 14);            // Sys_getprefix → G!14
+
+      // ---- graphics placeholders ----
+      case 34: return 0;                                // Sys_graphics NOOP
+
+      // ---- stream seek / tell ----
+      case 38: { // Sys_seek(h, pos, whence)
+        const h = a1, pos = a2 | 0, whence = a3 | 0;
+        const s = this.streams[h];
+        if (!s || s.kind !== "file") return 0;
+        let newPos = pos;
+        if (whence === 1) newPos = (s.pos | 0) + pos;
+        else if (whence === 2) newPos = (s.data?.length ?? 0) + pos;
+        s.pos = Math.max(0, newPos);
+        return -1;
+      }
+      case 39: { // Sys_tell(h)
+        const s = this.streams[a1];
+        if (!s || s.kind !== "file") return -1;
+        return s.pos | 0;
+      }
+
+      // ---- IRQ / device (Cintpos — out of scope) ----
+      case 40: case 41: case 42: case 43: return 0;
+
+      // ---- datstamp(v) — fill v!0..v!2 with date info ----
+      case 44: {
+        const v = a1;
+        if (!v) return 0;
+        const now = new Date();
+        const epochMs = now.getTime();
+        const days = Math.floor(epochMs / 86400000);
+        const msOfDay = epochMs - days * 86400000;
+        this.storeWord(v + 0, days);
+        this.storeWord(v + 1, msOfDay | 0);
+        this.storeWord(v + 2, -1);
+        return v;
+      }
+
+      // ---- sysvals (simple Map-backed kv store) ----
+      case 48: {  // Sys_getsysval(key)
+        this._sysvals ??= new Map();
+        return this._sysvals.get(a1 | 0) | 0;
+      }
+      case 49: {  // Sys_putsysval(key, val)
+        this._sysvals ??= new Map();
+        this._sysvals.set(a1 | 0, a2 | 0);
+        return 0;
+      }
+
+      case 50: return 0;                                // Sys_shellcom NOOP
+      case 51: return 1;                                // Sys_getpid constant
+      case 52: return 0;                                // Sys_dumpmem NOOP
+      case 54: return 0;                                // Sys_platform generic
+      case 55: {  // Sys_inc(addr) — *addr += 1, return new value
+        const v = this.loadWord(a1) + 1;
+        this.storeWord(a1, v);
+        return v;
+      }
+      case 56: return 0;                                // Sys_buttons NOOP
+
+      // ---- delay (no-op in Node, actual sleep would need async) ----
+      case 57: return 0;                                // Sys_delay NOOP
+      case 58: return 0;                                // Sys_sound NOOP (out of scope)
+
+      // ---- tracing (NOOP) ----
+      case 60: case 61: case 62: return 0;
+
+      // ---- float (subop dispatch) ----
+      case 63: {
         const sub = a1;
         const f = new Float32Array(1);
         const i = new Int32Array(f.buffer);
         const toF = (bits) => { i[0] = bits; return f[0]; };
         const toI = (val) => { f[0] = val;  return i[0]; };
         switch (sub) {
-          case 1:  // fl_mk(m, e) — m * 10^e
-            return toI(a2 * Math.pow(10, a3 | 0));
-          case 2:  return (toF(a2) | 0);                  // fl_unmk f->i
-          case 3:  return toI(a2 | 0);                    // fl_float i->f
-          case 4:  return (toF(a2) | 0);                  // fl_fix
-          case 5:  return toI(Math.abs(toF(a2)));         // fl_abs
-          case 6:  return toI(toF(a2) * toF(a3));         // fl_mul
-          case 7:  return toI(toF(a2) / toF(a3));         // fl_div
-          case 8:  return toI(toF(a2) % toF(a3));         // fl_mod
-          case 9:  return toI(toF(a2) + toF(a3));         // fl_add
-          case 10: return toI(toF(a2) - toF(a3));         // fl_sub
-          case 11: return a2;                             // fl_pos (identity)
-          case 12: return toI(-toF(a2));                  // fl_neg
-          case 13: return toF(a2) === toF(a3) ? -1 : 0;   // fl_eq
-          case 14: return toF(a2) !== toF(a3) ? -1 : 0;   // fl_ne
-          case 15: return toF(a2) <  toF(a3) ? -1 : 0;    // fl_ls
-          case 16: return toF(a2) >  toF(a3) ? -1 : 0;    // fl_gr
-          case 17: return toF(a2) <= toF(a3) ? -1 : 0;    // fl_le
-          case 18: return toF(a2) >= toF(a3) ? -1 : 0;    // fl_ge
+          case 1:  return toI(a2 * Math.pow(10, a3 | 0));  // fl_mk
+          case 2:  return (toF(a2) | 0);                    // fl_unmk
+          case 3:  return toI(a2 | 0);                      // fl_float
+          case 4:  return (toF(a2) | 0);                    // fl_fix
+          case 5:  return toI(Math.abs(toF(a2)));           // fl_abs
+          case 6:  return toI(toF(a2) * toF(a3));           // fl_mul
+          case 7:  return toI(toF(a2) / toF(a3));           // fl_div
+          case 8:  return toI(toF(a2) % toF(a3));           // fl_mod
+          case 9:  return toI(toF(a2) + toF(a3));           // fl_add
+          case 10: return toI(toF(a2) - toF(a3));           // fl_sub
+          case 11: return a2;                               // fl_pos
+          case 12: return toI(-toF(a2));                    // fl_neg
+          case 13: return toF(a2) === toF(a3) ? -1 : 0;     // fl_eq
+          case 14: return toF(a2) !== toF(a3) ? -1 : 0;     // fl_ne
+          case 15: return toF(a2) <  toF(a3) ? -1 : 0;      // fl_ls
+          case 16: return toF(a2) >  toF(a3) ? -1 : 0;      // fl_gr
+          case 17: return toF(a2) <= toF(a3) ? -1 : 0;      // fl_le
+          case 18: return toF(a2) >= toF(a3) ? -1 : 0;      // fl_ge
           default: return 0;
         }
       }
+
+      case 64: { // Sys_pollsardch — next char or -3 if none
+        const s = this.streams[this.curIn];
+        if (!s) return -3;
+        if (s.kind === "stdin") {
+          if (this.inputIdx >= this.input.length) return -3;
+          return this.input.charCodeAt(this.inputIdx++);
+        }
+        if ((s.pos | 0) >= (s.data?.length | 0)) return -3;
+        return s.data.charCodeAt(s.pos++);
+      }
+      case 65: return 0;                                // Sys_incdcount NOOP
+
+      // ---- graphics / audio / joystick / extension (out of scope) ----
+      case 66: case 67: case 68: case 69: case 72: return 0;
+
+      case 70: return 0;                                // Sys_settracing NOOP
+      case 71: return 0;                                // Sys_getbuildno stub
+
+      // ---- block moves ----
+      case 73: { // Sys_memmovewords(dest, src, n)
+        const dest = a1, src = a2, n = a3 | 0;
+        if (dest === src || n <= 0) return 0;
+        if (dest < src) {
+          for (let i = 0; i < n; i++) this.storeWord(dest + i, this.loadWord(src + i));
+        } else {
+          for (let i = n - 1; i >= 0; i--) this.storeWord(dest + i, this.loadWord(src + i));
+        }
+        return 0;
+      }
+      case 74: { // Sys_memmovebytes(dest, src, n) — byte addresses
+        const dest = a1, src = a2, n = a3 | 0;
+        if (dest === src || n <= 0) return 0;
+        if (dest < src) {
+          for (let i = 0; i < n; i++) this.memView.setUint8(dest + i, this.memView.getUint8(src + i));
+        } else {
+          for (let i = n - 1; i >= 0; i--) this.memView.setUint8(dest + i, this.memView.getUint8(src + i));
+        }
+        return 0;
+      }
+      case 75: { // Sys_errwrch(ch) — just write to stdout sink
+        this.writeOut(String.fromCharCode(a1 & 0xFF));
+        return 0;
+      }
+
       default:
-        // Unhandled syscall — return 0 rather than trap.
+        // Unknown syscall — return 0 rather than trap.
         return 0;
     }
   }
