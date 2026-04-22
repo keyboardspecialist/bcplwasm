@@ -62,6 +62,12 @@
   (import "env" "bcpl_newpage"           (func $imp_newpage (type $bcpl_fn)))
   (import "env" "bcpl_codewrch"          (func $imp_codewrch (type $bcpl_fn)))
   (import "env" "bcpl_errwritef"         (func $imp_errwritef (type $bcpl_fn)))
+  (import "env" "bcpl_readn"             (func $imp_readn (type $bcpl_fn)))
+  (import "env" "bcpl_readflt"           (func $imp_readflt (type $bcpl_fn)))
+  (import "env" "bcpl_rditem"            (func $imp_rditem (type $bcpl_fn)))
+  (import "env" "bcpl_str2numb"          (func $imp_str2numb (type $bcpl_fn)))
+  (import "env" "bcpl_string_to_number"  (func $imp_string_to_number (type $bcpl_fn)))
+  (import "env" "bcpl_findarg"           (func $imp_findarg (type $bcpl_fn)))
 
   (memory $mem    (export "mem")    64)                    ;; 4 MB — room for compiler self-hosting
   (table  $ftable (export "ftable") 512 funcref)
@@ -83,7 +89,8 @@
     $imp_testbit  $imp_setvec  $imp_writed  $imp_writeu
     $imp_writet  $imp_writez  $imp_writehex  $imp_writeoct
     $imp_writee  $imp_writeflt  $imp_newpage  $imp_codewrch
-    $imp_errwritef)
+    $imp_errwritef  $imp_readn  $imp_readflt  $imp_rditem
+    $imp_str2numb  $imp_string_to_number  $imp_findarg)
 
   (func $init (export "init") (param $stack_base i32)
     (global.set $P (local.get $stack_base))
@@ -119,6 +126,8 @@
     (i32.store (i32.const  252) (i32.const 19)) ;; G!62 endstream
     (i32.store (i32.const  264) (i32.const 26)) ;; G!65 rewindstream
     (i32.store (i32.const  296) (i32.const 53)) ;; G!73 writeflt
+    (i32.store (i32.const  300) (i32.const 58)) ;; G!74 readflt
+    (i32.store (i32.const  336) (i32.const 57)) ;; G!83 readn
     (i32.store (i32.const  340) (i32.const  3)) ;; G!84 newline
     (i32.store (i32.const  344) (i32.const 46)) ;; G!85 writed
     (i32.store (i32.const  348) (i32.const  4)) ;; G!86 writen
@@ -134,7 +143,11 @@
     (i32.store (i32.const  392) (i32.const 13)) ;; G!97 compch
     (i32.store (i32.const  396) (i32.const 14)) ;; G!98 compstring
     (i32.store (i32.const  400) (i32.const 35)) ;; G!99 copystring
+    (i32.store (i32.const  404) (i32.const 61)) ;; G!100 string_to_number
+    (i32.store (i32.const  408) (i32.const 60)) ;; G!101 str2numb
     (i32.store (i32.const  412) (i32.const 24)) ;; G!102 rdargs
+    (i32.store (i32.const  416) (i32.const 59)) ;; G!103 rditem
+    (i32.store (i32.const  420) (i32.const 62)) ;; G!104 findarg
     (i32.store (i32.const  452) (i32.const 43)) ;; G!112 setbit
     (i32.store (i32.const  456) (i32.const 44)) ;; G!113 testbit
     (i32.store (i32.const  460) (i32.const 36)) ;; G!114 copy_words
