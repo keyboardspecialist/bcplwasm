@@ -1364,6 +1364,12 @@ export class BcplRuntime {
 
   // Load several program modules sharing one master (multi-section
   // BCPL, or a main program + libraries).
+  //
+  // IMPORTANT ordering rule: every program's register() writes G!1
+  // (start tidx) if its source declares a `start` function. The LAST
+  // loaded program wins. Pass library modules first and the entry
+  // program last. run() prints a console warning if G!1 doesn't
+  // resolve into the most-recently-loaded program's table slice.
   async loadProgramSet(urls) {
     if (!this.master) await this.loadMaster();
     for (const u of urls) await this.loadProgram(u);
@@ -1400,6 +1406,15 @@ export class BcplRuntime {
     return this.programs.at(-1).instance;
   }
 
+  // Multi-program loading rule: libraries first, entry program LAST.
+  // Each program's register() writes G!1 if it exports start, so the
+  // last loader wins. Callers must order loadProgram() accordingly.
+  //
+  // NOTE: for a multi-section source (one logical program split on
+  // `.` separators into multiple modules), the start function lives
+  // in only ONE module — usually the first section. That's normal;
+  // not an ordering bug. Use checkEntryOrdering() explicitly when
+  // you know each loaded program is a separate source.
   run() {
     const tidx = this.loadWord(2);  // G!1 word addr = byte 8
     const fn = this.master.exports.ftable.get(tidx);
@@ -1410,6 +1425,38 @@ export class BcplRuntime {
       if (e instanceof BcplHalt) return e.code;
       throw e;
     }
+  }
+
+  // Caller-invoked load-order check. Returns null if OK, else a
+  // diagnostic string describing the mismatch. Use in multi-file UIs
+  // where each program corresponds to a separate source file and the
+  // entry is expected to be the last-loaded item.
+  //
+  //   const warn = rt.checkEntryOrdering(programsPerSource);
+  //
+  // `programsPerSource` (optional) is an array of how many loaded
+  // programs each source compiled to. If omitted, treats every
+  // loaded program as its own source.
+  checkEntryOrdering(programsPerSource = null) {
+    if (this.programs.length < 2) return null;
+    const tidx = this.loadWord(2);
+    let lastSourceStart = this.programs.length - 1;
+    if (programsPerSource && programsPerSource.length) {
+      const total = programsPerSource.reduce((a, b) => a + b, 0);
+      if (total === this.programs.length) {
+        lastSourceStart = this.programs.length - programsPerSource.at(-1);
+      }
+    }
+    const lastSource = this.programs.slice(lastSourceStart);
+    const inLast = lastSource.some(p =>
+      tidx >= p.tb && tidx < p.tb + p.fn_count);
+    if (inLast) return null;
+    const owner = this.programs.find(p =>
+      tidx >= p.tb && tidx < p.tb + p.fn_count);
+    const idx = owner ? this.programs.indexOf(owner) : -1;
+    return `G!1 (start) resolves into program #${idx}, not the ` +
+      `last-loaded source. Load the entry program last so its ` +
+      `register() wins the G!1 assignment.`;
   }
 
   // P/G accessors now route through master's exported globals.

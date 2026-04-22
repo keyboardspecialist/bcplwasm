@@ -64,6 +64,53 @@
     .edit-pane textarea { min-height: 12rem; }
     .compile-status { color: #888; font-size: 0.85rem; margin-left: 0.5rem; }
     .compile-status.err { color: #e74c3c; }
+    .file-bar { display: flex; gap: 0.5rem; align-items: stretch; margin-bottom: 0.5rem; }
+    .file-list {
+      flex: 0 0 14rem;
+      list-style: none;
+      padding: 0.25rem;
+      margin: 0;
+      border: 1px solid #2a2f37;
+      border-radius: 6px;
+      background: #0e1116;
+      font-size: 0.85rem;
+      max-height: 14rem;
+      overflow: auto;
+    }
+    .file-list li {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.15rem 0.25rem;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .file-list li.active { background: #1e2630; color: #fff; }
+    .file-list li .name { flex: 1; font-family: ui-monospace, monospace; }
+    .file-list li .name.entry::after { content: "  *"; color: #ffbe55; }
+    .file-list li button {
+      padding: 0 0.3rem;
+      font-size: 0.75rem;
+      background: transparent;
+      color: #888;
+      border: 1px solid #2a2f37;
+      border-radius: 3px;
+    }
+    .file-list li button:hover { color: #fff; }
+    .file-editor { flex: 1; display: flex; flex-direction: column; }
+    .file-editor .active-name {
+      font-family: ui-monospace, monospace;
+      color: #888;
+      font-size: 0.85rem;
+      margin-bottom: 0.25rem;
+    }
+    .file-editor textarea { flex: 1; min-height: 12rem; }
+    .file-actions { display: flex; gap: 0.4rem; margin-top: 0.4rem; }
+    .file-actions button {
+      font: inherit;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.8rem;
+    }
     footer { margin-top: 2rem; color: #888; font-size: 0.85rem; }
     code { background: rgba(128,128,128,0.15); padding: 0 0.25rem; border-radius: 3px; }
   </style>
@@ -123,19 +170,25 @@
   <div class="edit-pane">
     <h2>Live compile <span id="compileStatus" class="compile-status"></span></h2>
     <p class="sub">
-      Edit BCPL source below and hit <strong>Compile &amp; Run</strong>.
-      Source is sent through the self-hosted <code>bcplwasm</code>
-      compiler (3 wasm modules), the output <code>.wat</code> is
-      assembled in-browser via <code>wabt-js</code>, and the resulting
-      program runs with stdin/output piped into the panes above.
+      Edit one or more files below and hit <strong>Compile &amp; Run</strong>.
+      <code>.b</code> files are BCPL sources; <code>.h</code> files are
+      header declarations (<code>GET "name"</code>). The file flagged
+      with <code>*</code> is the entry program (its <code>start</code>
+      becomes <code>G!1</code>). Libraries compile first, entry last.
     </p>
-    <textarea id="userSrc" spellcheck="false">GET "libhdr"
-
-LET start() = VALOF
-{ writef("hello from self-hosted bcplwasm!*n")
-  RESULTIS 0
-}
-</textarea>
+    <div class="file-bar">
+      <ul id="fileList" class="file-list"></ul>
+      <div class="file-editor">
+        <div class="active-name" id="activeFileName">—</div>
+        <textarea id="userSrc" spellcheck="false"></textarea>
+      </div>
+    </div>
+    <div class="file-actions">
+      <button id="addFile">+ File</button>
+      <button id="renameFile">Rename</button>
+      <button id="setEntryBtn">Set as entry</button>
+      <button id="resetFiles">Reset to default</button>
+    </div>
     <div class="row">
       <button id="compileRun">Compile &amp; Run</button>
       <button id="loadSelected">Load selected example into editor</button>
@@ -173,6 +226,12 @@ LET start() = VALOF
     const loadSelBtn   = document.getElementById("loadSelected");
     const liveWatEl    = document.getElementById("liveWat");
     const statusEl     = document.getElementById("compileStatus");
+    const fileListEl   = document.getElementById("fileList");
+    const activeNameEl = document.getElementById("activeFileName");
+    const addFileBtn   = document.getElementById("addFile");
+    const renameBtn    = document.getElementById("renameFile");
+    const setEntryBtn  = document.getElementById("setEntryBtn");
+    const resetBtn     = document.getElementById("resetFiles");
 
     async function fetchText(url, fallback) {
       const resp = await fetch(url);
@@ -222,32 +281,166 @@ LET start() = VALOF
       statusEl.classList.toggle("err", isErr);
     }
 
-    // GET files the compiler resolves via pathfindinput. Seeded into
-    // storage so the lexer's findinput call succeeds without a real
-    // filesystem.
-    const HEADERS = ["libhdr.h", "bcplfecg.h"];
-    async function seedHeaders() {
-      for (const h of HEADERS) {
+    // ------------------ Multi-file editor state ------------------
+
+    // In-memory file list. Each entry: { name, content, entry }.
+    // `entry` marks the source whose `start` should end up as G!1.
+    // Persisted to localStorage so user work survives reload.
+    const FILES_LS_KEY = "bcpl-playground-files-v1";
+    const DEFAULT_FILES = [
+      {
+        name: "main.b",
+        entry: true,
+        content: `GET "libhdr"
+
+LET start() = VALOF
+{ writef("hello from self-hosted bcplwasm!*n")
+  RESULTIS 0
+}
+`,
+      },
+    ];
+    let files = loadFiles();
+    let activeIdx = 0;
+
+    function loadFiles() {
+      try {
+        const raw = localStorage.getItem(FILES_LS_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length) return parsed;
+        }
+      } catch { /* fall through */ }
+      return structuredClone(DEFAULT_FILES);
+    }
+    function persistFiles() {
+      try { localStorage.setItem(FILES_LS_KEY, JSON.stringify(files)); }
+      catch { /* localStorage may be disabled — ignore */ }
+    }
+
+    function commitActiveEdit() {
+      if (files[activeIdx]) files[activeIdx].content = userSrcEl.value;
+    }
+    function renderFileList() {
+      fileListEl.innerHTML = "";
+      files.forEach((f, i) => {
+        const li = document.createElement("li");
+        if (i === activeIdx) li.classList.add("active");
+        const name = document.createElement("span");
+        name.className = "name" + (f.entry ? " entry" : "");
+        name.textContent = f.name;
+        name.onclick = () => selectFile(i);
+        li.appendChild(name);
+        const del = document.createElement("button");
+        del.textContent = "×";
+        del.title = "delete";
+        del.onclick = (e) => { e.stopPropagation(); deleteFile(i); };
+        li.appendChild(del);
+        fileListEl.appendChild(li);
+      });
+      activeNameEl.textContent = files[activeIdx]?.name ?? "—";
+    }
+    function selectFile(i) {
+      commitActiveEdit();
+      if (i < 0 || i >= files.length) return;
+      activeIdx = i;
+      userSrcEl.value = files[i].content;
+      renderFileList();
+    }
+    function addFile() {
+      commitActiveEdit();
+      const name = prompt("New file name (ends with .b or .h):", "mylib.b");
+      if (!name) return;
+      if (files.some(f => f.name === name)) {
+        alert(`file "${name}" already exists`);
+        return;
+      }
+      const isSource = name.endsWith(".b");
+      files.push({
+        name,
+        content: isSource
+          ? `SECTION "${name.replace(/\.b$/, "")}"\n\nGET "libhdr"\n\n`
+          : "// BCPL header — declare globals here\n\nGLOBAL {\n}\n",
+        entry: false,
+      });
+      activeIdx = files.length - 1;
+      userSrcEl.value = files[activeIdx].content;
+      renderFileList();
+      persistFiles();
+    }
+    function deleteFile(i) {
+      commitActiveEdit();
+      if (files.length === 1) { alert("keep at least one file"); return; }
+      if (!confirm(`delete "${files[i].name}"?`)) return;
+      const wasEntry = files[i].entry;
+      files.splice(i, 1);
+      // Keep entry valid.
+      if (wasEntry) {
+        const firstB = files.findIndex(f => f.name.endsWith(".b"));
+        if (firstB >= 0) files[firstB].entry = true;
+      }
+      if (activeIdx >= files.length) activeIdx = files.length - 1;
+      userSrcEl.value = files[activeIdx].content;
+      renderFileList();
+      persistFiles();
+    }
+    function renameFile() {
+      commitActiveEdit();
+      const cur = files[activeIdx];
+      const name = prompt("New name:", cur.name);
+      if (!name || name === cur.name) return;
+      if (files.some((f, j) => j !== activeIdx && f.name === name)) {
+        alert(`file "${name}" already exists`);
+        return;
+      }
+      cur.name = name;
+      renderFileList();
+      persistFiles();
+    }
+    function setEntry() {
+      commitActiveEdit();
+      const cur = files[activeIdx];
+      if (!cur.name.endsWith(".b")) {
+        alert("entry must be a .b source file");
+        return;
+      }
+      for (const f of files) f.entry = (f === cur);
+      renderFileList();
+      persistFiles();
+    }
+    function resetFiles() {
+      if (!confirm("Discard all files and reset to the default?")) return;
+      files = structuredClone(DEFAULT_FILES);
+      activeIdx = 0;
+      userSrcEl.value = files[0].content;
+      renderFileList();
+      persistFiles();
+    }
+
+    // ------------------ GET resolution + compile ------------------
+
+    // Builtin stdlib headers that must always be present for the
+    // compiler to parse user code.
+    const BUILTIN_HEADERS = ["libhdr.h", "bcplfecg.h"];
+    async function seedBuiltinHeaders() {
+      for (const h of BUILTIN_HEADERS) {
         if (storageBackend.get(h)) continue;
         const txt = await fetchText(`headers/${h}?v=${V}`, "");
         if (txt) storageBackend.set(h, txt);
       }
     }
+    // Seed user-authored .h files (and .b too — their names double as
+    // storage keys so the compiler's FROM lookup + any `GET "other"`
+    // reference can find them).
+    function seedUserFiles() {
+      for (const f of files) storageBackend.set(f.name, f.content);
+    }
 
-    // Run the self-hosted bcplwasm compiler over user-supplied BCPL
-    // source. stdin feeds rdargs the FROM/TO command line; the source
-    // is staged in storageBackend under a fixed key that findinput
-    // will pick up; the compiler writes .wat to another storage key
-    // via findoutput + endstream.
-    async function compileBcpl(srcText) {
-      await seedHeaders();
-      const srcKey = "__live_src.b";
-      const watKey = "__live_out.wat";
-      storageBackend.set(srcKey, srcText);
-      storageBackend.del?.(watKey);
-
-      const cmd = `FROM ${srcKey} TO ${watKey}\n`;
-      // Capture compiler diagnostics but don't surface unless it errors.
+    // Run the self-hosted bcplwasm compiler over ONE BCPL source file.
+    // The source must already be in storageBackend under `fromName`.
+    async function compileBcplFile(fromName, toName) {
+      storageBackend.del?.(toName);
+      const cmd = `FROM ${fromName} TO ${toName}\n`;
       let diag = "";
       const rt = new BcplRuntime((s) => { diag += s; }, cmd);
       await rt.loadMaster("master.wasm?v=" + V);
@@ -258,18 +451,18 @@ LET start() = VALOF
       let exitCode = 0;
       try { exitCode = rt.run(); }
       catch (e) {
-        throw new Error(`compiler runtime error: ${e.message ?? e}\n${diag}`);
+        throw new Error(`compiling ${fromName}: runtime error: ${e.message ?? e}\n${diag}`);
       }
-      const wat = storageBackend.get(watKey);
+      const wat = storageBackend.get(toName);
       if (!wat) {
-        throw new Error(`compiler produced no .wat (exit=${exitCode})\n${diag}`);
+        throw new Error(`compiling ${fromName}: no .wat (exit=${exitCode})\n${diag}`);
       }
       return { wat, diag, exitCode };
     }
 
-    async function assembleWat(watText) {
+    async function assembleWat(watText, label = "live.wat") {
       const wabt = await getWabt();
-      const mod  = wabt.parseWat("live.wat", watText);
+      const mod  = wabt.parseWat(label, watText);
       mod.resolveNames();
       mod.validate();
       const { buffer } = mod.toBinary({ log: false });
@@ -277,24 +470,88 @@ LET start() = VALOF
       return buffer;
     }
 
+    // A single .wat produced by the compiler may contain multiple
+    // `(module ...)` sections (for BCPL sources with `.` separators).
+    // Split on `^(module` and hand each chunk to wat2wasm individually.
+    function splitModules(watText) {
+      const parts = [];
+      let current = null;
+      for (const line of watText.split("\n")) {
+        if (/^\(module\b/.test(line)) {
+          if (current !== null) parts.push(current);
+          current = line + "\n";
+        } else if (current !== null) {
+          current += line + "\n";
+        }
+      }
+      if (current !== null) parts.push(current);
+      return parts;
+    }
+
     async function compileAndRun() {
       compileBtn.disabled = true;
       outputEl.textContent = "";
       liveWatEl.textContent = "(compiling…)";
       setStatus("compiling…");
+      commitActiveEdit();
+      persistFiles();
       try {
-        const { wat } = await compileBcpl(userSrcEl.value);
-        liveWatEl.textContent = wat;
+        await seedBuiltinHeaders();
+        seedUserFiles();
+
+        const sources = files.filter(f => f.name.endsWith(".b"));
+        if (sources.length === 0) throw new Error("no .b source files");
+        const entry = sources.find(f => f.entry) ?? sources[0];
+        const libs  = sources.filter(f => f !== entry);
+
+        // Compile every source; collect its .wat.
+        const watByName = new Map();
+        for (const f of sources) {
+          setStatus(`compiling ${f.name}…`);
+          const toName = `__out_${f.name}.wat`;
+          const { wat } = await compileBcplFile(f.name, toName);
+          watByName.set(f.name, wat);
+        }
+
+        // Show entry program's WAT (usually most interesting).
+        liveWatEl.textContent = watByName.get(entry.name);
+
         setStatus("assembling…");
-        const bytes = await assembleWat(wat);
-        setStatus("running…");
+        // Assemble per source, preserving module-splits within a source.
+        const assemble = async (src) => {
+          const chunks = splitModules(watByName.get(src.name));
+          const bufs = [];
+          for (let i = 0; i < chunks.length; i++) {
+            bufs.push(await assembleWat(chunks[i], `${src.name}#${i}`));
+          }
+          return bufs;
+        };
+
+        setStatus("loading…");
         const rt = new BcplRuntime(
           (s) => { outputEl.textContent += s; },
           stdinEl.value
         );
         await rt.loadMaster("master.wasm?v=" + V);
-        await rt.loadProgramFromBytes(bytes);
+        // Libraries first so their register() runs before the entry
+        // module overwrites G!1.
+        const modulesPerSource = [];
+        for (const lib of libs) {
+          const bufs = await assemble(lib);
+          modulesPerSource.push(bufs.length);
+          for (const bytes of bufs) await rt.loadProgramFromBytes(bytes);
+        }
+        {
+          const bufs = await assemble(entry);
+          modulesPerSource.push(bufs.length);
+          for (const bytes of bufs) await rt.loadProgramFromBytes(bytes);
+        }
+        const warn = rt.checkEntryOrdering(modulesPerSource);
+        if (warn) {
+          outputEl.textContent += `[warn] ${warn}\n`;
+        }
         rt.initMaster();
+        setStatus("running…");
         rt.run();
         setStatus("ok");
       } catch (err) {
@@ -307,15 +564,36 @@ LET start() = VALOF
     }
 
     async function loadSelectedIntoEditor() {
+      commitActiveEdit();
       const name = selectEl.value;
       const src = await fetchText(`examples/${name}.b?v=${Date.now()}`, "");
-      if (src) userSrcEl.value = src;
+      if (src) {
+        // Replace the current file's content (not always main.b — respect
+        // the user's active selection).
+        files[activeIdx].content = src;
+        userSrcEl.value = src;
+        persistFiles();
+      }
     }
+
+    // ------------------ wiring ------------------
 
     selectEl.addEventListener("change", () => loadExample(selectEl.value));
     runBtn.addEventListener("click", runExample);
     compileBtn.addEventListener("click", compileAndRun);
     loadSelBtn.addEventListener("click", loadSelectedIntoEditor);
+    addFileBtn.addEventListener("click", addFile);
+    renameBtn.addEventListener("click", renameFile);
+    setEntryBtn.addEventListener("click", setEntry);
+    resetBtn.addEventListener("click", resetFiles);
+    userSrcEl.addEventListener("input", () => {
+      if (files[activeIdx]) files[activeIdx].content = userSrcEl.value;
+      persistFiles();
+    });
+
+    // Initial render.
+    userSrcEl.value = files[activeIdx]?.content ?? "";
+    renderFileList();
     loadExample(selectEl.value);
   </script>
 </body>
