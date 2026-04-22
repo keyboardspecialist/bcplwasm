@@ -51,6 +51,17 @@
   (import "env" "bcpl_setbit"            (func $imp_setbit (type $bcpl_fn)))
   (import "env" "bcpl_testbit"           (func $imp_testbit (type $bcpl_fn)))
   (import "env" "bcpl_setvec"            (func $imp_setvec (type $bcpl_fn)))
+  (import "env" "bcpl_writed"            (func $imp_writed (type $bcpl_fn)))
+  (import "env" "bcpl_writeu"            (func $imp_writeu (type $bcpl_fn)))
+  (import "env" "bcpl_writet"            (func $imp_writet (type $bcpl_fn)))
+  (import "env" "bcpl_writez"            (func $imp_writez (type $bcpl_fn)))
+  (import "env" "bcpl_writehex"          (func $imp_writehex (type $bcpl_fn)))
+  (import "env" "bcpl_writeoct"          (func $imp_writeoct (type $bcpl_fn)))
+  (import "env" "bcpl_writee"            (func $imp_writee (type $bcpl_fn)))
+  (import "env" "bcpl_writeflt"          (func $imp_writeflt (type $bcpl_fn)))
+  (import "env" "bcpl_newpage"           (func $imp_newpage (type $bcpl_fn)))
+  (import "env" "bcpl_codewrch"          (func $imp_codewrch (type $bcpl_fn)))
+  (import "env" "bcpl_errwritef"         (func $imp_errwritef (type $bcpl_fn)))
 
   (memory $mem    (export "mem")    64)                    ;; 4 MB — room for compiler self-hosting
   (table  $ftable (export "ftable") 512 funcref)
@@ -69,7 +80,10 @@
     $imp_longjump  $imp_pathfindinput  $imp_stop_fn  $imp_copystring
     $imp_copy_words  $imp_clear_words  $imp_copy_bytes  $imp_packstring
     $imp_unpackstring  $imp_getword  $imp_putword  $imp_setbit
-    $imp_testbit  $imp_setvec)
+    $imp_testbit  $imp_setvec  $imp_writed  $imp_writeu
+    $imp_writet  $imp_writez  $imp_writehex  $imp_writeoct
+    $imp_writee  $imp_writeflt  $imp_newpage  $imp_codewrch
+    $imp_errwritef)
 
   (func $init (export "init") (param $stack_base i32)
     (global.set $P (local.get $stack_base))
@@ -104,11 +118,16 @@
     (i32.store (i32.const  248) (i32.const 21)) ;; G!61 endwrite
     (i32.store (i32.const  252) (i32.const 19)) ;; G!62 endstream
     (i32.store (i32.const  264) (i32.const 26)) ;; G!65 rewindstream
+    (i32.store (i32.const  296) (i32.const 53)) ;; G!73 writeflt
     (i32.store (i32.const  340) (i32.const  3)) ;; G!84 newline
+    (i32.store (i32.const  344) (i32.const 46)) ;; G!85 writed
     (i32.store (i32.const  348) (i32.const  4)) ;; G!86 writen
-    (i32.store (i32.const  352) (i32.const  6)) ;; G!87 writehex = writef
-    (i32.store (i32.const  356) (i32.const  6)) ;; G!88 writeoct = writef
+    (i32.store (i32.const  352) (i32.const 50)) ;; G!87 writehex
+    (i32.store (i32.const  356) (i32.const 51)) ;; G!88 writeoct
     (i32.store (i32.const  360) (i32.const  5)) ;; G!89 writes
+    (i32.store (i32.const  364) (i32.const 48)) ;; G!90 writet
+    (i32.store (i32.const  368) (i32.const 47)) ;; G!91 writeu
+    (i32.store (i32.const  372) (i32.const 49)) ;; G!92 writez
     (i32.store (i32.const  380) (i32.const  6)) ;; G!94 writef
     (i32.store (i32.const  384) (i32.const 29)) ;; G!95 sawritef
     (i32.store (i32.const  388) (i32.const 12)) ;; G!96 capitalch
@@ -121,7 +140,11 @@
     (i32.store (i32.const  460) (i32.const 36)) ;; G!114 copy_words
     (i32.store (i32.const  464) (i32.const 37)) ;; G!115 clear_words
     (i32.store (i32.const  468) (i32.const 38)) ;; G!116 copy_bytes
+    (i32.store (i32.const  484) (i32.const 54)) ;; G!120 newpage
+    (i32.store (i32.const  508) (i32.const 55)) ;; G!126 codewrch
+    (i32.store (i32.const  724) (i32.const 52)) ;; G!180 writee
     (i32.store (i32.const  728) (i32.const 45)) ;; G!181 setvec
     (i32.store (i32.const  768) (i32.const 28)) ;; G!191 errwrch
+    (i32.store (i32.const  772) (i32.const 56)) ;; G!192 errwritef
   )
 )

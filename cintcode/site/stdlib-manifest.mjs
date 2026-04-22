@@ -64,6 +64,18 @@ export const slots = [
   { tidx: 43, name: "setbit",         impl: "imp_setbit"        },
   { tidx: 44, name: "testbit",        impl: "imp_testbit"       },
   { tidx: 45, name: "setvec",         impl: "imp_setvec"        },
+  // Phase 2B — Tier-A format group
+  { tidx: 46, name: "writed",         impl: "imp_writed"        },
+  { tidx: 47, name: "writeu",         impl: "imp_writeu"        },
+  { tidx: 48, name: "writet",         impl: "imp_writet"        },
+  { tidx: 49, name: "writez",         impl: "imp_writez"        },
+  { tidx: 50, name: "writehex",       impl: "imp_writehex"      },
+  { tidx: 51, name: "writeoct",       impl: "imp_writeoct"      },
+  { tidx: 52, name: "writee",         impl: "imp_writee"        },
+  { tidx: 53, name: "writeflt",       impl: "imp_writeflt"      },
+  { tidx: 54, name: "newpage",        impl: "imp_newpage"       },
+  { tidx: 55, name: "codewrch",       impl: "imp_codewrch"      },
+  { tidx: 56, name: "errwritef",      impl: "imp_errwritef"     },
 ];
 
 // Extra BCPL globals that share a table slot with another entry.
@@ -71,8 +83,6 @@ export const slots = [
 export const aliases = [
   { name: "binrdch",  tidx: 1 },   // → rdch
   { name: "binwrch",  tidx: 2 },   // → wrch
-  { name: "writehex", tidx: 6 },   // → writef (uses %x format)
-  { name: "writeoct", tidx: 6 },   // → writef (uses %o format)
 ];
 
 // Force a specific global to point at a specific tidx regardless of
