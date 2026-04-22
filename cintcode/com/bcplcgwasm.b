@@ -1203,12 +1203,13 @@ prescan_done:
       { LET l = rdl()
         cgpendingop_wasm()
         selectoutput(tostream)
-        // LL data-label: SB + local offset.
+        // LL L: load the VALUE of the word at data-label L (not its
+        // address — that's LLL). Byte addr = (SB + offset) << 2.
         { LET offset = VALOF
           { IF l >= 0 & l < nlabmap & labmap!l >= 0 RESULTIS labmap!l
             RESULTIS 0
           }
-          writef("    (local.set $t%n (i32.add (global.get $SB) (i32.const %n))) ;; LL L%n*n",
+          writef("    (local.set $t%n (i32.load (i32.shl (i32.add (global.get $SB) (i32.const %n)) (i32.const 2)))) ;; LL L%n*n",
                  cssp, offset, l)
         }
         selectoutput(sysprint)
