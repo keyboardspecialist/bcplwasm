@@ -947,6 +947,239 @@ export class BcplRuntime {
   // errwritef delegates to writef for identical output behavior.
   imp_errwritef() { return this.imp_writef(); }
 
+  // ------------------ Tier-A parse group ------------------
+
+  // Push a char back onto the current input stream (blib unrdch).
+  _unreadChar(ch) {
+    const s = this.streams[this.curIn];
+    if (!s) return;
+    if (s.kind === "stdin") {
+      if (this.inputIdx > 0) this.inputIdx--;
+      return;
+    }
+    if (s.pos > 0) s.pos--;
+  }
+
+  // Write result2 (G!10) — secondary return value used by several
+  // parse funcs for status/extra result.
+  _setResult2(v) { this.storeWord(1 + 10, v | 0); }
+
+  // readn() — skip leading whitespace + optional sign, parse signed
+  // decimal, un-read terminator. result2 = 0 on success, -1 on
+  // no-digits EOF-ish case.
+  imp_readn() {
+    this.restoreP();
+    let ch, neg = false;
+    // Skip whitespace + parse sign.
+    for (;;) {
+      ch = this._readChar();
+      if (ch >= 48 && ch <= 57) break;                 // '0'..'9'
+      if (ch === 32 || ch === 9 || ch === 10) continue;  // ws
+      if (ch === 45) { neg = true; ch = this._readChar(); break; }  // '-'
+      if (ch === 43) {              ch = this._readChar(); break; }  // '+'
+      // No digit sighted — push back, signal error via result2.
+      this._unreadChar(ch);
+      this._setResult2(-1);
+      return 0;
+    }
+    let sum = 0;
+    while (ch >= 48 && ch <= 57) {
+      sum = sum * 10 + (ch - 48);
+      ch = this._readChar();
+    }
+    this._unreadChar(ch);
+    this._setResult2(0);
+    return (neg ? -sum : sum) | 0;
+  }
+
+  // readflt() — parse floating-point number, return f32 bit pattern.
+  // result2 = 0 on success, -1 on failure.
+  imp_readflt() {
+    this.restoreP();
+    let ch, str = "";
+    // Skip whitespace.
+    do { ch = this._readChar(); }
+    while (ch === 32 || ch === 9 || ch === 10);
+    // Optional sign.
+    if (ch === 45 || ch === 43) { str += String.fromCharCode(ch); ch = this._readChar(); }
+    let gotDigit = false;
+    while (ch >= 48 && ch <= 57) { str += String.fromCharCode(ch); gotDigit = true; ch = this._readChar(); }
+    if (ch === 46) {  // '.'
+      str += "."; ch = this._readChar();
+      while (ch >= 48 && ch <= 57) { str += String.fromCharCode(ch); gotDigit = true; ch = this._readChar(); }
+    }
+    if (ch === 69 || ch === 101) {  // 'E' 'e'
+      str += "e"; ch = this._readChar();
+      if (ch === 45 || ch === 43) { str += String.fromCharCode(ch); ch = this._readChar(); }
+      while (ch >= 48 && ch <= 57) { str += String.fromCharCode(ch); ch = this._readChar(); }
+    }
+    this._unreadChar(ch);
+    if (!gotDigit) { this._setResult2(-1); return 0; }
+    const x = Number(str);
+    this._setResult2(0);
+    const buf = new ArrayBuffer(4);
+    new Float32Array(buf)[0] = Number.isFinite(x) ? x : 0;
+    return new Int32Array(buf)[0];
+  }
+
+  // rditem(v, upb) — read next item (word, quoted string, separator)
+  // into v. Returns item type: 0=EOF, 1=unquoted, 2=quoted, 3='\n',
+  // 4=';', 5='=', -1=error.
+  imp_rditem() {
+    const v   = this.arg(0);
+    const upb = this.arg(1);
+    this.restoreP();
+    const pmax = (upb + 1) * 4 - 1;
+    // Zero-fill v[0..upb].
+    for (let i = 0; i <= upb; i++) this.storeWord(v + i, 0);
+    const vByte = v * 4;
+    const putByte = (p, ch) => this.memView.setUint8(vByte + p, ch & 0xFF);
+
+    let ch = this._readChar();
+    // Skip horizontal whitespace + CR.
+    while (ch === 32 || ch === 9 || ch === 13) ch = this._readChar();
+
+    if (ch === -1)  return 0;   // EOF
+    if (ch === 10)  return 3;   // newline
+    if (ch === 59)  return 4;   // ';'
+    if (ch === 61)  return 5;   // '='
+
+    let p = 0;
+    if (ch === 34) {            // '"' quoted
+      for (;;) {
+        ch = this._readChar();
+        if (ch === 13) continue;
+        if (ch === 10 || ch === -1) return -1;
+        if (ch === 34) return 2;
+        if (ch === 42) {        // '*' escape
+          const next = this._readChar();
+          const cap = (next >= 97 && next <= 122) ? next - 32 : next;
+          if (cap === 78) ch = 10;         // '*n'
+          else if (cap === 34) ch = 34;    // '*"'
+          else ch = next;
+        }
+        p++;
+        if (p > pmax) return -1;
+        putByte(0, p);
+        putByte(p, ch);
+      }
+    }
+
+    // Unquoted item.
+    while (!(ch === 10 || ch === 32 || ch === 9 || ch === 59 || ch === 61 || ch === -1)) {
+      p++;
+      if (p > pmax) return -1;
+      putByte(0, p);
+      putByte(p, ch);
+      do { ch = this._readChar(); } while (ch === 13);
+    }
+    if (ch !== -1) this._unreadChar(ch);
+    return 1;
+  }
+
+  // str2numb(s) — simple BCPL-string-to-integer (deprecated but still
+  // used in old code). Accepts optional leading '-' then digits.
+  // Returns integer (no result2 contract).
+  imp_str2numb() {
+    const sByte = this.arg(0) * 4;
+    this.restoreP();
+    const len = this.memView.getUint8(sByte);
+    let n = 0, neg = false, i = 1;
+    if (len >= 1 && this.memView.getUint8(sByte + 1) === 45) { neg = true; i = 2; }
+    for (; i <= len; i++) {
+      const d = this.memView.getUint8(sByte + i) - 48;
+      if (d < 0 || d > 9) break;
+      n = n * 10 + d;
+    }
+    return (neg ? -n : n) | 0;
+  }
+
+  // string_to_number(s) — returns TRUE on success, FALSE on failure.
+  // Success puts the parsed value in result2 (G!10). Supports
+  // 'A' char literals, #O/#X/#B bases, underscores in digits, sign.
+  imp_string_to_number() {
+    const sByte = this.arg(0) * 4;
+    this.restoreP();
+    this._setResult2(0);
+    const len = this.memView.getUint8(sByte);
+    if (len === 0) return 0;
+    const at = (k) => this.memView.getUint8(sByte + k);
+    const cap = (c) => (c >= 97 && c <= 122) ? c - 32 : c;
+
+    let p = 1, neg = false, radix = 10;
+    let ch = cap(at(p));
+    // Char literal 'A' (3-byte string: 'X').
+    if (len === 3 && at(1) === 39 && at(3) === 39) {
+      this._setResult2(at(2));
+      return -1;
+    }
+    if (ch === 43 || ch === 45) {
+      neg = ch === 45;
+      if (p === len) return -1;
+      p++;
+      ch = cap(at(p));
+    }
+    if (ch === 35) {              // '#'
+      radix = 8;
+      if (p === len) return -1;
+      p++;
+      ch = cap(at(p));
+      if (ch === 79 || ch === 88 || ch === 66) {
+        if (ch === 88) radix = 16;
+        else if (ch === 66) radix = 2;
+        if (p === len) return -1;
+        p++;
+        ch = cap(at(p));
+      }
+    }
+    let acc = 0;
+    for (;;) {
+      const d = (ch >= 48 && ch <= 57) ? ch - 48
+              : (ch >= 65 && ch <= 90) ? ch - 65 + 10
+              : ch === 95 ? -1
+              : 1000;
+      if (d < radix) {
+        if (d >= 0) acc = (acc * radix + d) | 0;
+      } else {
+        return 0;  // bad digit → FALSE
+      }
+      p++;
+      if (p > len) break;
+      ch = cap(at(p));
+    }
+    this._setResult2((neg ? -acc : acc) | 0);
+    return -1;
+  }
+
+  // findarg(keys, w) — search the rdargs key-spec string for an arg
+  // matching BCPL string w. Returns arg index (0-based), or -1.
+  imp_findarg() {
+    const keysByte = this.arg(0) * 4;
+    const wByte    = this.arg(1) * 4;
+    this.restoreP();
+    const klen = this.memView.getUint8(keysByte);
+    const wlen = this.memView.getUint8(wByte);
+    const capcmp = (a, b) => {
+      const ca = (a >= 97 && a <= 122) ? a - 32 : a;
+      const cb = (b >= 97 && b <= 122) ? b - 32 : b;
+      return ca - cb;
+    };
+    let state = 0;  // 0=matching, 1=skipping
+    let wp = 0, argno = 0;
+    for (let i = 1; i <= klen; i++) {
+      const kch = this.memView.getUint8(keysByte + i);
+      if (state === 0) {
+        if ((kch === 61 || kch === 47 || kch === 44) && wp === wlen) return argno;
+        wp++;
+        if (wp <= wlen && capcmp(kch, this.memView.getUint8(wByte + wp)) !== 0) state = 1;
+      }
+      if (kch === 44 || kch === 61) { state = 0; wp = 0; }
+      if (kch === 44) argno++;
+    }
+    if (state === 0 && wp === wlen) return argno;
+    return -1;
+  }
+
   // ------------------ loader ------------------
 
   imports() {
@@ -1009,6 +1242,12 @@ export class BcplRuntime {
         bcpl_newpage:      () => this.imp_newpage(),
         bcpl_codewrch:     () => this.imp_codewrch(),
         bcpl_errwritef:    () => this.imp_errwritef(),
+        bcpl_readn:           () => this.imp_readn(),
+        bcpl_readflt:         () => this.imp_readflt(),
+        bcpl_rditem:          () => this.imp_rditem(),
+        bcpl_str2numb:        () => this.imp_str2numb(),
+        bcpl_string_to_number:() => this.imp_string_to_number(),
+        bcpl_findarg:         () => this.imp_findarg(),
       }
     };
   }
@@ -1020,7 +1259,7 @@ export class BcplRuntime {
   // table_base) and export register()/stat_words()/fn_count(). The
   // loader two-pass-instantiates each program: probe sizes, bump-
   // allocate bases, then real instantiate + register.
-  static STDLIB_TABLE_SLOTS = 57;
+  static STDLIB_TABLE_SLOTS = 63;
   static STATIC_WORD_BASE   = 1001;  // first word past G
 
   async loadMaster(url = "master.wasm") {

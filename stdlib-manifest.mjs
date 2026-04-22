@@ -76,6 +76,13 @@ export const slots = [
   { tidx: 54, name: "newpage",        impl: "imp_newpage"       },
   { tidx: 55, name: "codewrch",       impl: "imp_codewrch"      },
   { tidx: 56, name: "errwritef",      impl: "imp_errwritef"     },
+  // Phase 2C — Tier-A parse group
+  { tidx: 57, name: "readn",          impl: "imp_readn"             },
+  { tidx: 58, name: "readflt",        impl: "imp_readflt"           },
+  { tidx: 59, name: "rditem",         impl: "imp_rditem"            },
+  { tidx: 60, name: "str2numb",       impl: "imp_str2numb"          },
+  { tidx: 61, name: "string_to_number", impl: "imp_string_to_number" },
+  { tidx: 62, name: "findarg",        impl: "imp_findarg"           },
 ];
 
 // Extra BCPL globals that share a table slot with another entry.
