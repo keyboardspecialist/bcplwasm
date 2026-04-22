@@ -112,7 +112,7 @@
     .file-list li:hover, .example-list li:hover, .api-list li:hover {
       background: var(--bg-3);
     }
-    .file-list li.active, .api-list li.active {
+    .file-list li.active, .example-list li.active, .api-list li.active {
       background: var(--bg-3);
       color: var(--fg);
     }
@@ -180,22 +180,38 @@
 
     /* Right pane */
     .right-pane { background: var(--bg-2); }
-    .right-pane .active-name {
-      padding: 0.25rem 0.6rem;
-      font-family: ui-monospace, monospace;
-      font-size: 0.78rem;
-      color: var(--fg-dim);
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
+    .right-pane .source-tabs {
+      overflow-x: auto;
+      scrollbar-width: thin;
     }
-    .rpane {
+    .right-pane .source-tabs .tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      white-space: nowrap;
+    }
+    .right-pane .source-tabs .tab .close {
+      padding: 0 0.2rem;
+      color: var(--fg-dim);
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+      font-size: 0.75rem;
+    }
+    .right-pane .source-tabs .tab .close:hover { color: var(--err); }
+    .right-pane .source-tabs .tab.preview { font-style: italic; }
+    .right-pane .source-tabs .tab.wat-tab { color: var(--accent); }
+    .right-pane .source-tabs .tab.entry::before {
+      content: "*";
+      color: var(--entry);
+      margin-right: 0.25rem;
+    }
+    .editor-host {
       flex: 1;
       overflow: hidden;
       display: flex;
       flex-direction: column;
     }
-    .rpane.hidden { display: none; }
     #userSrc, #liveWat {
       flex: 1;
       width: 100%;
@@ -210,10 +226,35 @@
       outline: none;
       line-height: 1.5;
     }
+    #userSrc[readonly] {
+      background: var(--bg);
+      color: var(--fg-dim);
+    }
     #liveWat {
       white-space: pre-wrap;
       overflow: auto;
       margin: 0;
+    }
+    .preview-note {
+      background: var(--bg-3);
+      color: var(--fg-dim);
+      font-size: 0.75rem;
+      padding: 0.3rem 0.6rem;
+      display: none;
+      border-bottom: 1px solid var(--border);
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .preview-note.visible { display: flex; }
+    .preview-note button {
+      padding: 0.15rem 0.4rem;
+      background: var(--accent);
+      color: #000;
+      border: 0;
+      border-radius: 3px;
+      cursor: pointer;
+      font: inherit;
+      font-size: 0.75rem;
     }
     .action-row {
       padding: 0.4rem 0.6rem;
@@ -311,8 +352,8 @@
 
       <div class="tab-body hidden" id="tab-examples">
         <ul id="exampleList" class="example-list"></ul>
-        <div class="file-actions">
-          <button id="loadExample">load into editor</button>
+        <div class="file-actions" style="color: var(--fg-dim); font-size: 0.75rem;">
+          click to preview in the editor pane
         </div>
       </div>
 
@@ -327,15 +368,13 @@
 
     <!-- RIGHT PANE -->
     <main class="right-pane">
-      <nav class="tabs" id="rightTabs">
-        <button class="tab active" data-rtab="editor">Editor</button>
-        <button class="tab"        data-rtab="wat">WAT</button>
-      </nav>
-      <div class="active-name" id="activeFileName">—</div>
-      <div id="rpane-editor" class="rpane">
-        <textarea id="userSrc" spellcheck="false"></textarea>
+      <nav class="tabs source-tabs" id="sourceTabs"></nav>
+      <div class="preview-note" id="previewNote">
+        <span id="previewNoteText"></span>
+        <button id="savePreview">Save as file</button>
       </div>
-      <div id="rpane-wat" class="rpane hidden">
+      <div class="editor-host">
+        <textarea id="userSrc" spellcheck="false"></textarea>
         <pre id="liveWat">(not yet compiled)</pre>
       </div>
       <div class="action-row">
@@ -371,30 +410,32 @@
     const apiListEl     = document.getElementById("apiList");
     const apiFilterEl   = document.getElementById("apiFilter");
     const apiDetailEl   = document.getElementById("apiDetail");
-    const activeNameEl  = document.getElementById("activeFileName");
+    const sourceTabsEl  = document.getElementById("sourceTabs");
     const userSrcEl     = document.getElementById("userSrc");
     const liveWatEl     = document.getElementById("liveWat");
+    const previewNoteEl = document.getElementById("previewNote");
+    const previewNoteText = document.getElementById("previewNoteText");
+    const savePreviewBtn = document.getElementById("savePreview");
     const outputEl      = document.getElementById("output");
     const stdinEl       = document.getElementById("stdin");
     const compileBtn    = document.getElementById("compileRun");
     const statusEl      = document.getElementById("compileStatus");
 
-    // ------------------ Tab switching ------------------
-    function bindTabs(stripId, bodyPrefix, attr) {
-      const strip = document.getElementById(stripId);
+    // ------------------ Left-pane tab switching ------------------
+    function bindLeftTabs() {
+      const strip = document.getElementById("leftTabs");
       strip.addEventListener("click", (e) => {
         const btn = e.target.closest(".tab");
         if (!btn) return;
         strip.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
         btn.classList.add("active");
-        const key = btn.getAttribute(attr);
-        document.querySelectorAll(`[id^="${bodyPrefix}"]`).forEach(el => {
-          el.classList.toggle("hidden", el.id !== bodyPrefix + key);
+        const key = btn.getAttribute("data-tab");
+        document.querySelectorAll(`[id^="tab-"]`).forEach(el => {
+          el.classList.toggle("hidden", el.id !== "tab-" + key);
         });
       });
     }
-    bindTabs("leftTabs",  "tab-",    "data-tab");
-    bindTabs("rightTabs", "rpane-",  "data-rtab");
+    bindLeftTabs();
 
     // ------------------ Files tab ------------------
     const FILES_LS_KEY = "bcpl-playground-files-v1";
@@ -412,7 +453,153 @@ LET start() = VALOF
       },
     ];
     let files = loadFiles();
-    let activeIdx = 0;
+
+    // ------------------ Source-tab bar state ------------------
+    // Each entry in sourceTabs describes one tab on the right pane:
+    //   { kind: 'file',    fileIdx: n }
+    //   { kind: 'preview', name, content }
+    //   { kind: 'wat' }               (singleton, always last)
+    // activeTab is the index within sourceTabs. Clicking a file in
+    // the left Files tab opens (or focuses) its sourceTab. Clicking
+    // an example opens a preview sourceTab.
+    let sourceTabs = [];
+    let activeTab = 0;
+    function rebuildSourceTabs(preserve = true) {
+      // Keep preview + wat tabs; rebuild file tabs to match `files`.
+      const kept = sourceTabs.filter(t => t.kind !== "file");
+      const prev = sourceTabs[activeTab];
+      sourceTabs = files.map((_, i) => ({ kind: "file", fileIdx: i }))
+                       .concat(kept);
+      if (!sourceTabs.some(t => t.kind === "wat")) {
+        sourceTabs.push({ kind: "wat" });
+      }
+      // Try to preserve active selection.
+      if (preserve && prev) {
+        const idx = sourceTabs.findIndex(t =>
+          (t.kind === prev.kind) &&
+          (t.fileIdx === prev.fileIdx) &&
+          (t.name === prev.name));
+        activeTab = idx >= 0 ? idx : 0;
+      } else {
+        activeTab = 0;
+      }
+      renderSourceTabs();
+      showActive();
+    }
+    function renderSourceTabs() {
+      sourceTabsEl.innerHTML = "";
+      sourceTabs.forEach((t, i) => {
+        const btn = document.createElement("button");
+        btn.className = "tab" + (i === activeTab ? " active" : "");
+        let label = "";
+        if (t.kind === "file") {
+          const f = files[t.fileIdx];
+          if (!f) return;
+          label = f.name;
+          if (f.entry) btn.classList.add("entry");
+        } else if (t.kind === "preview") {
+          label = `${t.name} (preview)`;
+          btn.classList.add("preview");
+        } else if (t.kind === "wat") {
+          label = "WAT";
+          btn.classList.add("wat-tab");
+        }
+        const span = document.createElement("span");
+        span.textContent = label;
+        span.onclick = () => { activeTab = i; renderSourceTabs(); showActive(); };
+        btn.appendChild(span);
+        // Close button only for preview tabs.
+        if (t.kind === "preview") {
+          const close = document.createElement("button");
+          close.className = "close";
+          close.textContent = "×";
+          close.title = "close preview";
+          close.onclick = (e) => {
+            e.stopPropagation();
+            sourceTabs.splice(i, 1);
+            if (activeTab >= sourceTabs.length) activeTab = sourceTabs.length - 1;
+            if (activeTab < 0) activeTab = 0;
+            renderSourceTabs(); showActive();
+          };
+          btn.appendChild(close);
+        }
+        sourceTabsEl.appendChild(btn);
+      });
+    }
+    function showActive() {
+      const t = sourceTabs[activeTab];
+      if (!t) return;
+      if (t.kind === "file") {
+        const f = files[t.fileIdx];
+        userSrcEl.value = f?.content ?? "";
+        userSrcEl.readOnly = false;
+        userSrcEl.style.display = "block";
+        liveWatEl.style.display = "none";
+        previewNoteEl.classList.remove("visible");
+      } else if (t.kind === "preview") {
+        userSrcEl.value = t.content;
+        userSrcEl.readOnly = true;
+        userSrcEl.style.display = "block";
+        liveWatEl.style.display = "none";
+        previewNoteText.textContent =
+          `Previewing example "${t.name}". Save to make it a regular file.`;
+        previewNoteEl.classList.add("visible");
+      } else if (t.kind === "wat") {
+        userSrcEl.style.display = "none";
+        liveWatEl.style.display = "block";
+        previewNoteEl.classList.remove("visible");
+      }
+      // Sync left Files list highlight.
+      renderFileList();
+    }
+    function openFileTab(fileIdx) {
+      const existing = sourceTabs.findIndex(t =>
+        t.kind === "file" && t.fileIdx === fileIdx);
+      if (existing >= 0) {
+        activeTab = existing;
+      } else {
+        // Insert just before WAT tab.
+        const watPos = sourceTabs.findIndex(t => t.kind === "wat");
+        const at = watPos >= 0 ? watPos : sourceTabs.length;
+        sourceTabs.splice(at, 0, { kind: "file", fileIdx });
+        activeTab = at;
+      }
+      renderSourceTabs(); showActive();
+    }
+    function openPreviewTab(name, content) {
+      const existing = sourceTabs.findIndex(t =>
+        t.kind === "preview" && t.name === name);
+      if (existing >= 0) {
+        sourceTabs[existing].content = content;
+        activeTab = existing;
+      } else {
+        const watPos = sourceTabs.findIndex(t => t.kind === "wat");
+        const at = watPos >= 0 ? watPos : sourceTabs.length;
+        sourceTabs.splice(at, 0, { kind: "preview", name, content });
+        activeTab = at;
+      }
+      renderSourceTabs(); showActive();
+    }
+    function promotePreview() {
+      const t = sourceTabs[activeTab];
+      if (!t || t.kind !== "preview") return;
+      const fileName = `${t.name}.b`;
+      if (files.some(f => f.name === fileName)) {
+        if (!confirm(`"${fileName}" already exists — overwrite?`)) return;
+      }
+      const existing = files.findIndex(f => f.name === fileName);
+      if (existing >= 0) {
+        files[existing].content = t.content;
+      } else {
+        files.push({ name: fileName, entry: false, content: t.content });
+      }
+      persistFiles();
+      // Close the preview, focus the resulting file tab.
+      sourceTabs.splice(activeTab, 1);
+      rebuildSourceTabs(false);
+      const newFileIdx = files.findIndex(f => f.name === fileName);
+      openFileTab(newFileIdx);
+    }
 
     function loadFiles() {
       try {
@@ -427,18 +614,26 @@ LET start() = VALOF
     function persistFiles() {
       try { localStorage.setItem(FILES_LS_KEY, JSON.stringify(files)); } catch {}
     }
+    // Return the file-index of the currently-active file tab, or -1 if
+    // the active tab is a preview/WAT.
+    function activeFileIdx() {
+      const t = sourceTabs[activeTab];
+      return (t && t.kind === "file") ? t.fileIdx : -1;
+    }
     function commitActiveEdit() {
-      if (files[activeIdx]) files[activeIdx].content = userSrcEl.value;
+      const i = activeFileIdx();
+      if (i >= 0) files[i].content = userSrcEl.value;
     }
     function renderFileList() {
       fileListEl.innerHTML = "";
+      const activeFile = activeFileIdx();
       files.forEach((f, i) => {
         const li = document.createElement("li");
-        if (i === activeIdx) li.classList.add("active");
+        if (i === activeFile) li.classList.add("active");
         const name = document.createElement("span");
         name.className = "name" + (f.entry ? " entry" : "");
         name.textContent = f.name;
-        name.onclick = () => selectFile(i);
+        name.onclick = () => openFileTab(i);
         li.appendChild(name);
         const del = document.createElement("button");
         del.textContent = "×";
@@ -447,14 +642,6 @@ LET start() = VALOF
         li.appendChild(del);
         fileListEl.appendChild(li);
       });
-      activeNameEl.textContent = files[activeIdx]?.name ?? "—";
-    }
-    function selectFile(i) {
-      commitActiveEdit();
-      if (i < 0 || i >= files.length) return;
-      activeIdx = i;
-      userSrcEl.value = files[i].content;
-      renderFileList();
     }
     function addFile() {
       commitActiveEdit();
@@ -469,10 +656,9 @@ LET start() = VALOF
           ? `SECTION "${name.replace(/\.b$/, "")}"\n\nGET "libhdr"\n\n`
           : "// BCPL header — declare globals here\n\nGLOBAL {\n}\n",
       });
-      activeIdx = files.length - 1;
-      userSrcEl.value = files[activeIdx].content;
-      renderFileList();
       persistFiles();
+      rebuildSourceTabs(false);
+      openFileTab(files.length - 1);
     }
     function deleteFile(i) {
       commitActiveEdit();
@@ -484,60 +670,66 @@ LET start() = VALOF
         const b = files.findIndex(f => f.name.endsWith(".b"));
         if (b >= 0) files[b].entry = true;
       }
-      if (activeIdx >= files.length) activeIdx = files.length - 1;
-      userSrcEl.value = files[activeIdx].content;
-      renderFileList();
+      // Drop any source tabs referencing the removed file; shift
+      // fileIdx for tabs after it.
+      sourceTabs = sourceTabs.filter(t => !(t.kind === "file" && t.fileIdx === i));
+      for (const t of sourceTabs) {
+        if (t.kind === "file" && t.fileIdx > i) t.fileIdx--;
+      }
       persistFiles();
+      rebuildSourceTabs(true);
     }
     function renameFile() {
+      const i = activeFileIdx();
+      if (i < 0) { alert("rename applies to a file tab"); return; }
       commitActiveEdit();
-      const cur = files[activeIdx];
+      const cur = files[i];
       const name = prompt("New name:", cur.name);
       if (!name || name === cur.name) return;
-      if (files.some((f, j) => j !== activeIdx && f.name === name)) {
+      if (files.some((f, j) => j !== i && f.name === name)) {
         alert(`"${name}" already exists`); return;
       }
       cur.name = name;
-      renderFileList();
       persistFiles();
+      renderSourceTabs();
+      renderFileList();
     }
     function setEntry() {
+      const i = activeFileIdx();
+      if (i < 0) { alert("select a .b file tab first"); return; }
       commitActiveEdit();
-      const cur = files[activeIdx];
+      const cur = files[i];
       if (!cur.name.endsWith(".b")) { alert("entry must be a .b file"); return; }
       for (const f of files) f.entry = (f === cur);
-      renderFileList();
       persistFiles();
+      renderSourceTabs();
+      renderFileList();
     }
     function resetFiles() {
       if (!confirm("Reset to default file list?")) return;
       files = structuredClone(DEFAULT_FILES);
-      activeIdx = 0;
-      userSrcEl.value = files[0].content;
-      renderFileList();
+      sourceTabs = [];
       persistFiles();
+      rebuildSourceTabs(false);
     }
 
     // ------------------ Examples tab ------------------
+    let selectedExample = EXAMPLES[0];
     function renderExampleList() {
       exampleListEl.innerHTML = "";
       for (const name of EXAMPLES) {
         const li = document.createElement("li");
         li.textContent = name;
-        li.onclick = () => { selectedExample = name; renderExampleList(); };
         if (name === selectedExample) li.classList.add("active");
+        li.onclick = async () => {
+          commitActiveEdit();
+          selectedExample = name;
+          renderExampleList();
+          const src = await fetchText(`examples/${name}.b?v=${Date.now()}`, "");
+          if (src) openPreviewTab(name, src);
+        };
         exampleListEl.appendChild(li);
       }
-    }
-    let selectedExample = EXAMPLES[0];
-
-    async function loadSelectedExample() {
-      commitActiveEdit();
-      const src = await fetchText(`examples/${selectedExample}.b?v=${Date.now()}`, "");
-      if (!src) return;
-      files[activeIdx].content = src;
-      userSrcEl.value = src;
-      persistFiles();
     }
 
     // ------------------ API tab ------------------
@@ -730,15 +922,17 @@ LET start() = VALOF
     document.getElementById("renameFile").addEventListener("click", renameFile);
     document.getElementById("setEntryBtn").addEventListener("click", setEntry);
     document.getElementById("resetFiles").addEventListener("click", resetFiles);
-    document.getElementById("loadExample").addEventListener("click", loadSelectedExample);
+    savePreviewBtn.addEventListener("click", promotePreview);
     apiFilterEl.addEventListener("input", () => renderApiList(apiFilterEl.value));
     userSrcEl.addEventListener("input", () => {
-      if (files[activeIdx]) files[activeIdx].content = userSrcEl.value;
+      const i = activeFileIdx();
+      if (i < 0) return;  // readonly tab
+      files[i].content = userSrcEl.value;
       persistFiles();
     });
 
     // Initial render.
-    userSrcEl.value = files[activeIdx]?.content ?? "";
+    rebuildSourceTabs(false);
     renderFileList();
     renderExampleList();
     renderApiList();
