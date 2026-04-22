@@ -834,6 +834,119 @@ export class BcplRuntime {
     return 0;
   }
 
+  // ------------------ Tier-A format group ------------------
+
+  // writed(n, d) — signed decimal, d = min field width (space-pad).
+  imp_writed() {
+    const n = this.arg(0) | 0;
+    const d = this.arg(1) | 0;
+    this.restoreP();
+    this._writeString(String(n).padStart(d, " "));
+    return 0;
+  }
+
+  // writeu(n, d) — unsigned decimal, d = min field width.
+  imp_writeu() {
+    const n = this.arg(0) >>> 0;
+    const d = this.arg(1) | 0;
+    this.restoreP();
+    this._writeString(String(n).padStart(d, " "));
+    return 0;
+  }
+
+  // writet(s, d) — BCPL string, pad with trailing spaces to width d.
+  imp_writet() {
+    const s   = this.readBcplString(this.arg(0));
+    const d   = this.arg(1) | 0;
+    this.restoreP();
+    this._writeString(s);
+    const pad = d - s.length;
+    if (pad > 0) this._writeString(" ".repeat(pad));
+    return 0;
+  }
+
+  // writez(n, d) — signed decimal, d = field width, zero-pad.
+  imp_writez() {
+    const n = this.arg(0) | 0;
+    const d = this.arg(1) | 0;
+    this.restoreP();
+    const neg = n < 0;
+    const body = String(neg ? -n : n);
+    const w = neg ? d - 1 : d;
+    const padded = body.padStart(Math.max(w, body.length), "0");
+    this._writeString((neg ? "-" : "") + padded);
+    return 0;
+  }
+
+  // writehex(n, d) — unsigned hex, zero-pad to d digits (uppercase).
+  imp_writehex() {
+    const n = this.arg(0) >>> 0;
+    const d = this.arg(1) | 0;
+    this.restoreP();
+    this._writeString(n.toString(16).toUpperCase().padStart(d, "0"));
+    return 0;
+  }
+
+  // writeoct(n, d) — unsigned octal, zero-pad to d digits.
+  imp_writeoct() {
+    const n = this.arg(0) >>> 0;
+    const d = this.arg(1) | 0;
+    this.restoreP();
+    this._writeString(n.toString(8).padStart(d, "0"));
+    return 0;
+  }
+
+  // writeflt(x, w, p) — BCPL f32 bits x as fixed-point, width w,
+  // p digits after the decimal point.
+  imp_writeflt() {
+    const xi = this.arg(0) | 0;
+    const w  = this.arg(1) | 0;
+    const p  = Math.max(0, this.arg(2) | 0);
+    this.restoreP();
+    const buf = new ArrayBuffer(4);
+    new Int32Array(buf)[0] = xi;
+    const x = new Float32Array(buf)[0];
+    this._writeString(x.toFixed(p).padStart(w, " "));
+    return 0;
+  }
+
+  // writee(x, w, p) — BCPL f32 bits x as exponential form, width w,
+  // p digits after the decimal point.
+  imp_writee() {
+    const xi = this.arg(0) | 0;
+    const w  = this.arg(1) | 0;
+    const p  = Math.max(0, this.arg(2) | 0);
+    this.restoreP();
+    const buf = new ArrayBuffer(4);
+    new Int32Array(buf)[0] = xi;
+    const x = new Float32Array(buf)[0];
+    this._writeString(x.toExponential(p).padStart(w, " "));
+    return 0;
+  }
+
+  // newpage() — write form-feed (ASCII 12).
+  imp_newpage() {
+    this._writeChar(12);
+    this.restoreP();
+    return 0;
+  }
+
+  // codewrch(code) — encode Unicode codepoint as UTF-8 bytes.
+  // BCPL blib supports GB2312 too; browser playground sticks to UTF-8.
+  imp_codewrch() {
+    const code = this.arg(0) >>> 0;
+    this.restoreP();
+    // Emit as JS string so the UI callback handles encoding.
+    const s = String.fromCodePoint(code & 0x10FFFF);
+    this._writeString(s);
+    return 0;
+  }
+
+  // errwritef(fmt, ...) — writef to stderr. In the browser playground
+  // we have one sink (writeOut); errwrch already routes there, so
+  // errwritef delegates to writef for identical output behavior.
+  imp_errwritef() { return this.imp_writef(); }
+
   // ------------------ loader ------------------
 
   imports() {
@@ -885,6 +998,17 @@ export class BcplRuntime {
         bcpl_setbit:       () => this.imp_setbit(),
         bcpl_testbit:      () => this.imp_testbit(),
         bcpl_setvec:       () => this.imp_setvec(),
+        bcpl_writed:       () => this.imp_writed(),
+        bcpl_writeu:       () => this.imp_writeu(),
+        bcpl_writet:       () => this.imp_writet(),
+        bcpl_writez:       () => this.imp_writez(),
+        bcpl_writehex:     () => this.imp_writehex(),
+        bcpl_writeoct:     () => this.imp_writeoct(),
+        bcpl_writee:       () => this.imp_writee(),
+        bcpl_writeflt:     () => this.imp_writeflt(),
+        bcpl_newpage:      () => this.imp_newpage(),
+        bcpl_codewrch:     () => this.imp_codewrch(),
+        bcpl_errwritef:    () => this.imp_errwritef(),
       }
     };
   }
@@ -896,7 +1020,7 @@ export class BcplRuntime {
   // table_base) and export register()/stat_words()/fn_count(). The
   // loader two-pass-instantiates each program: probe sizes, bump-
   // allocate bases, then real instantiate + register.
-  static STDLIB_TABLE_SLOTS = 46;
+  static STDLIB_TABLE_SLOTS = 57;
   static STATIC_WORD_BASE   = 1001;  // first word past G
 
   async loadMaster(url = "master.wasm") {
