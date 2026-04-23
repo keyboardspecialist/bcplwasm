@@ -1190,7 +1190,8 @@ LET lex() BE
           RETURN
         }
         IF ch='(' DO                                  // #(
-        { token := s_mthap
+        { rch()  // consume the '('
+          token := s_mthap
           RETURN
         }
         UNLESS ch<=32 DO // All white space characters

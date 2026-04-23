@@ -3912,6 +3912,12 @@
     (if (i32.ne  (local.get $t4) (local.get $t5)) (then
       (local.set $__lab (i32.const 112)) (br $__dispatch)
     ))
+    (local.set $t7 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1240))))
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (global.get $P)) ;; save P
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t7)) ;; entry fn_idx
+    (global.set $P (i32.add (global.get $P) (i32.const 4)))
+    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t7)))
     (local.set $t4 (i32.const 28))
     (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1196)) (local.get $t4))
     ;; RTRN
