@@ -15,6 +15,7 @@ export const LEVELS = [
   { n: 4, name: "Data Structures"   },
   { n: 5, name: "I/O & System"      },
   { n: 6, name: "Advanced"          },
+  { n: 7, name: "Objects"           },
 ];
 
 export const TRACK = [
@@ -393,6 +394,61 @@ export const TRACK = [
       "Result type inferred from arm expressions",
     ],
     prereqs: ["26-match-patterns"],
+  },
+
+  // ---- Level 7 — Objects ----------------------------------------
+  {
+    slug: "28-method-sugar",
+    title: "Method-call Sugar",
+    level: 7,
+    topic: "objects",
+    summary: "E#(args) desugars to (args0!0!E)(args) at compile time.",
+    goals: [
+      "Understand BCPL's OOP calling convention",
+      "Build a methods vector and point obj!0 at it",
+      "Use E#(obj, …) and its equivalent (obj!0!E)(obj, …)",
+    ],
+    prereqs: ["15-vectors"],
+  },
+  {
+    slug: "29-first-class",
+    title: "Your First Class",
+    level: 7,
+    topic: "objects",
+    summary: "Class = methods vector + fields vector. init/destroy convention.",
+    goals: [
+      "Layout methods and fields vectors",
+      "InitObj (slot 0) and CloseObj (slot 1) convention",
+      "Write a tiny local mkobj that allocates + initialises",
+      "Create multiple instances sharing one methods vector",
+    ],
+    prereqs: ["28-method-sugar"],
+  },
+  {
+    slug: "30-inheritance",
+    title: "Inheritance",
+    level: 7,
+    topic: "objects",
+    summary: "Derive a class; override methods; call super via back-pointer.",
+    goals: [
+      "Copy parent methods into the derived methods vector",
+      "Override selected methods",
+      "Keep a private slot holding the parent's method to call super",
+    ],
+    prereqs: ["29-first-class"],
+  },
+  {
+    slug: "31-mkobj-helper",
+    title: "A Reusable mkobj",
+    level: 7,
+    topic: "objects",
+    summary: "Generic mkobj: one helper, any class following the InitObj convention.",
+    goals: [
+      "Encapsulate the allocate-and-initialise pattern",
+      "Pass init arguments via @a (address-of-first-arg)",
+      "Apply the same helper to different classes",
+    ],
+    prereqs: ["29-first-class"],
   },
 ];
 
