@@ -150,27 +150,16 @@ export const API_DOCS = {
   // ---- SDL graphics (sys(Sys_sdl, op, ...)) ----
   // The playground does not ship sdl.b BCPL wrappers — call via sys() directly.
   // Header sdl.h (auto-seeded) declares all sdl_* manifest constants.
+  // Each sdl_* sub-op below has its own entry; click for signature + notes.
   Sys_sdl: {
     sig: "sys(Sys_sdl, op, …)",
     cat: "graphics",
-    desc: "SDL dispatcher. Sub-ops implemented:\n" +
-          "  sdl_avail(0), sdl_init(1), sdl_setvideomode(2,w,h,bpp,flags)→surf, sdl_quit(3)\n" +
-          "  sdl_lock/unlocksurface(4,5) — no-op on canvas\n" +
-          "  sdl_delay(14) — better to use the wired delay() call instead\n" +
-          "  sdl_flip(15) — no-op (canvas auto-presents)\n" +
-          "  sdl_waitevent(17,v), sdl_pollevent(18,v) — fill v[0..2] with type/mod/ch or x/y\n" +
-          "  sdl_getmousestate(19,v) — v[0,1]=x,y; returns button bits\n" +
-          "  sdl_wm_setcaption(22,str)\n" +
-          "  sdl_maprgb(24,fmt,r,g,b) → packed colour int\n" +
-          "  sdl_drawline(27,surf,x1,y1,x2,y2,col)\n" +
-          "  sdl_drawhline(28,surf,x1,x2,y,col), sdl_drawvline(29,surf,x,y1,y2,col)\n" +
-          "  sdl_drawcircle(30,surf,cx,cy,r,col), sdl_drawfillcircle(37,…)\n" +
-          "  sdl_drawrect(31,surf,x1,y1,x2,y2,col), sdl_drawfillrect(38,…), sdl_fillrect(39,…)\n" +
-          "  sdl_drawpixel(32,surf,x,y,col)\n" +
-          "  sdl_drawellipse(33,…), sdl_drawfillellipse(34,…)\n" +
-          "  sdl_fillsurf(40,surf,col)\n" +
-          "  sdl_getticks(50) → ms since sdl_init\n" +
-          "  sdl_show/hidecursor(51,52)",
+    desc: "SDL dispatcher. Browse the sdl_* entries (filter the list with " +
+          "\"sdl\") for individual sub-op signatures and behavior. Programs " +
+          "include the sdl.h header (auto-seeded) for the sdl_* manifest " +
+          "constants, then call sys(Sys_sdl, sdl_xxx, args…). The first " +
+          "sdl_init reveals the canvas pane; sdl_setvideomode(w,h,0,0) " +
+          "returns the surface handle (use 1).",
   },
   sdl_init:           { sig: "sys(Sys_sdl, sdl_init)", cat: "graphics", desc: "Reveal the canvas pane and start the timer (sdl_getticks epoch)." },
   sdl_setvideomode:   { sig: "sys(Sys_sdl, sdl_setvideomode, w, h, bpp, flags) → surf", cat: "graphics", desc: "Set canvas size. Returns a surface handle (use 1)." },
@@ -198,15 +187,64 @@ export const API_DOCS = {
   // ---- Raw syscall ----
   sys: {
     sig: "sys(op, …)",
-    cat: "system",
-    desc: "Low-level dispatcher. Op codes: Sys_quit(0), Sys_sardch(10), Sys_sawrch(11), " +
-          "Sys_read(12)/write(13), Sys_open{read,write,append,readwrite}(14,15,19,47), " +
-          "Sys_close(16), Sys_delete/renamefile(17,18), Sys_getvec/freevec(21,22), " +
-          "Sys_muldiv(26), Sys_intflag(28), Sys_cputime(30), Sys_setprefix/getprefix(32,33), " +
-          "Sys_seek/tell(38,39), Sys_datstamp(44), Sys_filesize(46), Sys_getsysval/putsysval(48,49), " +
-          "Sys_getpid(51), Sys_inc(55), Sys_flt(63), Sys_pollsardch(64), Sys_sdl(66), " +
-          "Sys_memmovewords/bytes(73,74), Sys_errwrch(75). " +
-          "Sys_flt subops 1..18 cover mk/unmk/float/fix/abs/mul/div/mod/add/sub/pos/neg/eq/ne/ls/gr/le/ge. " +
-          "Sys_sdl sub-ops listed under sys(Sys_sdl, …).",
+    cat: "syscall",
+    desc: "Low-level dispatcher. Each Sys_* below has its own entry — " +
+          "filter the list with \"Sys_\" to browse. Most BCPL programs " +
+          "use the wired stdlib functions (writef, getvec, etc.) which " +
+          "internally route through sys() in the cintsys reference impl; " +
+          "in the playground those calls go directly to host imports.",
   },
+
+  // ---- Sys_* sub-op entries (documentation pseudo-keys) ----
+  // These aren't BCPL globals; they're constants you pass to sys(op, …).
+  // Listed individually so the API tab can document each.
+  Sys_quit: {
+    sig: "sys(Sys_quit, code)",
+    cat: "syscall",
+    desc: "Hard halt; throws BcplHalt(code). Equivalent to abort(code).",
+  },
+  Sys_sardch: { sig: "sys(Sys_sardch) → ch",     cat: "syscall", desc: "Direct keyboard read; alias of rdch in playground." },
+  Sys_sawrch: { sig: "sys(Sys_sawrch, ch)",      cat: "syscall", desc: "Direct screen write; alias of wrch in playground." },
+  Sys_read:   { sig: "sys(Sys_read, fd) → ch",   cat: "syscall", desc: "Read one byte from the given stream handle (or current if 0)." },
+  Sys_write:  { sig: "sys(Sys_write, fd, ch)",   cat: "syscall", desc: "Write one byte to the given stream handle (or current if 0)." },
+  Sys_openread:      { sig: "sys(Sys_openread, name) → h",    cat: "syscall", desc: "Open named storage entry for reading. Handle or 0." },
+  Sys_openwrite:     { sig: "sys(Sys_openwrite, name) → h",   cat: "syscall", desc: "Open named storage entry for writing. Handle or 0." },
+  Sys_openappend:    { sig: "sys(Sys_openappend, name) → h",  cat: "syscall", desc: "Open for append (existing data preserved)." },
+  Sys_openreadwrite: { sig: "sys(Sys_openreadwrite, name)→h", cat: "syscall", desc: "Open read+write." },
+  Sys_close:  { sig: "sys(Sys_close, h)",        cat: "syscall", desc: "Close stream; commits write streams to storage." },
+  Sys_deletefile: { sig: "sys(Sys_deletefile, name) → ok",   cat: "syscall", desc: "Remove a stored entry. -1 on success." },
+  Sys_renamefile: { sig: "sys(Sys_renamefile, old, new) → ok", cat: "syscall", desc: "Rename. -1 on success." },
+  Sys_getvec: { sig: "sys(Sys_getvec, n) → v",   cat: "syscall", desc: "No-op in playground; use getvec()." },
+  Sys_freevec:{ sig: "sys(Sys_freevec, v)",      cat: "syscall", desc: "No-op in playground; use freevec()." },
+  Sys_muldiv: { sig: "sys(Sys_muldiv, a, b, c)", cat: "syscall", desc: "(a*b)/c with 64-bit intermediate; remainder in result2." },
+  Sys_intflag:{ sig: "sys(Sys_intflag) → 0",     cat: "syscall", desc: "Always FALSE — no interrupt source in playground." },
+  Sys_cputime:{ sig: "sys(Sys_cputime) → 0",     cat: "syscall", desc: "Stub returning 0; use Sys_getticks for wall-clock ms." },
+  Sys_setprefix: { sig: "sys(Sys_setprefix, str)", cat: "syscall", desc: "Update G!14 currentdir from a BCPL string." },
+  Sys_getprefix: { sig: "sys(Sys_getprefix) → ptr", cat: "syscall", desc: "Return G!14 currentdir pointer." },
+  Sys_seek:   { sig: "sys(Sys_seek, h, pos, whence)", cat: "syscall", desc: "Stream seek. whence: 0=set, 1=cur, 2=end." },
+  Sys_tell:   { sig: "sys(Sys_tell, h) → pos",   cat: "syscall", desc: "Current stream byte position." },
+  Sys_datstamp:{ sig: "sys(Sys_datstamp, v) → v", cat: "syscall", desc: "Fill v[0]=days, v[1]=ms-of-day, v[2]=-1 from Date.now()." },
+  Sys_filesize:{ sig: "sys(Sys_filesize, name) → bytes", cat: "syscall", desc: "Length of stored entry; -1 if missing." },
+  Sys_getsysval:{ sig: "sys(Sys_getsysval, key) → val", cat: "syscall", desc: "Map-backed kv lookup keyed by integer." },
+  Sys_putsysval:{ sig: "sys(Sys_putsysval, key, val)",  cat: "syscall", desc: "Map-backed kv store." },
+  Sys_getpid: { sig: "sys(Sys_getpid) → 1",      cat: "syscall", desc: "Always returns 1." },
+  Sys_inc:    { sig: "sys(Sys_inc, addr) → new", cat: "syscall", desc: "Atomic-ish increment at word address (single-threaded)." },
+  Sys_flt: {
+    sig: "sys(Sys_flt, sub, a, b)",
+    cat: "syscall",
+    desc: "Float dispatcher. sub-ops:\n" +
+          "  1 fl_mk(m,e)→bits     2 fl_unmk(bits)→i   3 fl_float(i)→bits\n" +
+          "  4 fl_fix(bits)→i      5 fl_abs(bits)\n" +
+          "  6 fl_mul(a,b)         7 fl_div(a,b)        8 fl_mod(a,b)\n" +
+          "  9 fl_add(a,b)        10 fl_sub(a,b)       11 fl_pos(a)\n" +
+          " 12 fl_neg(a)\n" +
+          " 13 fl_eq(a,b)→bool   14 fl_ne   15 fl_ls   16 fl_gr\n" +
+          " 17 fl_le             18 fl_ge\n" +
+          "All values are f32 bit patterns. Most user code uses the BCPL\n" +
+          "FLT operators (#:= #+ #- etc) which compile to these calls.",
+  },
+  Sys_pollsardch: { sig: "sys(Sys_pollsardch) → ch", cat: "syscall", desc: "Non-blocking char read; -3 if none available." },
+  Sys_memmovewords:{ sig: "sys(Sys_memmovewords, dst, src, n)", cat: "syscall", desc: "memmove n words; handles overlap correctly." },
+  Sys_memmovebytes:{ sig: "sys(Sys_memmovebytes, dst, src, n)", cat: "syscall", desc: "memmove n bytes (byte-addressed); handles overlap." },
+  Sys_errwrch: { sig: "sys(Sys_errwrch, ch)", cat: "syscall", desc: "Same sink as wrch in playground." },
 };
