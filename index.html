@@ -981,12 +981,18 @@ LET start() = VALOF
       const { buffer } = mod.toBinary({ log: false });
       mod.destroy();
       if (needsAsync) {
+        outputEl.textContent += `[asyncify] transforming ${label}…\n`;
         try {
           const out = await asyncifyTransform(buffer);
-          console.log(`[asyncify] ${label}: ${buffer.byteLength} -> ${out.byteLength ?? out.length} bytes`);
+          const inSize = buffer.byteLength;
+          const outSize = out.byteLength ?? out.length;
+          outputEl.textContent += `[asyncify] ${label}: ${inSize} -> ${outSize} bytes\n`;
+          console.log(`[asyncify] ${label}: ${inSize} -> ${outSize} bytes`);
           return out;
         } catch (e) {
-          console.error("[asyncify] FAILED, returning untransformed wasm:", e);
+          const msg = e?.message ?? String(e);
+          outputEl.textContent += `[asyncify] FAILED for ${label}: ${msg}\n`;
+          console.error("[asyncify] FAILED:", e);
           return buffer;
         }
       }
@@ -1055,9 +1061,8 @@ LET start() = VALOF
         liveWatEl.textContent = watByName.get(entry.name);
 
         setStatus("assembling…");
-        // If ANY source in the build uses a coroutine suspend point,
-        // run asyncify on every module — user fns may call across files.
         const anyAsync = sources.some(s => srcNeedsAsyncify(s.content));
+        outputEl.textContent += `[asyncify] needed=${anyAsync}\n`;
         if (anyAsync) setStatus("asyncify pass…");
         const assemble = async (src) => {
           const chunks = splitModules(watByName.get(src.name));
