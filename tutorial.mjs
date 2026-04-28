@@ -16,6 +16,7 @@ export const LEVELS = [
   { n: 5, name: "I/O & System"      },
   { n: 6, name: "Advanced"          },
   { n: 7, name: "Objects"           },
+  { n: 8, name: "Coroutines"        },
 ];
 
 export const TRACK = [
@@ -449,6 +450,22 @@ export const TRACK = [
       "Apply the same helper to different classes",
     ],
     prereqs: ["29-first-class"],
+  },
+
+  // ---- Level 8 — Coroutines -------------------------------------
+  {
+    slug: "32-coroutines",
+    title: "Coroutines",
+    level: 8,
+    topic: "coroutines",
+    summary: "createco, callco, cowait — cooperative multitasking BCPL-style.",
+    goals: [
+      "Allocate a coroutine with its own stack via createco(fn, size)",
+      "callco(c, arg) suspends the caller, resumes c with arg",
+      "cowait(arg) yields control back to the parent",
+      "Body fn gets the first callco arg as its parameter",
+    ],
+    prereqs: ["10-functions"],
   },
 ];
 

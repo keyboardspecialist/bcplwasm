@@ -1465,7 +1465,7 @@ export class BcplRuntime {
     return null;
   }
 
-  _allocCoroutine(fn, sizeWords) {
+  _allocCoroutine(fnTidx, sizeWords) {
     // Reserve a slab near the top of memory (heap grows downward).
     const totalWords = sizeWords + 6;
     const base = this.heapTop - totalWords;
@@ -1479,24 +1479,29 @@ export class BcplRuntime {
     this.storeWord(base + 0, base << 2);          // co_pptr (byte addr)
     this.storeWord(base + 1, 0);                  // co_parent
     this.storeWord(base + 2, this.loadWord(1 + 8)); // co_list = old colist
-    this.storeWord(base + 3, fn);                 // co_fn
+    this.storeWord(base + 3, fnTidx);             // co_fn
     this.storeWord(base + 4, sizeWords);          // co_size
     this.storeWord(base + 5, base);               // co_c (self)
     // Fill stack with the BCPL stackword marker.
     for (let i = 6; i < totalWords; i++) {
       this.storeWord(base + i, 0xABCD1234 | 0);
     }
-    // Asyncify state buffer: state[0] = current ptr (byte), state[1] = end (byte).
+    // Asyncify state buffer: [0]=current sp (byte), [1]=end (byte).
     const asyncByteBase = asyncifyBase * 4;
     this.memView.setUint32(asyncByteBase,     asyncByteBase + 8, true);
     this.memView.setUint32(asyncByteBase + 4, asyncByteBase + asyncifyWords * 4, true);
 
     return {
-      handle: base,                  // BCPL passes this as "coroutine pointer"
-      asyncifyData: asyncByteBase,   // byte addr of state struct
-      status: "new",                 // "new" | "ready" | "running" | "done"
+      handle: base,                       // BCPL "coroutine pointer" (word addr of CB)
+      bodyTidx: fnTidx,                   // body fn table index
+      asyncifyData: asyncByteBase,        // byte addr of state struct
+      asyncifyWords,                      // size for reset
+      savedP: base + 6,                   // user stack starts after 6-word header
+      status: "new",                      // "new" | "running" | "suspended" | "done"
       yieldedValue: 0,
       resumeArg: 0,
+      parentHandle: null,
+      isRoot: false,
     };
   }
 
@@ -1536,49 +1541,56 @@ export class BcplRuntime {
   // up the parent and rewinds it.
   imp_cowait() {
     const arg = this.arg(0);
-    this.restoreP();
     const exp = this._coroutineExports();
-    if (!exp || !this._currentCo) {
-      // No asyncify or no coroutine context — degenerate: just return arg.
-      return arg;
-    }
+    if (!exp || !this._currentCo) { this.restoreP(); return arg; }
     const co = this._currentCo;
     if (this._asyncifyMode === "rewinding") {
-      // Resuming after a previous suspend.
       exp.asyncify_stop_rewind();
       this._asyncifyMode = "normal";
+      this.restoreP();
       return co.resumeArg;
     }
-    // Suspend: kick off unwind.
     co.yieldedValue = arg;
-    co.status = "ready";
+    const parent = (co.parentHandle && this._coroutines.has(co.parentHandle))
+      ? this._coroutines.get(co.parentHandle)
+      : this._rootCo;
+    if (parent) parent.resumeArg = arg;
+    this._resetAsyncifyBuffer(co.asyncifyData, co.asyncifyWords ?? 256);
+    co.savedP = this.P;            // callee frame P, for replay on rewind
     exp.asyncify_start_unwind(co.asyncifyData);
     this._asyncifyMode = "unwinding";
-    // Schedule parent for resumption.
-    this._scheduleResume = co.parentHandle;
+    this._scheduleResume = parent ? parent.handle : 0;
     return 0;
   }
 
   // callco(c, arg) — suspend caller, resume c with arg as the cowait
   // return value. blib aborts(110) if c already has a parent.
   imp_callco() {
+    // IMPORTANT: read args BEFORE restoreP since restoreP changes $P.
+    // Also, $P must stay at the CALLEE frame across asyncify_start_unwind
+    // so that on rewind the imp_* sees the same args at P!3/P!4. We
+    // restoreP only on the rewind path (just before returning to BCPL).
     const cHandle = this.arg(0);
     const arg     = this.arg(1);
-    this.restoreP();
     const exp = this._coroutineExports();
-    const target = this._coroutines?.get(cHandle);
-    if (!exp || !target) return 0;
     if (this._asyncifyMode === "rewinding") {
       exp.asyncify_stop_rewind();
       this._asyncifyMode = "normal";
+      this.restoreP();
       return this._currentCo?.resumeArg ?? 0;
     }
-    // Set parent link + arg.
-    target.parentHandle = this._currentCo?.handle ?? null;
+    const target = this._coroutines?.get(cHandle);
+    if (!exp || !target) { this.restoreP(); return 0; }
+    target.parentHandle = this._currentCo?.handle ?? 0;
     target.resumeArg    = arg;
     this.storeWord(target.handle + 1, this._currentCo?.handle ?? 0);
     if (this._currentCo) {
-      this._currentCo.status = "ready";
+      this._resetAsyncifyBuffer(
+        this._currentCo.asyncifyData,
+        this._currentCo.asyncifyWords ?? 256);
+      // Capture the callee-frame P so on rewind asyncify-replay sees
+      // the same args at P!3/P!4.
+      this._currentCo.savedP = this.P;
       exp.asyncify_start_unwind(this._currentCo.asyncifyData);
       this._asyncifyMode = "unwinding";
     }
@@ -1860,16 +1872,125 @@ export class BcplRuntime {
   // in only ONE module — usually the first section. That's normal;
   // not an ordering bug. Use checkEntryOrdering() explicitly when
   // you know each loaded program is a separate source.
+  // Allocate an asyncify state buffer for the given execution context.
+  // Returns the byte address of the buffer (state struct lives at
+  // [bufStart, bufStart+8); rest is scratch).
+  _allocAsyncifyBuffer(words = 256) {
+    const base = this.heapTop - words;
+    this.heapTop = base;
+    const byteBase = base * 4;
+    this.memView.setUint32(byteBase,     byteBase + 8, true);
+    this.memView.setUint32(byteBase + 4, byteBase + words * 4, true);
+    return byteBase;
+  }
+
+  // Reset an asyncify state buffer's stack-pointer header so a new
+  // unwind starts fresh. Required before re-suspending into the same
+  // buffer after a full unwind/rewind/finish cycle.
+  _resetAsyncifyBuffer(byteBase, words = 256) {
+    this.memView.setUint32(byteBase,     byteBase + 8, true);
+    this.memView.setUint32(byteBase + 4, byteBase + words * 4, true);
+  }
+
+  // Coroutine-aware run loop. If the program never imports the
+  // coroutine suspend points, this degenerates to the simple "call
+  // start once" path.
   run() {
-    const tidx = this.loadWord(2);  // G!1 word addr = byte 8
-    const fn = this.master.exports.ftable.get(tidx);
-    if (!fn) throw new Error(`start (G!1 tidx=${tidx}) not in table`);
-    try {
-      return fn();
-    } catch (e) {
-      if (e instanceof BcplHalt) return e.code;
-      throw e;
+    const tidx = this.loadWord(2);
+    const startFn = this.master.exports.ftable.get(tidx);
+    if (!startFn) throw new Error(`start (G!1 tidx=${tidx}) not in table`);
+
+    const exp = this._coroutineExports();
+    if (!exp) {
+      // No asyncify support — plain entry.
+      try { return startFn(); }
+      catch (e) {
+        if (e instanceof BcplHalt) return e.code;
+        throw e;
+      }
     }
+
+    // Set up root execution context.
+    this._coroutines ??= new Map();
+    this._asyncifyMode = "normal";
+    const rootBuf = this._allocAsyncifyBuffer();
+    const root = {
+      isRoot: true,
+      handle: 0,
+      asyncifyData: rootBuf,
+      asyncifyWords: 256,
+      bodyTidx: tidx,
+      savedP: this.P,
+      status: "new",
+      resumeArg: 0,
+      yieldedValue: 0,
+      parentHandle: null,
+    };
+    this._rootCo = root;          // imp_* methods reach the root via this
+    this._currentCo = root;
+    this._scheduleResume = null;
+    let lastReturn = 0;
+
+    // Execute the entry context, then drive the cooperative loop until
+    // every context is done or the root finishes.
+    let ctx = root;
+    while (ctx) {
+      this.P = ctx.savedP;
+      this._currentCo = ctx;
+      const isFirst = (ctx.status === "new");
+      const isResume = (ctx.status === "suspended");
+
+      if (isFirst && !ctx.isRoot) {
+        // BCPL convention: body fn called with first cowait arg as its
+        // single parameter. Stage it at P!3 before entry.
+        this.storeWord(this.P + 0, 0);                    // saved P
+        this.storeWord(this.P + 1, 0);                    // ret addr placeholder
+        this.storeWord(this.P + 2, ctx.bodyTidx);         // entry fn_idx
+        this.storeWord(this.P + 3, ctx.resumeArg | 0);    // arg
+      }
+      if (isResume) {
+        exp.asyncify_start_rewind(ctx.asyncifyData);
+        this._asyncifyMode = "rewinding";
+      } else {
+        ctx.status = "running";
+      }
+
+      const fn = this.master.exports.ftable.get(ctx.bodyTidx);
+      if (!fn) throw new Error(`coroutine body tidx=${ctx.bodyTidx} not in table`);
+      try { lastReturn = fn(); }
+      catch (e) {
+        if (e instanceof BcplHalt) return e.code;
+        throw e;
+      }
+
+      if (this._asyncifyMode === "unwinding") {
+        exp.asyncify_stop_unwind();
+        this._asyncifyMode = "normal";
+        ctx.savedP = this.P;
+        ctx.status = "suspended";
+        // Reset the asyncify buffer's pointer header so the NEXT
+        // unwind (when this ctx eventually resumes again, runs, and
+        // suspends a second time) starts with a clean ring.
+        // Wait — actually asyncify_stop_unwind already clears state.
+        // The buffer's stack contents represent the saved call stack
+        // and must be preserved until the rewind that re-enters this
+        // ctx. So we DON'T reset here. Instead, reset on context-done.
+        const nextHandle = this._scheduleResume;
+        this._scheduleResume = null;
+        if (nextHandle === null || nextHandle === 0) {
+          ctx = this._coroutines.get(ctx.parentHandle) ?? root;
+        } else {
+          ctx = (nextHandle === root.handle) ? root : (this._coroutines.get(nextHandle) ?? root);
+        }
+      } else {
+        ctx.status = "done";
+        if (ctx.isRoot) return lastReturn;
+        const parent = this._coroutines.get(ctx.parentHandle) ?? root;
+        parent.resumeArg = lastReturn;
+        ctx = parent;
+      }
+    }
+    return lastReturn;
   }
 
   // Caller-invoked load-order check. Returns null if OK, else a
