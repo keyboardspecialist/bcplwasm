@@ -88,6 +88,14 @@ export const slots = [
   { tidx: 64, name: "stackfree",      impl: "imp_stackfree"         },
   { tidx: 65, name: "intflag",        impl: "imp_intflag"           },
   { tidx: 66, name: "setseed",        impl: "imp_setseed"           },
+  // Phase G — Coroutines (Asyncify-backed)
+  { tidx: 67, name: "createco",       impl: "imp_createco"          },
+  { tidx: 68, name: "callco",         impl: "imp_callco"            },
+  { tidx: 69, name: "cowait",         impl: "imp_cowait"            },
+  { tidx: 70, name: "resumeco",       impl: "imp_resumeco"          },
+  { tidx: 71, name: "deleteco",       impl: "imp_deleteco"          },
+  { tidx: 72, name: "initco",         impl: "imp_initco"            },
+  { tidx: 73, name: "changeco",       impl: "imp_changeco"          },
 ];
 
 // Extra BCPL globals that share a table slot with another entry.
