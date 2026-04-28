@@ -926,11 +926,12 @@ LET start() = VALOF
     }
 
     // Lazy-load binaryen (provides wasm-opt) for the in-browser
-    // asyncify pass on coroutine programs.
+    // asyncify pass on coroutine programs. Need >=122 — earlier
+    // versions reject our linker-mode wasm (bulk-memory ops).
     let binaryenPromise = null;
     function getBinaryen() {
       if (!binaryenPromise) {
-        binaryenPromise = import("https://esm.sh/binaryen@121");
+        binaryenPromise = import("https://esm.sh/binaryen@129");
       }
       return binaryenPromise;
     }
@@ -944,13 +945,23 @@ LET start() = VALOF
 
     // Run asyncify on a wasm buffer and return the transformed bytes.
     async function asyncifyTransform(bytes) {
-      const binaryen = (await getBinaryen()).default ?? (await getBinaryen());
+      const mod_ns = await getBinaryen();
+      const binaryen = mod_ns.default ?? mod_ns;
       const mod = binaryen.readBinary(new Uint8Array(bytes));
-      mod.setFeatures(binaryen.Features.BulkMemory | binaryen.Features.ReferenceTypes);
-      binaryen.setPassArgument("asyncify-imports", ASYNC_IMPORTS.join(","));
+      // Enable everything so the emitter preserves bulk-memory data
+      // segments referenced by our register() function.
+      if (typeof mod.setFeatures === "function" && binaryen.Features) {
+        mod.setFeatures(binaryen.Features.All);
+      }
+      // Don't pass asyncify-imports: user modules call all stdlib
+      // (incl. cowait/callco) via call_indirect to master's shared
+      // ftable. They have no direct bcpl_* imports. Default asyncify
+      // treats indirect calls as suspending, which is what we need.
       mod.runPasses(["asyncify"]);
       const out = mod.emitBinary();
       mod.dispose();
+      // out is a Uint8Array whose .buffer may be larger; slice to the
+      // exact bytes for a tight ArrayBuffer.
       return out.buffer.slice(out.byteOffset, out.byteOffset + out.byteLength);
     }
 
@@ -971,9 +982,11 @@ LET start() = VALOF
       mod.destroy();
       if (needsAsync) {
         try {
-          return await asyncifyTransform(buffer);
+          const out = await asyncifyTransform(buffer);
+          console.log(`[asyncify] ${label}: ${buffer.byteLength} -> ${out.byteLength ?? out.length} bytes`);
+          return out;
         } catch (e) {
-          console.warn("asyncify pass failed, returning untransformed wasm:", e);
+          console.error("[asyncify] FAILED, returning untransformed wasm:", e);
           return buffer;
         }
       }

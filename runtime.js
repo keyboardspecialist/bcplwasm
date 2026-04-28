@@ -1462,6 +1462,14 @@ export class BcplRuntime {
     for (const p of this.programs) {
       if (p.instance.exports.asyncify_start_unwind) return p.instance.exports;
     }
+    if (!this._asyncifyMissingWarned) {
+      this._asyncifyMissingWarned = true;
+      console.warn(
+        "[bcpl-runtime] coroutine call but no asyncify-instrumented " +
+        "wasm module found. Live-compile in browser must run the " +
+        "asyncify pass on the assembled wasm. Without it, cowait/callco " +
+        "are no-ops returning 0.");
+    }
     return null;
   }
 
