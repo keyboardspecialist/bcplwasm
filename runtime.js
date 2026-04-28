@@ -1870,11 +1870,6 @@ export class BcplRuntime {
   imp_delay() {
     const ms = this.arg(0) | 0;
     const exp = this._coroutineExportsRequired();
-    if (!this._delayLogCount) this._delayLogCount = 0;
-    if (this._delayLogCount < 3) {
-      console.log(`[delay] call#${this._delayLogCount + 1} ms=${ms} exp=${!!exp} mode=${this._asyncifyMode} co=${this._currentCo?.isRoot ? "root" : "co"}`);
-      this._delayLogCount++;
-    }
     if (!exp) {
       this.restoreP();
       return 0;

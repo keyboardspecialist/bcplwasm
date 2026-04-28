@@ -1020,12 +1020,10 @@ LET start() = VALOF
       const { buffer } = mod.toBinary({ log: false });
       mod.destroy();
       if (needsAsync) {
-        outputEl.textContent += `[asyncify] transforming ${label}…\n`;
         try {
           const out = await asyncifyTransform(buffer);
           const inSize = buffer.byteLength;
           const outSize = out.byteLength ?? out.length;
-          outputEl.textContent += `[asyncify] ${label}: ${inSize} -> ${outSize} bytes\n`;
           console.log(`[asyncify] ${label}: ${inSize} -> ${outSize} bytes`);
           return out;
         } catch (e) {
@@ -1150,7 +1148,6 @@ LET start() = VALOF
 
         setStatus("assembling…");
         const anyAsync = sources.some(s => srcNeedsAsyncify(s.content));
-        outputEl.textContent += `[asyncify] needed=${anyAsync}\n`;
         if (anyAsync) setStatus("asyncify pass…");
         const assemble = async (src) => {
           const chunks = splitModules(watByName.get(src.name));
@@ -1191,9 +1188,6 @@ LET start() = VALOF
         if (warn) outputEl.textContent += `[warn] ${warn}\n`;
         rt.initMaster();
         setStatus("running…");
-        const hasAsync = !!rt._coroutineExports?.();
-        outputEl.textContent +=
-          `[runtime] asyncify=${hasAsync} run=${rt.run.constructor.name}\n`;
         await rt.run();
         setStatus("ok");
       } catch (err) {
