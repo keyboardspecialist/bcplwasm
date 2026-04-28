@@ -1476,7 +1476,17 @@ export class BcplRuntime {
   _allocCoroutine(fnTidx, sizeWords) {
     // Reserve a slab near the top of memory (heap grows downward).
     const totalWords = sizeWords + 6;
+    const memWords = this.mem.buffer.byteLength >>> 2;
+    if (this.heapTop <= 0 || this.heapTop > memWords) {
+      // Defensive: re-anchor heapTop to top of memory if it was lost
+      // (can happen when memory grew or wasn't initialised yet).
+      this.heapTop = memWords;
+    }
     const base = this.heapTop - totalWords;
+    if (base < 0 || base > memWords) {
+      throw new Error(`createco: heap exhausted (heapTop=${this.heapTop}, ` +
+        `requested=${totalWords} words, memWords=${memWords})`);
+    }
     this.heapTop = base;
     // Reserve an asyncify state buffer (1024 bytes = 256 words).
     const asyncifyWords = 256;

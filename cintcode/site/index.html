@@ -1035,6 +1035,42 @@ LET start() = VALOF
       statusEl.classList.toggle("err", isErr);
     }
 
+    // Walk GET "X" directives starting from the entry source.
+    // Returns the ordered list of .b sources that need compiling:
+    //   entry first... no wait, libraries first (so their register()
+    //   runs before entry's register() overwrites G!1). Topological
+    //   order with entry LAST.
+    // Headers (.h) are seeded into storageBackend by seedUserFiles()
+    // but never compiled.
+    // Built-in names (libhdr / bcplfecg) are skipped — they're already
+    // seeded as built-in headers and have no user-supplied .b.
+    function resolveDeps(entryFile, filesArr) {
+      const BUILTIN = new Set(["libhdr", "bcplfecg"]);
+      const byBaseName = new Map();
+      for (const f of filesArr) {
+        const m = f.name.match(/^(.*)\.(b|h)$/);
+        if (m) byBaseName.set(m[1] + "." + m[2], f);
+      }
+      const ordered = [];      // libs first, entry LAST
+      const visited = new Set();
+      const visit = (file) => {
+        if (visited.has(file.name)) return;
+        visited.add(file.name);
+        const gets = [...file.content.matchAll(/\bGET\s+"([^"]+)"/g)]
+          .map(m => m[1]);
+        for (const name of gets) {
+          if (BUILTIN.has(name)) continue;
+          // Resolve to .b if it exists; otherwise skip (.h-only is fine).
+          const bFile = byBaseName.get(name + ".b");
+          if (bFile && bFile !== file) visit(bFile);
+        }
+        if (file !== entryFile) ordered.push(file);
+      };
+      visit(entryFile);
+      ordered.push(entryFile);  // entry last
+      return ordered;
+    }
+
     async function compileAndRun() {
       compileBtn.disabled = true;
       outputEl.textContent = "";
@@ -1046,10 +1082,23 @@ LET start() = VALOF
         await seedBuiltinHeaders();
         seedUserFiles();
 
-        const sources = files.filter(f => f.name.endsWith(".b"));
-        if (sources.length === 0) throw new Error("no .b source files");
-        const entry = sources.find(f => f.entry) ?? sources[0];
+        const allSources = files.filter(f => f.name.endsWith(".b"));
+        if (allSources.length === 0) throw new Error("no .b source files");
+        const entry = allSources.find(f => f.entry) ?? allSources[0];
+
+        // Only compile entry + its transitive GET-resolved deps.
+        // Other .b files in the list are seeded into storageBackend
+        // (so a future GET resolves them) but not compiled this run.
+        const sources = resolveDeps(entry, files);
         const libs  = sources.filter(f => f !== entry);
+
+        const skipped = allSources.filter(f => !sources.includes(f));
+        if (skipped.length) {
+          outputEl.textContent +=
+            `[deps] compiling ${sources.length} file(s); ` +
+            `skipped ${skipped.length} unreferenced: ` +
+            `${skipped.map(f => f.name).join(", ")}\n`;
+        }
 
         const watByName = new Map();
         for (const f of sources) {
