@@ -1191,6 +1191,9 @@ LET start() = VALOF
         if (warn) outputEl.textContent += `[warn] ${warn}\n`;
         rt.initMaster();
         setStatus("running…");
+        const hasAsync = !!rt._coroutineExports?.();
+        outputEl.textContent +=
+          `[runtime] asyncify=${hasAsync} run=${rt.run.constructor.name}\n`;
         await rt.run();
         setStatus("ok");
       } catch (err) {
