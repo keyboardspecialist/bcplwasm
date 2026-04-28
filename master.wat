@@ -79,6 +79,7 @@
   (import "env" "bcpl_deleteco"          (func $imp_deleteco (type $bcpl_fn)))
   (import "env" "bcpl_initco"            (func $imp_initco (type $bcpl_fn)))
   (import "env" "bcpl_changeco"          (func $imp_changeco (type $bcpl_fn)))
+  (import "env" "bcpl_delay"             (func $imp_delay (type $bcpl_fn)))
 
   (memory $mem    (export "mem")    64)                    ;; 4 MB — room for compiler self-hosting
   (table  $ftable (export "ftable") 512 funcref)
@@ -104,7 +105,7 @@
     $imp_str2numb  $imp_string_to_number  $imp_findarg  $imp_memoryfree
     $imp_stackfree  $imp_intflag  $imp_setseed  $imp_createco
     $imp_callco  $imp_cowait  $imp_resumeco  $imp_deleteco
-    $imp_initco  $imp_changeco)
+    $imp_initco  $imp_changeco  $imp_delay)
 
   (func $init (export "init") (param $stack_base i32)
     (global.set $P (local.get $stack_base))
@@ -181,6 +182,7 @@
     (i32.store (i32.const  484) (i32.const 54)) ;; G!120 newpage
     (i32.store (i32.const  496) (i32.const 64)) ;; G!123 stackfree
     (i32.store (i32.const  508) (i32.const 55)) ;; G!126 codewrch
+    (i32.store (i32.const  516) (i32.const 74)) ;; G!128 delay
     (i32.store (i32.const  528) (i32.const 63)) ;; G!131 memoryfree
     (i32.store (i32.const  724) (i32.const 52)) ;; G!180 writee
     (i32.store (i32.const  728) (i32.const 45)) ;; G!181 setvec

@@ -1863,6 +1863,39 @@ export class BcplRuntime {
     return 0;
   }
 
+  // delay(ms) — suspend execution for ms milliseconds.
+  // Asyncify-backed: triggers an unwind, JS scheduler awaits a real
+  // timer, then asyncify-rewinds to resume. Lets the browser repaint
+  // between frames in animation loops.
+  imp_delay() {
+    const ms = this.arg(0) | 0;
+    const exp = this._coroutineExportsRequired();
+    if (!exp) {
+      // No asyncify available — degenerate to immediate return.
+      this.restoreP();
+      return 0;
+    }
+    if (this._asyncifyMode === "rewinding") {
+      exp.asyncify_stop_rewind();
+      this._asyncifyMode = "normal";
+      this.restoreP();
+      return 0;
+    }
+    // Suspend: same machinery as cowait, but the JS scheduler awaits a
+    // timer instead of a peer coroutine. Stash the requested ms; the
+    // run loop reads it after stop_unwind.
+    const co = this._currentCo ?? this._rootCo;
+    if (!co) { this.restoreP(); return 0; }
+    this._resetAsyncifyBuffer(co.asyncifyData, co.asyncifyWords ?? 256);
+    co.savedP = this.P;
+    co.status = "suspended";
+    this._delayMs = Math.max(0, ms);
+    this._scheduleResume = co.handle;          // resume self after timer
+    exp.asyncify_start_unwind(co.asyncifyData);
+    this._asyncifyMode = "unwinding";
+    return 0;
+  }
+
   // initco(fn, size, a..k) — wrapper that creates a coroutine and
   // delivers its initial args via the cowait return path. v1: just
   // create and let body see the first cowait arg.
@@ -1988,6 +2021,7 @@ export class BcplRuntime {
         bcpl_deleteco:        () => this.imp_deleteco(),
         bcpl_initco:          () => this.imp_initco(),
         bcpl_changeco:        () => this.imp_changeco(),
+        bcpl_delay:           () => this.imp_delay(),
       }
     };
   }
@@ -1999,7 +2033,7 @@ export class BcplRuntime {
   // table_base) and export register()/stat_words()/fn_count(). The
   // loader two-pass-instantiates each program: probe sizes, bump-
   // allocate bases, then real instantiate + register.
-  static STDLIB_TABLE_SLOTS = 74;
+  static STDLIB_TABLE_SLOTS = 75;
   static STATIC_WORD_BASE   = 1001;  // first word past G
 
   async loadMaster(url = "master.wasm") {
@@ -2130,7 +2164,15 @@ export class BcplRuntime {
   // Coroutine-aware run loop. If the program never imports the
   // coroutine suspend points, this degenerates to the simple "call
   // start once" path.
-  run() {
+  //
+  // ASYNC: returns a Promise so callers can `await rt.run()`. The
+  // promise resolves when the program completes. Animation loops use
+  // delay() to yield between frames; this run loop awaits a setTimeout
+  // for the requested duration before re-entering the suspended ctx.
+  // Synchronous callers (existing examples) still work — non-async
+  // programs never suspend, so the loop completes in one tick and
+  // the awaited Promise resolves immediately.
+  async run() {
     const tidx = this.loadWord(2);
     const startFn = this.master.exports.ftable.get(tidx);
     if (!startFn) throw new Error(`start (G!1 tidx=${tidx}) not in table`);
@@ -2203,15 +2245,27 @@ export class BcplRuntime {
         this._asyncifyMode = "normal";
         ctx.savedP = this.P;
         ctx.status = "suspended";
-        // Reset the asyncify buffer's pointer header so the NEXT
-        // unwind (when this ctx eventually resumes again, runs, and
-        // suspends a second time) starts with a clean ring.
-        // Wait — actually asyncify_stop_unwind already clears state.
-        // The buffer's stack contents represent the saved call stack
-        // and must be preserved until the rewind that re-enters this
-        // ctx. So we DON'T reset here. Instead, reset on context-done.
         const nextHandle = this._scheduleResume;
         this._scheduleResume = null;
+        // Animation pause: imp_delay set this. Yield to the browser
+        // event loop for the requested duration so canvas can repaint.
+        if (this._delayMs !== undefined && this._delayMs !== null) {
+          const ms = this._delayMs;
+          this._delayMs = null;
+          // For very short waits use rAF (~16ms cadence); otherwise
+          // setTimeout. Either way we yield so the canvas paints.
+          await new Promise((resolve) => {
+            if (ms <= 0) {
+              if (typeof requestAnimationFrame === "function") {
+                requestAnimationFrame(() => resolve());
+              } else {
+                setTimeout(resolve, 0);
+              }
+            } else {
+              setTimeout(resolve, ms);
+            }
+          });
+        }
         if (nextHandle === null || nextHandle === 0) {
           ctx = this._coroutines.get(ctx.parentHandle) ?? root;
         } else {
