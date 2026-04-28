@@ -96,6 +96,8 @@ export const slots = [
   { tidx: 71, name: "deleteco",       impl: "imp_deleteco"          },
   { tidx: 72, name: "initco",         impl: "imp_initco"            },
   { tidx: 73, name: "changeco",       impl: "imp_changeco"          },
+  // Phase H — Animation timing (Asyncify-backed delay)
+  { tidx: 74, name: "delay",          impl: "imp_delay"             },
 ];
 
 // Extra BCPL globals that share a table slot with another entry.

@@ -25,7 +25,7 @@ node site/test-headers.mjs
 # the BCPL source contains a call to one of the suspend imports).
 needs_asyncify() {
   local src="$1"
-  grep -qE '\b(cowait|callco|resumeco|changeco|createco)\b' "$src"
+  grep -qE '\b(cowait|callco|resumeco|changeco|createco|delay)\b' "$src"
 }
 
 for src in site/examples/*.b; do

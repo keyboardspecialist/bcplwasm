@@ -1,15 +1,14 @@
-// 33-sdl-bouncer: minimal SDL graphics demo.
+// 33-sdl-bouncer: animated SDL graphics demo.
 //
 // Concepts:
 //   - sys(Sys_sdl, sdl_init) opens the canvas pane.
 //   - sys(Sys_sdl, sdl_setvideomode, w, h, 0, 0) returns a surface
 //     handle (use 1).
-//   - sys(Sys_sdl, sdl_maprgb, 0, r, g, b) packs a color int.
-//   - drawing ops take (surf, ...args, color).
-//   - sdl_flip is a no-op in the playground (canvas auto-presents).
-//
-// This demo runs a fixed number of frames (no asyncified delay loop).
-// Each frame the ball position advances and the canvas is re-rendered.
+//   - sys(Sys_sdl, sdl_maprgb, 0, r, g, b) packs a colour int.
+//   - delay(ms) is a real yield: Asyncify suspends, the JS scheduler
+//     awaits the timer, then resumes — letting the canvas repaint
+//     between frames so you see motion (without it the loop is
+//     synchronous and only the final frame appears).
 
 SECTION "sdlb"
 
@@ -40,6 +39,7 @@ LET start() = VALOF
     sys(Sys_sdl, sdl_drawfillcircle, surf, x, y, 12, red)
     sys(Sys_sdl, sdl_drawrect, surf, 0, 0, W-1, H-1, green)
     sys(Sys_sdl, sdl_flip, surf)
+    delay(16)        // ~60 fps yield to browser
     x := x + dx
     y := y + dy
     IF x < 12  | x > W - 12 DO dx := -dx

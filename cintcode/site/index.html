@@ -1059,7 +1059,7 @@ LET start() = VALOF
       }
       rt.initMaster();
       let exitCode = 0;
-      try { exitCode = rt.run(); }
+      try { exitCode = await rt.run(); }
       catch (e) {
         throw new Error(`${fromName}: runtime error: ${e.message ?? e}\n${diag}`);
       }
@@ -1191,7 +1191,7 @@ LET start() = VALOF
         if (warn) outputEl.textContent += `[warn] ${warn}\n`;
         rt.initMaster();
         setStatus("running…");
-        rt.run();
+        await rt.run();
         setStatus("ok");
       } catch (err) {
         setStatus(err.message ?? String(err), true);
