@@ -176,7 +176,31 @@
       color: var(--accent);
       margin-bottom: 0.3rem;
     }
-    .api-detail .desc { color: var(--fg-dim); }
+    .api-detail .desc {
+      color: var(--fg-dim);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .api-detail .desc.long {
+      max-height: 8.5rem;
+      overflow: auto;
+      border-top: 1px dashed var(--border);
+      padding-top: 0.3rem;
+    }
+    .api-detail .desc.long.expanded {
+      max-height: 24rem;
+    }
+    .api-detail .toggle {
+      display: inline-block;
+      margin-left: 0.4rem;
+      padding: 0 0.35rem;
+      font-size: 0.7rem;
+      cursor: pointer;
+      color: var(--accent);
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+    }
 
     /* Right pane */
     .right-pane { background: var(--bg-2); }
@@ -929,9 +953,23 @@ LET start() = VALOF
           `<div class="desc">(no help available — see g/libhdr.h or BCPL manual)</div>`;
         return;
       }
+      // Multi-line descs (e.g. Sys_sdl op table) get a scrollable
+      // "long" container with an expand toggle.
+      const isLong = doc.desc.includes("\n") || doc.desc.length > 220;
+      const toggle = isLong
+        ? `<button class="toggle" id="apiToggle" type="button">expand</button>`
+        : "";
       apiDetailEl.innerHTML =
-        `<div class="sig">${escapeHtml(doc.sig)}</div>` +
-        `<div class="desc">${escapeHtml(doc.desc)}</div>`;
+        `<div class="sig">${escapeHtml(doc.sig)}${toggle}</div>` +
+        `<div class="desc${isLong ? " long" : ""}" id="apiDesc">${escapeHtml(doc.desc)}</div>`;
+      const btn  = document.getElementById("apiToggle");
+      const desc = document.getElementById("apiDesc");
+      if (btn && desc) {
+        btn.onclick = () => {
+          desc.classList.toggle("expanded");
+          btn.textContent = desc.classList.contains("expanded") ? "collapse" : "expand";
+        };
+      }
     }
     function escapeHtml(s) {
       return String(s).replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
