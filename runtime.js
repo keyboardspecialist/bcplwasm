@@ -2252,19 +2252,19 @@ export class BcplRuntime {
         if (this._delayMs !== undefined && this._delayMs !== null) {
           const ms = this._delayMs;
           this._delayMs = null;
-          // For very short waits use rAF (~16ms cadence); otherwise
-          // setTimeout. Either way we yield so the canvas paints.
+          // Always yield via requestAnimationFrame so the browser
+          // composites + paints between frames. setTimeout alone is
+          // not enough — short setTimeouts often coalesce away the
+          // paint cycle. For longer waits (>16ms), follow the rAF
+          // with a setTimeout for the remainder.
+          const haveRaf = typeof requestAnimationFrame === "function";
           await new Promise((resolve) => {
-            if (ms <= 0) {
-              if (typeof requestAnimationFrame === "function") {
-                requestAnimationFrame(() => resolve());
-              } else {
-                setTimeout(resolve, 0);
-              }
-            } else {
-              setTimeout(resolve, ms);
-            }
+            if (haveRaf) requestAnimationFrame(() => resolve());
+            else setTimeout(resolve, 0);
           });
+          if (ms > 16) {
+            await new Promise((resolve) => setTimeout(resolve, ms - 16));
+          }
         }
         if (nextHandle === null || nextHandle === 0) {
           ctx = this._coroutines.get(ctx.parentHandle) ?? root;
