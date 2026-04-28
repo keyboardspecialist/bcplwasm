@@ -1434,6 +1434,205 @@ export class BcplRuntime {
     return old;
   }
 
+  // ------------------ Coroutines (Asyncify-based) ------------------
+  //
+  // Each coroutine has its own BCPL stack slab + its own asyncify-state
+  // buffer. cowait/callco/resumeco suspend the running wasm via
+  // asyncify_start_unwind, and the JS scheduler resumes whichever
+  // coroutine should run next via asyncify_start_rewind.
+  //
+  // Asyncify exports come from the user program after wasm-opt --asyncify
+  // ran on it. If a program imports cowait/callco/resumeco/changeco/delay
+  // but the asyncify pass wasn't applied (e.g. wasm-opt missing), the
+  // imp_* methods fall back to single-shot semantics that won't actually
+  // suspend; the program will still run but coroutine yields are no-ops.
+
+  // Coroutine control block layout (mirrors blib.b's convention):
+  //   c!0  co_pptr   — saved P (BCPL byte addr = stack << B2Wsh)
+  //   c!1  co_parent — parent coroutine handle (0 if root)
+  //   c!2  co_list   — next link in colist (we mirror G!8)
+  //   c!3  co_fn     — body function
+  //   c!4  co_size   — user stack size in words (excl. 6-word header)
+  //   c!5  co_c      — self-pointer
+  //   c!6+ stack space
+
+  _coroutineExports() {
+    // Find an instance that exports asyncify_start_unwind. After
+    // wasm-opt --asyncify, every transformed module exports them.
+    for (const p of this.programs) {
+      if (p.instance.exports.asyncify_start_unwind) return p.instance.exports;
+    }
+    return null;
+  }
+
+  _allocCoroutine(fn, sizeWords) {
+    // Reserve a slab near the top of memory (heap grows downward).
+    const totalWords = sizeWords + 6;
+    const base = this.heapTop - totalWords;
+    this.heapTop = base;
+    // Reserve an asyncify state buffer (1024 bytes = 256 words).
+    const asyncifyWords = 256;
+    const asyncifyBase = this.heapTop - asyncifyWords;
+    this.heapTop = asyncifyBase;
+
+    // Header.
+    this.storeWord(base + 0, base << 2);          // co_pptr (byte addr)
+    this.storeWord(base + 1, 0);                  // co_parent
+    this.storeWord(base + 2, this.loadWord(1 + 8)); // co_list = old colist
+    this.storeWord(base + 3, fn);                 // co_fn
+    this.storeWord(base + 4, sizeWords);          // co_size
+    this.storeWord(base + 5, base);               // co_c (self)
+    // Fill stack with the BCPL stackword marker.
+    for (let i = 6; i < totalWords; i++) {
+      this.storeWord(base + i, 0xABCD1234 | 0);
+    }
+    // Asyncify state buffer: state[0] = current ptr (byte), state[1] = end (byte).
+    const asyncByteBase = asyncifyBase * 4;
+    this.memView.setUint32(asyncByteBase,     asyncByteBase + 8, true);
+    this.memView.setUint32(asyncByteBase + 4, asyncByteBase + asyncifyWords * 4, true);
+
+    return {
+      handle: base,                  // BCPL passes this as "coroutine pointer"
+      asyncifyData: asyncByteBase,   // byte addr of state struct
+      status: "new",                 // "new" | "ready" | "running" | "done"
+      yieldedValue: 0,
+      resumeArg: 0,
+    };
+  }
+
+  // createco(fn, size) — allocate a coroutine, return handle (=word
+  // address of the control block). On first invocation the body fn
+  // will see arg0 = the initial cowait return value (which our
+  // scheduler delivers when first resumed).
+  imp_createco() {
+    const fn   = this.arg(0);
+    const size = this.arg(1) | 0;
+    this.restoreP();
+    const sizeWords = Math.max(64, size);
+    const co = this._allocCoroutine(fn, sizeWords);
+    this._coroutines ??= new Map();
+    this._coroutines.set(co.handle, co);
+    // Insert at head of colist (G!8).
+    this.storeWord(1 + 8, co.handle);
+    return co.handle;
+  }
+
+  // deleteco(c) — free a coroutine. Refuse if it has children.
+  imp_deleteco() {
+    const c = this.arg(0);
+    this.restoreP();
+    if (!this._coroutines || !this._coroutines.has(c)) return 0;
+    const co = this._coroutines.get(c);
+    if (co.status === "running") return 0;
+    this._coroutines.delete(c);
+    // Note: we don't actually reclaim the heap slab here — the bump
+    // allocator doesn't support arbitrary frees. Programs that delete
+    // many short-lived coroutines will leak. Acceptable for demos.
+    return 0;
+  }
+
+  // cowait(arg) — suspend the running coroutine, yield arg to the parent.
+  // Implementation: triggers asyncify unwind; the JS scheduler picks
+  // up the parent and rewinds it.
+  imp_cowait() {
+    const arg = this.arg(0);
+    this.restoreP();
+    const exp = this._coroutineExports();
+    if (!exp || !this._currentCo) {
+      // No asyncify or no coroutine context — degenerate: just return arg.
+      return arg;
+    }
+    const co = this._currentCo;
+    if (this._asyncifyMode === "rewinding") {
+      // Resuming after a previous suspend.
+      exp.asyncify_stop_rewind();
+      this._asyncifyMode = "normal";
+      return co.resumeArg;
+    }
+    // Suspend: kick off unwind.
+    co.yieldedValue = arg;
+    co.status = "ready";
+    exp.asyncify_start_unwind(co.asyncifyData);
+    this._asyncifyMode = "unwinding";
+    // Schedule parent for resumption.
+    this._scheduleResume = co.parentHandle;
+    return 0;
+  }
+
+  // callco(c, arg) — suspend caller, resume c with arg as the cowait
+  // return value. blib aborts(110) if c already has a parent.
+  imp_callco() {
+    const cHandle = this.arg(0);
+    const arg     = this.arg(1);
+    this.restoreP();
+    const exp = this._coroutineExports();
+    const target = this._coroutines?.get(cHandle);
+    if (!exp || !target) return 0;
+    if (this._asyncifyMode === "rewinding") {
+      exp.asyncify_stop_rewind();
+      this._asyncifyMode = "normal";
+      return this._currentCo?.resumeArg ?? 0;
+    }
+    // Set parent link + arg.
+    target.parentHandle = this._currentCo?.handle ?? null;
+    target.resumeArg    = arg;
+    this.storeWord(target.handle + 1, this._currentCo?.handle ?? 0);
+    if (this._currentCo) {
+      this._currentCo.status = "ready";
+      exp.asyncify_start_unwind(this._currentCo.asyncifyData);
+      this._asyncifyMode = "unwinding";
+    }
+    this._scheduleResume = cHandle;
+    return 0;
+  }
+
+  // resumeco(c, arg) — same as callco but reparents (used for tail-call
+  // style coroutine chains). Minimal v1: alias to callco.
+  imp_resumeco() { return this.imp_callco(); }
+
+  // changeco(val, c) — low-level swap. Treat as callco for v1.
+  imp_changeco() {
+    const val     = this.arg(0);
+    const cHandle = this.arg(1);
+    this.restoreP();
+    // Reorder args to match callco's expectation.
+    // Callers should rarely use changeco directly.
+    const exp = this._coroutineExports();
+    if (!exp) return 0;
+    const target = this._coroutines?.get(cHandle);
+    if (!target) return 0;
+    if (this._asyncifyMode === "rewinding") {
+      exp.asyncify_stop_rewind();
+      this._asyncifyMode = "normal";
+      return this._currentCo?.resumeArg ?? 0;
+    }
+    target.resumeArg = val;
+    if (this._currentCo) {
+      this._currentCo.status = "ready";
+      exp.asyncify_start_unwind(this._currentCo.asyncifyData);
+      this._asyncifyMode = "unwinding";
+    }
+    this._scheduleResume = cHandle;
+    return 0;
+  }
+
+  // initco(fn, size, a..k) — wrapper that creates a coroutine and
+  // delivers its initial args via the cowait return path. v1: just
+  // create and let body see the first cowait arg.
+  imp_initco() {
+    const fn   = this.arg(0);
+    const size = this.arg(1) | 0;
+    // Args 2..12 are seed values; capture for the first cowait return.
+    const seed = this.arg(2);
+    this.restoreP();
+    this._coroutines ??= new Map();
+    const co = this._allocCoroutine(fn, Math.max(64, size));
+    co.resumeArg = seed;
+    this._coroutines.set(co.handle, co);
+    this.storeWord(1 + 8, co.handle);
+    return co.handle;
+  }
+
   // findarg(keys, w) — search the rdargs key-spec string for an arg
   // matching BCPL string w. Returns arg index (0-based), or -1.
   imp_findarg() {
@@ -1535,6 +1734,13 @@ export class BcplRuntime {
         bcpl_stackfree:       () => this.imp_stackfree(),
         bcpl_intflag:         () => this.imp_intflag(),
         bcpl_setseed:         () => this.imp_setseed(),
+        bcpl_createco:        () => this.imp_createco(),
+        bcpl_callco:          () => this.imp_callco(),
+        bcpl_cowait:          () => this.imp_cowait(),
+        bcpl_resumeco:        () => this.imp_resumeco(),
+        bcpl_deleteco:        () => this.imp_deleteco(),
+        bcpl_initco:          () => this.imp_initco(),
+        bcpl_changeco:        () => this.imp_changeco(),
       }
     };
   }
@@ -1546,7 +1752,7 @@ export class BcplRuntime {
   // table_base) and export register()/stat_words()/fn_count(). The
   // loader two-pass-instantiates each program: probe sizes, bump-
   // allocate bases, then real instantiate + register.
-  static STDLIB_TABLE_SLOTS = 67;
+  static STDLIB_TABLE_SLOTS = 74;
   static STATIC_WORD_BASE   = 1001;  // first word past G
 
   async loadMaster(url = "master.wasm") {

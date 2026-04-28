@@ -72,6 +72,13 @@
   (import "env" "bcpl_stackfree"         (func $imp_stackfree (type $bcpl_fn)))
   (import "env" "bcpl_intflag"           (func $imp_intflag (type $bcpl_fn)))
   (import "env" "bcpl_setseed"           (func $imp_setseed (type $bcpl_fn)))
+  (import "env" "bcpl_createco"          (func $imp_createco (type $bcpl_fn)))
+  (import "env" "bcpl_callco"            (func $imp_callco (type $bcpl_fn)))
+  (import "env" "bcpl_cowait"            (func $imp_cowait (type $bcpl_fn)))
+  (import "env" "bcpl_resumeco"          (func $imp_resumeco (type $bcpl_fn)))
+  (import "env" "bcpl_deleteco"          (func $imp_deleteco (type $bcpl_fn)))
+  (import "env" "bcpl_initco"            (func $imp_initco (type $bcpl_fn)))
+  (import "env" "bcpl_changeco"          (func $imp_changeco (type $bcpl_fn)))
 
   (memory $mem    (export "mem")    64)                    ;; 4 MB — room for compiler self-hosting
   (table  $ftable (export "ftable") 512 funcref)
@@ -95,7 +102,9 @@
     $imp_writee  $imp_writeflt  $imp_newpage  $imp_codewrch
     $imp_errwritef  $imp_readn  $imp_readflt  $imp_rditem
     $imp_str2numb  $imp_string_to_number  $imp_findarg  $imp_memoryfree
-    $imp_stackfree  $imp_intflag  $imp_setseed)
+    $imp_stackfree  $imp_intflag  $imp_setseed  $imp_createco
+    $imp_callco  $imp_cowait  $imp_resumeco  $imp_deleteco
+    $imp_initco  $imp_changeco)
 
   (func $init (export "init") (param $stack_base i32)
     (global.set $P (local.get $stack_base))
@@ -103,8 +112,15 @@
     (i32.store (i32.const   12) (i32.const 34)) ;; G!2 stop → imp_stop_fn (diagnostic)
     (i32.store (i32.const   16) (i32.const 30)) ;; G!3 sys
     (i32.store (i32.const   24) (i32.const  9)) ;; G!5 muldiv
+    (i32.store (i32.const   28) (i32.const 73)) ;; G!6 changeco
     (i32.store (i32.const   64) (i32.const 31)) ;; G!15 level
     (i32.store (i32.const   68) (i32.const 32)) ;; G!16 longjump
+    (i32.store (i32.const   72) (i32.const 67)) ;; G!17 createco
+    (i32.store (i32.const   76) (i32.const 71)) ;; G!18 deleteco
+    (i32.store (i32.const   80) (i32.const 68)) ;; G!19 callco
+    (i32.store (i32.const   84) (i32.const 69)) ;; G!20 cowait
+    (i32.store (i32.const   88) (i32.const 70)) ;; G!21 resumeco
+    (i32.store (i32.const   92) (i32.const 72)) ;; G!22 initco
     (i32.store (i32.const  104) (i32.const  7)) ;; G!25 getvec
     (i32.store (i32.const  112) (i32.const  8)) ;; G!27 freevec
     (i32.store (i32.const  116) (i32.const 10)) ;; G!28 abort
