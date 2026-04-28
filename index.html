@@ -925,13 +925,58 @@ LET start() = VALOF
       return wabtPromise;
     }
 
-    async function assembleWat(watText, label = "live.wat") {
+    // Lazy-load binaryen (provides wasm-opt) for the in-browser
+    // asyncify pass on coroutine programs.
+    let binaryenPromise = null;
+    function getBinaryen() {
+      if (!binaryenPromise) {
+        binaryenPromise = import("https://esm.sh/binaryen@121");
+      }
+      return binaryenPromise;
+    }
+
+    // List of imports that may suspend execution. Must match
+    // bcpl2wasm.sh + site/build.sh to keep behavior consistent.
+    const ASYNC_IMPORTS = [
+      "env.bcpl_cowait", "env.bcpl_callco", "env.bcpl_resumeco",
+      "env.bcpl_changeco", "env.bcpl_delay",
+    ];
+
+    // Run asyncify on a wasm buffer and return the transformed bytes.
+    async function asyncifyTransform(bytes) {
+      const binaryen = (await getBinaryen()).default ?? (await getBinaryen());
+      const mod = binaryen.readBinary(new Uint8Array(bytes));
+      mod.setFeatures(binaryen.Features.BulkMemory | binaryen.Features.ReferenceTypes);
+      binaryen.setPassArgument("asyncify-imports", ASYNC_IMPORTS.join(","));
+      mod.runPasses(["asyncify"]);
+      const out = mod.emitBinary();
+      mod.dispose();
+      return out.buffer.slice(out.byteOffset, out.byteOffset + out.byteLength);
+    }
+
+    // Source-level detection: user code uses one of the coroutine
+    // suspend names. Compiled wasm doesn't import bcpl_cowait directly
+    // (calls go through G!N dispatch via master), so .wat content
+    // can't be inspected here — scan the BCPL source text.
+    function srcNeedsAsyncify(srcText) {
+      return /\b(cowait|callco|resumeco|changeco|createco|delay)\b/.test(srcText);
+    }
+
+    async function assembleWat(watText, label = "live.wat", needsAsync = false) {
       const wabt = await getWabt();
       const mod  = wabt.parseWat(label, watText);
       mod.resolveNames();
       mod.validate();
       const { buffer } = mod.toBinary({ log: false });
       mod.destroy();
+      if (needsAsync) {
+        try {
+          return await asyncifyTransform(buffer);
+        } catch (e) {
+          console.warn("asyncify pass failed, returning untransformed wasm:", e);
+          return buffer;
+        }
+      }
       return buffer;
     }
 
@@ -997,11 +1042,15 @@ LET start() = VALOF
         liveWatEl.textContent = watByName.get(entry.name);
 
         setStatus("assembling…");
+        // If ANY source in the build uses a coroutine suspend point,
+        // run asyncify on every module — user fns may call across files.
+        const anyAsync = sources.some(s => srcNeedsAsyncify(s.content));
+        if (anyAsync) setStatus("asyncify pass…");
         const assemble = async (src) => {
           const chunks = splitModules(watByName.get(src.name));
           const bufs = [];
           for (let i = 0; i < chunks.length; i++) {
-            bufs.push(await assembleWat(chunks[i], `${src.name}#${i}`));
+            bufs.push(await assembleWat(chunks[i], `${src.name}#${i}`, anyAsync));
           }
           return bufs;
         };
