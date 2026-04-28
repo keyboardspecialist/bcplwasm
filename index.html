@@ -925,13 +925,14 @@ LET start() = VALOF
       return wabtPromise;
     }
 
-    // Lazy-load binaryen (provides wasm-opt) for the in-browser
-    // asyncify pass on coroutine programs. Need >=122 — earlier
-    // versions reject our linker-mode wasm (bulk-memory ops).
+    // Lazy-load binaryen for the in-browser asyncify pass.
+    // jsDelivr's +esm bundles the CommonJS package as ESM without
+    // tripping over Node's require shim (esm.sh's polyfill rejects it).
+    // Pin >=122 so the parser accepts our bulk-memory wasm.
     let binaryenPromise = null;
     function getBinaryen() {
       if (!binaryenPromise) {
-        binaryenPromise = import("https://esm.sh/binaryen@129");
+        binaryenPromise = import("https://cdn.jsdelivr.net/npm/binaryen@129/+esm");
       }
       return binaryenPromise;
     }
