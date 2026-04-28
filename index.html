@@ -358,6 +358,7 @@
     <span class="sub">
       self-hosted <code>bcplwasm</code> + browser runtime. multi-file programs supported.
     </span>
+    <span class="sub" id="buildTag" style="margin-left: auto; font-family: ui-monospace, monospace; font-size: 0.75rem;"></span>
   </header>
 
   <div class="workspace">
@@ -425,6 +426,20 @@
 
   <script type="module">
     const V = Date.now();
+    // Build tag in header — derived from the page's last-modified
+    // header (server-side mtime). If the browser served a cached
+    // response, the time shown reflects the CACHED page's mtime, so
+    // it doubles as a "did my reload actually pick up changes?"
+    // indicator. Click to copy timestamp.
+    {
+      const tag = document.getElementById("buildTag");
+      const lm  = new Date(document.lastModified || Date.now());
+      const pad = (n) => String(n).padStart(2, "0");
+      const txt = `build ${lm.getFullYear()}-${pad(lm.getMonth()+1)}-${pad(lm.getDate())} ` +
+                  `${pad(lm.getHours())}:${pad(lm.getMinutes())}:${pad(lm.getSeconds())}`;
+      tag.textContent = txt;
+      tag.title = "page last-modified — bump on reload to verify cache busted";
+    }
     const { BcplRuntime, storageBackend } = await import(`./runtime.js?v=${V}`);
     const { slots, aliases } = await import(`./stdlib-manifest.mjs?v=${V}`);
     const { API_DOCS } = await import(`./api-docs.mjs?v=${V}`);
