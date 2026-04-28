@@ -17,6 +17,7 @@ export const LEVELS = [
   { n: 6, name: "Advanced"          },
   { n: 7, name: "Objects"           },
   { n: 8, name: "Coroutines"        },
+  { n: 9, name: "Graphics"          },
 ];
 
 export const TRACK = [
@@ -466,6 +467,23 @@ export const TRACK = [
       "Body fn gets the first callco arg as its parameter",
     ],
     prereqs: ["10-functions"],
+  },
+
+  // ---- Level 9 — Graphics --------------------------------------
+  {
+    slug: "33-sdl-bouncer",
+    title: "SDL: Bouncing Ball",
+    level: 9,
+    topic: "graphics",
+    summary: "Canvas-backed SDL ops: setvideomode, maprgb, drawfillcircle, fillsurf.",
+    goals: [
+      "GET \"sdl\" + sys(Sys_sdl, sdl_init) reveals the canvas pane",
+      "sdl_setvideomode picks the canvas size",
+      "sdl_maprgb packs (r,g,b) into a colour int",
+      "Drawing ops take (surf, ...args, colour)",
+      "sdl_flip is a no-op (canvas auto-presents)",
+    ],
+    prereqs: ["07-for-loop"],
   },
 ];
 

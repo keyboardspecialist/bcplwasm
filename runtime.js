@@ -56,6 +56,80 @@ export class BcplRuntime {
     ];
     this.curOut = 1;
     this.curIn  = 2;
+    // SDL / canvas state. setSdlCanvas(canvasEl, onShow) wires it up
+    // before run(). sdlCtx is the 2D context; sdlSurfaces maps surface
+    // handle → { ctx, w, h, kind } records.
+    this.sdlCanvas = null;
+    this.sdlCtx    = null;
+    this.sdlEvents = [];        // queued events (each = { type, args... })
+    this.sdlMouse  = { x: 0, y: 0, buttons: 0 };
+    this.sdlKeys   = new Set();
+    this.sdlStartTime = 0;
+    this.sdlOnShow = null;      // callback: () => void  (toggles visible)
+    this.sdlCurrentColor = 0xFFFFFFFF; // packed RGBA
+  }
+
+  // Wire up the canvas + a callback to flip its container visible.
+  // Browser code calls this before run() if a canvas is available.
+  setSdlCanvas(canvasEl, onShow) {
+    this.sdlCanvas = canvasEl;
+    this.sdlCtx    = canvasEl ? canvasEl.getContext("2d") : null;
+    this.sdlOnShow = onShow ?? null;
+    if (canvasEl) this._installSdlInputHandlers();
+  }
+
+  _installSdlInputHandlers() {
+    const c = this.sdlCanvas;
+    if (!c || c.__bcplWired) return;
+    c.__bcplWired = true;
+    c.tabIndex = 0;
+    c.addEventListener("mousemove", (e) => {
+      const r = c.getBoundingClientRect();
+      this.sdlMouse.x = (e.clientX - r.left) | 0;
+      this.sdlMouse.y = (e.clientY - r.top)  | 0;
+      this.sdlEvents.push({ type: 4, x: this.sdlMouse.x, y: this.sdlMouse.y });
+    });
+    c.addEventListener("mousedown", (e) => {
+      this.sdlMouse.buttons |= (1 << e.button);
+      this.sdlEvents.push({ type: 5, b: 1 << e.button, x: this.sdlMouse.x, y: this.sdlMouse.y });
+    });
+    c.addEventListener("mouseup", (e) => {
+      this.sdlMouse.buttons &= ~(1 << e.button);
+      this.sdlEvents.push({ type: 6, b: 1 << e.button, x: this.sdlMouse.x, y: this.sdlMouse.y });
+    });
+    c.addEventListener("keydown", (e) => {
+      const code = e.keyCode || e.which || e.key.charCodeAt(0);
+      this.sdlKeys.add(code);
+      this.sdlEvents.push({ type: 2, mod: 0, ch: code });
+      e.preventDefault();
+    });
+    c.addEventListener("keyup", (e) => {
+      const code = e.keyCode || e.which || e.key.charCodeAt(0);
+      this.sdlKeys.delete(code);
+      this.sdlEvents.push({ type: 3, mod: 0, ch: code });
+      e.preventDefault();
+    });
+  }
+
+  // Decode a packed BCPL "colour" (any int) into rgba components.
+  // Default packing: 0xRRGGBBAA (high byte R, low byte A). Fallback A=0xFF.
+  _sdlPackedToRgba(c) {
+    const u = c >>> 0;
+    let r = (u >>> 24) & 0xFF;
+    let g = (u >>> 16) & 0xFF;
+    let b = (u >>>  8) & 0xFF;
+    let a = u & 0xFF;
+    // If alpha is 0, treat as opaque (BCPL maprgb returns RGB only).
+    if (a === 0 && (r | g | b) !== 0) a = 0xFF;
+    return [r, g, b, a];
+  }
+  _sdlSetStroke(c) {
+    const [r, g, b, a] = this._sdlPackedToRgba(c);
+    this.sdlCtx.strokeStyle = `rgba(${r},${g},${b},${a/255})`;
+  }
+  _sdlSetFill(c) {
+    const [r, g, b, a] = this._sdlPackedToRgba(c);
+    this.sdlCtx.fillStyle = `rgba(${r},${g},${b},${a/255})`;
   }
 
   // Byte view; refresh after memory.grow (we never grow, but keep
@@ -646,8 +720,10 @@ export class BcplRuntime {
       }
       case 65: return 0;                                // Sys_incdcount NOOP
 
-      // ---- graphics / audio / joystick / extension (out of scope) ----
-      case 66: case 67: case 68: case 69: case 72: return 0;
+      // ---- SDL: route to dedicated dispatcher ----
+      case 66: return this._sdlDispatch(a1, a2, a3, a4, a5, a6, a7);
+      // ---- audio / joystick / extension / GL still out of scope ----
+      case 67: case 68: case 69: case 72: return 0;
 
       case 70: return 0;                                // Sys_settracing NOOP
       case 71: return 0;                                // Sys_getbuildno stub
@@ -1203,6 +1279,140 @@ export class BcplRuntime {
   // parse funcs for status/extra result.
   _setResult2(v) { this.storeWord(1 + 10, v | 0); }
 
+  // ------------------ Sys_sdl (op 66) sub-dispatch -----------------
+  // Maps the bcplprogs SDL ops onto Canvas 2D. Subset focused on the
+  // common drawing primitives, events, and timing — enough for simple
+  // demos. Surfaces beyond the primary screen are stubbed.
+  _sdlDispatch(sub, a, b, c, d, e, f) {
+    if (!this.sdlCtx) return 0;
+    const ctx = this.sdlCtx;
+    const can = this.sdlCanvas;
+    switch (sub) {
+      case 0: return -1;                              // sdl_avail
+      case 1: {                                       // sdl_init
+        this.sdlStartTime = performance.now();
+        if (this.sdlOnShow) this.sdlOnShow();
+        return 0;
+      }
+      case 2: {                                       // sdl_setvideomode w,h,bpp,flags
+        can.width = a; can.height = b;
+        ctx.imageSmoothingEnabled = false;
+        return 1;                                     // surfptr (any non-zero)
+      }
+      case 3: return 0;                               // sdl_quit
+      case 4: case 5: return 0;                       // lock/unlock surface (noop)
+      case 27: {                                      // sdl_drawline x1,y1,x2,y2,color  OR  surfptr,x1,y1,x2,y2,color (varies)
+        const colour = (f !== undefined) ? f : (e !== undefined ? e : this.sdlCurrentColor);
+        // Two arg shapes seen in sdl.b: (surf,x1,y1,x2,y2,col) -> 6 args
+        // and  (x1,y1,x2,y2,col) -> 5 args. We can't distinguish from
+        // count alone, so try a heuristic: if `a` looks like a small
+        // surface-handle (1) treat as the 6-arg form.
+        let x1, y1, x2, y2;
+        if (a === 1 && f !== undefined) { x1 = b; y1 = c; x2 = d; y2 = e; }
+        else                            { x1 = a; y1 = b; x2 = c; y2 = d; }
+        this._sdlSetStroke(colour);
+        ctx.beginPath();
+        ctx.moveTo(x1 + 0.5, y1 + 0.5);
+        ctx.lineTo(x2 + 0.5, y2 + 0.5);
+        ctx.stroke();
+        return 0;
+      }
+      case 28: case 29: {                             // drawhline/drawvline: (surf,x1,x2,y,col) / (surf,x,y1,y2,col)
+        const colour = e ?? d;
+        this._sdlSetStroke(colour);
+        ctx.beginPath();
+        if (sub === 28) { ctx.moveTo(b + 0.5, d + 0.5); ctx.lineTo(c + 0.5, d + 0.5); }
+        else            { ctx.moveTo(b + 0.5, c + 0.5); ctx.lineTo(b + 0.5, d + 0.5); }
+        ctx.stroke();
+        return 0;
+      }
+      case 30: {                                      // drawcircle (surf, cx, cy, r, col)
+        this._sdlSetStroke(e);
+        ctx.beginPath();
+        ctx.arc(b, c, d, 0, Math.PI * 2);
+        ctx.stroke();
+        return 0;
+      }
+      case 31: {                                      // drawrect (surf, x1, y1, x2, y2, col)
+        this._sdlSetStroke(f);
+        ctx.strokeRect(b + 0.5, c + 0.5, d - b, e - c);
+        return 0;
+      }
+      case 32: {                                      // drawpixel (surf, x, y, col)
+        this._sdlSetFill(d);
+        ctx.fillRect(b, c, 1, 1);
+        return 0;
+      }
+      case 33: {                                      // drawellipse (surf, cx, cy, rx, ry, col)
+        this._sdlSetStroke(f);
+        ctx.beginPath();
+        ctx.ellipse(b, c, d, e, 0, 0, Math.PI * 2);
+        ctx.stroke();
+        return 0;
+      }
+      case 34: {                                      // drawfillellipse
+        this._sdlSetFill(f);
+        ctx.beginPath();
+        ctx.ellipse(b, c, d, e, 0, 0, Math.PI * 2);
+        ctx.fill();
+        return 0;
+      }
+      case 37: {                                      // drawfillcircle (surf, cx, cy, r, col)
+        this._sdlSetFill(e);
+        ctx.beginPath();
+        ctx.arc(b, c, d, 0, Math.PI * 2);
+        ctx.fill();
+        return 0;
+      }
+      case 38: case 39: {                             // drawfillrect / fillrect (surf, x1, y1, x2, y2, col)
+        this._sdlSetFill(f);
+        ctx.fillRect(b, c, d - b, e - c);
+        return 0;
+      }
+      case 40: {                                      // fillsurf (surf, col)
+        this._sdlSetFill(b);
+        ctx.fillRect(0, 0, can.width, can.height);
+        return 0;
+      }
+      case 15: {                                      // sdl_flip — Canvas auto-presents.
+        return 0;
+      }
+      case 17: case 18: {                             // waitevent / pollevent
+        const v = a;                                  // BCPL pointer to event slot vector
+        if (this.sdlEvents.length === 0) {
+          this.storeWord(v + 0, 0);                   // type=0 (none)
+          return sub === 17 ? 0 : 0;                  // waitevent should block, but we don't
+        }
+        const ev = this.sdlEvents.shift();
+        this.storeWord(v + 0, ev.type | 0);
+        this.storeWord(v + 1, ev.mod   ?? ev.b ?? ev.x ?? 0);
+        this.storeWord(v + 2, ev.ch    ?? ev.y ?? 0);
+        return -1;
+      }
+      case 19: {                                      // getmousestate (v -> [x,y]); returns button bits
+        this.storeWord(a + 0, this.sdlMouse.x | 0);
+        this.storeWord(a + 1, this.sdlMouse.y | 0);
+        return this.sdlMouse.buttons | 0;
+      }
+      case 22: {                                      // wm_setcaption (str, ?)
+        const name = this.readBcplString(a);
+        if (typeof document !== "undefined") document.title = name;
+        return 0;
+      }
+      case 24: {                                      // sdl_maprgb (fmtptr, r, g, b)
+        return ((b & 0xFF) << 24) | ((c & 0xFF) << 16) | ((d & 0xFF) << 8) | 0xFF;
+      }
+      case 50: return (performance.now() - this.sdlStartTime) | 0;  // getticks
+      case 14: {                                      // sdl_delay (ms) — async-style; without asyncify wired here, no-op
+        return 0;
+      }
+      case 51: return 0;                              // showcursor
+      case 52: return 0;                              // hidecursor
+      default:
+        return 0;
+    }
+  }
+
   // readn() — skip leading whitespace + optional sign, parse signed
   // decimal, un-read terminator. result2 = 0 on success, -1 on
   // no-digits EOF-ish case.
@@ -1456,12 +1666,19 @@ export class BcplRuntime {
   //   c!5  co_c      — self-pointer
   //   c!6+ stack space
 
+  // Probe that returns the asyncify exports (or null) silently. Used
+  // by run() to decide between plain entry and the cooperative loop.
   _coroutineExports() {
-    // Find an instance that exports asyncify_start_unwind. After
-    // wasm-opt --asyncify, every transformed module exports them.
     for (const p of this.programs) {
       if (p.instance.exports.asyncify_start_unwind) return p.instance.exports;
     }
+    return null;
+  }
+  // Same probe but warns if the caller (a coroutine import) needs
+  // asyncify and it's not present.
+  _coroutineExportsRequired() {
+    const exp = this._coroutineExports();
+    if (exp) return exp;
     if (!this._asyncifyMissingWarned) {
       this._asyncifyMissingWarned = true;
       console.warn(
@@ -1559,7 +1776,7 @@ export class BcplRuntime {
   // up the parent and rewinds it.
   imp_cowait() {
     const arg = this.arg(0);
-    const exp = this._coroutineExports();
+    const exp = this._coroutineExportsRequired();
     if (!exp || !this._currentCo) { this.restoreP(); return arg; }
     const co = this._currentCo;
     if (this._asyncifyMode === "rewinding") {
@@ -1590,7 +1807,7 @@ export class BcplRuntime {
     // restoreP only on the rewind path (just before returning to BCPL).
     const cHandle = this.arg(0);
     const arg     = this.arg(1);
-    const exp = this._coroutineExports();
+    const exp = this._coroutineExportsRequired();
     if (this._asyncifyMode === "rewinding") {
       exp.asyncify_stop_rewind();
       this._asyncifyMode = "normal";
@@ -1627,7 +1844,7 @@ export class BcplRuntime {
     this.restoreP();
     // Reorder args to match callco's expectation.
     // Callers should rarely use changeco directly.
-    const exp = this._coroutineExports();
+    const exp = this._coroutineExportsRequired();
     if (!exp) return 0;
     const target = this._coroutines?.get(cHandle);
     if (!target) return 0;
