@@ -176,8 +176,9 @@ export class BcplRuntime {
   // stdlib entry must call this before returning.
   restoreP() { this.P = this.loadWord(this.P); }
 
-  // Route one char to the current output stream. stdout → UI. User
-  // streams buffer in-memory; contents commit on endstream.
+  // Route one char to the current output stream. stdout → UI. NIL
+  // streams discard. RAM/file streams buffer in-memory; file streams
+  // commit on endstream; RAM streams stay in-memory only.
   _writeChar(ch) {
     const s = this.streams[this.curOut];
     if (!s) return;
@@ -185,6 +186,7 @@ export class BcplRuntime {
       this.writeOut(String.fromCharCode(ch & 0xFF));
       return;
     }
+    if (s.kind === "nil") return;
     s.data = (s.data || "") + String.fromCharCode(ch & 0xFF);
   }
 
@@ -192,6 +194,7 @@ export class BcplRuntime {
     const s = this.streams[this.curOut];
     if (!s) return;
     if (s.kind === "stdout") { this.writeOut(str); return; }
+    if (s.kind === "nil") return;
     s.data = (s.data || "") + str;
   }
 
@@ -203,6 +206,7 @@ export class BcplRuntime {
       if (this.inputIdx >= this.input.length) return -1;
       return this.input.charCodeAt(this.inputIdx++);
     }
+    if (s.kind === "nil") return -1;
     if (s.pos >= s.data.length) return -1;
     return s.data.charCodeAt(s.pos++);
   }
@@ -448,11 +452,33 @@ export class BcplRuntime {
     return 0;
   }
 
-  // findinoutput(name) — open bidirectional stream. We treat it as
-  // an empty read/write stream.
+  // Recognise the special device prefixes BCPL uses, mirroring the
+  // dispatcher in sysb/dlibsys.b:
+  //   "NIL:..."   — null device. Read = EOF, write = discard.
+  //   "RAM:..."   — read/write in-memory scratch buffer; not committed
+  //                  to persistent storage.
+  // Anything else is a regular storageBackend-backed file stream.
+  _streamSpec(name) {
+    if (!name) return { kind: "file" };
+    const i = name.indexOf(":");
+    if (i < 0) return { kind: "file" };
+    const prefix = name.slice(0, i);
+    if (prefix === "NIL") return { kind: "nil" };
+    if (prefix === "RAM") return { kind: "ram" };
+    return { kind: "file" };
+  }
+
+  // findinoutput(name) — open bidirectional stream.
   imp_findinoutput() {
     const name = this.readBcplString(this.arg(0));
     this.restoreP();
+    const spec = this._streamSpec(name);
+    if (spec.kind === "nil") {
+      return this._allocStream({ kind: "nil", mode: "rw", name, data: "", pos: 0 });
+    }
+    if (spec.kind === "ram") {
+      return this._allocStream({ kind: "ram", mode: "rw", name, data: "", pos: 0 });
+    }
     const data = storageBackend.get(name) ?? "";
     return this._allocStream({ kind: "file", mode: "rw", name, data, pos: 0 });
   }
@@ -916,23 +942,33 @@ export class BcplRuntime {
     const name = this.readBcplString(this.arg(0));
     this.restoreP();
     if (!name) return 0;
-    const h = this._allocStream({
-      kind: "file", mode: "w", name, data: "", pos: 0,
-    });
-    return h;
+    const spec = this._streamSpec(name);
+    if (spec.kind === "nil") {
+      return this._allocStream({ kind: "nil", mode: "w", name, data: "", pos: 0 });
+    }
+    if (spec.kind === "ram") {
+      return this._allocStream({ kind: "ram", mode: "w", name, data: "", pos: 0 });
+    }
+    return this._allocStream({ kind: "file", mode: "w", name, data: "", pos: 0 });
   }
 
-  // findinput(name) — open a stream for reading from storage.
-  // Returns handle, or 0 if no such stream exists.
+  // findinput(name) — open a stream for reading.
+  // RAM:/NIL: return an empty stream. For real files, returns 0 if
+  // no entry under that name exists in storage.
   imp_findinput() {
     const name = this.readBcplString(this.arg(0));
     this.restoreP();
     if (!name) return 0;
+    const spec = this._streamSpec(name);
+    if (spec.kind === "nil") {
+      return this._allocStream({ kind: "nil", mode: "r", name, data: "", pos: 0 });
+    }
+    if (spec.kind === "ram") {
+      return this._allocStream({ kind: "ram", mode: "r", name, data: "", pos: 0 });
+    }
     const data = storageBackend.get(name);
     if (data === null) return 0;
-    return this._allocStream({
-      kind: "file", mode: "r", name, data, pos: 0,
-    });
+    return this._allocStream({ kind: "file", mode: "r", name, data, pos: 0 });
   }
 
   // selectoutput(h) — make h the current output stream. Returns
@@ -2213,6 +2249,8 @@ export class BcplRuntime {
     while (ctx) {
       this.P = ctx.savedP;
       this._currentCo = ctx;
+      // Mirror currco (G!7) for BCPL code that reads it directly.
+      this.storeWord(1 + 7, ctx.isRoot ? 0 : ctx.handle);
       const isFirst = (ctx.status === "new");
       const isResume = (ctx.status === "suspended");
 
