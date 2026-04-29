@@ -46,16 +46,17 @@ export class BcplRuntime {
     // Heap grows downward from top of linear memory.
     this.heapTop = 0;
     this.freeList = 0;
-    // Stream table. Handle 0 reserved. 1 = stdout (routed to UI
-    // callback), 2 = stdin (routed to input buffer). User streams
-    // start at 3.
-    this.streams = [
-      null,
-      { kind: "stdout" },
-      { kind: "stdin" },
-    ];
-    this.curOut = 1;
-    this.curIn  = 2;
+    // Streams. Handles passed back to BCPL are POINTERS to SCB
+    // structs allocated in linear memory (so user code can read
+    // s!scb_pos / s!scb_end / s!scb_id directly, matching cintsys
+    // semantics from g/libhdr.h).
+    //
+    //   _scbToStream: Map<scbPtr → record>
+    //   record       = { kind, mode, name, data, pos, scbPtr }
+    //   curIn/curOut = scbPtrs of stdin/stdout (allocated in initMaster)
+    this._scbToStream = new Map();
+    this.curOut = 0;             // populated in initMaster
+    this.curIn  = 0;
     // SDL / canvas state. setSdlCanvas(canvasEl, onShow) wires it up
     // before run(). sdlCtx is the 2D context; sdlSurfaces maps surface
     // handle → { ctx, w, h, kind } records.
@@ -132,6 +133,72 @@ export class BcplRuntime {
     this.sdlCtx.fillStyle = `rgba(${r},${g},${b},${a/255})`;
   }
 
+  // ------------------ Stream Control Blocks ------------------
+  //
+  // Layout matches g/libhdr.h scb_* manifests so BCPL code can read
+  // scb fields directly via the returned handle (which is the SCB's
+  // word address). Only the fields user code typically inspects are
+  // kept in sync (id, type, pos, end, buf, bufend, name).
+  static SCB = {
+    id: 0, type: 1, task: 2, buf: 3, pos: 4, end: 5,
+    rdfn: 6, wrfn: 7, endfn: 8, block: 9, write: 10, bufend: 11,
+    lblock: 12, ldata: 13, blength: 14, reclen: 15,
+    fd: 16, fd1: 17, timeout: 18, timeoutact: 19, encoding: 20,
+    name: 21, SIZE: 29,
+  };
+  // id_* constants
+  static SCB_ID_IN     = 0x81;
+  static SCB_ID_OUT    = 0x82;
+  static SCB_ID_INOUT  = 0x83;
+  static SCB_ID_APPEND = 0x84;
+  // scbt_* constants
+  static SCB_T_RAM     =  0;
+  static SCB_T_FILE    =  1;
+  static SCB_T_CONSOLE = -1;
+
+  _allocScbPtr() {
+    // Reserve an SCB-sized slab (29 words) from the heap.
+    this.heapTop -= BcplRuntime.SCB.SIZE;
+    return this.heapTop;
+  }
+
+  _initScbFields(scbPtr, { idCode, typeCode, name }) {
+    const S = BcplRuntime.SCB;
+    // Zero everything first.
+    for (let i = 0; i < S.SIZE; i++) this.storeWord(scbPtr + i, 0);
+    this.storeWord(scbPtr + S.id,   idCode | 0);
+    this.storeWord(scbPtr + S.type, typeCode | 0);
+    this.storeWord(scbPtr + S.pos,  0);
+    this.storeWord(scbPtr + S.end,  0);
+    this.storeWord(scbPtr + S.buf,  0);
+    this.storeWord(scbPtr + S.bufend, 0);
+    this.storeWord(scbPtr + S.encoding, -1);  // UTF8 by default
+    // Copy up to 31 bytes of name into scb_name region.
+    if (name) {
+      const base = (scbPtr + S.name) * 4;
+      const len = Math.min(name.length, 31);
+      this.memView.setUint8(base, len);
+      for (let i = 0; i < len; i++) {
+        this.memView.setUint8(base + 1 + i, name.charCodeAt(i) & 0xFF);
+      }
+    }
+  }
+
+  _syncScb(rec) {
+    if (!rec || !rec.scbPtr) return;
+    const S = BcplRuntime.SCB;
+    this.storeWord(rec.scbPtr + S.pos, rec.pos | 0);
+    const len = (rec.data?.length ?? 0) | 0;
+    this.storeWord(rec.scbPtr + S.end,    len);
+    this.storeWord(rec.scbPtr + S.bufend, len);
+  }
+
+  // Return the stream record for a handle (scbPtr) or null.
+  _stream(scbPtr) {
+    if (!scbPtr) return null;
+    return this._scbToStream.get(scbPtr) ?? null;
+  }
+
   // Byte view; refresh after memory.grow (we never grow, but keep
   // pattern correct).
   refresh() {
@@ -180,7 +247,7 @@ export class BcplRuntime {
   // streams discard. RAM/file streams buffer in-memory; file streams
   // commit on endstream; RAM streams stay in-memory only.
   _writeChar(ch) {
-    const s = this.streams[this.curOut];
+    const s = this._stream(this.curOut);
     if (!s) return;
     if (s.kind === "stdout") {
       this.writeOut(String.fromCharCode(ch & 0xFF));
@@ -188,19 +255,23 @@ export class BcplRuntime {
     }
     if (s.kind === "nil") return;
     s.data = (s.data || "") + String.fromCharCode(ch & 0xFF);
+    s.pos = s.data.length;
+    this._syncScb(s);
   }
 
   _writeString(str) {
-    const s = this.streams[this.curOut];
+    const s = this._stream(this.curOut);
     if (!s) return;
     if (s.kind === "stdout") { this.writeOut(str); return; }
     if (s.kind === "nil") return;
     s.data = (s.data || "") + str;
+    s.pos = s.data.length;
+    this._syncScb(s);
   }
 
   // Read one char from current input stream, or -1 at EOF.
   _readChar() {
-    const s = this.streams[this.curIn];
+    const s = this._stream(this.curIn);
     if (!s) return -1;
     if (s.kind === "stdin") {
       if (this.inputIdx >= this.input.length) return -1;
@@ -208,7 +279,9 @@ export class BcplRuntime {
     }
     if (s.kind === "nil") return -1;
     if (s.pos >= s.data.length) return -1;
-    return s.data.charCodeAt(s.pos++);
+    const ch = s.data.charCodeAt(s.pos++);
+    this._syncScb(s);
+    return ch;
   }
 
   // ------------------ stdlib implementations ------------------
@@ -428,7 +501,7 @@ export class BcplRuntime {
 
   // unrdch(ch) — push back one char into the current input stream.
   imp_unrdch() {
-    const s = this.streams[this.curIn];
+    const s = this._stream(this.curIn);
     this.restoreP();
     if (!s) return -1;
     if (s.kind === "stdin") {
@@ -436,19 +509,20 @@ export class BcplRuntime {
       return 0;
     }
     if (s.pos > 0) s.pos--;
+    this._syncScb(s);
     return 0;
   }
 
-  // rewindstream(h) — reset stream position to 0.
+  // rewindstream(scbPtr) — reset stream position to 0.
   imp_rewindstream() {
     const h = this.arg(0);
     this.restoreP();
-    if (h <= 0 || h >= this.streams.length) return 0;
-    const s = this.streams[h];
+    const s = this._stream(h);
     if (!s) return 0;
     if (s.kind === "stdin") { this.inputIdx = 0; return 0; }
     if (s.kind === "stdout") return 0;
     s.pos = 0;
+    this._syncScb(s);
     return 0;
   }
 
@@ -553,15 +627,14 @@ export class BcplRuntime {
         if (!name) return 0;
         return this._allocStream({ kind: "file", mode: "w", name, data: "", pos: 0 });
       }
-      case 16: { // Sys_close(h)
+      case 16: { // Sys_close(scbPtr)
         const h = a1;
-        if (h <= 0 || h >= this.streams.length) return 0;
-        const s = this.streams[h];
+        const s = this._stream(h);
         if (!s) return 0;
         if (s.kind === "file" && s.mode === "w") storageBackend.set(s.name, s.data);
-        this.streams[h] = null;
-        if (this.curOut === h) { this.curOut = 1; this.storeWord(1 + 13, 1); }
-        if (this.curIn  === h) { this.curIn  = 2; this.storeWord(1 + 12, 2); }
+        this._freeStream(h);
+        if (this.curOut === h) { this.curOut = this.stdoutScb; this.storeWord(1 + 13, this.stdoutScb); }
+        if (this.curIn  === h) { this.curIn  = this.stdinScb;  this.storeWord(1 + 12, this.stdinScb);  }
         return 0;
       }
       case 19: { // Sys_openappend(name)
@@ -642,18 +715,19 @@ export class BcplRuntime {
       case 34: return 0;                                // Sys_graphics NOOP
 
       // ---- stream seek / tell ----
-      case 38: { // Sys_seek(h, pos, whence)
-        const h = a1, pos = a2 | 0, whence = a3 | 0;
-        const s = this.streams[h];
+      case 38: { // Sys_seek(scbPtr, pos, whence)
+        const pos = a2 | 0, whence = a3 | 0;
+        const s = this._stream(a1);
         if (!s || s.kind !== "file") return 0;
         let newPos = pos;
         if (whence === 1) newPos = (s.pos | 0) + pos;
         else if (whence === 2) newPos = (s.data?.length ?? 0) + pos;
         s.pos = Math.max(0, newPos);
+        this._syncScb(s);
         return -1;
       }
-      case 39: { // Sys_tell(h)
-        const s = this.streams[a1];
+      case 39: { // Sys_tell(scbPtr)
+        const s = this._stream(a1);
         if (!s || s.kind !== "file") return -1;
         return s.pos | 0;
       }
@@ -735,14 +809,16 @@ export class BcplRuntime {
       }
 
       case 64: { // Sys_pollsardch — next char or -3 if none
-        const s = this.streams[this.curIn];
+        const s = this._stream(this.curIn);
         if (!s) return -3;
         if (s.kind === "stdin") {
           if (this.inputIdx >= this.input.length) return -3;
           return this.input.charCodeAt(this.inputIdx++);
         }
         if ((s.pos | 0) >= (s.data?.length | 0)) return -3;
-        return s.data.charCodeAt(s.pos++);
+        const ch = s.data.charCodeAt(s.pos++);
+        this._syncScb(s);
+        return ch;
       }
       case 65: return 0;                                // Sys_incdcount NOOP
 
@@ -925,14 +1001,43 @@ export class BcplRuntime {
     return argvWord || 1;  // non-zero = success
   }
 
-  // Allocate a new stream slot, return its handle (index in
-  // this.streams). Never returns 0.
-  _allocStream(s) {
-    for (let i = 3; i < this.streams.length; i++) {
-      if (this.streams[i] === null) { this.streams[i] = s; return i; }
+  // Allocate a new stream record, attach an SCB struct in linear
+  // memory, register in the scbPtr→record map, and return the scbPtr
+  // (BCPL handle). The handle IS the word address of the SCB so user
+  // code can read s!scb_pos, s!scb_end, s!scb_id directly.
+  _allocStream(rec) {
+    const scbPtr = this._allocScbPtr();
+    rec.scbPtr = scbPtr;
+    const idCode = this._scbIdForMode(rec.mode);
+    const typeCode = this._scbTypeForKind(rec.kind);
+    this._initScbFields(scbPtr, { idCode, typeCode, name: rec.name });
+    this._scbToStream.set(scbPtr, rec);
+    this._syncScb(rec);
+    return scbPtr;
+  }
+
+  _scbIdForMode(mode) {
+    switch (mode) {
+      case "r":  return BcplRuntime.SCB_ID_IN;
+      case "w":  return BcplRuntime.SCB_ID_OUT;
+      case "rw": return BcplRuntime.SCB_ID_INOUT;
+      case "a":  return BcplRuntime.SCB_ID_APPEND;
+      default:   return BcplRuntime.SCB_ID_IN;
     }
-    this.streams.push(s);
-    return this.streams.length - 1;
+  }
+  _scbTypeForKind(kind) {
+    switch (kind) {
+      case "stdin": case "stdout": return BcplRuntime.SCB_T_CONSOLE;
+      case "ram": case "nil":      return BcplRuntime.SCB_T_RAM;
+      case "file":                 return BcplRuntime.SCB_T_FILE;
+      default:                     return BcplRuntime.SCB_T_RAM;
+    }
+  }
+
+  _freeStream(scbPtr) {
+    if (!scbPtr) return;
+    this._scbToStream.delete(scbPtr);
+    // SCB slab leaks (heap is bump-only). Acceptable for playground.
   }
 
   // findoutput(name) — open a new write stream backed by storage.
@@ -971,13 +1076,13 @@ export class BcplRuntime {
     return this._allocStream({ kind: "file", mode: "r", name, data, pos: 0 });
   }
 
-  // selectoutput(h) — make h the current output stream. Returns
-  // previous handle. Mirrors to G!13 (cos) so BCPL code reading the
-  // global directly sees the current handle.
+  // selectoutput(scbPtr) — make scbPtr the current output stream.
+  // Returns previous handle. Mirrors to G!13 (cos) so BCPL code
+  // reading the global directly sees the current handle.
   imp_selectoutput() {
     const h = this.arg(0);
     this.restoreP();
-    if (h < 0 || h >= this.streams.length || this.streams[h] === null) return 0;
+    if (!this._stream(h)) return 0;
     const prev = this.curOut;
     this.curOut = h;
     this.storeWord(1 + 13, h);  // G!13 = cos
@@ -987,28 +1092,28 @@ export class BcplRuntime {
   imp_selectinput() {
     const h = this.arg(0);
     this.restoreP();
-    if (h < 0 || h >= this.streams.length || this.streams[h] === null) return 0;
+    if (!this._stream(h)) return 0;
     const prev = this.curIn;
     this.curIn = h;
     this.storeWord(1 + 12, h);  // G!12 = cis
     return prev;
   }
 
-  // endstream(h) — close h. If it was a write stream, commit data
-  // to storage. If it was the current in/out stream, reset to the
-  // stdin/stdout defaults.
+  // endstream(scbPtr) — close stream. If it was a write stream,
+  // commit data to storage. If it was the current in/out stream,
+  // reset to the stdin/stdout defaults.
   imp_endstream() {
     const h = this.arg(0);
     this.restoreP();
-    if (h <= 0 || h >= this.streams.length) return 0;
-    const s = this.streams[h];
+    const s = this._stream(h);
     if (!s) return 0;
+    if (h === this.stdinScb || h === this.stdoutScb) return 0;
     if (s.kind === "file" && s.mode === "w") {
       storageBackend.set(s.name, s.data);
     }
-    this.streams[h] = null;
-    if (this.curOut === h) { this.curOut = 1; this.storeWord(1 + 13, 1); }
-    if (this.curIn  === h) { this.curIn  = 2; this.storeWord(1 + 12, 2); }
+    this._freeStream(h);
+    if (this.curOut === h) { this.curOut = this.stdoutScb; this.storeWord(1 + 13, this.stdoutScb); }
+    if (this.curIn  === h) { this.curIn  = this.stdinScb;  this.storeWord(1 + 12, this.stdinScb);  }
     return 0;
   }
 
@@ -1017,23 +1122,25 @@ export class BcplRuntime {
   imp_endread() {
     const h = this.curIn;
     this.restoreP();
-    if (h >= 3 && this.streams[h]) {
-      this.streams[h] = null;
+    if (h && h !== this.stdinScb && this._stream(h)) {
+      this._freeStream(h);
     }
-    this.curIn = 2;
-    this.storeWord(1 + 12, 2);  // G!12 = cis
+    this.curIn = this.stdinScb;
+    this.storeWord(1 + 12, this.stdinScb);  // G!12 = cis
     return 0;
   }
   imp_endwrite() {
     const h = this.curOut;
     this.restoreP();
-    if (h >= 3 && this.streams[h]) {
-      const s = this.streams[h];
-      if (s.mode === "w") storageBackend.set(s.name, s.data);
-      this.streams[h] = null;
+    if (h && h !== this.stdoutScb) {
+      const s = this._stream(h);
+      if (s) {
+        if (s.kind === "file" && s.mode === "w") storageBackend.set(s.name, s.data);
+        this._freeStream(h);
+      }
     }
-    this.curOut = 1;
-    this.storeWord(1 + 13, 1);  // G!13 = cos
+    this.curOut = this.stdoutScb;
+    this.storeWord(1 + 13, this.stdoutScb);  // G!13 = cos
     return 0;
   }
 
@@ -1302,13 +1409,13 @@ export class BcplRuntime {
 
   // Push a char back onto the current input stream (blib unrdch).
   _unreadChar(ch) {
-    const s = this.streams[this.curIn];
+    const s = this._stream(this.curIn);
     if (!s) return;
     if (s.kind === "stdin") {
       if (this.inputIdx > 0) this.inputIdx--;
       return;
     }
-    if (s.pos > 0) s.pos--;
+    if (s.pos > 0) { s.pos--; this._syncScb(s); }
   }
 
   // Write result2 (G!10) — secondary return value used by several
@@ -2140,10 +2247,18 @@ export class BcplRuntime {
     const base = stackBaseWord ?? ((this.nextStaticWord + 3) & ~3);
     this.master.exports.init(base);
 
+    // Allocate persistent stdin/stdout SCBs in the heap. Their
+    // scbPtrs become the default cis/cos handles. They never get
+    // freed — endread/endwrite reset back to these.
+    this.stdoutScb = this._allocStream({ kind: "stdout", mode: "w", name: "**", data: "", pos: 0 });
+    this.stdinScb  = this._allocStream({ kind: "stdin",  mode: "r", name: "**", data: "", pos: 0 });
+    this.curOut = this.stdoutScb;
+    this.curIn  = this.stdinScb;
+
     // Phase 4: seed state globals libhdr reserves as read-only values
     // programs can inspect directly (not function pointers).
-    //   G!12  cis         = default input  handle (stdin)
-    //   G!13  cos         = default output handle (stdout)
+    //   G!12  cis         = default input  handle (stdin scbPtr)
+    //   G!13  cos         = default output handle (stdout scbPtr)
     //   G!127 randseed    = PRNG seed
     //   G!14  currentdir  = pointer to BCPL string "/"
     // G!9 (rootnode), G!190 (current_language), G!7/8 (coroutine state)
