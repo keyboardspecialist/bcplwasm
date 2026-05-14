@@ -367,7 +367,24 @@ export class BcplRuntime {
       }
       switch (code) {
         case "n": out += String(args[ai++] | 0); break;
-        case "d":
+        case "d": {
+          // Canonical BCPL: %n.mD is fixed-point — divide arg by 10^m,
+          // write int part in width (n-1-m), then `.`, then fractional
+          // part zero-padded to m digits. Without precision, %D == %I.
+          const v = args[ai++] | 0;
+          if (widthgiven && precision >= 0) {
+            const scale = Math.pow(10, precision);
+            const sign = v < 0 ? "-" : "";
+            const av = Math.abs(v);
+            const intpart = String(Math.trunc(av / scale))
+              .padStart(width - 1 - precision - (v < 0 ? 1 : 0), " ");
+            const frac = String(av % scale).padStart(precision, "0");
+            out += sign + intpart + "." + frac;
+          } else {
+            out += String(v).padStart(width, " ");
+          }
+          break;
+        }
         case "i": out += String(args[ai++] | 0).padStart(width, " "); break;
         case "u": out += String(args[ai++] >>> 0).padStart(width, " "); break;
         case "c": out += String.fromCharCode(args[ai++] & 0xFF); break;
@@ -388,6 +405,17 @@ export class BcplRuntime {
             ? f32f[0].toExponential(precision >= 0 ? precision : 6)
             : f32f[0].toFixed(precision >= 0 ? precision : 6);
           out += s.padStart(width, " ");
+          break;
+        }
+        case "$": case "+": ai++; break;   // skip arg, no output
+        case "-": ai--; break;             // back up arg pointer
+        case "#": {
+          // codewrch(code) — UTF-8 / GB2312 char emitter. We map it to
+          // a plain JS character; high-bit selector codes are honoured
+          // by the dedicated imp_codewrch but in writef context the
+          // simple cast is what BLIB compiles to.
+          const ch = args[ai++] & 0xFFFFFF;
+          out += String.fromCodePoint(ch);
           break;
         }
         default: out += "%" + (fmt[i] ?? ""); break;
