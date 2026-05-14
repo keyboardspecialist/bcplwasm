@@ -11,6 +11,7 @@
   ;; BCPL fn mkobj (L10)
   (func $fn_L10 (export "fn_L10") (type $bcpl_fn)
     (local $__lab i32)
+    (local $__res i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -42,9 +43,9 @@
     ))
     (local.set $t7 (i32.const 0))
     ;; FNRN
-    (local.set $t0 (local.get $t7))
+    (local.set $__res (local.get $t7))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
-    (return (local.get $t0))
+    (return (local.get $__res))
     )) ;; end block / LAB L11 = idx 1
     (if (i32.eq (local.get $__lab) (i32.const 1)) (then ;; L11
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
@@ -68,14 +69,14 @@
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t12)))
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
     ;; FNRN
-    (local.set $t0 (local.get $t7))
+    (local.set $__res (local.get $t7))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
-    (return (local.get $t0))
+    (return (local.get $__res))
     (local.set $t6 (i32.const 0))
     ;; FNRN
-    (local.set $t0 (local.get $t6))
+    (local.set $__res (local.get $t6))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
-    (return (local.get $t0))
+    (return (local.get $__res))
     )) ;; end last block
     ) ;; end $__dispatch
     (i32.const 0) ;; unreachable return
@@ -84,6 +85,7 @@
   ;; BCPL fn initGreeter (L12)
   (func $fn_L12 (export "fn_L12") (type $bcpl_fn)
     (local $__lab i32)
+    (local $__res i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -116,6 +118,7 @@
   ;; BCPL fn destroyGreeter (L13)
   (func $fn_L13 (export "fn_L13") (type $bcpl_fn)
     (local $__lab i32)
+    (local $__res i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -149,6 +152,7 @@
   ;; BCPL fn sayGreeter (L14)
   (func $fn_L14 (export "fn_L14") (type $bcpl_fn)
     (local $__lab i32)
+    (local $__res i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -188,6 +192,7 @@
   ;; BCPL fn mkfns_Greeter (L15)
   (func $fn_L15 (export "fn_L15") (type $bcpl_fn)
     (local $__lab i32)
+    (local $__res i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -224,14 +229,14 @@
     (i32.store (i32.shl (local.get $t5) (i32.const 2)) (local.get $t4))
     (local.set $t4 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
     ;; FNRN
-    (local.set $t0 (local.get $t4))
+    (local.set $__res (local.get $t4))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
-    (return (local.get $t0))
+    (return (local.get $__res))
     (local.set $t3 (i32.const 0))
     ;; FNRN
-    (local.set $t0 (local.get $t3))
+    (local.set $__res (local.get $t3))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
-    (return (local.get $t0))
+    (return (local.get $__res))
     )) ;; end last block
     ) ;; end $__dispatch
     (i32.const 0) ;; unreachable return
@@ -240,6 +245,7 @@
   ;; BCPL fn start (L16)
   (func $fn_L16 (export "fn_L16") (type $bcpl_fn)
     (local $__lab i32)
+    (local $__res i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -345,14 +351,14 @@
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t10)))
     (local.set $t6 (i32.const 0))
     ;; FNRN
-    (local.set $t0 (local.get $t6))
+    (local.set $__res (local.get $t6))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
-    (return (local.get $t0))
+    (return (local.get $__res))
     (local.set $t3 (i32.const 0))
     ;; FNRN
-    (local.set $t0 (local.get $t3))
+    (local.set $__res (local.get $t3))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
-    (return (local.get $t0))
+    (return (local.get $__res))
     )) ;; end last block
     ) ;; end $__dispatch
     (i32.const 0) ;; unreachable return

@@ -11,6 +11,7 @@
   ;; BCPL fn bump (L11)
   (func $fn_L11 (export "fn_L11") (type $bcpl_fn)
     (local $__lab i32)
+    (local $__res i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -38,6 +39,7 @@
   ;; BCPL fn start (L12)
   (func $fn_L12 (export "fn_L12") (type $bcpl_fn)
     (local $__lab i32)
+    (local $__res i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -107,14 +109,14 @@
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t8)))
     (local.set $t3 (i32.const 0))
     ;; FNRN
-    (local.set $t0 (local.get $t3))
+    (local.set $__res (local.get $t3))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
-    (return (local.get $t0))
+    (return (local.get $__res))
     (local.set $t3 (i32.const 0))
     ;; FNRN
-    (local.set $t0 (local.get $t3))
+    (local.set $__res (local.get $t3))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
-    (return (local.get $t0))
+    (return (local.get $__res))
     )) ;; end last block
     ) ;; end $__dispatch
     (i32.const 0) ;; unreachable return

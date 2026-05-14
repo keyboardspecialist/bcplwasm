@@ -11,6 +11,7 @@
   ;; BCPL fn classify (L10)
   (func $fn_L10 (export "fn_L10") (type $bcpl_fn)
     (local $__lab i32)
+    (local $__res i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -20,7 +21,7 @@
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     (local.set $t4 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
     ;; RES L11: save result, jump to RSTACK
-    (local.set $t0 (local.get $t4))
+    (local.set $__res (local.get $t4))
       (local.set $__lab (i32.const 17)) (br $__dispatch)
     )) ;; end block / LAB L12 = idx 1
     (if (i32.eq (local.get $__lab) (i32.const 1)) (then ;; L12
@@ -53,9 +54,9 @@
     (if (i32.eq (local.get $__lab) (i32.const 10)) (then ;; L21
     (local.set $t4 (i32.const 1))
     ;; FNRN
-    (local.set $t0 (local.get $t4))
+    (local.set $__res (local.get $t4))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
-    (return (local.get $t0))
+    (return (local.get $__res))
     )) ;; end block / LAB L22 = idx 11
     (if (i32.eq (local.get $__lab) (i32.const 11)) (then ;; L22
       (local.set $__lab (i32.const 12)) (br $__dispatch)
@@ -72,20 +73,20 @@
     (if (i32.eq (local.get $__lab) (i32.const 15)) (then ;; L26
     (local.set $t4 (i32.const 2))
     ;; FNRN
-    (local.set $t0 (local.get $t4))
+    (local.set $__res (local.get $t4))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
-    (return (local.get $t0))
+    (return (local.get $__res))
     )) ;; end block / LAB L27 = idx 16
     (if (i32.eq (local.get $__lab) (i32.const 16)) (then ;; L27
     (local.set $t4 (i32.const 0))
     ;; FNRN
-    (local.set $t0 (local.get $t4))
+    (local.set $__res (local.get $t4))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
-    (return (local.get $t0))
+    (return (local.get $__res))
     )) ;; end block / LAB L11 = idx 17
     (if (i32.eq (local.get $__lab) (i32.const 17)) (then ;; L11
     ;; RSTACK 4
-    (local.set $t4 (local.get $t0)) ;; restore RES result
+    (local.set $t4 (local.get $__res)) ;; restore RES result
     ;; SWITCHON 15 cases default L27
     (if (i32.eq (local.get $t4) (i32.const 117)) (then
       (local.set $__lab (i32.const 15)) (br $__dispatch)))
@@ -120,9 +121,9 @@
       (local.set $__lab (i32.const 16)) (br $__dispatch)
     (local.set $t4 (i32.const 0))
     ;; FNRN
-    (local.set $t0 (local.get $t4))
+    (local.set $__res (local.get $t4))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
-    (return (local.get $t0))
+    (return (local.get $__res))
     )) ;; end last block
     ) ;; end $__dispatch
     (i32.const 0) ;; unreachable return
@@ -131,6 +132,7 @@
   ;; BCPL fn start (L28)
   (func $fn_L28 (export "fn_L28") (type $bcpl_fn)
     (local $__lab i32)
+    (local $__res i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -201,14 +203,14 @@
     ))
     (local.set $t4 (i32.const 0))
     ;; FNRN
-    (local.set $t0 (local.get $t4))
+    (local.set $__res (local.get $t4))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
-    (return (local.get $t0))
+    (return (local.get $__res))
     (local.set $t3 (i32.const 0))
     ;; FNRN
-    (local.set $t0 (local.get $t3))
+    (local.set $__res (local.get $t3))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
-    (return (local.get $t0))
+    (return (local.get $__res))
     )) ;; end last block
     ) ;; end $__dispatch
     (i32.const 0) ;; unreachable return

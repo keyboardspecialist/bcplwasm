@@ -11,6 +11,7 @@
   ;; BCPL fn classify (L10)
   (func $fn_L10 (export "fn_L10") (type $bcpl_fn)
     (local $__lab i32)
+    (local $__res i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -29,9 +30,9 @@
     ))
     (local.set $t5 (i32.add (global.get $SB) (i32.const 0))) ;; LSTR
     ;; FNRN
-    (local.set $t0 (local.get $t5))
+    (local.set $__res (local.get $t5))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
-    (return (local.get $t0))
+    (return (local.get $__res))
     )) ;; end block / LAB L11 = idx 1
     (if (i32.eq (local.get $__lab) (i32.const 1)) (then ;; L11
     (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
@@ -57,9 +58,9 @@
     (if (i32.eq (local.get $__lab) (i32.const 3)) (then ;; L14
     (local.set $t5 (i32.add (global.get $SB) (i32.const 2))) ;; LSTR
     ;; FNRN
-    (local.set $t0 (local.get $t5))
+    (local.set $__res (local.get $t5))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
-    (return (local.get $t0))
+    (return (local.get $__res))
     )) ;; end block / LAB L13 = idx 4
     (if (i32.eq (local.get $__lab) (i32.const 4)) (then ;; L13
     (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
@@ -74,9 +75,9 @@
     ))
     (local.set $t5 (i32.add (global.get $SB) (i32.const 4))) ;; LSTR
     ;; FNRN
-    (local.set $t0 (local.get $t5))
+    (local.set $__res (local.get $t5))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
-    (return (local.get $t0))
+    (return (local.get $__res))
     )) ;; end block / LAB L19 = idx 5
     (if (i32.eq (local.get $__lab) (i32.const 5)) (then ;; L19
     (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
@@ -91,35 +92,35 @@
     ))
     (local.set $t5 (i32.add (global.get $SB) (i32.const 6))) ;; LSTR
     ;; FNRN
-    (local.set $t0 (local.get $t5))
+    (local.set $__res (local.get $t5))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
-    (return (local.get $t0))
+    (return (local.get $__res))
     )) ;; end block / LAB L20 = idx 6
     (if (i32.eq (local.get $__lab) (i32.const 6)) (then ;; L20
     (local.set $t5 (i32.add (global.get $SB) (i32.const 7))) ;; LSTR
     ;; FNRN
-    (local.set $t0 (local.get $t5))
+    (local.set $__res (local.get $t5))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
-    (return (local.get $t0))
+    (return (local.get $__res))
     )) ;; end block / LAB L21 = idx 7
     (if (i32.eq (local.get $__lab) (i32.const 7)) (then ;; L21
     (local.set $t4 (i32.const 0))
     ;; RES L22: save result, jump to RSTACK
-    (local.set $t0 (local.get $t4))
+    (local.set $__res (local.get $t4))
       (local.set $__lab (i32.const 8)) (br $__dispatch)
     )) ;; end block / LAB L22 = idx 8
     (if (i32.eq (local.get $__lab) (i32.const 8)) (then ;; L22
     ;; RSTACK 4
-    (local.set $t4 (local.get $t0)) ;; restore RES result
+    (local.set $t4 (local.get $__res)) ;; restore RES result
     ;; FNRN
-    (local.set $t0 (local.get $t4))
+    (local.set $__res (local.get $t4))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
-    (return (local.get $t0))
+    (return (local.get $__res))
     (local.set $t4 (i32.const 0))
     ;; FNRN
-    (local.set $t0 (local.get $t4))
+    (local.set $__res (local.get $t4))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
-    (return (local.get $t0))
+    (return (local.get $__res))
     )) ;; end last block
     ) ;; end $__dispatch
     (i32.const 0) ;; unreachable return
@@ -128,6 +129,7 @@
   ;; BCPL fn start (L23)
   (func $fn_L23 (export "fn_L23") (type $bcpl_fn)
     (local $__lab i32)
+    (local $__res i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -198,14 +200,14 @@
     (if (i32.eq (local.get $__lab) (i32.const 2)) (then ;; L25
     (local.set $t3 (i32.const 0))
     ;; FNRN
-    (local.set $t0 (local.get $t3))
+    (local.set $__res (local.get $t3))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
-    (return (local.get $t0))
+    (return (local.get $__res))
     (local.set $t3 (i32.const 0))
     ;; FNRN
-    (local.set $t0 (local.get $t3))
+    (local.set $__res (local.get $t3))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
-    (return (local.get $t0))
+    (return (local.get $__res))
     )) ;; end last block
     ) ;; end $__dispatch
     (i32.const 0) ;; unreachable return

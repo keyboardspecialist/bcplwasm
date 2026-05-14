@@ -7,12 +7,11 @@
   - [DONE] s_stack load-up — no longer reads uninit mem for fresh slots.
 
   Semantic polish
-  - s_res/s_rstack pair: uses $t0 as scratch — collides with FNRN also using $t0. Pick dedicated scratch local.
-  - Implicit trailing FNRN after explicit FNRN emits dead code. Detect terminated and skip.
-  - s_comment format: bcplfecg.h says "up to newline" but prescan treats length-prefixed. Verify against actual frontend emission,
-  fix if mismatched.
-  - LF of stdlib function (e.g., user does LET p = writef): currently resolves to user ftab, missing stdlib. Add stdlib label
-  lookup.
+  - [DONE] s_res/s_rstack pair: now uses dedicated $__res local (was $t0 — collided with FNRN).
+  - [DONE] Dead trailing FNRN: already gated by `terminated` flag at s_endproc/s_global exits.
+  - [DONE] s_comment format: bcplsyn.b:3851 confirms OCODE-level length-prefixed. fecg.h "up to newline" refers to source syntax,
+    not OCODE. Backend prescan + emit treat it correctly.
+  - [DONE] LF of stdlib: not an issue. Stdlib references compile as LG (load global), never LF.
 
   Missing ops / features
   - s_section/s_needs emits skip. Could emit ;; section comment for readability.

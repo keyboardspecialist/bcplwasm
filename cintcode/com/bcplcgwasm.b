@@ -1113,6 +1113,7 @@ prescan_done:
         writef("  ;; BCPL fn %s (L%n)*n", nam, l)
         writef("  (func $fn_L%n (export *"fn_L%n*") (type $bcpl_fn)*n", l, l)
         writef("    (local $__lab i32)*n")
+        writef("    (local $__res i32)*n")  // scratch for RES/RSTACK pair
         FOR i = 0 TO fn_peak-1 DO writef("    (local $t%n i32)*n", i)
         writef("    (loop $__dispatch*n")
         writef("    (if (i32.eqz (local.get $__lab)) (then ;; entry block*n")
@@ -1447,9 +1448,13 @@ prescan_done:
         { LET ret_t = cssp - 1
           selectoutput(tostream)
           writef("    ;; FNRN*n")
-          writef("    (local.set $t%n (local.get $t%n))*n", 0, ret_t)
+          // Capture return value first; restoring $P clobbers the
+          // stack frame the local was computed from in principle —
+          // in practice Wasm locals are independent of $P, but the
+          // explicit copy keeps emission order unambiguous.
+          writef("    (local.set $__res (local.get $t%n))*n", ret_t)
           writef("    (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))*n")
-          writef("    (return (local.get $t0))*n")
+          writef("    (return (local.get $__res))*n")
           selectoutput(sysprint)
         }
         cssp := cssp - 1
@@ -1464,7 +1469,7 @@ prescan_done:
         { LET res_t = cssp - 1
           selectoutput(tostream)
           writef("    ;; RES L%n: save result, jump to RSTACK*n", l)
-          writef("    (local.set $t0 (local.get $t%n))*n", res_t)
+          writef("    (local.set $__res (local.get $t%n))*n", res_t)
           cssp := cssp - 1
           IF cssp_sync > cssp DO cssp_sync := cssp
           emit_goto_lab(l)
@@ -1477,7 +1482,7 @@ prescan_done:
       { LET n = rdn()
         selectoutput(tostream)
         writef("    ;; RSTACK %n*n", n)
-        writef("    (local.set $t%n (local.get $t0)) ;; restore RES result*n", n)
+        writef("    (local.set $t%n (local.get $__res)) ;; restore RES result*n", n)
         selectoutput(sysprint)
         cssp := n + 1
         terminated := FALSE

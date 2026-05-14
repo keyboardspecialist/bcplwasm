@@ -11,6 +11,7 @@
   ;; BCPL fn start (L10)
   (func $fn_L10 (export "fn_L10") (type $bcpl_fn)
     (local $__lab i32)
+    (local $__res i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -94,7 +95,7 @@
     ))
     (local.set $t8 (i32.add (global.get $SB) (i32.const 19))) ;; LSTR
     ;; RES L16: save result, jump to RSTACK
-    (local.set $t0 (local.get $t8))
+    (local.set $__res (local.get $t8))
       (local.set $__lab (i32.const 8)) (br $__dispatch)
       (local.set $__lab (i32.const 5)) (br $__dispatch)
     )) ;; end block / LAB L17 = idx 5
@@ -106,26 +107,26 @@
     ))
     (local.set $t8 (i32.add (global.get $SB) (i32.const 20))) ;; LSTR
     ;; RES L18: save result, jump to RSTACK
-    (local.set $t0 (local.get $t8))
+    (local.set $__res (local.get $t8))
       (local.set $__lab (i32.const 7)) (br $__dispatch)
       (local.set $__lab (i32.const 6)) (br $__dispatch)
     )) ;; end block / LAB L19 = idx 6
     (if (i32.eq (local.get $__lab) (i32.const 6)) (then ;; L19
     (local.set $t8 (i32.add (global.get $SB) (i32.const 22))) ;; LSTR
     ;; RES L18: save result, jump to RSTACK
-    (local.set $t0 (local.get $t8))
+    (local.set $__res (local.get $t8))
       (local.set $__lab (i32.const 7)) (br $__dispatch)
     )) ;; end block / LAB L18 = idx 7
     (if (i32.eq (local.get $__lab) (i32.const 7)) (then ;; L18
     ;; RSTACK 8
-    (local.set $t8 (local.get $t0)) ;; restore RES result
+    (local.set $t8 (local.get $__res)) ;; restore RES result
     ;; RES L16: save result, jump to RSTACK
-    (local.set $t0 (local.get $t8))
+    (local.set $__res (local.get $t8))
       (local.set $__lab (i32.const 8)) (br $__dispatch)
     )) ;; end block / LAB L16 = idx 8
     (if (i32.eq (local.get $__lab) (i32.const 8)) (then ;; L16
     ;; RSTACK 8
-    (local.set $t8 (local.get $t0)) ;; restore RES result
+    (local.set $t8 (local.get $__res)) ;; restore RES result
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8))
@@ -136,14 +137,14 @@
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t9)))
     (local.set $t4 (i32.const 0))
     ;; FNRN
-    (local.set $t0 (local.get $t4))
+    (local.set $__res (local.get $t4))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
-    (return (local.get $t0))
+    (return (local.get $__res))
     (local.set $t3 (i32.const 0))
     ;; FNRN
-    (local.set $t0 (local.get $t3))
+    (local.set $__res (local.get $t3))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
-    (return (local.get $t0))
+    (return (local.get $__res))
     )) ;; end last block
     ) ;; end $__dispatch
     (i32.const 0) ;; unreachable return
