@@ -39,9 +39,12 @@
   - [DEFER] Source-map / DWARF. Substantial work; s_line debug comment already in place as a starting point.
 
   Build / tooling
-  - site/build.sh requires bin/cintsys + BCPLROOT env. Not portable. Could ship pre-built wasm, or CI-build on push.
-  - No automated test harness — test-node.mjs is ad-hoc. Turn into npm test with expected outputs.
-  - No .gitignore for .wat/.wasm in site/examples/ vs committed. Decide: commit built artifacts for GitHub Pages, or CI-build.
+  - [DONE] npm test entry point in site/package.json. Runs test-globals + test-headers + test-examples (new).
+  - [DONE] test-examples.mjs: instantiates all 34 example .wasm against master.wasm; runs 29 of them; output-checks any with a
+    sibling .expected golden file. Browser-only examples (stdin/argv/asyncify/SDL) skip run.
+  - [DONE] .gitignore decision: site/examples/*.{wat,wasm} are committed (pages branch consumes them directly, no build step).
+  - [DEFER] site/build.sh portability: still needs bin/cintsys + BCPLROOT env. Bootstrap documented in CLAUDE.md. Could add a
+    GitHub Action that builds cintsys + bcplwasm + examples on push for fresh clones to pick up.
 
   Docs
   - [DONE] CLAUDE.md wasm backend section.

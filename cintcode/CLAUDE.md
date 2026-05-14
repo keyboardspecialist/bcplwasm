@@ -167,6 +167,19 @@ wat2wasm hello.wat -o hello.wasm
 
 `build.sh` picks up `WAT2WASM=/path/to/wat2wasm` if wat2wasm isn't on PATH.
 
+### Test the wasm playground
+
+```bash
+cd site && npm test
+```
+
+Runs three checks:
+1. `test-globals.mjs` — `master.wat` regenerates byte-identical against the libhdr / stdlib-manifest sources of truth.
+2. `test-headers.mjs` — no two `g/*.h` headers map different names to the same global number in the stdlib range.
+3. `test-examples.mjs` — every `site/examples/*.wasm` instantiates against the real `master.wasm` and host stdlib. Examples that don't need browser host services also `run()`; any with a sibling `<name>.expected` file get a stdout golden-diff.
+
+Add a new golden by capturing the program's stdout and dropping it in `site/examples/<name>.expected`.
+
 ### Hosted playground
 
 The `pages` branch ships pre-built `site/examples/*.{wat,wasm}` so GitHub
