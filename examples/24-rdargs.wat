@@ -11,6 +11,7 @@
   ;; BCPL fn start (L10)
   (func $fn_L10 (export "fn_L10") (type $bcpl_fn)
     (local $__lab i32)
+    (local $__res i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -109,9 +110,9 @@
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t61)))
     (local.set $t56 (i32.const 20))
     ;; FNRN
-    (local.set $t0 (local.get $t56))
+    (local.set $__res (local.get $t56))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
-    (return (local.get $t0))
+    (return (local.get $__res))
     )) ;; end block / LAB L11 = idx 1
     (if (i32.eq (local.get $__lab) (i32.const 1)) (then ;; L11
     (local.set $t59 (i32.add (global.get $SB) (i32.const 17))) ;; LSTR
@@ -140,19 +141,19 @@
     (local.set $t60 (i32.add (local.get $t60) (local.get $t61)))
     (local.set $t60 (i32.load (i32.shl (local.get $t60) (i32.const 2))))
     ;; RES L12: save result, jump to RSTACK
-    (local.set $t0 (local.get $t60))
+    (local.set $__res (local.get $t60))
       (local.set $__lab (i32.const 3)) (br $__dispatch)
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     )) ;; end block / LAB L13 = idx 2
     (if (i32.eq (local.get $__lab) (i32.const 2)) (then ;; L13
     (local.set $t60 (i32.add (global.get $SB) (i32.const 25))) ;; LSTR
     ;; RES L12: save result, jump to RSTACK
-    (local.set $t0 (local.get $t60))
+    (local.set $__res (local.get $t60))
       (local.set $__lab (i32.const 3)) (br $__dispatch)
     )) ;; end block / LAB L12 = idx 3
     (if (i32.eq (local.get $__lab) (i32.const 3)) (then ;; L12
     ;; RSTACK 60
-    (local.set $t60 (local.get $t0)) ;; restore RES result
+    (local.set $t60 (local.get $__res)) ;; restore RES result
     (local.set $t61 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 236)) (local.get $t59))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 240)) (local.get $t60))
@@ -200,14 +201,14 @@
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t61)))
     (local.set $t56 (i32.const 0))
     ;; FNRN
-    (local.set $t0 (local.get $t56))
+    (local.set $__res (local.get $t56))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
-    (return (local.get $t0))
+    (return (local.get $__res))
     (local.set $t3 (i32.const 0))
     ;; FNRN
-    (local.set $t0 (local.get $t3))
+    (local.set $__res (local.get $t3))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
-    (return (local.get $t0))
+    (return (local.get $__res))
     )) ;; end last block
     ) ;; end $__dispatch
     (i32.const 0) ;; unreachable return

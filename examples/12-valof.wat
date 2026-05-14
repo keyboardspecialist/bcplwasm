@@ -11,6 +11,7 @@
   ;; BCPL fn start (L10)
   (func $fn_L10 (export "fn_L10") (type $bcpl_fn)
     (local $__lab i32)
+    (local $__res i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -28,33 +29,33 @@
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     (local.set $t3 (i32.const 10))
     ;; RES L11: save result, jump to RSTACK
-    (local.set $t0 (local.get $t3))
+    (local.set $__res (local.get $t3))
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     )) ;; end block / LAB L11 = idx 1
     (if (i32.eq (local.get $__lab) (i32.const 1)) (then ;; L11
     ;; RSTACK 3
-    (local.set $t3 (local.get $t0)) ;; restore RES result
+    (local.set $t3 (local.get $__res)) ;; restore RES result
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)) (local.get $t3)) ;; STORE slot 3
     (local.set $t4 (i32.const 3))
     ;; RES L13: save result, jump to RSTACK
-    (local.set $t0 (local.get $t4))
+    (local.set $__res (local.get $t4))
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     )) ;; end block / LAB L13 = idx 2
     (if (i32.eq (local.get $__lab) (i32.const 2)) (then ;; L13
     ;; RSTACK 4
-    (local.set $t4 (local.get $t0)) ;; restore RES result
+    (local.set $t4 (local.get $__res)) ;; restore RES result
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (local.get $t4)) ;; STORE slot 4
     (local.set $t5 (i32.const 7))
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
     (local.set $t5 (i32.add (local.get $t5) (local.get $t6)))
     ;; RES L12: save result, jump to RSTACK
-    (local.set $t0 (local.get $t5))
+    (local.set $__res (local.get $t5))
       (local.set $__lab (i32.const 3)) (br $__dispatch)
       (local.set $__lab (i32.const 3)) (br $__dispatch)
     )) ;; end block / LAB L12 = idx 3
     (if (i32.eq (local.get $__lab) (i32.const 3)) (then ;; L12
     ;; RSTACK 4
-    (local.set $t4 (local.get $t0)) ;; restore RES result
+    (local.set $t4 (local.get $__res)) ;; restore RES result
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (local.get $t4)) ;; STORE slot 4
     (local.set $t8 (i32.add (global.get $SB) (i32.const 0))) ;; LSTR
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
@@ -74,14 +75,14 @@
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t12)))
     (local.set $t5 (i32.const 0))
     ;; FNRN
-    (local.set $t0 (local.get $t5))
+    (local.set $__res (local.get $t5))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
-    (return (local.get $t0))
+    (return (local.get $__res))
     (local.set $t3 (i32.const 0))
     ;; FNRN
-    (local.set $t0 (local.get $t3))
+    (local.set $__res (local.get $t3))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
-    (return (local.get $t0))
+    (return (local.get $__res))
     )) ;; end last block
     ) ;; end $__dispatch
     (i32.const 0) ;; unreachable return
