@@ -123,7 +123,7 @@
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t11)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 7)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t11)))
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 30))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 0))) ;; LSTR
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 192))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (global.get $P)) ;; save P
@@ -138,7 +138,7 @@
     (if (local.get $t7) (then
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     ))
-    (local.set $t10 (i32.add (global.get $SB) (i32.const 33))) ;; LSTR
+    (local.set $t10 (i32.add (global.get $SB) (i32.const 30))) ;; LSTR
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (global.get $P)) ;; save P
@@ -240,14 +240,14 @@
   ;; --- function table slice (passive) ---
   (elem $ftab funcref (ref.func $fn_L10))
 
-  ;; static data — passive segment (38 words)
-  (data $stat "\08\67\72\65\65\74\69\6E\67\00\00\00\12\66\69\6E\64\6F\75\74\70\75\74\20\66\61\69\6C\65\64\0A\00\19\68\65\6C\6C\6F\20\66\72\6F\6D\20\61\20\73\61\76\65\64\20\73\74\72\65\61\6D\00\00\10\25\6E\20\73\71\75\61\72\65\64\20\3D\20\25\6E\0A\00\00\00\27\77\72\6F\74\65\20\27\67\72\65\65\74\69\6E\67\27\2E\20\6E\6F\77\20\72\65\61\64\69\6E\67\20\69\74\20\62\61\63\6B\3A\0A\08\67\72\65\65\74\69\6E\67\00\00\00\11\66\69\6E\64\69\6E\70\75\74\20\66\61\69\6C\65\64\0A\00\00")
+  ;; static data — passive segment (35 words)
+  (data $stat "\08\67\72\65\65\74\69\6E\67\00\00\00\12\66\69\6E\64\6F\75\74\70\75\74\20\66\61\69\6C\65\64\0A\00\19\68\65\6C\6C\6F\20\66\72\6F\6D\20\61\20\73\61\76\65\64\20\73\74\72\65\61\6D\00\00\10\25\6E\20\73\71\75\61\72\65\64\20\3D\20\25\6E\0A\00\00\00\27\77\72\6F\74\65\20\27\67\72\65\65\74\69\6E\67\27\2E\20\6E\6F\77\20\72\65\61\64\69\6E\67\20\69\74\20\62\61\63\6B\3A\0A\11\66\69\6E\64\69\6E\70\75\74\20\66\61\69\6C\65\64\0A\00\00")
 
   (func $register (export "register")
     (memory.init $stat
       (i32.shl (global.get $SB) (i32.const 2))
       (i32.const 0)
-      (i32.const 152))
+      (i32.const 140))
     (data.drop $stat)
     (table.init $ftable $ftab
       (global.get $TB)
@@ -257,7 +257,7 @@
     (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 4)) (i32.add (global.get $TB) (i32.const 0))) ;; G!1
   )
   (func $stat_words (export "stat_words") (result i32)
-    (i32.const 38))
+    (i32.const 35))
   (func $fn_count (export "fn_count") (result i32)
     (i32.const 1))
 )
