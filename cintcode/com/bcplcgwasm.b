@@ -230,6 +230,8 @@ AND register_entries() BE
       CASE s_comment: CASE s_needs: CASE s_section:
         { LET nn=rdn(); FOR i=1 TO nn DO rdn(); ENDCASE }
       CASE s_itemn: CASE s_itemflt: rdn(); ENDCASE
+      CASE s_line: rdn(); rdn(); ENDCASE   // file_no, line_no
+      CASE s_endfor: ENDCASE                // legacy, no operand
     }
     cur_op := rdn()
   } REPEAT
@@ -308,6 +310,8 @@ AND skip_inner_body() BE
       CASE s_comment: CASE s_needs: CASE s_section:
         { LET nn=rdn(); FOR i=1 TO nn DO rdn(); ENDCASE }
       CASE s_itemn: CASE s_itemflt: rdn(); ENDCASE
+      CASE s_line: rdn(); rdn(); ENDCASE
+      CASE s_endfor: ENDCASE
       CASE 0: RETURN
     }
     sop := rdn()
@@ -843,10 +847,32 @@ AND scan_emit() BE
 
     SWITCHON op INTO
     { DEFAULT:
-        writef("*nWASM CG: unhandled op %n*n", op)
+        // s_match..s_frange are tree-node tags only; bcpltrn lowers
+        // MATCH/EVERY/pattern constructs to ordinary OCODE before
+        // codegen runs. Seeing one of those tags here means a bug
+        // in the frontend, not an unsupported language feature.
+        TEST op >= s_match & op <= s_frange
+        THEN writef("*nWASM CG: tree-only op %n leaked into OCODE (frontend bug)*n", op)
+        ELSE writef("*nWASM CG: unhandled op %n*n", op)
+        errcount := errcount + 1
         ENDCASE
 
       CASE 0: RETURN
+
+      CASE s_line:
+      { // checksyn-only source position marker. Emit as a WAT comment
+        // for readability; useful if debug mapping ever wanted.
+        LET fno = rdn()
+        LET lno = rdn()
+        IF fn_entrylab > 0 DO
+        { selectoutput(tostream)
+          writef("    ;; line %n:%n*n", fno, lno)
+          selectoutput(sysprint)
+        }
+        ENDCASE
+      }
+
+      CASE s_endfor: ENDCASE  // legacy, never emitted by bcpltrn
 
       CASE s_global:
       { // GLOBAL n g1 l1 ... gn ln
@@ -1080,6 +1106,8 @@ AND scan_emit() BE
               CASE s_comment: CASE s_needs: CASE s_section:
                 { LET nn=rdn(); FOR i=1 TO nn DO rdn(); ENDCASE }
               CASE s_itemn: CASE s_itemflt: rdn(); ENDCASE
+              CASE s_line: rdn(); rdn(); ENDCASE
+              CASE s_endfor: ENDCASE
 
               CASE 0: GOTO prescan_done
               CASE s_global: GOTO prescan_done

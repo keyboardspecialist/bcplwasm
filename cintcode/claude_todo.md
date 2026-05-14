@@ -14,10 +14,12 @@
   - [DONE] LF of stdlib: not an issue. Stdlib references compile as LG (load global), never LF.
 
   Missing ops / features
-  - s_section/s_needs emits skip. Could emit ;; section comment for readability.
-  - s_line (source position marker) ignored. Could emit as ;; line N for debug mapping.
-  - Pattern-match / MCPL extensions: s_match, s_every, s_patfndef, etc. — unlikely needed, but DEFAULT traps.
-  - s_endfor legacy — currently hits DEFAULT. Add as no-op.
+  - [DONE] s_section/s_needs: cgsects() top level already emits ;; SECTION header at boundaries; in-scan occurrences silently
+    consumed. No-op sufficient.
+  - [DONE] s_line: handled — emits `;; line F:L` debug comment inside function bodies. Also added to all 3 prescan tables.
+  - [DONE] s_endfor: legacy no-op added in main dispatch and all prescan tables.
+  - [DONE] MCPL ops (s_match..s_frange): are tree-node tags only, bcpltrn lowers them to OCODE before codegen.
+    DEFAULT now reports them as "tree-only op leaked into OCODE (frontend bug)" with errcount++.
 
   Runtime / stdlib
   - 22 imports wired (stop, rdch, wrch, newline, writen, writes, writef, getvec, freevec, muldiv, abort, randno,
