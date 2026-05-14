@@ -126,6 +126,17 @@ LET codegenerate(workspace, workspacesize) BE
     errcount := errcount + 1
     longjump(fin_p, fin_l)
   }
+  // Wasm backend currently emits 32-bit linear-memory code only
+  // (all addresses use (i32.shl ... 2), loads/stores are i32).
+  // On cintsys64 the frontend defaults to T64 — the resulting OCODE
+  // assumes 8-byte words and would mis-address every P!n. Force the
+  // user to pass T32 explicitly until a memory64 path exists.
+  UNLESS targetbytelen = 4 DO
+  { writef("WASM CG: target word size %n bytes not supported.*n", targetbytelen)
+    writef("         Re-invoke bcplwasm with the T32 option.*n")
+    errcount := errcount + 1
+    longjump(fin_p, fin_l)
+  }
 
   labmap      := p;  p := p + maxlabs;   nlabmap := maxlabs
   stat_words  := p;  p := p + 32768

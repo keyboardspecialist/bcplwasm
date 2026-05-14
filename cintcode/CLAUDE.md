@@ -174,6 +174,21 @@ Pages can serve them directly with no build step. Users who want to
 modify examples clone `main`, bootstrap as above, rebuild, and either
 use it locally or push a fresh `pages` branch.
 
+### Target word size
+
+The Wasm backend currently emits 32-bit linear-memory code only. The
+frontend defaults to the host word size, so on `cintsys64` you must
+pass `T32` explicitly:
+
+```
+bcplwasm T32 com/hello.b to hello.wat
+```
+
+Without `T32` on a 64-bit host, codegen aborts with:
+`WASM CG: target word size 8 bytes not supported.`
+
+On 32-bit `cintsys` the default is already T32 — no flag needed.
+
 ### Memory layout (32-bit target)
 
 All addresses are BCPL word addresses. Byte address = word × 4.
