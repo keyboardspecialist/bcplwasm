@@ -220,9 +220,7 @@ Callee:
 
 ### Function table
 
-`(table $ftable 256 funcref)`. Slots:
-- `0..stdlib_count-1` = host-imported stdlib (see below).
-- `stdlib_count..` = user functions in declaration order.
+`(table $ftable 256 funcref)` lives in `master.wasm`. Slots `0..74` are host-imported stdlib functions; program modules append their own functions starting at `$TB` (table_base — a runtime-supplied global per program). The loader (`site/runtime.js`) two-pass-instantiates each program: probe size, bump-allocate `$TB`/`$SB`, then real instantiate + call `register()`.
 
 LF of a function label pushes table index. LF of a local (dispatch) label pushes the in-function dispatch-loop index used by computed `GOTO`.
 
@@ -236,34 +234,15 @@ BCPL words are untyped bit patterns. All expression-stack locals and memory are 
 
 ### Host-imported stdlib
 
-`site/runtime.js` supplies these via `(import "env" "...")`. Table slots fixed at 0..8. `$__init` stores each slot index into the matching BCPL global number:
+`site/runtime.js` supplies ~75 stdlib functions via `(import "env" "bcpl_*")`, imported into `master.wasm` at fixed table slots `0..74`. `master.wat` (line ~110+) is the source of truth: it writes each slot index into the matching BCPL global number (e.g. G!94 = writef → slot 6) so user code's `FNAP via G!n` dispatches to the host.
 
-| tidx | import | global | purpose |
-|------|--------|--------|---------|
-| 0  | `bcpl_stop`       |  2 | halt (BcplHalt) |
-| 1  | `bcpl_rdch`       | 38 | read char from stdin |
-| 2  | `bcpl_wrch`       | 41 | write char |
-| 3  | `bcpl_newline`    | 84 | write newline |
-| 4  | `bcpl_writen`     | 86 | write integer |
-| 5  | `bcpl_writes`     | 89 | write BCPL string |
-| 6  | `bcpl_writef`     | 94 | formatted write |
-| 7  | `bcpl_getvec`     | 25 | allocate n+1 words |
-| 8  | `bcpl_freevec`    | 27 | free vector |
-| 9  | `bcpl_muldiv`     |  5 | (a*b)/c with 64-bit intermediate |
-| 10 | `bcpl_abort`      | 28 | halt with error flag (BcplHalt isAbort) |
-| 11 | `bcpl_randno`     | 34 | random integer in [1..n] |
-| 12 | `bcpl_capitalch`  | 96 | uppercase a-z |
-| 13 | `bcpl_compch`     | 97 | case-insensitive char compare |
-| 14 | `bcpl_compstring` | 98 | BCPL string compare |
-| 15 | `bcpl_findoutput` | 49 | open named write stream (browser storage-backed) |
-| 16 | `bcpl_findinput`  | 48 | open named read stream |
-| 17 | `bcpl_selectoutput` | 57 | set current output stream, return previous |
-| 18 | `bcpl_selectinput`  | 56 | set current input stream, return previous |
-| 19 | `bcpl_endstream`  | 62 | close stream; write streams commit to storage |
-| 20 | `bcpl_endread`    | 60 | close current input stream |
-| 21 | `bcpl_endwrite`   | 61 | close current output stream |
+Coverage includes: core I/O (rdch, wrch, newline, writef + family — writed/writeu/writet/writez/writehex/writeoct/writee/writeflt), stream control (findinput/output/inoutput, selectinput/output, endstream/read/write, rewindstream, pathfindinput), memory (getvec, freevec, copy_words/bytes, clear_words, setvec, packstring/unpackstring, getword/putword, setbit/testbit), strings (capitalch, compch, compstring, copystring, str2numb, string_to_number, readn, readflt, rditem), arithmetic (muldiv, randno, setseed), control flow (abort, level, longjump, stop_fn), coroutines (createco/deleteco/callco/cowait/resumeco/initco/changeco), system (sys, rdargs, findarg, intflag, memoryfree, stackfree, delay, newpage). `sardch`/`sawrch`/`binrdch`/`binwrch` are aliased to the regular rdch/wrch slots.
 
-Named streams persist across page loads via `localStorage` (keys prefixed `bcpl:`). In Node test harness falls back to an in-memory `Map`.
+Named streams persist across page loads via `localStorage` (keys prefixed `bcpl:`). Node test harness falls back to an in-memory `Map`.
+
+### writef format codes
+
+`imp_writef` in `site/runtime.js` implements the BLIB `write_format` codes that real BCPL programs use: `%n`, `%d`, `%i`, `%u`, `%c`, `%s`, `%x`, `%o`, `%b`, `%z`, `%t`, `%f`, `%e`, `%g`, `%n.mD` (scaled fixed-point), `%#` (codewrch), `%$`/`%+` (advance arg), `%-` (back up arg). Both `%nD` (single digit post-code width) and `%n.mD` (explicit `width.precision` pre-code) forms work. `%M` (message-table lookup) and `%P` (pluralisation) from canonical blib are intentionally omitted — no message DB in the browser playground.
 
 ### Playground
 

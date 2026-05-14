@@ -22,10 +22,11 @@
     DEFAULT now reports them as "tree-only op leaked into OCODE (frontend bug)" with errcount++.
 
   Runtime / stdlib
-  - 22 imports wired (stop, rdch, wrch, newline, writen, writes, writef, getvec, freevec, muldiv, abort, randno,
-    capitalch, compch, compstring, findoutput, findinput, selectoutput, selectinput, endstream, endread, endwrite).
-    Still missing: rdbin/wrbin.
-  - imp_writef format parser: supports %n, %i, %c, %s, %x. Missing %o (octal), %b (binary), %*n/%*c (runtime width), FLT %f/%g.
+  - [DONE] Import wiring: 75 stdlib slots in master.wat (source of truth: site/stdlib-manifest.mjs, validated by
+    test-globals.mjs). binrdch/binwrch aliased to rdch/wrch. Stale stdlib_count=22 constant removed from cgwasm.b.
+  - [DONE] imp_writef format codes: %n, %d, %i, %u, %c, %s, %x, %o, %b, %z, %t, %f, %e, %g, %n.mD scaled, %#, %$, %+, %-.
+  - %M (message DB lookup) and %P (pluralisation) deliberately omitted — no message DB in browser playground.
+  - CLAUDE.md import table refreshed to point at master.wat as ground truth.
 
   Codegen quality
   - If-chain dispatch loop: O(N) per branch. Fine for <50 labels, poor for large functions. Switch to br_table once label count

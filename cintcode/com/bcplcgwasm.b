@@ -39,11 +39,10 @@ MANIFEST {
                    // ~1500 labels; 16384 gives 10x headroom. Direct-indexed
                    // labmap — must exceed the highest label number emitted.
 
-  // Imported stdlib: host-provided BCPL built-ins. Each gets a fixed
-  // Wasm function-table slot at the front of the table, and __init
-  // writes that slot into its BCPL global number so indirect calls
-  // (FNAP via G!n) reach the host.
-  stdlib_count = 22
+  // Stdlib is reached via the shared funcref table that master.wasm
+  // owns; the loader populates G[gnum] := TB + slot for every host
+  // import. The backend no longer hardcodes a stdlib count — the
+  // runtime side (site/runtime.js) is the source of truth.
 }
 
 GLOBAL {
