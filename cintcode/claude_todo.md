@@ -29,12 +29,14 @@
   - CLAUDE.md import table refreshed to point at master.wat as ground truth.
 
   Codegen quality
-  - If-chain dispatch loop: O(N) per branch. Fine for <50 labels, poor for large functions. Switch to br_table once label count
-  stabilizes.
-  - Forward-reference LF — handled by register_entries pre-pass. Scales to large modules but walks OCODE twice.
-  - Every function re-emits full module prelude info (imports, table)? No — one prelude, one elem. OK.
-  - Static data: all strings packed. No string deduplication.
-  - No source-map / DWARF. Stack traces unusable.
+  - [DONE] Static data: LSTR now deduplicates. Linear scan against str_dedup_v registry; identical byte sequences reuse offset.
+    Empirical: 23-parsing.wasm -61 bytes (17 LSTRs → 14 unique), 22-format-output -20, stdlib -9. Cap = 1024 strings.
+  - [DEFER] If-chain dispatch loop → br_table. Substantial refactor: would require buffering all label bodies and emitting in
+    reverse nesting order so they sit inside nested (block) ladders. Engines compile current emit to a test+branch+set already;
+    marginal gain except on huge functions.
+  - [DEFER] Two-pass OCODE walk via register_entries. Not a bug — scales fine to current sizes. Could stream label collection.
+  - [OK] Module prelude: one (module ...) per codegenerate() call; imports + elem emitted once.
+  - [DEFER] Source-map / DWARF. Substantial work; s_line debug comment already in place as a starting point.
 
   Build / tooling
   - site/build.sh requires bin/cintsys + BCPLROOT env. Not portable. Could ship pre-built wasm, or CI-build on push.

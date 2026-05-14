@@ -95,6 +95,9 @@ GLOBAL {
   ginit_n        // number of global init entries
   ftab_v         // function labels in order (for elem section)
   ftab_n         // number of functions
+  str_dedup_v    // string registry: pairs (offset_in_words, byte_total)
+  str_dedup_n    // number of words used (multiple of 2)
+  str_dedup_max  // capacity (number of pair slots)
   pend_v         // pending inner-function OCODE ranges: triples
                  // (obuf_start, obuf_end, label)
   pend_n         // number of words used in pend_v (multiple of 3)
@@ -143,14 +146,16 @@ LET codegenerate(workspace, workspacesize) BE
   ginit_v     := p;  p := p + 512
   ftab_v      := p;  p := p + 1536
   pend_v      := p;  p := p + 768;  pend_max := 768
+  str_dedup_v := p;  p := p + 2048; str_dedup_max := 1024   // 1024 entries
 
   FOR i = 0 TO maxlabs-1   DO labmap!i := -1
   FOR i = 0 TO maxlabs*2-1 DO stat_labmap!i := -1
-  stat_n    := 0
-  ginit_n   := 0
-  ftab_n    := 0
-  pend_n    := 0
-  sect_open := FALSE
+  stat_n      := 0
+  ginit_n     := 0
+  ftab_n      := 0
+  pend_n      := 0
+  str_dedup_n := 0
+  sect_open   := FALSE
 
   op := rdn()
   cgsects(workspace + 4096, workspacesize - 4096)
@@ -1595,20 +1600,49 @@ prescan_done:
         // shares word 0 with the first 3 chars.
         LET n = rdn()
         cgpendingop_wasm()
-        { LET str_offset = stat_n
-          LET total = n + 1        // length byte + n char bytes
-          LET words = (total + 3) / 4
-          LET i = 0                // byte index in the composite
-          LET w = 0
-          LET b = 0
-          UNTIL i = total DO
-          { LET ch = i=0 -> n, rdn()
-            w := w | ((ch & #xFF) << (b * 8))
-            i := i + 1
-            b := b + 1
-            IF b = 4 DO { alloc_static(-1, w); w := 0; b := 0 }
+        { LET total = n + 1        // length byte + n char bytes
+          LET buf   = VEC 64       // 65 words = 260 bytes, ≥ 256 max
+          LET str_offset = -1
+
+          // 1. Read all n+1 bytes into a flat byte buffer.
+          buf%0 := n
+          FOR i = 1 TO n DO buf%i := rdn() & #xFF
+
+          // 2. Scan dedup registry for identical bytes already stored.
+          FOR e = 0 TO str_dedup_n-1 BY 2 DO
+          { LET prev_off = str_dedup_v!e
+            LET prev_len = str_dedup_v!(e+1)
+            IF prev_len = total DO
+            { LET ok = TRUE
+              FOR i = 0 TO total-1 DO
+              { LET word_idx = prev_off + i/4
+                LET byte_in = (i REM 4) * 8
+                LET stored  = (stat_words!word_idx >> byte_in) & #xFF
+                UNLESS stored = buf%i DO { ok := FALSE; BREAK }
+              }
+              IF ok DO { str_offset := prev_off; BREAK }
+            }
           }
-          IF b > 0 DO alloc_static(-1, w)   // flush final partial word
+
+          // 3. Allocate fresh static words if no match.
+          IF str_offset < 0 DO
+          { str_offset := stat_n
+            { LET w = 0
+              LET b = 0
+              FOR i = 0 TO total-1 DO
+              { w := w | (buf%i << (b * 8))
+                b := b + 1
+                IF b = 4 DO { alloc_static(-1, w); w := 0; b := 0 }
+              }
+              IF b > 0 DO alloc_static(-1, w)
+            }
+            IF str_dedup_n + 2 <= str_dedup_max * 2 DO
+            { str_dedup_v!str_dedup_n     := str_offset
+              str_dedup_v!(str_dedup_n+1) := total
+              str_dedup_n := str_dedup_n + 2
+            }
+          }
+
           selectoutput(tostream)
           writef("    (local.set $t%n (i32.add (global.get $SB) (i32.const %n))) ;; LSTR*n",
                  cssp, str_offset)
