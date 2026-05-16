@@ -593,6 +593,7 @@
       </div>
       <div class="action-row">
         <button id="compileRun">Compile &amp; Run</button>
+        <button id="shareLink" title="copy share URL of current file">Share link</button>
         <span id="compileStatus" class="compile-status"></span>
       </div>
     </main>
@@ -1618,12 +1619,128 @@ LET start() = VALOF
       localStorage.setItem(THEME_LS_KEY, next);
     });
 
+    // ------------------ URL-based file references --------------------
+    // Supported params (query string OR # hash):
+    //   example=<slug>          open a built-in example as a preview tab
+    //   src=<base64url>         decode and add (or replace) a file
+    //   name=<filename>         optional name for src= / url= payload
+    //   url=<full URL>          fetch raw text and add as a file
+    //   gh=<user>/<repo>/<branch>/<path>
+    //                           shorthand for raw.githubusercontent.com
+    function readUrlParams() {
+      const q = new URLSearchParams(location.search);
+      const h = new URLSearchParams(location.hash.replace(/^#/, ""));
+      const get = (k) => q.get(k) ?? h.get(k);
+      return {
+        example: get("example"),
+        src:     get("src"),
+        name:    get("name"),
+        url:     get("url"),
+        gh:      get("gh"),
+      };
+    }
+    function decodeB64Url(s) {
+      try {
+        s = s.replace(/-/g, "+").replace(/_/g, "/");
+        s += "=".repeat((4 - s.length % 4) % 4);
+        const bin = atob(s);
+        const bytes = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        return new TextDecoder().decode(bytes);
+      } catch { return null; }
+    }
+    function encodeB64Url(s) {
+      const bytes = new TextEncoder().encode(s);
+      let bin = "";
+      for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+      return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    }
+    function sanitizeName(raw, fallback = "shared.b") {
+      const cleaned = (raw || "").replace(/[^\w.\-]/g, "_");
+      if (!cleaned) return fallback;
+      if (!/\.(b|h)$/.test(cleaned)) return cleaned + ".b";
+      return cleaned;
+    }
+    function upsertFileFromUrl(name, content) {
+      name = sanitizeName(name);
+      const ex = files.findIndex(f => f.name === name);
+      const entry = name.endsWith(".b");
+      if (ex >= 0) {
+        files[ex].content = content;
+      } else {
+        if (entry) files.forEach(f => f.entry = false);
+        files.push({ name, entry, content });
+      }
+      persistFiles();
+      rebuildSourceTabs(false);
+      const idx = files.findIndex(f => f.name === name);
+      if (idx >= 0) openFileTab(idx);
+    }
+    async function applyUrlParams() {
+      const p = readUrlParams();
+      if (p.src) {
+        const content = decodeB64Url(p.src);
+        if (content !== null) upsertFileFromUrl(p.name, content);
+        return;
+      }
+      let fetchUrl = p.url;
+      if (!fetchUrl && p.gh) {
+        const parts = p.gh.split("/").filter(Boolean);
+        if (parts.length >= 4) {
+          const [user, repo, branch, ...rest] = parts;
+          fetchUrl = `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${rest.join("/")}`;
+        }
+      }
+      if (fetchUrl) {
+        try {
+          const r = await fetch(fetchUrl);
+          if (!r.ok) { console.error("URL load HTTP", r.status); return; }
+          const content = await r.text();
+          const base = p.name || fetchUrl.split("/").pop() || "remote.b";
+          upsertFileFromUrl(base, content);
+          return;
+        } catch (e) {
+          console.error("URL load failed:", e);
+          return;
+        }
+      }
+      if (p.example) await openExamplePreview(p.example);
+    }
+    function buildShareUrl() {
+      const i = activeFileIdx();
+      if (i < 0) {
+        // No editable file active — share the currently viewed preview.
+        const t = sourceTabs[activeTab];
+        if (t?.kind === "preview" && BY_SLUG.has(t.name)) {
+          return `${location.origin}${location.pathname}#example=${encodeURIComponent(t.name)}`;
+        }
+        return null;
+      }
+      const f = files[i];
+      const enc = encodeB64Url(f.content);
+      return `${location.origin}${location.pathname}#name=${encodeURIComponent(f.name)}&src=${enc}`;
+    }
+    document.getElementById("shareLink").addEventListener("click", async () => {
+      const url = buildShareUrl();
+      if (!url) { alert("No file to share."); return; }
+      try {
+        await navigator.clipboard.writeText(url);
+        const btn = document.getElementById("shareLink");
+        const old = btn.textContent;
+        btn.textContent = "Copied!";
+        setTimeout(() => { btn.textContent = old; }, 1200);
+      } catch {
+        prompt("Copy this link:", url);
+      }
+    });
+
     // Initial render.
     rebuildSourceTabs(false);
     renderFileList();
     renderExampleList();
     renderApiList();
     syncEditor();
+    applyUrlParams();
   </script>
 </body>
 </html>
