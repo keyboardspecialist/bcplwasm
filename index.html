@@ -21,23 +21,28 @@
       --tok-com:  #6b7480;
       --tok-op:   #89ddff;
     }
+    /* Light theme: Visual C++ 6 colour scheme. White background,
+       black text, blue keywords, green comments, maroon strings. */
     [data-theme="light"] {
       color-scheme: light;
-      --bg:       #fafafa;
+      --bg:       #ffffff;
       --bg-2:     #ffffff;
-      --bg-3:     #eef0f3;
-      --border:   #d0d6dc;
-      --fg:       #1c2228;
-      --fg-dim:   #6c757d;
-      --accent:   #0a58ca;
-      --entry:    #b86c00;
-      --err:      #b3261e;
-      --tok-kw:   #7c3aed;
-      --tok-str:  #1f7a45;
-      --tok-num:  #c44b2c;
-      --tok-com:  #8a929a;
-      --tok-op:   #126b8c;
+      --bg-3:     #f0f0f0;
+      --border:   #a0a0a0;
+      --fg:       #000000;
+      --fg-dim:   #808080;
+      --accent:   #0000ff;
+      --entry:    #800080;
+      --err:      #ff0000;
+      --tok-kw:   #0000ff;   /* classic VC6 keyword blue */
+      --tok-str:  #a31515;   /* maroon for string literals */
+      --tok-num:  #000000;   /* numbers stay black like in VC6 */
+      --tok-com:  #008000;   /* green comments */
+      --tok-op:   #000000;   /* operators black */
     }
+    [data-theme="light"] .tok-kw  { font-weight: normal; }
+    [data-theme="light"] .tok-com { font-style: normal; }
+    [data-theme="light"] .gutter  { background: #ece9d8; color: #2b2b2b; }
     * { box-sizing: border-box; }
     body {
       margin: 0;
