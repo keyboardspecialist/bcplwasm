@@ -15,6 +15,28 @@
       --accent:   #6cb6ff;
       --entry:    #ffbe55;
       --err:      #f07178;
+      --tok-kw:   #c792ea;
+      --tok-str:  #c3e88d;
+      --tok-num:  #f78c6c;
+      --tok-com:  #6b7480;
+      --tok-op:   #89ddff;
+    }
+    [data-theme="light"] {
+      color-scheme: light;
+      --bg:       #fafafa;
+      --bg-2:     #ffffff;
+      --bg-3:     #eef0f3;
+      --border:   #d0d6dc;
+      --fg:       #1c2228;
+      --fg-dim:   #6c757d;
+      --accent:   #0a58ca;
+      --entry:    #b86c00;
+      --err:      #b3261e;
+      --tok-kw:   #7c3aed;
+      --tok-str:  #1f7a45;
+      --tok-num:  #c44b2c;
+      --tok-com:  #8a929a;
+      --tok-op:   #126b8c;
     }
     * { box-sizing: border-box; }
     body {
@@ -264,7 +286,73 @@
       display: flex;
       flex-direction: column;
     }
-    #userSrc, #liveWat {
+    .editor-wrap {
+      flex: 1;
+      display: flex;
+      position: relative;
+      overflow: hidden;
+      background: var(--bg-2);
+    }
+    .gutter {
+      width: 3rem;
+      flex: 0 0 auto;
+      padding: 0.6rem 0.4rem 0.6rem 0.6rem;
+      text-align: right;
+      color: var(--fg-dim);
+      background: var(--bg);
+      font-family: ui-monospace, monospace;
+      font-size: 0.8rem;
+      line-height: 1.5;
+      white-space: pre;
+      overflow: hidden;
+      user-select: none;
+      border-right: 1px solid var(--border);
+    }
+    .hl-wrap {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+    .hl, #userSrc {
+      position: absolute;
+      inset: 0;
+      margin: 0;
+      padding: 0.6rem;
+      font-family: ui-monospace, monospace;
+      font-size: 0.8rem;
+      line-height: 1.5;
+      white-space: pre;
+      tab-size: 2;
+      border: 0;
+      box-sizing: border-box;
+    }
+    .hl {
+      pointer-events: none;
+      color: var(--fg);
+      overflow: hidden;
+    }
+    #userSrc {
+      background: transparent;
+      color: transparent;
+      caret-color: var(--fg);
+      resize: none;
+      outline: none;
+      overflow: auto;
+      width: 100%;
+      height: 100%;
+    }
+    #userSrc[readonly] {
+      caret-color: transparent;
+    }
+    .editor-wrap.is-readonly { background: var(--bg); }
+    .editor-wrap.is-readonly .hl,
+    .editor-wrap.is-readonly .hl span { color: var(--fg-dim); }
+    .tok-kw  { color: var(--tok-kw); font-weight: 600; }
+    .tok-str { color: var(--tok-str); }
+    .tok-num { color: var(--tok-num); }
+    .tok-com { color: var(--tok-com); font-style: italic; }
+    .tok-op  { color: var(--tok-op); }
+    #liveWat {
       flex: 1;
       width: 100%;
       margin: 0;
@@ -278,10 +366,17 @@
       outline: none;
       line-height: 1.5;
     }
-    #userSrc[readonly] {
-      background: var(--bg);
-      color: var(--fg-dim);
+    .theme-toggle {
+      margin-left: 0.5rem;
+      padding: 0.2rem 0.55rem;
+      background: var(--bg-3);
+      color: var(--fg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.75rem;
     }
+    .theme-toggle:hover { border-color: var(--accent); }
     #liveWat {
       white-space: pre-wrap;
       overflow: auto;
@@ -431,6 +526,7 @@
       self-hosted <code>bcplwasm</code> + browser runtime. multi-file programs supported.
     </span>
     <span class="sub" id="buildTag" style="margin-left: auto; font-family: ui-monospace, monospace; font-size: 0.75rem;"></span>
+    <button class="theme-toggle" id="themeToggle" title="Toggle light/dark theme">☀︎</button>
   </header>
 
   <div class="workspace">
@@ -478,7 +574,16 @@
         <button id="savePreview">Save as file</button>
       </div>
       <div class="editor-host">
-        <textarea id="userSrc" spellcheck="false"></textarea>
+        <div class="editor-wrap" id="editorWrap">
+          <div class="gutter" id="editorGutter">1
+</div>
+          <div class="hl-wrap">
+            <pre class="hl" id="editorHl"></pre>
+            <textarea id="userSrc" spellcheck="false"
+              autocorrect="off" autocapitalize="off" autocomplete="off"
+              wrap="off"></textarea>
+          </div>
+        </div>
         <pre id="liveWat">(not yet compiled)</pre>
       </div>
       <div class="action-row">
@@ -532,6 +637,10 @@
     const apiDetailEl   = document.getElementById("apiDetail");
     const sourceTabsEl  = document.getElementById("sourceTabs");
     const userSrcEl     = document.getElementById("userSrc");
+    const editorWrapEl  = document.getElementById("editorWrap");
+    const editorGutterEl= document.getElementById("editorGutter");
+    const editorHlEl    = document.getElementById("editorHl");
+    const themeToggleEl = document.getElementById("themeToggle");
     const liveWatEl     = document.getElementById("liveWat");
     const previewNoteEl = document.getElementById("previewNote");
     const previewMetaEl = document.getElementById("previewMeta");
@@ -653,20 +762,22 @@ LET start() = VALOF
       if (!t) return;
       if (t.kind === "file") {
         const f = files[t.fileIdx];
-        userSrcEl.value = f?.content ?? "";
+        setEditorContent(f?.content ?? "");
         userSrcEl.readOnly = false;
-        userSrcEl.style.display = "block";
+        editorWrapEl.classList.remove("is-readonly");
+        editorWrapEl.style.display = "flex";
         liveWatEl.style.display = "none";
         previewNoteEl.classList.remove("visible");
       } else if (t.kind === "preview") {
-        userSrcEl.value = t.content;
+        setEditorContent(t.content);
         userSrcEl.readOnly = true;
-        userSrcEl.style.display = "block";
+        editorWrapEl.classList.add("is-readonly");
+        editorWrapEl.style.display = "flex";
         liveWatEl.style.display = "none";
         renderPreviewMeta(t.name);
         previewNoteEl.classList.add("visible");
       } else if (t.kind === "wat") {
-        userSrcEl.style.display = "none";
+        editorWrapEl.style.display = "none";
         liveWatEl.style.display = "block";
         previewNoteEl.classList.remove("visible");
       }
@@ -1322,10 +1433,149 @@ LET start() = VALOF
     nextLessonBtn.addEventListener("click", goNextLesson);
     apiFilterEl.addEventListener("input", () => renderApiList(apiFilterEl.value));
     userSrcEl.addEventListener("input", () => {
+      syncEditor();
       const i = activeFileIdx();
       if (i < 0) return;  // readonly tab
       files[i].content = userSrcEl.value;
       persistFiles();
+    });
+
+    // ------------------ Editor: line numbers + highlight ------------
+    const BCPL_KW = new Set([
+      "SECTION","GET","LET","AND","BE","VALOF","IF","UNLESS","TEST","THEN","ELSE",
+      "WHILE","UNTIL","FOR","TO","BY","DO","REPEAT","REPEATWHILE","REPEATUNTIL",
+      "LOOP","BREAK","NEXT","EXIT","RESULTIS","RETURN","FINISH","SWITCHON","CASE",
+      "DEFAULT","ENDCASE","GOTO","MANIFEST","GLOBAL","STATIC","VEC","MATCH","EVERY",
+      "INTO","TRUE","FALSE","MOD","REM","XOR","EQV","NOT","FLT","NEEDS",
+    ]);
+    function escHtml(s) {
+      return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+    function highlightBCPL(src) {
+      const out = [];
+      let i = 0, n = src.length;
+      while (i < n) {
+        const c = src[i];
+        // Line comment: // … EOL
+        if (c === "/" && src[i+1] === "/") {
+          let j = src.indexOf("\n", i);
+          if (j < 0) j = n;
+          out.push(`<span class="tok-com">${escHtml(src.slice(i, j))}</span>`);
+          i = j; continue;
+        }
+        // Block comment: /* … */
+        if (c === "/" && src[i+1] === "*") {
+          let j = src.indexOf("*/", i + 2);
+          j = j < 0 ? n : j + 2;
+          out.push(`<span class="tok-com">${escHtml(src.slice(i, j))}</span>`);
+          i = j; continue;
+        }
+        // String literal: "..." with *X escape
+        if (c === '"') {
+          let j = i + 1;
+          while (j < n && src[j] !== '"' && src[j] !== "\n") {
+            if (src[j] === "*" && j + 1 < n) j += 2; else j++;
+          }
+          if (j < n && src[j] === '"') j++;
+          out.push(`<span class="tok-str">${escHtml(src.slice(i, j))}</span>`);
+          i = j; continue;
+        }
+        // Char literal: 'c' or '*N'
+        if (c === "'") {
+          let j = i + 1;
+          while (j < n && src[j] !== "'" && src[j] !== "\n") {
+            if (src[j] === "*" && j + 1 < n) j += 2; else j++;
+          }
+          if (j < n && src[j] === "'") j++;
+          out.push(`<span class="tok-str">${escHtml(src.slice(i, j))}</span>`);
+          i = j; continue;
+        }
+        // #x / #b / #o numeric literals
+        if (c === "#" && /[xXbBoO]/.test(src[i+1] ?? "")) {
+          const m = src.slice(i).match(/^#[xX][0-9a-fA-F]+|^#[bB][01]+|^#[oO][0-7]+/);
+          if (m) {
+            out.push(`<span class="tok-num">${escHtml(m[0])}</span>`);
+            i += m[0].length; continue;
+          }
+        }
+        // Decimal number
+        if (/[0-9]/.test(c)) {
+          let j = i;
+          while (j < n && /[0-9]/.test(src[j])) j++;
+          out.push(`<span class="tok-num">${escHtml(src.slice(i, j))}</span>`);
+          i = j; continue;
+        }
+        // Identifier or keyword
+        if (/[a-zA-Z_]/.test(c)) {
+          let j = i;
+          while (j < n && /[a-zA-Z0-9_]/.test(src[j])) j++;
+          const tok = src.slice(i, j);
+          if (BCPL_KW.has(tok)) {
+            out.push(`<span class="tok-kw">${escHtml(tok)}</span>`);
+          } else {
+            out.push(escHtml(tok));
+          }
+          i = j; continue;
+        }
+        // Multi-char operators
+        if (i + 1 < n) {
+          const two = src.slice(i, i+2);
+          if (two === ":=" || two === "->" || two === "~=" ||
+              two === "<=" || two === ">=" || two === "<<" || two === ">>" ||
+              two === ".." || two === "@!" || two === "::") {
+            out.push(`<span class="tok-op">${escHtml(two)}</span>`);
+            i += 2; continue;
+          }
+        }
+        // Single-char operators
+        if ("+-*/=<>!@&|~%^".indexOf(c) >= 0) {
+          out.push(`<span class="tok-op">${escHtml(c)}</span>`);
+          i++; continue;
+        }
+        // Default: pass through (escaped)
+        out.push(escHtml(c));
+        i++;
+      }
+      return out.join("");
+    }
+    function syncEditor() {
+      const src = userSrcEl.value;
+      // Line numbers — count \n + 1.
+      const lines = src.split("\n").length;
+      let g = "";
+      for (let k = 1; k <= lines; k++) g += k + "\n";
+      editorGutterEl.textContent = g;
+      // Highlight pane — append trailing newline so final blank line
+      // gets a rendered line height matching the textarea.
+      editorHlEl.innerHTML = highlightBCPL(src) + "\n";
+      // Sync scroll: textarea drives gutter + hl positions.
+      editorHlEl.scrollTop  = userSrcEl.scrollTop;
+      editorHlEl.scrollLeft = userSrcEl.scrollLeft;
+      editorGutterEl.scrollTop = userSrcEl.scrollTop;
+    }
+    function setEditorContent(v) {
+      userSrcEl.value = v;
+      syncEditor();
+    }
+    userSrcEl.addEventListener("scroll", () => {
+      editorHlEl.scrollTop  = userSrcEl.scrollTop;
+      editorHlEl.scrollLeft = userSrcEl.scrollLeft;
+      editorGutterEl.scrollTop = userSrcEl.scrollTop;
+    });
+
+    // ------------------ Theme toggle ----------------------------------
+    const THEME_LS_KEY = "bcpl-playground-theme";
+    function applyTheme(name) {
+      if (name === "light") document.documentElement.setAttribute("data-theme", "light");
+      else document.documentElement.removeAttribute("data-theme");
+      themeToggleEl.textContent = name === "light" ? "☾" : "☀︎";
+    }
+    applyTheme(localStorage.getItem(THEME_LS_KEY) || "dark");
+    themeToggleEl.addEventListener("click", () => {
+      const cur = document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
+      const next = cur === "light" ? "dark" : "light";
+      applyTheme(next);
+      localStorage.setItem(THEME_LS_KEY, next);
     });
 
     // Initial render.
@@ -1333,6 +1583,7 @@ LET start() = VALOF
     renderFileList();
     renderExampleList();
     renderApiList();
+    syncEditor();
   </script>
 </body>
 </html>
