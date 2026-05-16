@@ -1622,11 +1622,14 @@ LET start() = VALOF
     // ------------------ URL-based file references --------------------
     // Supported params (query string OR # hash):
     //   example=<slug>          open a built-in example as a preview tab
-    //   src=<base64url>         decode and add (or replace) a file
+    //   src=<base64url>         decode and add (or replace) a single file
     //   name=<filename>         optional name for src= / url= payload
     //   url=<full URL>          fetch raw text and add as a file
     //   gh=<user>/<repo>/<branch>/<path>
     //                           shorthand for raw.githubusercontent.com
+    //   bundle=<base64url>      multi-file payload: a self-contained
+    //                           snapshot of the workspace. Bytes carry
+    //                           a one-byte format tag (see below).
     function readUrlParams() {
       const q = new URLSearchParams(location.search);
       const h = new URLSearchParams(location.hash.replace(/^#/, ""));
@@ -1637,6 +1640,7 @@ LET start() = VALOF
         name:    get("name"),
         url:     get("url"),
         gh:      get("gh"),
+        bundle:  get("bundle"),
       };
     }
     function decodeB64Url(s) {
@@ -1654,6 +1658,76 @@ LET start() = VALOF
       let bin = "";
       for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
       return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    }
+    // Raw-bytes variants for bundle payload (tag byte + binary data).
+    function bytesToB64Url(bytes) {
+      let bin = "";
+      for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+      return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    }
+    function b64UrlToBytes(s) {
+      try {
+        s = s.replace(/-/g, "+").replace(/_/g, "/");
+        s += "=".repeat((4 - s.length % 4) % 4);
+        const bin = atob(s);
+        const out = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+        return out;
+      } catch { return null; }
+    }
+    // Bundle format: byte 0 = 'J' (0x4A) plain JSON, or 'Z' (0x5A)
+    // deflate-raw of JSON. Bytes 1.. = payload.
+    async function packBundle(files) {
+      const json = JSON.stringify(files.map(f => ({
+        name: f.name, entry: !!f.entry, content: f.content ?? "",
+      })));
+      const jsonBytes = new TextEncoder().encode(json);
+      // Try compression; fall back to plain if unavailable or bigger.
+      if (typeof CompressionStream === "function") {
+        try {
+          const cs = new Blob([jsonBytes]).stream()
+            .pipeThrough(new CompressionStream("deflate-raw"));
+          const compressed = new Uint8Array(await new Response(cs).arrayBuffer());
+          if (compressed.length + 1 < jsonBytes.length + 1) {
+            const out = new Uint8Array(compressed.length + 1);
+            out[0] = 0x5A; // 'Z'
+            out.set(compressed, 1);
+            return out;
+          }
+        } catch (e) { /* fall through */ }
+      }
+      const out = new Uint8Array(jsonBytes.length + 1);
+      out[0] = 0x4A; // 'J'
+      out.set(jsonBytes, 1);
+      return out;
+    }
+    async function unpackBundle(bytes) {
+      if (!bytes || bytes.length < 1) return null;
+      const tag = bytes[0];
+      const body = bytes.subarray(1);
+      let jsonText;
+      if (tag === 0x4A) {
+        jsonText = new TextDecoder().decode(body);
+      } else if (tag === 0x5A) {
+        if (typeof DecompressionStream !== "function") return null;
+        try {
+          const ds = new Blob([body]).stream()
+            .pipeThrough(new DecompressionStream("deflate-raw"));
+          jsonText = await new Response(ds).text();
+        } catch { return null; }
+      } else {
+        return null;
+      }
+      try {
+        const arr = JSON.parse(jsonText);
+        if (!Array.isArray(arr)) return null;
+        return arr.filter(o => o && typeof o.name === "string")
+                  .map(o => ({
+                    name: sanitizeName(o.name),
+                    entry: !!o.entry,
+                    content: typeof o.content === "string" ? o.content : "",
+                  }));
+      } catch { return null; }
     }
     function sanitizeName(raw, fallback = "shared.b") {
       const cleaned = (raw || "").replace(/[^\w.\-]/g, "_");
@@ -1678,6 +1752,28 @@ LET start() = VALOF
     }
     async function applyUrlParams() {
       const p = readUrlParams();
+      if (p.bundle) {
+        const bytes = b64UrlToBytes(p.bundle);
+        const restored = bytes ? await unpackBundle(bytes) : null;
+        if (restored && restored.length > 0) {
+          // Make sure exactly one .b file is marked entry. Prefer the
+          // bundle's own entry flag, else first .b file.
+          let hasEntry = restored.some(f => f.entry && f.name.endsWith(".b"));
+          if (!hasEntry) {
+            const i = restored.findIndex(f => f.name.endsWith(".b"));
+            if (i >= 0) restored[i].entry = true;
+          }
+          files.length = 0;
+          for (const f of restored) files.push(f);
+          persistFiles();
+          rebuildSourceTabs(false);
+          const entryIdx = files.findIndex(f => f.entry);
+          if (entryIdx >= 0) openFileTab(entryIdx);
+          return;
+        } else {
+          console.error("bundle param could not be decoded");
+        }
+      }
       if (p.src) {
         const content = decodeB64Url(p.src);
         if (content !== null) upsertFileFromUrl(p.name, content);
@@ -1706,29 +1802,41 @@ LET start() = VALOF
       }
       if (p.example) await openExamplePreview(p.example);
     }
-    function buildShareUrl() {
-      const i = activeFileIdx();
-      if (i < 0) {
-        // No editable file active — share the currently viewed preview.
-        const t = sourceTabs[activeTab];
-        if (t?.kind === "preview" && BY_SLUG.has(t.name)) {
-          return `${location.origin}${location.pathname}#example=${encodeURIComponent(t.name)}`;
-        }
-        return null;
+    async function buildShareUrl() {
+      // Preview tab: share the example slug.
+      const t = sourceTabs[activeTab];
+      if (t?.kind === "preview" && BY_SLUG.has(t.name)) {
+        return `${location.origin}${location.pathname}#example=${encodeURIComponent(t.name)}`;
       }
-      const f = files[i];
-      const enc = encodeB64Url(f.content);
-      return `${location.origin}${location.pathname}#name=${encodeURIComponent(f.name)}&src=${enc}`;
+      // Single editable file: use the compact src= form.
+      if (files.length === 1) {
+        const f = files[0];
+        const enc = encodeB64Url(f.content);
+        return `${location.origin}${location.pathname}#name=${encodeURIComponent(f.name)}&src=${enc}`;
+      }
+      // Multi-file workspace: pack the whole thing into bundle=.
+      // Recipients without the same local files still get a working
+      // copy because all sources travel in the URL.
+      const bytes = await packBundle(files);
+      const enc = bytesToB64Url(bytes);
+      return `${location.origin}${location.pathname}#bundle=${enc}`;
     }
     document.getElementById("shareLink").addEventListener("click", async () => {
-      const url = buildShareUrl();
-      if (!url) { alert("No file to share."); return; }
+      let url;
+      try { url = await buildShareUrl(); }
+      catch (e) { console.error(e); alert("Could not build share URL."); return; }
+      if (!url) { alert("Nothing to share."); return; }
+      const URL_WARN = 30000;   // Most browsers handle >32KB hashes fine,
+                                 // but warn before producing something pathological.
+      if (url.length > URL_WARN) {
+        if (!confirm(`Share URL is ${url.length} chars long — some chat apps may truncate it. Copy anyway?`)) return;
+      }
       try {
         await navigator.clipboard.writeText(url);
         const btn = document.getElementById("shareLink");
         const old = btn.textContent;
-        btn.textContent = "Copied!";
-        setTimeout(() => { btn.textContent = old; }, 1200);
+        btn.textContent = `Copied (${url.length}c)`;
+        setTimeout(() => { btn.textContent = old; }, 1500);
       } catch {
         prompt("Copy this link:", url);
       }
