@@ -1432,7 +1432,42 @@ LET start() = VALOF
     prevLessonBtn.addEventListener("click", goPrevLesson);
     nextLessonBtn.addEventListener("click", goNextLesson);
     apiFilterEl.addEventListener("input", () => renderApiList(apiFilterEl.value));
-    userSrcEl.addEventListener("input", () => {
+    // macOS "Add period with double-space" lives in the system text
+    // input layer, below autocorrect="off". The substitution arrives as
+    // a single beforeinput/input with data ". " — either inputType
+    // insertReplacementText (deliberate replace) or insertText (when
+    // the system batches the two fast keystrokes into one event).
+    // Normal user typing of ". " never produces a single event with
+    // data === ". " because each keystroke fires its own insertText.
+    const isPeriodSub = (e) =>
+      e.data === ". " &&
+      (e.inputType === "insertReplacementText" ||
+       e.inputType === "insertText");
+
+    userSrcEl.addEventListener("beforeinput", (e) => {
+      if (!isPeriodSub(e)) return;
+      e.preventDefault();
+      // Insert two spaces at the caret instead — preserves the user's
+      // double-space intent for both replace-style and batched-text
+      // variants of the substitution.
+      const pos = userSrcEl.selectionEnd;
+      const v = userSrcEl.value;
+      userSrcEl.value = v.slice(0, pos) + "  " + v.slice(pos);
+      userSrcEl.selectionStart = userSrcEl.selectionEnd = pos + 2;
+      userSrcEl.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    userSrcEl.addEventListener("input", (e) => {
+      // Fallback: if beforeinput's preventDefault didn't take (some
+      // browsers fire input first or skip cancellation for batched
+      // text), undo the substitution after the fact.
+      if (isPeriodSub(e)) {
+        const pos = userSrcEl.selectionEnd;
+        const v = userSrcEl.value;
+        if (v.slice(pos - 2, pos) === ". ") {
+          userSrcEl.value = v.slice(0, pos - 2) + "  " + v.slice(pos);
+          userSrcEl.selectionStart = userSrcEl.selectionEnd = pos;
+        }
+      }
       syncEditor();
       const i = activeFileIdx();
       if (i < 0) return;  // readonly tab
