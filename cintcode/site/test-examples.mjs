@@ -37,6 +37,7 @@ const RUN_SKIP = new Set([
   "24-rdargs",          // expects argv
   "32-coroutines",      // asyncify needs browser-style yield
   "33-sdl-bouncer",     // needs SDL canvas context
+  "35-raycaster",       // continuous game loop — only ends on Esc
   "stdlib",             // pure library — no start()
 ]);
 
