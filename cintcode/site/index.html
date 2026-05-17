@@ -1531,12 +1531,28 @@ LET start() = VALOF
     });
 
     // ------------------ Editor: line numbers + highlight ------------
+    // Reserved words per bcplsyn.b:declsyswords(). Keep in sync.
     const BCPL_KW = new Set([
-      "SECTION","GET","LET","AND","BE","VALOF","IF","UNLESS","TEST","THEN","ELSE",
-      "WHILE","UNTIL","FOR","TO","BY","DO","REPEAT","REPEATWHILE","REPEATUNTIL",
-      "LOOP","BREAK","NEXT","EXIT","RESULTIS","RETURN","FINISH","SWITCHON","CASE",
-      "DEFAULT","ENDCASE","GOTO","MANIFEST","GLOBAL","STATIC","VEC","MATCH","EVERY",
-      "INTO","TRUE","FALSE","MOD","REM","XOR","EQV","NOT","FLT","NEEDS",
+      // Structure / decls
+      "SECTION","GET","NEEDS","LET","AND","BE","VALOF","TABLE",
+      "MANIFEST","GLOBAL","STATIC","VEC","RESULTIS","RETURN","FINISH",
+      // Control flow
+      "IF","UNLESS","TEST","THEN","ELSE","OR",
+      "WHILE","UNTIL","FOR","TO","BY","DO",
+      "REPEAT","REPEATWHILE","REPEATUNTIL",
+      "LOOP","BREAK","NEXT","EXIT","SKIP",
+      "SWITCHON","CASE","DEFAULT","ENDCASE","INTO","GOTO",
+      // Pattern match
+      "MATCH","EVERY",
+      // Constants
+      "TRUE","FALSE","BITSPERBCPLWORD",
+      // Word-form operators
+      "MOD","REM","XOR","NEQV","EQV","NOT","ABS",
+      "LOGAND","LOGOR","LSHIFT","RSHIFT",
+      "EQ","NE","LS","GR","LE","GE",
+      "LV","RV","OF","SLCT",
+      // Type / coercion
+      "FLT","FIX","FLOAT",
     ]);
     function escHtml(s) {
       return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
