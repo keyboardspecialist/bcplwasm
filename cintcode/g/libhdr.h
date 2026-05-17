@@ -523,6 +523,8 @@ Sys_memmovebytes    =  74  // MR 14/06/23 (dest, src, n) dest and src are
 Sys_errwrch         = 75   // wrch to STDERR
 
 // BCPL-Wasm playground extension. Cintsys ignores these (returns 0).
+// Sys_assetload: info!1 = 0 means a binary blob (info!0 = byte length,
+// info!2 = word address of bytes — read via `base % i`).
 Sys_assetload       = 80
 Sys_assetlist       = 81
 Sys_drawtexcol      = 82

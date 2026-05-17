@@ -558,6 +558,20 @@ export const TRACK = [
     ],
     prereqs: ["37-raycaster-textured"],
   },
+  {
+    slug: "39-wad-reader",
+    title: "Doom WAD Reader",
+    level: 9,
+    topic: "graphics",
+    summary: "Parse a Doom WAD file header and lump directory in pure BCPL using a binary asset upload.",
+    goals: [
+      "Sys_assetload now accepts arbitrary binary blobs (info!1 = 0)",
+      "BCPL byte-fetch operator `base % i` reads raw bytes from wasm memory",
+      "Little-endian i32 decode from bytes",
+      "Walk the WAD lump directory; print filepos, size, 8-byte name",
+    ],
+    prereqs: ["37-raycaster-textured"],
+  },
 ];
 
 // Quick-lookup helpers used by the UI.
