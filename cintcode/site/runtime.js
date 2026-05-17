@@ -1049,7 +1049,10 @@ export class BcplRuntime {
         const startY = y0 - top;
         for (let i = 0; i < drawH; i++) {
           const screenY = y0 + i;
-          const tY = (((screenY - top) * th) / h) | 0;
+          // Math.floor (not |0) — h can exceed i32 once the player
+          // presses against a wall, and (screenY-top)*th can spill
+          // past 2^31. JS numbers stay precise up to 2^53.
+          const tY = Math.floor((screenY - top) * th / h);
           const ty = tY >= 0 ? (tY < th ? tY : th - 1) : 0;
           const word = mv.getInt32((tBase + ty * tw + tx) * 4, true);
           // word stored as ((r<<24)|(g<<16)|(b<<8)|a) but mv reads it
