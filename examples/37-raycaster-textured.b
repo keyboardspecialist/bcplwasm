@@ -29,10 +29,8 @@ MANIFEST {
   STRIDE   = 1
   ANG      = 8192
   FOV      = 1365         // ~60deg in 8192-tick units
-  PROJ     = 22000
-  MARCH_DV = 64
-  MAXSTEP  = 4096
-  N_BANDS  = 64
+  PROJ     = 900000       // tuned for DDA perpDist in /1024 units
+  MAXSTEP  = 64           // DDA crosses one grid line per step
 
   KEYCAP   = 512
   K_LEFT   = 37
@@ -97,69 +95,103 @@ LET buildtrig() BE
   }
 }
 
+// DDA grid traversal. Every iteration advances to the next grid line
+// along whichever axis is closer along the ray. No marching, no
+// missed cells, exact face detection.
+//
+//   res!0 = perpendicular distance (1024 = 1 cell of ray length)
+//   res!1 = side hit (0 = vertical face, 1 = horizontal face)
+//   res!2 = wallX (0..1023) — fractional position along the wall face
 LET cast(px, py, angle, res) BE
-{ LET dx   = cos_t!(angle & (ANG-1))
-  LET dy   = sin_t!(angle & (ANG-1))
-  LET ix   = dx / MARCH_DV
-  LET iy   = dy / MARCH_DV
-  LET x    = px
-  LET y    = py
-  LET cx   = x / 1024
-  LET cy   = y / 1024
-  LET pcx  = cx
-  LET pcy  = cy
-  LET side = 0
-  LET wX   = 0
+{ // BCPL requires all LET declarations at the top of a block.
+  LET dx     = cos_t!(angle & (ANG-1))   // dirX * 1024
+  LET dy     = sin_t!(angle & (ANG-1))   // dirY * 1024
+  LET adx    = ABS dx
+  LET ady    = ABS dy
+  LET deltaX = 0
+  LET deltaY = 0
+  LET mapX   = px / 1024
+  LET mapY   = py / 1024
+  LET stepX  = dx < 0 -> -1, 1
+  LET stepY  = dy < 0 -> -1, 1
+  LET sideX  = 0
+  LET sideY  = 0
+  LET side   = 0
+  IF adx = 0 DO adx := 1
+  IF ady = 0 DO ady := 1
+  // deltaX / deltaY = ray length (in /1024 cell units) needed to
+  // cross one full cell along the corresponding axis.
+  deltaX := (1024 * 1024) / adx
+  deltaY := (1024 * 1024) / ady
+  // Distance from current position to the first grid line along
+  // each axis, scaled by deltaX/deltaY to give "ray length".
+  TEST dx < 0
+  THEN sideX := ((px - mapX * 1024) * deltaX) / 1024
+  ELSE sideX := ((mapX * 1024 + 1024 - px) * deltaX) / 1024
+  TEST dy < 0
+  THEN sideY := ((py - mapY * 1024) * deltaY) / 1024
+  ELSE sideY := ((mapY * 1024 + 1024 - py) * deltaY) / 1024
   FOR step = 1 TO MAXSTEP DO
-  { pcx := cx
-    pcy := cy
-    x := x + ix
-    y := y + iy
-    cx := x / 1024
-    cy := y / 1024
-    UNLESS cx = pcx & cy = pcy DO
-    { TEST cx ~= pcx
-      THEN side := 0
-      ELSE side := 1
-      IF cx < 0 | cx >= MAP | cy < 0 | cy >= MAP DO
-      { res!0 := step; res!1 := side; res!2 := 0; RETURN }
-      IF wmap!(cy*MAP+cx) DO
-      { TEST side = 0
-        THEN wX := y - cy * 1024
-        ELSE wX := x - cx * 1024
-        IF wX < 0 DO wX := wX + 1024
-        res!0 := step; res!1 := side; res!2 := wX
-        RETURN
-      }
+  { TEST sideX < sideY
+    THEN { sideX := sideX + deltaX; mapX := mapX + stepX; side := 0 }
+    ELSE { sideY := sideY + deltaY; mapY := mapY + stepY; side := 1 }
+    IF mapX < 0 | mapX >= MAP | mapY < 0 | mapY >= MAP DO
+    { res!0 := 1024 * MAP; res!1 := side; res!2 := 0; RETURN }
+    IF wmap!(mapY * MAP + mapX) DO
+    { LET perp = side = 0 -> sideX - deltaX, sideY - deltaY
+      LET wallX = 0
+      // Compute fractional hit position on the wall face.
+      TEST side = 0
+      THEN { LET rayY = py + (perp * dy) / 1024
+             wallX := rayY - (rayY / 1024) * 1024
+           }
+      ELSE { LET rayX = px + (perp * dx) / 1024
+             wallX := rayX - (rayX / 1024) * 1024
+           }
+      IF wallX < 0 DO wallX := wallX + 1024
+      res!0 := perp
+      res!1 := side
+      res!2 := wallX
+      // Stash ray direction signs in result slots 3 & 4 so the caller
+      // can flip texX correctly for back-facing wall faces.
+      res!3 := dx
+      res!4 := dy
+      RETURN
     }
   }
-  res!0 := MAXSTEP; res!1 := 0; res!2 := 0
+  res!0 := 1024 * MAP; res!1 := 0; res!2 := 0
 }
 
 LET drawframe(px, py, pa) BE
-{ LET res = VEC 3
+{ LET res = VEC 5
   sys(Sys_sdl, sdl_drawfillrect, surf, 0,   0,   W, H/2, sky_c)
   sys(Sys_sdl, sdl_drawfillrect, surf, 0, H/2,   W,   H, floor_c)
 
-  // Per column: cast a ray, ask the runtime to draw one textured
-  // vertical slice. The runtime does per-pixel texY = (y-top)*tex_h/h
-  // sampling — texture detail scales with tex_h, no banding.
   FOR col = 0 TO W - 1 BY STRIDE DO
-  { LET dA, rayA, d, side, wX = 0, 0, 0, 0, 0
+  { LET dA, rayA, perp, side, wX = 0, 0, 0, 0, 0
     LET dperp, h, top = 0, 0, 0
-    LET texX = 0
+    LET texX, rdx, rdy = 0, 0, 0
     dA   := (col - W/2) * FOV / W
     rayA := pa + dA
     cast(px, py, rayA, res)
-    d     := res!0
-    side  := res!1
-    wX    := res!2
-    dperp := (d * cos_t!(dA & (ANG-1))) / 1024
+    perp := res!0
+    side := res!1
+    wX   := res!2
+    rdx  := res!3
+    rdy  := res!4
+    // Fisheye correction: perp is Euclidean ray length; multiply by
+    // cos(angle delta) to get camera-perpendicular distance.
+    dperp := (perp * cos_t!(dA & (ANG-1))) / 1024
     IF dperp < 1 DO dperp := 1
     h := PROJ / dperp
     IF h > H DO h := H
-    top  := (H - h) / 2
+    top := (H - h) / 2
     texX := (wX * tex_w) / 1024
+    // Mirror texX on back-facing wall sides so the texture orientation
+    // is consistent around a room.
+    TEST side = 0
+    THEN IF rdx > 0 DO texX := tex_w - 1 - texX
+    ELSE IF rdy < 0 DO texX := tex_w - 1 - texX
     sys(Sys_drawtexcol, col, top, h, texX, tex_base, tex_w, tex_h, side)
   }
   sys(Sys_sdl, sdl_flip, surf)
