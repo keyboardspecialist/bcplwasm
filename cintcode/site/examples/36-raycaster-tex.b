@@ -21,18 +21,18 @@ GET "libhdr"
 GET "sdl"
 
 MANIFEST {
-  W        = 480
-  H        = 300
+  W        = 960
+  H        = 600
   MAP      = 8
   STRIDE   = 1
   ANG      = 1024
   FOV      = 171
-  PROJ     = 9000
+  PROJ     = 22000
   MARCH_DV = 64           // 1/MARCH_DV cell per ray step
   MAXSTEP  = 2048
   TEX_W    = 64           // virtual texel pitch along wall face
   TEX_H    = 64           // virtual texel pitch up the wall
-  N_BANDS  = 16           // texY samples per column
+  N_BANDS  = 48           // texY samples per column
 
   KEYCAP   = 512
   K_LEFT   = 37
