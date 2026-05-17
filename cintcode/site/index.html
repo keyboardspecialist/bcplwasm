@@ -593,6 +593,7 @@
       </div>
       <div class="action-row">
         <button id="compileRun">Compile &amp; Run</button>
+        <button id="stopRun" disabled title="stop the running program">Stop</button>
         <button id="shareLink" title="copy share URL of current file">Share link</button>
         <span id="compileStatus" class="compile-status"></span>
       </div>
@@ -656,6 +657,8 @@
     const outputEl      = document.getElementById("output");
     const stdinEl       = document.getElementById("stdin");
     const compileBtn    = document.getElementById("compileRun");
+    const stopBtn       = document.getElementById("stopRun");
+    let   currentRt     = null;   // BcplRuntime of the active program, if any
     const statusEl      = document.getElementById("compileStatus");
 
     // ------------------ Left-pane tab switching ------------------
@@ -1392,6 +1395,8 @@ LET start() = VALOF
           (s) => { outputEl.textContent += s; },
           stdinEl.value
         );
+        currentRt = rt;
+        stopBtn.disabled = false;
         // Wire the canvas + reveal callback so SDL ops have a target.
         const canvasEl = document.getElementById("sdlCanvas");
         const outputPaneEl = document.getElementById("outputPane");
@@ -1418,15 +1423,23 @@ LET start() = VALOF
         rt.initMaster();
         setStatus("running…");
         await rt.run();
-        setStatus("ok");
+        setStatus(rt.aborted ? "stopped" : "ok");
       } catch (err) {
         setStatus(err.message ?? String(err), true);
         outputEl.textContent += `\n[compile+run error] ${err.message ?? err}`;
         console.error(err);
       } finally {
         compileBtn.disabled = false;
+        stopBtn.disabled = true;
+        currentRt = null;
       }
     }
+    stopBtn.addEventListener("click", () => {
+      if (currentRt) {
+        currentRt.abort();
+        setStatus("stopping…");
+      }
+    });
 
     // ------------------ Wiring ------------------
     compileBtn.addEventListener("click", compileAndRun);

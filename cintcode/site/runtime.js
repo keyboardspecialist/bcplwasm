@@ -68,6 +68,16 @@ export class BcplRuntime {
     this.sdlStartTime = 0;
     this.sdlOnShow = null;      // callback: () => void  (toggles visible)
     this.sdlCurrentColor = 0xFFFFFFFF; // packed RGBA
+    this.aborted = false;       // set true by abort(); checked between yields
+  }
+
+  // Request the running program to stop. Effective at the next
+  // asyncify yield point (delay, cowait, etc.) — the run() loop sees
+  // the flag during its resume cycle and throws BcplHalt to unwind.
+  // Synchronous tight loops without yield points cannot be aborted
+  // (JS is single-threaded; the wasm call has to return on its own).
+  abort() {
+    this.aborted = true;
   }
 
   // Wire up the canvas + a callback to flip its container visible.
@@ -2351,6 +2361,7 @@ export class BcplRuntime {
   // programs never suspend, so the loop completes in one tick and
   // the awaited Promise resolves immediately.
   async run() {
+    this.aborted = false;
     const tidx = this.loadWord(2);
     const startFn = this.master.exports.ftable.get(tidx);
     if (!startFn) throw new Error(`start (G!1 tidx=${tidx}) not in table`);
@@ -2390,6 +2401,7 @@ export class BcplRuntime {
     // every context is done or the root finishes.
     let ctx = root;
     while (ctx) {
+      if (this.aborted) return 0;
       this.P = ctx.savedP;
       this._currentCo = ctx;
       // Mirror currco (G!7) for BCPL code that reads it directly.
@@ -2446,6 +2458,7 @@ export class BcplRuntime {
             await new Promise((resolve) => setTimeout(resolve, ms - 16));
           }
         }
+        if (this.aborted) return 0;
         if (nextHandle === null || nextHandle === 0) {
           ctx = this._coroutines.get(ctx.parentHandle) ?? root;
         } else {
