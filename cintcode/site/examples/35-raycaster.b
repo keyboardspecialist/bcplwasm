@@ -125,8 +125,11 @@ LET shade(d) = VALOF
 }
 
 LET drawframe(px, py, pa) BE
-{ sys(Sys_sdl, sdl_drawfillrect, surf, 0, 0,     W, H/2, sky_c)
-  sys(Sys_sdl, sdl_drawfillrect, surf, 0, H/2,   W, H/2, floor_c)
+{ // sdl_drawfillrect takes two CORNERS (x1, y1, x2, y2, col) in the
+  // browser runtime — width/height would be the wrong interpretation
+  // and produce zero-area strips.
+  sys(Sys_sdl, sdl_drawfillrect, surf, 0,   0,   W, H/2, sky_c)
+  sys(Sys_sdl, sdl_drawfillrect, surf, 0, H/2,   W,   H, floor_c)
 
   FOR col = 0 TO W - 1 BY STRIDE DO
   { LET rayA = pa + (col - W/2) * FOV / W
@@ -135,7 +138,7 @@ LET drawframe(px, py, pa) BE
     IF h > H DO h := H
     { LET top = (H - h) / 2
       sys(Sys_sdl, sdl_drawfillrect,
-          surf, col, top, STRIDE, h, shade(d))
+          surf, col, top, col + STRIDE, top + h, shade(d))
     }
   }
   sys(Sys_sdl, sdl_flip, surf)
