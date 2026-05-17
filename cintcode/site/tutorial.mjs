@@ -544,6 +544,20 @@ export const TRACK = [
     ],
     prereqs: ["36-raycaster-tex"],
   },
+  {
+    slug: "38-raycaster-skyfloor",
+    title: "SDL: Sky Panorama + Floor & Ceiling Cast",
+    level: 9,
+    topic: "graphics",
+    summary: "Textured sky (sampled by ray angle), textured floor and ceiling (per-pixel floorcast) on top of textured walls.",
+    goals: [
+      "Sys_setbgtex caches sky/floor/ceiling textures once",
+      "Sys_drawskycol samples a panorama by ray angle for U",
+      "Sys_drawfloorcol per-pixel cast: rowDist = horizon / (y - horizon)",
+      "Three uploaded PNGs combine for full environment texturing",
+    ],
+    prereqs: ["37-raycaster-textured"],
+  },
 ];
 
 // Quick-lookup helpers used by the UI.
