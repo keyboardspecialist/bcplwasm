@@ -515,6 +515,21 @@ export const TRACK = [
     ],
     prereqs: ["33-sdl-bouncer", "25-floats", "34-binary-tree"],
   },
+  {
+    slug: "36-raycaster-tex",
+    title: "SDL: Raycaster with Texture Pipeline",
+    level: 9,
+    topic: "graphics",
+    summary: "Higher-res raycaster wired for texture mapping: side detection, wallX, per-band column draw.",
+    goals: [
+      "STRIDE = 1 — one ray per pixel column",
+      "cast() reports (perpendicular distance, side, wallX)",
+      "Wall column rendered as N texY bands instead of one rect",
+      "Procedural brick texture stands in for a real texel array",
+      "Fisheye correction via cos(angle delta from heading)",
+    ],
+    prereqs: ["35-raycaster"],
+  },
 ];
 
 // Quick-lookup helpers used by the UI.
