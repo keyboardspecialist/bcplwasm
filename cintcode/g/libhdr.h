@@ -526,6 +526,9 @@ Sys_errwrch         = 75   // wrch to STDERR
 Sys_assetload       = 80
 Sys_assetlist       = 81
 Sys_drawtexcol      = 82
+Sys_setbgtex        = 83    // (slot, base, w, h) — slot 0=sky, 1=floor, 2=ceil
+Sys_drawskycol      = 84    // (col, h_top, u) — panorama sky column 0..h_top-1
+Sys_drawfloorcol    = 85    // (col, horizon, px, py, dx, dy) — floor+ceil cast
 
 bootregs = 11 // Registers used to enter the function start in boot.b
 cliregs  = 21 // Registers used by BOOT to start the CLI

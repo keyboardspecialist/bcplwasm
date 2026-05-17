@@ -1074,6 +1074,153 @@ export class BcplRuntime {
         return 0;
       }
 
+      // sys(Sys_setbgtex, slot, base, w, h) — cache a background tex.
+      // slot 0=sky, 1=floor, 2=ceiling. Subsequent drawskycol /
+      // drawfloorcol read from these slots. base is a word address
+      // (info!2 from Sys_assetload).
+      case 83: {
+        const slot = a1 | 0;
+        const base = a2 | 0;
+        const w    = a3 | 0;
+        const h    = a4 | 0;
+        const bg = this._bgTex ??= [null, null, null];
+        if (slot >= 0 && slot < 3) bg[slot] = { base, w, h };
+        return 0;
+      }
+
+      // sys(Sys_drawskycol, col, h_top, u) — panorama sky column.
+      // Fills y=0..h_top-1 from cached sky tex at column u (wrapped),
+      // V scaled by y / (canvas.height/2) * sky_h so the horizon line
+      // sits at canvas mid-height regardless of where the wall starts.
+      case 84: {
+        const col   = a1 | 0;
+        const h_top = a2 | 0;
+        const u     = a3 | 0;
+        const bg = this._bgTex;
+        if (!this.sdlCtx || !bg || !bg[0] || h_top <= 0) return 0;
+        const tex = bg[0];
+        const can = this.sdlCanvas;
+        if (col < 0 || col >= can.width) return 0;
+        let drawH = h_top;
+        if (drawH > can.height) drawH = can.height;
+        const horizon = can.height >> 1;
+        const buf = this._skyColBuf ??= { arr: null, h: 0 };
+        if (buf.h !== drawH) {
+          buf.arr = new Uint8ClampedArray(drawH * 4);
+          buf.h = drawH;
+        }
+        const arr = buf.arr;
+        const mv = this.memView;
+        const tw = tex.w, th = tex.h;
+        const tx = ((u % tw) + tw) % tw;
+        for (let y = 0; y < drawH; y++) {
+          let tY = Math.floor(y * th / horizon);
+          if (tY < 0) tY = 0; else if (tY >= th) tY = th - 1;
+          const word = mv.getInt32((tex.base + tY * tw + tx) * 4, true);
+          const r = (word >>> 24) & 0xFF;
+          const g = (word >>> 16) & 0xFF;
+          const b = (word >>>  8) & 0xFF;
+          const a = word & 0xFF;
+          const o = y * 4;
+          arr[o]     = r;
+          arr[o + 1] = g;
+          arr[o + 2] = b;
+          arr[o + 3] = a || 0xFF;
+        }
+        this.sdlCtx.putImageData(new ImageData(arr, 1, drawH), col, 0);
+        return 0;
+      }
+
+      // sys(Sys_drawfloorcol, col, horizon, px, py, dx, dy) — per-pixel
+      // floor + ceiling cast for one column. Both halves share rowDist
+      // (camera-perp distance to the floor/ceiling point at screen y).
+      // px/py: player pos, 1024-scaled cell coords. dx/dy: ray dir for
+      // this column, cos/sin*1024. Floor uses slot 1, ceiling slot 2;
+      // either may be null and that half is then skipped.
+      //
+      //   rowDist = (horizon * 1024) / (y - horizon)        (1024-scaled cells)
+      //   worldX  = px + (rowDist * dx) / 1024
+      //   worldY  = py + (rowDist * dy) / 1024
+      //   tx      = ((worldX mod 1024) * tex_w) / 1024
+      //   ty      = ((worldY mod 1024) * tex_h) / 1024
+      case 85: {
+        const col     = a1 | 0;
+        const horizon = a2 | 0;
+        const px      = a3 | 0;
+        const py      = a4 | 0;
+        const dx      = a5 | 0;
+        const dy      = a6 | 0;
+        const bg = this._bgTex;
+        if (!this.sdlCtx || !bg) return 0;
+        const floor = bg[1], ceil = bg[2];
+        if (!floor && !ceil) return 0;
+        const can = this.sdlCanvas;
+        if (col < 0 || col >= can.width) return 0;
+        const H = can.height;
+        // Floor strip: y in [horizon, H-1]; ceiling strip: y in [0, horizon-1].
+        // Two separate putImageData calls so the middle wall region is
+        // never touched here (walls overpaint after).
+        const floorY0 = Math.max(horizon, 0);
+        const floorH  = H - floorY0;
+        const ceilH   = Math.max(horizon, 0);
+        const bufF = this._floorBufF ??= { arr: null, h: 0 };
+        const bufC = this._floorBufC ??= { arr: null, h: 0 };
+        if (bufF.h !== floorH) {
+          bufF.arr = floorH > 0 ? new Uint8ClampedArray(floorH * 4) : null;
+          bufF.h = floorH;
+        }
+        if (bufC.h !== ceilH) {
+          bufC.arr = ceilH > 0 ? new Uint8ClampedArray(ceilH * 4) : null;
+          bufC.h = ceilH;
+        }
+        // Reset per-column so leftover bytes from prior columns don't
+        // show through. The y=horizon pixel itself is left at 0 too —
+        // skipped by the loop (denom=0 would divide).
+        if (bufF.arr) bufF.arr.fill(0);
+        if (bufC.arr) bufC.arr.fill(0);
+        const mv = this.memView;
+        for (let y = floorY0 + 1; y < H; y++) {
+          const denom = y - horizon;          // > 0
+          const rowDist = ((horizon * 1024) / denom) | 0;
+          const worldX = px + ((rowDist * dx) / 1024 | 0);
+          const worldY = py + ((rowDist * dy) / 1024 | 0);
+          const fx = ((worldX % 1024) + 1024) % 1024;
+          const fy = ((worldY % 1024) + 1024) % 1024;
+          if (floor && bufF.arr) {
+            const tw = floor.w, th = floor.h;
+            const tx = (fx * tw / 1024) | 0;
+            const ty = (fy * th / 1024) | 0;
+            const word = mv.getInt32((floor.base + ty * tw + tx) * 4, true);
+            const o = (y - floorY0) * 4;
+            bufF.arr[o]     = (word >>> 24) & 0xFF;
+            bufF.arr[o + 1] = (word >>> 16) & 0xFF;
+            bufF.arr[o + 2] = (word >>>  8) & 0xFF;
+            bufF.arr[o + 3] = (word & 0xFF) || 0xFF;
+          }
+          if (ceil && bufC.arr) {
+            const my = horizon - denom;
+            if (my >= 0 && my < ceilH) {
+              const tw = ceil.w, th = ceil.h;
+              const tx = (fx * tw / 1024) | 0;
+              const ty = (fy * th / 1024) | 0;
+              const word = mv.getInt32((ceil.base + ty * tw + tx) * 4, true);
+              const o = my * 4;
+              bufC.arr[o]     = (word >>> 24) & 0xFF;
+              bufC.arr[o + 1] = (word >>> 16) & 0xFF;
+              bufC.arr[o + 2] = (word >>>  8) & 0xFF;
+              bufC.arr[o + 3] = (word & 0xFF) || 0xFF;
+            }
+          }
+        }
+        if (floor && bufF.arr && floorH > 0) {
+          this.sdlCtx.putImageData(new ImageData(bufF.arr, 1, floorH), col, floorY0);
+        }
+        if (ceil && bufC.arr && ceilH > 0) {
+          this.sdlCtx.putImageData(new ImageData(bufC.arr, 1, ceilH), col, 0);
+        }
+        return 0;
+      }
+
       // sys(Sys_assetlist, dest_str) — copy a comma-separated list of
       // asset names into dest_str (BCPL string layout). Useful for
       // discovery. Returns count.
