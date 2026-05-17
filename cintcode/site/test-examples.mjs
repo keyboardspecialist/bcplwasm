@@ -39,6 +39,7 @@ const RUN_SKIP = new Set([
   "33-sdl-bouncer",     // needs SDL canvas context
   "35-raycaster",       // continuous game loop — only ends on Esc
   "36-raycaster-tex",   // ditto
+  "37-raycaster-textured",  // ditto
   "stdlib",             // pure library — no start()
 ]);
 
