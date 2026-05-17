@@ -500,6 +500,21 @@ export const TRACK = [
     ],
     prereqs: ["07-for-loop"],
   },
+  {
+    slug: "35-raycaster",
+    title: "SDL: Wolfenstein-style Raycaster",
+    level: 9,
+    topic: "graphics",
+    summary: "Flat-shaded raycast walls over an 8x8 grid; per-column vertical strips.",
+    goals: [
+      "Fixed-point map coordinates (1024 units per cell)",
+      "BCPL Taylor sin/cos baked into fixed-point lookup tables",
+      "Per-column ray cast by marching small steps until a wall cell",
+      "Wall slice height = projection_const / distance",
+      "Distance shading via sdl_maprgb at draw time",
+    ],
+    prereqs: ["33-sdl-bouncer", "25-floats", "34-binary-tree"],
+  },
 ];
 
 // Quick-lookup helpers used by the UI.
