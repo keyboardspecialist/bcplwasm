@@ -183,8 +183,11 @@ LET drawframe(px, py, pa) BE
     // cos(angle delta) to get camera-perpendicular distance.
     dperp := (perp * cos_t!(dA & (ANG-1))) / 1024
     IF dperp < 1 DO dperp := 1
+    // No clamp on h. The runtime clips drawing to the canvas, but the
+    // texY mapping inside Sys_drawtexcol uses the UNCLAMPED h so the
+    // texture stays at correct scale even when the wall is so close
+    // it would span far more than H pixels.
     h := PROJ / dperp
-    IF h > H DO h := H
     top := (H - h) / 2
     texX := (wX * tex_w) / 1024
     // Mirror texX on back-facing wall sides so the texture orientation
