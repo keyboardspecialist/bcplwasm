@@ -586,11 +586,14 @@
         <ul id="assetList" class="file-list"></ul>
         <div class="file-actions">
           <button id="addAsset">+ asset</button>
-          <input id="assetFile" type="file" accept="image/*" style="display:none">
+          <input id="assetFile" type="file" style="display:none">
         </div>
         <div class="file-actions" style="color: var(--fg-dim); font-size: 0.72rem; line-height:1.35;">
-          PNG/JPEG/etc. Decoded to RGBA bytes on upload. Reach from
-          BCPL via <code>sys(Sys_assetload, "name", info_vec)</code>.
+          PNG/JPEG/etc. decoded to RGBA; any other file kept as raw
+          bytes (WAD, .bin, etc.). Reach from BCPL via
+          <code>sys(Sys_assetload, "name", info_vec)</code> —
+          <code>info!1 = 0</code> signals a binary blob and
+          <code>info!0</code> holds its byte length.
         </div>
       </div>
 
@@ -997,15 +1000,24 @@ LET start() = VALOF
     }
 
     // ------------------ Assets tab ----------------------------------
+    // Image extensions get decoded to RGBA; everything else is stored
+    // raw as a binary blob (WADs, .bin, etc.) and reachable from BCPL
+    // via Sys_assetload with info!1 == 0.
+    const IMAGE_EXT = /\.(png|jpe?g|gif|webp|bmp)$/i;
     async function loadAssetFile(file) {
       try {
         const { decodeImageToAsset, assetBackend } =
           await import(`./runtime.js?v=${V}`);
-        const rec = await decodeImageToAsset(file);
+        let rec;
+        if (IMAGE_EXT.test(file.name)) {
+          rec = await decodeImageToAsset(file);
+        } else {
+          rec = { bytes: new Uint8Array(await file.arrayBuffer()) };
+        }
         assetBackend.set(file.name, rec);
         renderAssetList();
       } catch (e) {
-        alert(`Asset decode failed: ${e.message ?? e}`);
+        alert(`Asset load failed: ${e.message ?? e}`);
       }
     }
     async function renderAssetList() {
@@ -1016,7 +1028,11 @@ LET start() = VALOF
         const rec = assetBackend.get(name);
         const li = document.createElement("li");
         const title = document.createElement("span");
-        title.textContent = `${name}  (${rec.w}×${rec.h})`;
+        if (rec.bytes) {
+          title.textContent = `${name}  (${rec.bytes.length} bytes)`;
+        } else {
+          title.textContent = `${name}  (${rec.w}×${rec.h})`;
+        }
         const del = document.createElement("button");
         del.textContent = "×";
         del.title = "remove";

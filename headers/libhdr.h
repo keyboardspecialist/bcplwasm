@@ -523,10 +523,14 @@ Sys_memmovebytes    =  74  // MR 14/06/23 (dest, src, n) dest and src are
 Sys_errwrch         = 75   // wrch to STDERR
 
 // Playground-only sys ops for the asset registry. Lookup uploaded
-// images by name; on success the runtime allocates wasm memory for
-// the decoded RGBA texels, copies them in (one packed-RGB word per
-// texel — same layout sdl_maprgb returns), and writes:
-//   info!0 = width   info!1 = height   info!2 = word addr of pixels
+// assets by name. Two record shapes:
+//   image:  info!0 = width    info!1 = height   info!2 = word addr
+//           of packed-RGB pixels (one word per texel, same layout
+//           sdl_maprgb returns).
+//   binary: info!0 = byte len  info!1 = 0       info!2 = word addr
+//           whose backing bytes are reachable via BCPL's byte-fetch
+//           operator (`base % i`). Use for WADs, .bin blobs, etc.
+// Caller distinguishes by `info!1 = 0` (binary) vs nonzero (image).
 Sys_assetload       = 80   // (name_str, info_vec) -> -1 hit / 0 miss
 Sys_assetlist       = 81   // (dest_str) — fills with comma list
 Sys_drawtexcol      = 82   // (col, top, h, texX, tex_base, tex_w, tex_h, dim)

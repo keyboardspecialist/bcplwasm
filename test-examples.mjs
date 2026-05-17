@@ -41,6 +41,7 @@ const RUN_SKIP = new Set([
   "36-raycaster-tex",   // ditto
   "37-raycaster-textured",  // ditto
   "38-raycaster-skyfloor",  // ditto
+  "39-wad-reader",      // needs a binary WAD asset uploaded
   "stdlib",             // pure library — no start()
 ]);
 

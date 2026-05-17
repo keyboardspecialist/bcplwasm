@@ -35,33 +35,49 @@ export const storageBackend = (() => {
 })();
 
 // Binary asset registry (textures etc.). In-memory only — bundles are
-// the persistence path. Each entry is { w, h, rgba: Uint8Array(w*h*4) }
-// with rgba in standard RGBA byte order.
+// the persistence path. Two record shapes:
+//   image:  { w, h, rgba: Uint8Array(w*h*4) }    — RGBA byte order
+//   binary: { bytes: Uint8Array }                — arbitrary blob (WADs, etc.)
+// Sys_assetload returns image data as packed words; binary as raw
+// bytes (info!0 = byte length, info!1 = 0).
 export const assetBackend = (() => {
   const mem = new Map();
+  const toB64 = (u8) => {
+    let bin = "";
+    for (let i = 0; i < u8.length; i++) bin += String.fromCharCode(u8[i]);
+    return btoa(bin);
+  };
+  const fromB64 = (s) => {
+    const bin = atob(s);
+    const u8 = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+    return u8;
+  };
   return {
     list: () => Array.from(mem.keys()),
     get: (name) => mem.get(name) ?? null,
     set: (name, rec) => mem.set(name, rec),
     del: (name) => mem.delete(name),
     clear: () => mem.clear(),
-    // Returns a JSON-serialisable snapshot — rgba converted to base64.
     serialise: () => {
       const out = {};
       for (const [k, v] of mem) {
-        let bin = "";
-        for (let i = 0; i < v.rgba.length; i++) bin += String.fromCharCode(v.rgba[i]);
-        out[k] = { w: v.w, h: v.h, rgba_b64: btoa(bin) };
+        if (v.bytes) {
+          out[k] = { kind: "binary", bytes_b64: toB64(v.bytes) };
+        } else {
+          out[k] = { w: v.w, h: v.h, rgba_b64: toB64(v.rgba) };
+        }
       }
       return out;
     },
     deserialise: (obj) => {
       mem.clear();
       for (const [k, v] of Object.entries(obj)) {
-        const bin = atob(v.rgba_b64);
-        const rgba = new Uint8Array(bin.length);
-        for (let i = 0; i < bin.length; i++) rgba[i] = bin.charCodeAt(i);
-        mem.set(k, { w: v.w, h: v.h, rgba });
+        if (v.kind === "binary" || v.bytes_b64) {
+          mem.set(k, { bytes: fromB64(v.bytes_b64) });
+        } else {
+          mem.set(k, { w: v.w, h: v.h, rgba: fromB64(v.rgba_b64) });
+        }
       }
     },
   };
@@ -982,9 +998,30 @@ export class BcplRuntime {
         const infoPtr = a2;
         const rec = assetBackend.get(name);
         if (!rec) return 0;
-        // Allocate from heap if this asset isn't already mapped.
         this._assetMap ??= new Map();
         let dataWordAddr = this._assetMap.get(name);
+        // ----- Binary asset path -----
+        // Layout: raw bytes copied into wasm memory starting at the
+        // byte address dataWordAddr * 4. BCPL reads them via the
+        // byte-fetch operator (`base % i`).
+        // info!0 = byte length, info!1 = 0, info!2 = word address.
+        if (rec.bytes) {
+          if (dataWordAddr === undefined) {
+            const byteLen = rec.bytes.length;
+            const wordsNeeded = (byteLen + 3) >> 2;
+            this.heapTop -= wordsNeeded;
+            if (this.heapTop <= 0) { this.heapTop += wordsNeeded; return 0; }
+            dataWordAddr = this.heapTop;
+            const dstByteAddr = dataWordAddr * 4;
+            new Uint8Array(this.mem.buffer, dstByteAddr, byteLen).set(rec.bytes);
+            this._assetMap.set(name, dataWordAddr);
+          }
+          this.storeWord(infoPtr + 0, rec.bytes.length | 0);
+          this.storeWord(infoPtr + 1, 0);
+          this.storeWord(infoPtr + 2, dataWordAddr | 0);
+          return -1;
+        }
+        // ----- Image asset path -----
         if (dataWordAddr === undefined) {
           const wordsNeeded = rec.w * rec.h;
           this.heapTop -= wordsNeeded;
