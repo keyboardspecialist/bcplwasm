@@ -108,18 +108,44 @@ export class BcplRuntime {
       this.sdlMouse.buttons &= ~(1 << e.button);
       this.sdlEvents.push({ type: 6, b: 1 << e.button, x: this.sdlMouse.x, y: this.sdlMouse.y });
     });
-    c.addEventListener("keydown", (e) => {
-      const code = e.keyCode || e.which || e.key.charCodeAt(0);
-      this.sdlKeys.add(code);
-      this.sdlEvents.push({ type: 2, mod: 0, ch: code });
-      e.preventDefault();
-    });
-    c.addEventListener("keyup", (e) => {
-      const code = e.keyCode || e.which || e.key.charCodeAt(0);
-      this.sdlKeys.delete(code);
-      this.sdlEvents.push({ type: 3, mod: 0, ch: code });
-      e.preventDefault();
-    });
+
+    // Key handlers live on the window so the canvas does not have to
+    // hold focus. Without this, clicking Stop or anywhere outside the
+    // canvas swallows subsequent keystrokes, including Esc — so the
+    // running BCPL program "rarely" sees the quit key.
+    //
+    // Skip events targeted at form fields so typing into stdin /
+    // editor textareas does not flood the SDL queue.
+    if (typeof window !== "undefined" && !window.__bcplKeysWired) {
+      window.__bcplKeysWired = this;
+      const editable = (t) => t && (
+        t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable
+      );
+      window.addEventListener("keydown", (e) => {
+        const rt = window.__bcplKeysWired;
+        if (!rt || !rt.sdlCanvas) return;
+        if (editable(e.target)) return;
+        const code = e.keyCode || e.which || (e.key && e.key.charCodeAt(0)) || 0;
+        rt.sdlKeys.add(code);
+        rt.sdlEvents.push({ type: 2, mod: 0, ch: code });
+        // Stop arrows / space from scrolling the page while playing.
+        if (code >= 32 && code <= 40) e.preventDefault();
+        if (code === 27) e.preventDefault();
+      }, true);
+      window.addEventListener("keyup", (e) => {
+        const rt = window.__bcplKeysWired;
+        if (!rt || !rt.sdlCanvas) return;
+        if (editable(e.target)) return;
+        const code = e.keyCode || e.which || (e.key && e.key.charCodeAt(0)) || 0;
+        rt.sdlKeys.delete(code);
+        rt.sdlEvents.push({ type: 3, mod: 0, ch: code });
+      }, true);
+    } else if (typeof window !== "undefined") {
+      // Re-point the singleton window handler at this runtime so a
+      // fresh Compile & Run does not keep firing events into the old
+      // BcplRuntime instance.
+      window.__bcplKeysWired = this;
+    }
   }
 
   // Decode a packed BCPL "colour" (any int) into rgba components.

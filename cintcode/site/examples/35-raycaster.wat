@@ -1101,9 +1101,9 @@
     (local $t17 i32)
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
-    (local.set $t3 (i32.const 3584))
+    (local.set $t3 (i32.const 1536))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)) (local.get $t3)) ;; STORE slot 3
-    (local.set $t4 (i32.const 5632))
+    (local.set $t4 (i32.const 1536))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (local.get $t4)) ;; STORE slot 4
     (local.set $t5 (i32.const 0))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t5)) ;; STORE slot 5

@@ -178,8 +178,10 @@ LET try_move(px_lv, py_lv, mx, my) BE
 }
 
 LET start() = VALOF
-{ LET px = 3 * 1024 + 512
-  LET py = 5 * 1024 + 512
+{ // Map row 5 col 3 is a wall — bug in earlier draft. Cell (1, 1) is
+  // open. Coordinates are (cell * 1024 + 512) for cell-centre origin.
+  LET px = 1 * 1024 + 512
+  LET py = 1 * 1024 + 512
   LET pa = 0
 
   wmap := TABLE
