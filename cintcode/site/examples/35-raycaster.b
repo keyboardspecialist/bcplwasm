@@ -132,22 +132,23 @@ LET drawframe(px, py, pa) BE
   sys(Sys_sdl, sdl_drawfillrect, surf, 0, H/2,   W,   H, floor_c)
 
   FOR col = 0 TO W - 1 BY STRIDE DO
-  { // dA = ray offset from player heading. Used twice: once to find
-    // the ray angle for casting, once to undo the fisheye that
-    // plain Euclidean distance would produce. dperp = d * cos(dA)
-    // gives perpendicular distance to the wall — projecting that
-    // keeps verticals straight in screen space.
-    LET dA   = (col - W/2) * FOV / W
-    LET rayA = pa + dA
-    LET d    = cast(px, py, rayA)
+  { // dA = ray offset from player heading. dperp = d * cos(dA) is
+    // the perpendicular distance to the wall — projecting that
+    // keeps verticals straight in screen space (no fisheye bulge).
+    // All LETs must come before commands in a BCPL block, so the
+    // assignments interleave instead of using IF-clamp.
+    LET dA    = (col - W/2) * FOV / W
+    LET rayA  = pa + dA
+    LET d     = cast(px, py, rayA)
     LET dperp = (d * cos_t!(dA & (ANG-1))) / 1024
+    LET h     = 0
+    LET top   = 0
     IF dperp < 1 DO dperp := 1
-    LET h = PROJ / dperp
+    h := PROJ / dperp
     IF h > H DO h := H
-    { LET top = (H - h) / 2
-      sys(Sys_sdl, sdl_drawfillrect,
-          surf, col, top, col + STRIDE, top + h, shade(dperp))
-    }
+    top := (H - h) / 2
+    sys(Sys_sdl, sdl_drawfillrect,
+        surf, col, top, col + STRIDE, top + h, shade(dperp))
   }
   sys(Sys_sdl, sdl_flip, surf)
 }
