@@ -562,6 +562,7 @@
     <aside class="left-pane">
       <nav class="tabs" id="leftTabs">
         <button class="tab active" data-tab="files">Files</button>
+        <button class="tab"        data-tab="assets">Assets</button>
         <button class="tab"        data-tab="examples">Examples</button>
         <button class="tab"        data-tab="api">API</button>
       </nav>
@@ -573,6 +574,23 @@
           <button id="renameFile">rename</button>
           <button id="setEntryBtn">set entry</button>
           <button id="resetFiles">reset</button>
+        </div>
+        <div class="file-actions" style="margin-top:0.4rem;">
+          <button id="exportBundle" title="download project bundle">export</button>
+          <button id="importBundle" title="load project bundle">import</button>
+          <input id="bundleFile" type="file" accept=".bcplproj,.json" style="display:none">
+        </div>
+      </div>
+
+      <div class="tab-body hidden" id="tab-assets">
+        <ul id="assetList" class="file-list"></ul>
+        <div class="file-actions">
+          <button id="addAsset">+ asset</button>
+          <input id="assetFile" type="file" accept="image/*" style="display:none">
+        </div>
+        <div class="file-actions" style="color: var(--fg-dim); font-size: 0.72rem; line-height:1.35;">
+          PNG/JPEG/etc. Decoded to RGBA bytes on upload. Reach from
+          BCPL via <code>sys(Sys_assetload, "name", info_vec)</code>.
         </div>
       </div>
 
@@ -977,6 +995,98 @@ LET start() = VALOF
       persistFiles();
       rebuildSourceTabs(false);
     }
+
+    // ------------------ Assets tab ----------------------------------
+    async function loadAssetFile(file) {
+      try {
+        const { decodeImageToAsset, assetBackend } =
+          await import(`./runtime.js?v=${V}`);
+        const rec = await decodeImageToAsset(file);
+        assetBackend.set(file.name, rec);
+        renderAssetList();
+      } catch (e) {
+        alert(`Asset decode failed: ${e.message ?? e}`);
+      }
+    }
+    async function renderAssetList() {
+      const { assetBackend } = await import(`./runtime.js?v=${V}`);
+      const ul = document.getElementById("assetList");
+      ul.innerHTML = "";
+      for (const name of assetBackend.list()) {
+        const rec = assetBackend.get(name);
+        const li = document.createElement("li");
+        const title = document.createElement("span");
+        title.textContent = `${name}  (${rec.w}×${rec.h})`;
+        const del = document.createElement("button");
+        del.textContent = "×";
+        del.title = "remove";
+        del.onclick = () => { assetBackend.del(name); renderAssetList(); };
+        li.appendChild(title);
+        li.appendChild(del);
+        ul.appendChild(li);
+      }
+    }
+    document.getElementById("addAsset").addEventListener("click", () => {
+      document.getElementById("assetFile").click();
+    });
+    document.getElementById("assetFile").addEventListener("change", async (e) => {
+      const f = e.target.files?.[0];
+      if (f) await loadAssetFile(f);
+      e.target.value = "";
+    });
+
+    // ------------------ Project bundle export / import -------------
+    async function exportBundle() {
+      const { assetBackend } = await import(`./runtime.js?v=${V}`);
+      const bundle = {
+        version: 1,
+        exported: new Date().toISOString(),
+        files: files.map(f => ({ name: f.name, entry: !!f.entry, content: f.content })),
+        assets: assetBackend.serialise(),
+      };
+      const blob = new Blob([JSON.stringify(bundle)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "project.bcplproj";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+    async function importBundle(file) {
+      try {
+        const text = await file.text();
+        const bundle = JSON.parse(text);
+        if (!Array.isArray(bundle.files)) throw new Error("missing files[]");
+        const { assetBackend } = await import(`./runtime.js?v=${V}`);
+        files = bundle.files.map(f => ({
+          name: f.name, entry: !!f.entry, content: f.content ?? "",
+        }));
+        if (!files.some(f => f.entry)) {
+          const i = files.findIndex(f => f.name.endsWith(".b"));
+          if (i >= 0) files[i].entry = true;
+        }
+        if (bundle.assets && typeof bundle.assets === "object") {
+          assetBackend.deserialise(bundle.assets);
+        }
+        persistFiles();
+        sourceTabs = [];
+        rebuildSourceTabs(false);
+        renderAssetList();
+      } catch (e) {
+        alert(`Import failed: ${e.message ?? e}`);
+      }
+    }
+    document.getElementById("exportBundle").addEventListener("click", exportBundle);
+    document.getElementById("importBundle").addEventListener("click", () => {
+      document.getElementById("bundleFile").click();
+    });
+    document.getElementById("bundleFile").addEventListener("change", async (e) => {
+      const f = e.target.files?.[0];
+      if (f) await importBundle(f);
+      e.target.value = "";
+    });
 
     // ------------------ Examples tab (tutorial track) ------------------
     let selectedExample = TRACK[0]?.slug ?? EXTRAS[0];
@@ -1910,6 +2020,7 @@ LET start() = VALOF
     // Initial render.
     rebuildSourceTabs(false);
     renderFileList();
+    renderAssetList();
     renderExampleList();
     renderApiList();
     syncEditor();

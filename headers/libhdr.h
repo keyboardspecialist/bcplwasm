@@ -522,6 +522,14 @@ Sys_memmovebytes    =  74  // MR 14/06/23 (dest, src, n) dest and src are
 			   //    The dest and src regions may overlap.
 Sys_errwrch         = 75   // wrch to STDERR
 
+// Playground-only sys ops for the asset registry. Lookup uploaded
+// images by name; on success the runtime allocates wasm memory for
+// the decoded RGBA texels, copies them in (one packed-RGB word per
+// texel — same layout sdl_maprgb returns), and writes:
+//   info!0 = width   info!1 = height   info!2 = word addr of pixels
+Sys_assetload       = 80   // (name_str, info_vec) -> -1 hit / 0 miss
+Sys_assetlist       = 81   // (dest_str) — fills with comma list
+
 bootregs = 11 // Registers used to enter the function start in boot.b
 cliregs  = 21 // Registers used by BOOT to start the CLI
 klibregs = 21 // Registers used by BOOT to start KLIB

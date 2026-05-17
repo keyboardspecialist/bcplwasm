@@ -34,6 +34,53 @@ export const storageBackend = (() => {
   };
 })();
 
+// Binary asset registry (textures etc.). In-memory only — bundles are
+// the persistence path. Each entry is { w, h, rgba: Uint8Array(w*h*4) }
+// with rgba in standard RGBA byte order.
+export const assetBackend = (() => {
+  const mem = new Map();
+  return {
+    list: () => Array.from(mem.keys()),
+    get: (name) => mem.get(name) ?? null,
+    set: (name, rec) => mem.set(name, rec),
+    del: (name) => mem.delete(name),
+    clear: () => mem.clear(),
+    // Returns a JSON-serialisable snapshot — rgba converted to base64.
+    serialise: () => {
+      const out = {};
+      for (const [k, v] of mem) {
+        let bin = "";
+        for (let i = 0; i < v.rgba.length; i++) bin += String.fromCharCode(v.rgba[i]);
+        out[k] = { w: v.w, h: v.h, rgba_b64: btoa(bin) };
+      }
+      return out;
+    },
+    deserialise: (obj) => {
+      mem.clear();
+      for (const [k, v] of Object.entries(obj)) {
+        const bin = atob(v.rgba_b64);
+        const rgba = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) rgba[i] = bin.charCodeAt(i);
+        mem.set(k, { w: v.w, h: v.h, rgba });
+      }
+    },
+  };
+})();
+
+// Decode an image File/Blob to { w, h, rgba } via OffscreenCanvas.
+// Caller awaits — used by the Assets UI on upload.
+export async function decodeImageToAsset(blob) {
+  const bitmap = await createImageBitmap(blob);
+  const oc = (typeof OffscreenCanvas === "function")
+    ? new OffscreenCanvas(bitmap.width, bitmap.height)
+    : Object.assign(document.createElement("canvas"),
+                    { width: bitmap.width, height: bitmap.height });
+  const ctx = oc.getContext("2d");
+  ctx.drawImage(bitmap, 0, 0);
+  const img = ctx.getImageData(0, 0, bitmap.width, bitmap.height);
+  return { w: bitmap.width, h: bitmap.height, rgba: new Uint8Array(img.data.buffer) };
+}
+
 export class BcplRuntime {
   constructor(writeOut, input = "") {
     this.writeOut = writeOut;   // (string) => void — UI sink for stdout
@@ -917,6 +964,66 @@ export class BcplRuntime {
       case 75: { // Sys_errwrch(ch) — just write to stdout sink
         this.writeOut(String.fromCharCode(a1 & 0xFF));
         return 0;
+      }
+
+      // ---- Asset access ------------------------------------------
+      // BCPL: sys(Sys_assetload, name_str, info_vec)
+      //   name_str   — BCPL string with the asset's registered name.
+      //   info_vec   — caller-supplied VEC 2. On success:
+      //                  info_vec!0 = width
+      //                  info_vec!1 = height
+      //                  info_vec!2 = word address of pixel data
+      //                              (packed RGBA, one word per texel
+      //                               in 0xAABBGGRR order — same layout
+      //                               sdl_maprgb produces).
+      // Returns 0 on miss, -1 on hit.
+      case 80: {
+        const name = this.readBcplString(a1);
+        const infoPtr = a2;
+        const rec = assetBackend.get(name);
+        if (!rec) return 0;
+        // Allocate from heap if this asset isn't already mapped.
+        this._assetMap ??= new Map();
+        let dataWordAddr = this._assetMap.get(name);
+        if (dataWordAddr === undefined) {
+          const wordsNeeded = rec.w * rec.h;
+          this.heapTop -= wordsNeeded;
+          if (this.heapTop <= 0) { this.heapTop += wordsNeeded; return 0; }
+          dataWordAddr = this.heapTop;
+          // RGBA byte-stream -> packed-RGB int per texel. Runtime
+          // colour packing (sdl_maprgb) puts r in high byte:
+          //   (r<<24)|(g<<16)|(b<<8)|a  → 0xRRGGBBAA
+          for (let i = 0; i < wordsNeeded; i++) {
+            const off = i * 4;
+            const r = rec.rgba[off    ] | 0;
+            const g = rec.rgba[off + 1] | 0;
+            const b = rec.rgba[off + 2] | 0;
+            const a = rec.rgba[off + 3] | 0;
+            const packed = ((r & 0xFF) << 24) | ((g & 0xFF) << 16) |
+                           ((b & 0xFF) << 8)  |  (a & 0xFF);
+            this.storeWord(dataWordAddr + i, packed);
+          }
+          this._assetMap.set(name, dataWordAddr);
+        }
+        this.storeWord(infoPtr + 0, rec.w | 0);
+        this.storeWord(infoPtr + 1, rec.h | 0);
+        this.storeWord(infoPtr + 2, dataWordAddr | 0);
+        return -1;
+      }
+
+      // sys(Sys_assetlist, dest_str) — copy a comma-separated list of
+      // asset names into dest_str (BCPL string layout). Useful for
+      // discovery. Returns count.
+      case 81: {
+        const names = assetBackend.list();
+        const joined = names.join(",");
+        const dest = a1;
+        const len = Math.min(joined.length, 255);
+        this.memView.setUint8(dest * 4, len);
+        for (let i = 0; i < len; i++) {
+          this.memView.setUint8(dest * 4 + 1 + i, joined.charCodeAt(i) & 0xFF);
+        }
+        return names.length;
       }
 
       default:
