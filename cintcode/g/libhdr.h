@@ -522,6 +522,11 @@ Sys_memmovebytes    =  74  // MR 14/06/23 (dest, src, n) dest and src are
 			   //    The dest and src regions may overlap.
 Sys_errwrch         = 75   // wrch to STDERR
 
+// BCPL-Wasm playground extension. Cintsys ignores these (returns 0).
+Sys_assetload       = 80
+Sys_assetlist       = 81
+Sys_drawtexcol      = 82
+
 bootregs = 11 // Registers used to enter the function start in boot.b
 cliregs  = 21 // Registers used by BOOT to start the CLI
 klibregs = 21 // Registers used by BOOT to start KLIB
