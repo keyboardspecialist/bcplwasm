@@ -1580,10 +1580,14 @@ export class BcplRuntime {
         ctx.fillRect(0, 0, can.width, can.height);
         return 0;
       }
-      case 17: {                                      // sdl_flip — Canvas auto-presents.
+      // Op numbers below MUST match site/headers/sdl.h. The playground
+      // ships its own minimal sdl.h with hand-picked op constants —
+      // NOT the same as cintsys g/sdl.h, which uses MANIFEST auto-
+      // increment from sdl_avail=0 and lands these elsewhere.
+      case 15: {                                      // sdl_flip — Canvas auto-presents.
         return 0;
       }
-      case 19: case 20: {                             // waitevent / pollevent
+      case 17: case 18: {                             // waitevent / pollevent
         const v = a;                                  // BCPL pointer to event slot vector
         if (this.sdlEvents.length === 0) {
           this.storeWord(v + 0, 0);                   // type=0 (none)
@@ -1595,21 +1599,21 @@ export class BcplRuntime {
         this.storeWord(v + 2, ev.ch    ?? ev.y ?? 0);
         return -1;
       }
-      case 21: {                                      // getmousestate (v -> [x,y]); returns button bits
+      case 19: {                                      // getmousestate (v -> [x,y]); returns button bits
         this.storeWord(a + 0, this.sdlMouse.x | 0);
         this.storeWord(a + 1, this.sdlMouse.y | 0);
         return this.sdlMouse.buttons | 0;
       }
-      case 24: {                                      // wm_setcaption (str, ?)
+      case 22: {                                      // wm_setcaption (str, ?)
         const name = this.readBcplString(a);
         if (typeof document !== "undefined") document.title = name;
         return 0;
       }
-      case 26: {                                      // sdl_maprgb (fmtptr, r, g, b)
+      case 24: {                                      // sdl_maprgb (fmtptr, r, g, b)
         return ((b & 0xFF) << 24) | ((c & 0xFF) << 16) | ((d & 0xFF) << 8) | 0xFF;
       }
       case 50: return (performance.now() - this.sdlStartTime) | 0;  // getticks
-      case 16: {                                      // sdl_delay (ms)
+      case 14: {                                      // sdl_delay (ms)
         // No-op here; the asyncify yield is driven by the dedicated
         // bcpl_delay import (G!128), not this SDL sub-op.
         return 0;
