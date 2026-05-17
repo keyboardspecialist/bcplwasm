@@ -132,13 +132,21 @@ LET drawframe(px, py, pa) BE
   sys(Sys_sdl, sdl_drawfillrect, surf, 0, H/2,   W,   H, floor_c)
 
   FOR col = 0 TO W - 1 BY STRIDE DO
-  { LET rayA = pa + (col - W/2) * FOV / W
-    LET d = cast(px, py, rayA)
-    LET h = PROJ / d
+  { // dA = ray offset from player heading. Used twice: once to find
+    // the ray angle for casting, once to undo the fisheye that
+    // plain Euclidean distance would produce. dperp = d * cos(dA)
+    // gives perpendicular distance to the wall — projecting that
+    // keeps verticals straight in screen space.
+    LET dA   = (col - W/2) * FOV / W
+    LET rayA = pa + dA
+    LET d    = cast(px, py, rayA)
+    LET dperp = (d * cos_t!(dA & (ANG-1))) / 1024
+    IF dperp < 1 DO dperp := 1
+    LET h = PROJ / dperp
     IF h > H DO h := H
     { LET top = (H - h) / 2
       sys(Sys_sdl, sdl_drawfillrect,
-          surf, col, top, col + STRIDE, top + h, shade(d))
+          surf, col, top, col + STRIDE, top + h, shade(dperp))
     }
   }
   sys(Sys_sdl, sdl_flip, surf)
