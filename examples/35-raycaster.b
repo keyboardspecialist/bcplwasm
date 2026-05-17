@@ -1,5 +1,14 @@
 // 35-raycaster: Wolfenstein-style flat-shaded raycaster.
 //
+// Controls:
+//   W / ArrowUp     walk forward
+//   S / ArrowDown   walk backward
+//   A / ArrowLeft   turn left
+//   D / ArrowRight  turn right
+//   Esc             quit
+//
+// Click the canvas first so it has focus, then keys reach the demo.
+//
 // Concepts:
 //   - 8x8 wall grid stored as a TABLE of 0/1.
 //   - Player position in 1024-per-cell fixed-point.
@@ -9,6 +18,8 @@
 //   - Flat shading by distance (no texture mapping yet).
 //   - sin/cos baked at startup into 1024-entry fixed-point tables via
 //     a BCPL Taylor implementation.
+//   - sdl_pollevent drives a real game loop: events update a key-down
+//     bitmap each frame, movement reads that bitmap.
 //   - delay() yields to the browser between frames so the canvas
 //     repaints.
 
@@ -20,25 +31,39 @@ GET "sdl"
 MANIFEST {
   W        = 320
   H        = 240
-  MAP      = 8        // map is MAP x MAP cells
-  STRIDE   = 2        // pixel width of one ray column (W/STRIDE rays/frame)
-  ANG      = 1024     // angle ticks per full circle
-  FOV      = 171      // ~60 degrees in 1024-tick units
-  FRAMES   = 600
-  PROJ     = 7000     // distance->height projection scale (tuned for H=240)
-  STEP_DIV = 32       // ray march granularity: STEP_DIV steps per cell
+  MAP      = 8
+  STRIDE   = 2
+  ANG      = 1024
+  FOV      = 171         // ~60 degrees
+  PROJ     = 7000        // height projection
+  STEP_DIV = 32          // ray-march granularity per cell
+
+  KEYCAP   = 512         // size of key-state vector
+
+  // Browser keyCode constants the runtime forwards to BCPL.
+  K_LEFT   = 37
+  K_UP     = 38
+  K_RIGHT  = 39
+  K_DOWN   = 40
+  K_A      = 65
+  K_D      = 68
+  K_S      = 83
+  K_W      = 87
+  K_ESC    = 27
 }
 
 STATIC {
-  wmap   = 0       // pointer to a TABLE built in start()
+  wmap   = 0
   sin_t  = 0
   cos_t  = 0
+  keys   = 0
   surf   = 0
   sky_c  = 0
   floor_c = 0
+  running = 1
 }
 
-// Taylor sin good for |x| <= pi after range reduction.
+// Taylor sin, |x| <= pi after range reduction.
 LET fsin(x) = VALOF
 { LET pi, twopi, x2, t, s = 0, 0, 0, 0, 0
   pi    #:= 3.14159265358979
@@ -61,7 +86,6 @@ LET fcos(x) = VALOF
   RESULTIS fsin(x #+ pi2)
 }
 
-// Populate sin_t and cos_t with values * 1024 (fixed-point).
 LET buildtrig() BE
 { LET a, step, sv, cv = 0, 0, 0, 0
   a    #:= 0.0
@@ -75,13 +99,10 @@ LET buildtrig() BE
   }
 }
 
-// March ray from (px, py) at integer-tick angle until a wall cell is
-// entered. Returns step count (1..MAX) — proportional to distance.
-// px, py are in 1024-per-cell fixed-point.
 LET cast(px, py, angle) = VALOF
-{ LET dx = cos_t!(angle & (ANG-1))    // (-1024..+1024)
+{ LET dx = cos_t!(angle & (ANG-1))
   LET dy = sin_t!(angle & (ANG-1))
-  LET ix = dx / STEP_DIV               // increment per step (1/STEP_DIV cell)
+  LET ix = dx / STEP_DIV
   LET iy = dy / STEP_DIV
   LET x = px
   LET y = py
@@ -97,22 +118,18 @@ LET cast(px, py, angle) = VALOF
   RESULTIS 1024
 }
 
-// Distance -> packed RGB. Closer = brighter brick.
 LET shade(d) = VALOF
 { LET v = 230 - d
   IF v < 32 DO v := 32
   RESULTIS sys(Sys_sdl, sdl_maprgb, 0, v, v / 2, v / 4)
 }
 
-// One frame: clear sky/floor, raycast every STRIDE-wide column.
 LET drawframe(px, py, pa) BE
-{ // Sky (top half) + floor (bottom half).
-  sys(Sys_sdl, sdl_drawfillrect, surf, 0, 0,     W, H/2, sky_c)
+{ sys(Sys_sdl, sdl_drawfillrect, surf, 0, 0,     W, H/2, sky_c)
   sys(Sys_sdl, sdl_drawfillrect, surf, 0, H/2,   W, H/2, floor_c)
 
   FOR col = 0 TO W - 1 BY STRIDE DO
-  { // Ray angle for this column. Linear sweep across FOV.
-    LET rayA = pa + (col - W/2) * FOV / W
+  { LET rayA = pa + (col - W/2) * FOV / W
     LET d = cast(px, py, rayA)
     LET h = PROJ / d
     IF h > H DO h := H
@@ -124,11 +141,46 @@ LET drawframe(px, py, pa) BE
   sys(Sys_sdl, sdl_flip, surf)
 }
 
+// Drain all queued SDL events, mirroring keydown/up into the keys[]
+// bitmap. ESC sets `running` to 0 so the main loop can exit.
+LET poll_events() BE
+{ LET ev = VEC 7
+  WHILE sys(Sys_sdl, sdl_pollevent, ev) DO
+  { LET et = ev!0
+    LET ch = ev!2
+    TEST et = sdle_keydown
+    THEN { IF ch >= 0 & ch < KEYCAP DO keys!ch := 1
+           IF ch = K_ESC DO running := 0
+         }
+    ELSE IF et = sdle_keyup DO
+         IF ch >= 0 & ch < KEYCAP DO keys!ch := 0
+    IF et = sdle_quit DO running := 0
+  }
+}
+
+LET key_down(k) = k >= 0 & k < KEYCAP -> keys!k, 0
+
+// Try to advance the player by (mx, my). Refuse if the destination cell
+// is a wall. Sliding-along-walls is approximated by trying X and Y
+// axes independently, which is the classic Wolfenstein trick.
+LET try_move(px_lv, py_lv, mx, my) BE
+{ LET nx = !px_lv + mx
+  LET cx = nx / 1024
+  LET cy = !py_lv / 1024
+  UNLESS cx < 0 | cx >= MAP | cy < 0 | cy >= MAP | wmap!(cy*MAP+cx) DO
+    !px_lv := nx
+  { LET ny = !py_lv + my
+    LET cx2 = !px_lv / 1024
+    LET cy2 = ny / 1024
+    UNLESS cx2 < 0 | cx2 >= MAP | cy2 < 0 | cy2 >= MAP | wmap!(cy2*MAP+cx2) DO
+      !py_lv := ny
+  }
+}
+
 LET start() = VALOF
-{ // BCPL: all LET declarations must come before any commands.
-  LET px = 3 * 1024 + 512          // start cell (3, 5), centred
+{ LET px = 3 * 1024 + 512
   LET py = 5 * 1024 + 512
-  LET pa = 0                       // facing +x
+  LET pa = 0
 
   wmap := TABLE
     1, 1, 1, 1, 1, 1, 1, 1,
@@ -148,31 +200,36 @@ LET start() = VALOF
 
   sin_t := getvec(ANG)
   cos_t := getvec(ANG)
+  keys  := getvec(KEYCAP)
+  FOR i = 0 TO KEYCAP DO keys!i := 0
   buildtrig()
 
-  FOR frame = 1 TO FRAMES DO
-  { drawframe(px, py, pa)
+  WHILE running DO
+  { LET fwd = 0
+    LET turn = 0
 
-    // Walk forward by ~1/4 cell. If next cell is a wall, swing 90°.
-    { LET dx = cos_t!(pa & (ANG-1)) / 4
-      LET dy = sin_t!(pa & (ANG-1)) / 4
-      LET nx = px + dx
-      LET ny = py + dy
-      LET cx = nx / 1024
-      LET cy = ny / 1024
-      TEST cx < 0 | cx >= MAP | cy < 0 | cy >= MAP | wmap!(cy*MAP+cx)
-      THEN pa := (pa + 256) & (ANG-1)
-      ELSE { px := nx; py := ny }
+    poll_events()
+
+    IF key_down(K_W) | key_down(K_UP)    DO fwd  := fwd  + 1
+    IF key_down(K_S) | key_down(K_DOWN)  DO fwd  := fwd  - 1
+    IF key_down(K_A) | key_down(K_LEFT)  DO turn := turn - 8
+    IF key_down(K_D) | key_down(K_RIGHT) DO turn := turn + 8
+
+    IF fwd ~= 0 DO
+    { LET dx = (cos_t!(pa & (ANG-1)) * fwd) / 16
+      LET dy = (sin_t!(pa & (ANG-1)) * fwd) / 16
+      try_move(@px, @py, dx, dy)
     }
 
-    // Small ambient rotation so the camera keeps drifting.
-    pa := (pa + 3) & (ANG-1)
+    IF turn ~= 0 DO pa := (pa + turn) & (ANG-1)
 
+    drawframe(px, py, pa)
     delay(16)
   }
 
   freevec(sin_t)
   freevec(cos_t)
-  writef("done %n frames*n", FRAMES)
+  freevec(keys)
+  writef("raycaster exited*n")
   RESULTIS 0
 }
