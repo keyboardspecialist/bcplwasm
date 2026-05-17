@@ -284,6 +284,21 @@ export const TRACK = [
     ],
     prereqs: ["03-variables"],
   },
+  {
+    slug: "34-binary-tree",
+    title: "Binary Search Tree",
+    level: 4,
+    topic: "data",
+    summary: "Heap-allocated BST: getvec nodes, recursive insert/lookup/inorder, freevec cleanup.",
+    goals: [
+      "getvec(n) returns a 0..n vector; 0 is the null pointer",
+      "MANIFEST gives readable field offsets on plain vectors",
+      "Recursive insert returning the (possibly new) root",
+      "Iterative lookup with a sentinel for misses",
+      "Post-order freevec releases the whole tree",
+    ],
+    prereqs: ["15-vectors", "19-manifest-static"],
+  },
 
   // ---- Level 5 — I/O & System ----------------------------------
   {
