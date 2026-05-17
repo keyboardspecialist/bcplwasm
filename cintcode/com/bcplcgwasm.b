@@ -761,12 +761,14 @@ AND emit_apply(op_kind, k) BE
 
 AND cgpendingop_wasm() BE
 { LET pndop = pendingop
+  LET sv_out = output()
   pendingop := s_none
   IF pndop = s_none RETURN
   // Callers do not always have the output stream selected — flushes
   // can happen from structural cases (s_fnrn, s_res, ...) that select
   // tostream AFTER the flush call. Select locally so the flush always
-  // lands in the .wat.
+  // lands in the .wat. Restore the caller's stream at exit so callers
+  // that already had tostream selected continue to write to it.
   selectoutput(tostream)
   SWITCHON pndop INTO
   { DEFAULT:                                ENDCASE
@@ -823,7 +825,7 @@ AND cgpendingop_wasm() BE
     CASE s_fle: fcmp_op("f32.le");          ENDCASE
     CASE s_fge: fcmp_op("f32.ge");          ENDCASE
   }
-  selectoutput(sysprint)
+  selectoutput(sv_out)
 }
 
 // ------------------------------------------------------------------
@@ -1249,8 +1251,11 @@ prescan_done:
         selectoutput(tostream)
         // LL L: load the VALUE of the word at data-label L (not its
         // address — that's LLL). Byte addr = (SB + offset) << 2.
+        // STATIC labels live in stat_labmap, not the function-scope
+        // labmap.
         { LET offset = VALOF
-          { IF l >= 0 & l < nlabmap & labmap!l >= 0 RESULTIS labmap!l
+          { IF l >= 0 & l < stat_labmap_n & stat_labmap!l >= 0
+              RESULTIS stat_labmap!l
             RESULTIS 0
           }
           writef("    (local.set $t%n (i32.load (i32.shl (i32.add (global.get $SB) (i32.const %n)) (i32.const 2)))) ;; LL L%n*n",
@@ -1291,7 +1296,8 @@ prescan_done:
         cgpendingop_wasm()
         selectoutput(tostream)
         { LET offset = VALOF
-          { IF l >= 0 & l < nlabmap & labmap!l >= 0 RESULTIS labmap!l
+          { IF l >= 0 & l < stat_labmap_n & stat_labmap!l >= 0
+              RESULTIS stat_labmap!l
             RESULTIS 0
           }
           writef("    (local.set $t%n (i32.add (global.get $SB) (i32.const %n))) ;; LLL L%n*n",
@@ -1374,7 +1380,8 @@ prescan_done:
         cgpendingop_wasm()
         selectoutput(tostream)
         { LET offset = VALOF
-          { IF l >= 0 & l < nlabmap & labmap!l >= 0 RESULTIS labmap!l
+          { IF l >= 0 & l < stat_labmap_n & stat_labmap!l >= 0
+              RESULTIS stat_labmap!l
             RESULTIS 0
           }
           cssp := cssp - 1
@@ -1713,9 +1720,11 @@ prescan_done:
 
       CASE s_datalab:
       { LET l = rdl()
-        // Mark next static item with this label (module-local word
-        // offset; resolved at emit via (i32.add (global.get $SB) ...)).
-        IF l >= 0 & l < nlabmap DO labmap!l := stat_n
+        // Mark the next static item with this label. Use stat_labmap,
+        // NOT labmap — labmap is reset by every s_entry prescan to
+        // track per-function dispatch labels, which would otherwise
+        // wipe out the STATIC offsets recorded here at section scope.
+        IF l >= 0 & l < stat_labmap_n DO stat_labmap!l := stat_n
         ENDCASE
       }
 
@@ -1794,7 +1803,9 @@ AND alloc_static(bcpl_lab, val) = VALOF
   { stat_words!stat_n := val
     stat_n := stat_n + 1
   }
-  IF bcpl_lab >= 0 & bcpl_lab < nlabmap DO
-    labmap!bcpl_lab := offset
+  // Record the label's offset in stat_labmap (section-scope), not
+  // labmap (which is reset per function for dispatch labels).
+  IF bcpl_lab >= 0 & bcpl_lab < stat_labmap_n DO
+    stat_labmap!bcpl_lab := offset
   RESULTIS offset
 }
