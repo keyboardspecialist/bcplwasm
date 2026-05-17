@@ -53,16 +53,17 @@ MANIFEST {
 }
 
 STATIC {
-  wmap    = 0
-  sin_t   = 0
-  cos_t   = 0
-  keys    = 0
-  surf    = 0
-  running = 1
-  tex_base = 0
-  tex_w    = 0
-  tex_h    = 0
-  sky_w    = 0
+  wmap      = 0
+  sin_t     = 0
+  cos_t     = 0
+  keys      = 0
+  surf      = 0
+  running   = 1
+  tex_base  = 0
+  tex_w     = 0
+  tex_h     = 0
+  sky_w     = 0
+  wall_name = 0
 }
 
 LET fsin(x) = VALOF
@@ -228,9 +229,22 @@ LET try_move(px_lv, py_lv, mx, my) BE
 // Load asset by name into info vec; on hit, register as the given
 // background slot. Return TRUE on success.
 LET load_bg(name, slot, info) = VALOF
-{ UNLESS sys(Sys_assetload, name, info) RESULTIS FALSE
+{ UNLESS name DO RESULTIS FALSE
+  UNLESS sys(Sys_assetload, name, info) RESULTIS FALSE
   sys(Sys_setbgtex, slot, info!2, info!0, info!1)
   RESULTIS TRUE
+}
+
+// Try a slot's candidate names in order, then fall back to the wall
+// texture as a universal last resort. Without this, a user who only
+// uploaded e.g. brick.png (used by walls) would see no floor — the
+// previous chain only tried stone/checker. Returns TRUE on first hit.
+LET load_bg_with_fallback(slot, info, n1, n2, n3) = VALOF
+{ IF load_bg(n1,        slot, info) RESULTIS TRUE
+  IF load_bg(n2,        slot, info) RESULTIS TRUE
+  IF load_bg(n3,        slot, info) RESULTIS TRUE
+  IF load_bg(wall_name, slot, info) RESULTIS TRUE
+  RESULTIS FALSE
 }
 
 LET start() = VALOF
@@ -250,13 +264,18 @@ LET start() = VALOF
     1, 0, 1, 0, 0, 0, 0, 1,
     1, 1, 1, 1, 1, 1, 1, 1
 
-  // Walls.
-  UNLESS sys(Sys_assetload, "brick.png", info) DO
-    UNLESS sys(Sys_assetload, "stone.png", info) DO
-      UNLESS sys(Sys_assetload, "checker.png", info) DO
-      { writef("No wall texture. Upload brick.png in Assets.*n")
-        info!0 := 1; info!1 := 1; info!2 := 0
-      }
+  // Walls. Record which name actually loaded so floor/ceil can fall
+  // back to it when none of their own candidates are present.
+  TEST sys(Sys_assetload, "brick.png", info)
+  THEN wall_name := "brick.png"
+  ELSE TEST sys(Sys_assetload, "stone.png", info)
+  THEN wall_name := "stone.png"
+  ELSE TEST sys(Sys_assetload, "checker.png", info)
+  THEN wall_name := "checker.png"
+  ELSE { writef("No wall texture. Upload brick.png in Assets.*n")
+         info!0 := 1; info!1 := 1; info!2 := 0
+         wall_name := 0
+       }
   tex_w    := info!0
   tex_h    := info!1
   tex_base := info!2
@@ -266,14 +285,13 @@ LET start() = VALOF
     writef("No sky.png asset. Sky column will be blank.*n")
   sky_w := sky_info!0
 
-  // Floor and ceiling. Either may be missing — that side just stays
-  // black for the relevant column rows.
-  UNLESS load_bg("stone.png", BG_FLOOR, info) DO
-    UNLESS load_bg("checker.png", BG_FLOOR, info) DO
-      writef("No floor texture.*n")
-  UNLESS load_bg("wood.png",  BG_CEIL, info) DO
-    UNLESS load_bg("brick.png", BG_CEIL, info) DO
-      writef("No ceiling texture.*n")
+  // Floor / ceiling. Each tries its preferred names first, then the
+  // wall texture as a last resort so any single uploaded texture
+  // still produces *something* on every surface.
+  UNLESS load_bg_with_fallback(BG_FLOOR, info, "stone.png", "checker.png", "brick.png") DO
+    writef("No floor texture.*n")
+  UNLESS load_bg_with_fallback(BG_CEIL,  info, "wood.png",  "brick.png",   "stone.png") DO
+    writef("No ceiling texture.*n")
 
   sys(Sys_sdl, sdl_init)
   surf := sys(Sys_sdl, sdl_setvideomode, W, H, 0, 0)
