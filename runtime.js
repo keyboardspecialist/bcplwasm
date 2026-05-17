@@ -91,7 +91,11 @@ export class BcplRuntime {
 
   _installSdlInputHandlers() {
     const c = this.sdlCanvas;
-    if (!c || c.__bcplWired) return;
+    if (!c) return;
+    // Always re-point the singleton window key handler at this runtime
+    // so a fresh Compile & Run wires events into the new instance.
+    if (typeof window !== "undefined") window.__bcplKeysWired = this;
+    if (c.__bcplWired) return;
     c.__bcplWired = true;
     c.tabIndex = 0;
     c.addEventListener("mousemove", (e) => {
@@ -116,8 +120,8 @@ export class BcplRuntime {
     //
     // Skip events targeted at form fields so typing into stdin /
     // editor textareas does not flood the SDL queue.
-    if (typeof window !== "undefined" && !window.__bcplKeysWired) {
-      window.__bcplKeysWired = this;
+    if (typeof window !== "undefined" && !window.__bcplKeysListenersAttached) {
+      window.__bcplKeysListenersAttached = true;
       const editable = (t) => t && (
         t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable
       );
@@ -140,11 +144,6 @@ export class BcplRuntime {
         rt.sdlKeys.delete(code);
         rt.sdlEvents.push({ type: 3, mod: 0, ch: code });
       }, true);
-    } else if (typeof window !== "undefined") {
-      // Re-point the singleton window handler at this runtime so a
-      // fresh Compile & Run does not keep firing events into the old
-      // BcplRuntime instance.
-      window.__bcplKeysWired = this;
     }
   }
 
