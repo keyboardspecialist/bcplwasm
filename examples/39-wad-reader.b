@@ -2,8 +2,10 @@
 //
 // Setup:
 //   1. Open the Assets tab.
-//   2. + asset, pick one of the WADs in site/textures/Wads/
-//      (doom1.wad, doom2.wad, plutonia.wad, tnt.wad, etc.).
+//   2. + asset, pick any WAD in site/textures/Wads/
+//      (Doom1.WAD, doom2.wad, plutonia.wad, tnt.wad, etc.). Filename
+//      casing does not matter — the example walks Sys_assetlist and
+//      picks the first name ending in .wad (case-insensitive).
 //      Non-image extensions are stored as a binary blob.
 //   3. Compile & Run.
 //
@@ -68,29 +70,53 @@ LET pr_lumpname(base, off) BE
   FOR i = n TO NAME_LEN - 1 DO wrch('*s')
 }
 
-// One-shot loader. Returns TRUE on first matching upload name.
-// String literals can't live in a TABLE, so the tries are open-coded.
-LET try1(nm, info) = VALOF
-{ IF sys(Sys_assetload, nm, info) DO
-  { writef("loaded asset: %s*n", nm)
-    RESULTIS TRUE
-  }
-  RESULTIS FALSE
+// ASCII lowercase helper.
+LET lc(c) = c >= 'A' & c <= 'Z' -> c + ('a' - 'A'), c
+
+// TRUE if buf[start..end-1] ends in ".wad" (case-insensitive).
+LET ends_with_wad(buf, start, end) = VALOF
+{ LET n = end - start
+  IF n < 4 RESULTIS FALSE
+  RESULTIS lc(buf % (end - 4)) = '.' &
+           lc(buf % (end - 3)) = 'w' &
+           lc(buf % (end - 2)) = 'a' &
+           lc(buf % (end - 1)) = 'd'
 }
 
+// Copy buf[start..end-1] into dest as a BCPL string (length byte +
+// chars). dest must have room for n+1 bytes.
+LET cp_substr(buf, start, end, dest) BE
+{ LET n = end - start
+  dest % 0 := n
+  FOR i = 0 TO n - 1 DO dest % (i + 1) := buf % (start + i)
+}
+
+// Walk the comma-separated asset list. For the first name ending in
+// .wad / .WAD, load it and return TRUE. Case-insensitive, so
+// "Doom1.WAD", "doom1.wad", "plutonia.wad" — all match.
 LET try_load(info) = VALOF
-{ IF try1("doom1.wad",     info) RESULTIS TRUE
-  IF try1("DOOM1.WAD",     info) RESULTIS TRUE
-  IF try1("doom.wad",      info) RESULTIS TRUE
-  IF try1("doom2.wad",     info) RESULTIS TRUE
-  IF try1("DOOM2.WAD",     info) RESULTIS TRUE
-  IF try1("doom3.wad",     info) RESULTIS TRUE
-  IF try1("DOOM3.WAD",     info) RESULTIS TRUE
-  IF try1("plutonia.wad",  info) RESULTIS TRUE
-  IF try1("Plutonia.wad",  info) RESULTIS TRUE
-  IF try1("tnt.wad",       info) RESULTIS TRUE
-  IF try1("Tnt.wad",       info) RESULTIS TRUE
-  IF try1("TNT.WAD",       info) RESULTIS TRUE
+{ LET listbuf = VEC 64       // 256 bytes — fits up to 255-char list
+  LET namebuf = VEC 32       // 128 bytes — plenty for any asset name
+  LET totlen, start, end = 0, 0, 0
+
+  sys(Sys_assetlist, listbuf)
+  totlen := listbuf % 0
+  start  := 1
+  end    := 1
+  WHILE end <= totlen DO
+  { WHILE end <= totlen & listbuf % end ~= ',' DO end := end + 1
+    IF ends_with_wad(listbuf, start, end) DO
+    { cp_substr(listbuf, start, end, namebuf)
+      IF sys(Sys_assetload, namebuf, info) DO
+      { writef("loaded asset: ")
+        FOR i = start TO end - 1 DO wrch(listbuf % i)
+        newline()
+        RESULTIS TRUE
+      }
+    }
+    end   := end + 1
+    start := end
+  }
   RESULTIS FALSE
 }
 
