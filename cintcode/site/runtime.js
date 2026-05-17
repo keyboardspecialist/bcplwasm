@@ -688,10 +688,10 @@ export class BcplRuntime {
   // CLAUDE.md "WebAssembly Backend" for scope rules.
   imp_sys() {
     const op = this.arg(0);
-    // Capture up to 7 extra args BEFORE restoreP since it rewrites P.
+    // Capture up to 8 extra args BEFORE restoreP since it rewrites P.
     const a1 = this.arg(1), a2 = this.arg(2), a3 = this.arg(3);
     const a4 = this.arg(4), a5 = this.arg(5), a6 = this.arg(6);
-    const a7 = this.arg(7);
+    const a7 = this.arg(7), a8 = this.arg(8);
     this.restoreP();
 
     switch (op) {
@@ -1009,6 +1009,66 @@ export class BcplRuntime {
         this.storeWord(infoPtr + 1, rec.h | 0);
         this.storeWord(infoPtr + 2, dataWordAddr | 0);
         return -1;
+      }
+
+      // sys(Sys_drawtexcol, col, top, h, texX, tex_base, tex_w, tex_h, dim)
+      // One textured column. Per-pixel texY = (y-top)*tex_h / h so the
+      // texture stretches/shrinks to fit the wall slice height. `dim`
+      // is 0 (full bright) or 1 (halve each channel, for NS faces).
+      // Drawn straight into an ImageData strip and pushed onto the
+      // canvas with one putImageData — no fillRect-per-band overhead.
+      case 82: {
+        const col   = a1 | 0;
+        const top   = a2 | 0;
+        const h     = a3 | 0;
+        const texX  = a4 | 0;
+        const tBase = a5 | 0;     // word address of texel array
+        const tw    = a6 | 0;
+        const th    = a7 | 0;
+        const dim   = a8 | 0;
+        if (!this.sdlCtx || h <= 0 || tw <= 0 || th <= 0) return 0;
+        // Clip to canvas.
+        const can = this.sdlCanvas;
+        let y0 = top, y1 = top + h;
+        if (col < 0 || col >= can.width) return 0;
+        if (y0 < 0) y0 = 0;
+        if (y1 > can.height) y1 = can.height;
+        const drawH = y1 - y0;
+        if (drawH <= 0) return 0;
+        // Reusable column buffer.
+        const buf = this._texColBuf ??= { arr: null, h: 0 };
+        if (buf.h !== drawH) {
+          buf.arr = new Uint8ClampedArray(drawH * 4);
+          buf.h = drawH;
+        }
+        const arr = buf.arr;
+        // mem is little-endian i32; texel layout is 0xRRGGBBAA so
+        // little-endian bytes read as [A, B, G, R]. Need to flip.
+        const mv = this.memView;
+        const tx = ((texX % tw) + tw) % tw;
+        const startY = y0 - top;
+        for (let i = 0; i < drawH; i++) {
+          const screenY = y0 + i;
+          const tY = (((screenY - top) * th) / h) | 0;
+          const ty = tY >= 0 ? (tY < th ? tY : th - 1) : 0;
+          const word = mv.getInt32((tBase + ty * tw + tx) * 4, true);
+          // word stored as ((r<<24)|(g<<16)|(b<<8)|a) but mv reads it
+          // as little-endian → low byte first. So:
+          //   byte0 = a, byte1 = b, byte2 = g, byte3 = r
+          let r = (word >>> 24) & 0xFF;
+          let g = (word >>> 16) & 0xFF;
+          let b = (word >>>  8) & 0xFF;
+          const a = word & 0xFF;
+          if (dim) { r >>= 1; g >>= 1; b >>= 1; }
+          const o = i * 4;
+          arr[o]     = r;
+          arr[o + 1] = g;
+          arr[o + 2] = b;
+          arr[o + 3] = a || 0xFF;
+        }
+        const imgData = new ImageData(arr, 1, drawH);
+        this.sdlCtx.putImageData(imgData, col, y0);
+        return 0;
       }
 
       // sys(Sys_assetlist, dest_str) — copy a comma-separated list of

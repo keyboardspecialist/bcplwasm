@@ -136,22 +136,14 @@ LET cast(px, py, angle, res) BE
   res!0 := MAXSTEP; res!1 := 0; res!2 := 0
 }
 
-// Sample one texel; on NS-side faces, halve each channel for shading.
-// Returns a packed colour (0xRRGGBBAA) ready for the draw op.
-LET tex_sample(tx, ty, side) = VALOF
-{ LET tex = tex_base!(ty * tex_w + tx)
-  LET r = (tex >> 24) & #xFF
-  LET g = (tex >> 16) & #xFF
-  LET b = (tex >> 8)  & #xFF
-  IF side DO { r := r / 2; g := g / 2; b := b / 2 }
-  RESULTIS (r << 24) | (g << 16) | (b << 8) | #xFF
-}
-
 LET drawframe(px, py, pa) BE
 { LET res = VEC 3
   sys(Sys_sdl, sdl_drawfillrect, surf, 0,   0,   W, H/2, sky_c)
   sys(Sys_sdl, sdl_drawfillrect, surf, 0, H/2,   W,   H, floor_c)
 
+  // Per column: cast a ray, ask the runtime to draw one textured
+  // vertical slice. The runtime does per-pixel texY = (y-top)*tex_h/h
+  // sampling — texture detail scales with tex_h, no banding.
   FOR col = 0 TO W - 1 BY STRIDE DO
   { LET dA, rayA, d, side, wX = 0, 0, 0, 0, 0
     LET dperp, h, top = 0, 0, 0
@@ -168,14 +160,7 @@ LET drawframe(px, py, pa) BE
     IF h > H DO h := H
     top  := (H - h) / 2
     texX := (wX * tex_w) / 1024
-
-    FOR band = 0 TO N_BANDS - 1 DO
-    { LET texY = (band * tex_h) / N_BANDS
-      LET y1   = top + (band * h) / N_BANDS
-      LET y2   = top + ((band + 1) * h) / N_BANDS
-      LET c    = tex_sample(texX, texY, side)
-      sys(Sys_sdl, sdl_drawfillrect, surf, col, y1, col + STRIDE, y2, c)
-    }
+    sys(Sys_drawtexcol, col, top, h, texX, tex_base, tex_w, tex_h, side)
   }
   sys(Sys_sdl, sdl_flip, surf)
 }

@@ -529,6 +529,9 @@ Sys_errwrch         = 75   // wrch to STDERR
 //   info!0 = width   info!1 = height   info!2 = word addr of pixels
 Sys_assetload       = 80   // (name_str, info_vec) -> -1 hit / 0 miss
 Sys_assetlist       = 81   // (dest_str) — fills with comma list
+Sys_drawtexcol      = 82   // (col, top, h, texX, tex_base, tex_w, tex_h, dim)
+                           //   Renders one textured wall column with
+                           //   per-pixel texture sampling.
 
 bootregs = 11 // Registers used to enter the function start in boot.b
 cliregs  = 21 // Registers used by BOOT to start the CLI
