@@ -1311,8 +1311,10 @@ LET start() = VALOF
 
     const BUILTIN_HEADERS = ["libhdr.h", "bcplfecg.h", "sdl.h"];
     async function seedBuiltinHeaders() {
+      // Always re-fetch — the shipped header may have been updated
+      // (e.g. new Sys_* manifests) since the user's last visit.
+      // localStorage caching of these caused a hard-to-spot drift bug.
       for (const h of BUILTIN_HEADERS) {
-        if (storageBackend.get(h)) continue;
         const txt = await fetchText(`headers/${h}?v=${V}`, "");
         if (txt) storageBackend.set(h, txt);
       }
