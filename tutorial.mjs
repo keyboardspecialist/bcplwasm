@@ -530,6 +530,20 @@ export const TRACK = [
     ],
     prereqs: ["35-raycaster"],
   },
+  {
+    slug: "37-raycaster-textured",
+    title: "SDL: Real Texture Mapping",
+    level: 9,
+    topic: "graphics",
+    summary: "Loads an uploaded PNG via the Assets tab and samples real texels per band.",
+    goals: [
+      "Sys_assetload maps a decoded PNG into wasm memory",
+      "Direct texel lookup: tbase!(texY * tw + texX)",
+      "ANG = 8192, FOV = 1365 — finer angular resolution to kill silhouette stair-step",
+      "NS-face dimming via per-channel halving",
+    ],
+    prereqs: ["36-raycaster-tex"],
+  },
 ];
 
 // Quick-lookup helpers used by the UI.
