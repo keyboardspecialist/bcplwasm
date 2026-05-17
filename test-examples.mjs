@@ -40,6 +40,7 @@ const RUN_SKIP = new Set([
   "35-raycaster",       // continuous game loop — only ends on Esc
   "36-raycaster-tex",   // ditto
   "37-raycaster-textured",  // ditto
+  "38-raycaster-skyfloor",  // ditto
   "stdlib",             // pure library — no start()
 ]);
 

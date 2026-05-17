@@ -118,12 +118,47 @@ function checkerPixel(x, y) {
     : [40, 40, 40];
 }
 
+// Sky panorama — 256 wide × 64 tall. Sampled by ray angle for U
+// (column) and by screen-Y for V. Blue gradient + low-frequency
+// "clouds" via combined value-noise.
+function skyPixel(x, y) {
+  // Vertical gradient: deep blue up top, pale blue at horizon.
+  const t = y / 64;
+  const bgR = 40 + (180 - 40) * t;
+  const bgG = 90 + (200 - 90) * t;
+  const bgB = 160 + (230 - 160) * t;
+  // Two-octave cloud noise.
+  const n1 = vnoise(Math.floor(x / 8),  Math.floor(y / 6));
+  const n2 = vnoise(Math.floor(x / 24), Math.floor(y / 14));
+  const cloud = Math.max(0, (n1 * 0.4 + n2 * 0.6) - 0.5) * 2;  // 0..1
+  // Clouds thin toward the top, dense near horizon.
+  const cw = cloud * Math.min(1, t * 1.4);
+  const r = bgR + (240 - bgR) * cw;
+  const g = bgG + (240 - bgG) * cw;
+  const b = bgB + (250 - bgB) * cw;
+  return [r | 0, g | 0, b | 0];
+}
+
+// Wood plank ceiling — warm browns, plank seams every 16 rows.
+function woodPixel(x, y) {
+  const PLANK = 16, SEAM = 1;
+  const row = Math.floor(y / PLANK);
+  if (y % PLANK < SEAM) return [40, 25, 15];                   // seam
+  // Vertical grain: noise along x with stretching along y.
+  const grain = vnoise(x, Math.floor(y / 2) + row * 17);
+  const shade = 0.85 + grain * 0.30;
+  const baseR = 120, baseG = 80, baseB = 45;
+  return [(baseR * shade) | 0, (baseG * shade) | 0, (baseB * shade) | 0];
+}
+
 // ---------- Build ---------------------------------------------------
 
 const PALETTE = [
   ["brick.png",   64, 64, brickPixel],
   ["stone.png",   64, 64, stonePixel],
   ["checker.png", 64, 64, checkerPixel],
+  ["sky.png",    256, 64, skyPixel],
+  ["wood.png",    64, 64, woodPixel],
 ];
 
 for (const [name, w, h, fn] of PALETTE) {

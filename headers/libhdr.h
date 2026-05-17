@@ -532,6 +532,16 @@ Sys_assetlist       = 81   // (dest_str) — fills with comma list
 Sys_drawtexcol      = 82   // (col, top, h, texX, tex_base, tex_w, tex_h, dim)
                            //   Renders one textured wall column with
                            //   per-pixel texture sampling.
+Sys_setbgtex        = 83   // (slot, base, w, h) — cache sky/floor/ceil tex
+                           //   slot 0 = sky, 1 = floor, 2 = ceiling.
+Sys_drawskycol      = 84   // (col, h_top, u) — panorama sky column. Samples
+                           //   cached sky tex at column u, V scaled by
+                           //   y / (canvas.height/2) * sky_h. Fills y=0..h_top-1.
+Sys_drawfloorcol    = 85   // (col, horizon, px, py, dx, dy) — per-pixel
+                           //   floor+ceiling cast for one column. Uses cached
+                           //   floor tex below horizon, ceil tex above. px/py
+                           //   in 1024-scaled cell coords; dx/dy are
+                           //   cos/sin*1024 of the ray angle for this column.
 
 bootregs = 11 // Registers used to enter the function start in boot.b
 cliregs  = 21 // Registers used by BOOT to start the CLI
