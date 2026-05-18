@@ -4240,12 +4240,11 @@
     (return (i32.const 0))
     )) ;; end block / LAB L174 = idx 1
     (if (i32.eq (local.get $__lab) (i32.const 1)) (then ;; L174
-    (local.set $t4 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
-    (if (i32.eqz (local.get $t4)) (then
-      (local.set $__lab (i32.const 2)) (br $__dispatch)
-    ))
     (local.set $t4 (i32.const 32768))
-    (if (i32.eqz (local.get $t4)) (then
+    (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t4 (i32.and (local.get $t4) (local.get $t5)))
+    (local.set $t5 (i32.const 0))
+    (if (i32.eq  (local.get $t4) (local.get $t5)) (then
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     ))
     (local.set $t7 (i32.const -32769))
