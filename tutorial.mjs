@@ -572,6 +572,21 @@ export const TRACK = [
     ],
     prereqs: ["37-raycaster-textured"],
   },
+  {
+    slug: "40-doom-mapview",
+    title: "Doom 2D Map View",
+    level: 9,
+    topic: "graphics",
+    summary: "First step toward a Doom BSP renderer: auto-detect ExMy/MAPxx, decode VERTEXES + LINEDEFS, draw the map as a top-down automap.",
+    goals: [
+      "Auto-detect a map marker lump (ExMy or MAPxx) in the WAD dir",
+      "Read int16 vertex coords; sign-extend negative values",
+      "Compute bbox + scale to fit canvas (aspect-preserving)",
+      "Draw each linedef as one Sys_sdl sdl_drawline call",
+      "Two-sided linedefs (back ~= #xFFFF) drawn dimmer for portal hint",
+    ],
+    prereqs: ["39-wad-reader"],
+  },
 ];
 
 // Quick-lookup helpers used by the UI.
