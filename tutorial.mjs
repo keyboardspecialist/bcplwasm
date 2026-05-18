@@ -712,6 +712,20 @@ export const TRACK = [
     ],
     prereqs: ["47-doom-pegging"],
   },
+  {
+    slug: "49-doom-collide",
+    title: "Doom Wall + Floor Collision",
+    level: 9,
+    topic: "graphics",
+    summary: "try_move() with axis-aligned slide. Blocks moves that climb stairs taller than STEP_MAX or push the player into a ceiling.",
+    goals: [
+      "sector_at(x, y) → floor_at / ceil_at convenience accessors",
+      "can_move(): new_floor − cur_floor ≤ STEP_MAX (24); new_ceil − new_floor ≥ PLAYER_H (56)",
+      "try_move(): full diagonal first; on block try X-only then Y-only",
+      "1-sided walls block naturally — opposite side is a huge floor step",
+    ],
+    prereqs: ["48-doom-sprites"],
+  },
 ];
 
 // Quick-lookup helpers used by the UI.

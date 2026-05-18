@@ -1,31 +1,25 @@
-// 47-doom-pegging: 46 + LINEDEF pegging flags + portal mid-textures.
+// 49-doom-collide: 48 + wall and floor-step collision.
 //
-// What's new vs 46:
-//   - Read LINEDEF.flags. ML_DONTPEGTOP / ML_DONTPEGBOTTOM change the
-//     texture anchor for upper, lower and solid wall textures.
-//   - SIDEDEF.textureoffset_y shifts the V coord per sidedef.
-//   - Portal mid-textures (railings, fences) drawn with alpha-test
-//     transparency (drawwallcol skips word == 0 pixels when v_step is
-//     passed negated).
+// What's new vs 48:
+//   - try_move(): attempt a tentative move; if blocked by a wall or
+//     a step that's too tall, slide along whichever axis is still
+//     open. Player can't walk through walls or up stairs taller than
+//     STEP_MAX (24 units, Doom standard).
+//   - Floor-height clearance check: blocks the move if the destination
+//     sector's ceiling would be lower than the player's stand height
+//     (cur_floor + PLAYER_H).
+//   - cam_z then snaps to new floor + EYE_H every frame.
 //
-// Pegging recap:
-//   solid wall  : default anchor = front_ceil
-//                 ML_DONTPEGBOTTOM → anchor = front_floor + tex_h
-//   upper step  : default anchor = back_ceil + tex_h (texture pegged at
-//                  bottom of upper region)
-//                 ML_DONTPEGTOP → anchor = front_ceil
-//   lower step  : default anchor = front_ceil (peg to top of higher ceil)
-//                 ML_DONTPEGBOTTOM → anchor = back_floor + tex_h
-//   portal mid  : default anchor = back_ceil
-//                 ML_DONTPEGBOTTOM → anchor = back_floor + tex_h
-//
-// Caveat: portal mid-textures are rendered inline during BSP
-// front-to-back, so any farther wall in the same column will overdraw
-// them. Correct Doom rendering defers them; we accept the artifact.
+// Limitations:
+//   - Point-sized player (no radius). Can stand on edges; may peek
+//     through walls at extreme angles.
+//   - No ML_BLOCKING flag check; relies on floor-step + ceiling-clearance
+//     to stop the player at solid walls (1-sided edges have huge
+//     floor steps so they block naturally).
 //
 // Controls: WASD/arrows = move/turn, Esc = quit.
 
-SECTION "dpeg"
+SECTION "dcol"
 
 GET "libhdr"
 GET "sdl"
@@ -74,6 +68,12 @@ MANIFEST {
 
   LIGHT_DROP = 20                 // bigger = slower fade with depth
   LIGHT_FADE_MIN = 32             // never go fully black
+
+  MAX_SPRITES = 64
+  Z_INF = #x7FFFFFFF              // sentinel "no wall yet" depth
+
+  STEP_MAX  = 24                  // max step-up height (Doom standard)
+  PLAYER_H  = 56                  // physical body height (eye at +41)
 
   NODE_SIZE    = 28
   NODE_PX_OFS  = 0
@@ -198,6 +198,23 @@ STATIC {
   fwd_y = 0
   right_x = 0
   right_y = 0
+
+  // Per-column z-buffer (nearest cy seen during wall rendering).
+  col_z = 0
+
+  // Sprite cache.
+  spr_count = 0
+  spr_name  = 0     // VEC MAX_SPRITES*2  (8 bytes each)
+  spr_base  = 0     // word addr of RGBA buffer
+  spr_w     = 0     // patch width
+  spr_h     = 0     // patch height
+  spr_lofs  = 0     // patch leftoffset
+  spr_tofs  = 0     // patch topoffset
+
+  // Where things live (set in main).
+  g_things_byte = 0
+  g_tsize       = 0
+  g_nlines      = 0     // number of LINEDEFS in the current map
 }
 
 // ---------- byte helpers (same as 43) ----------
@@ -490,7 +507,8 @@ LET point_in_subsector(x, y) = VALOF
   RESULTIS n & ~SUBSECTOR_BIT
 }
 
-LET floor_at(x, y) = VALOF
+// Sector index containing world (x, y).  -1 if degenerate.
+LET sector_at(x, y) = VALOF
 { LET ssidx = point_in_subsector(x, y)
   LET se = g_ssec_byte + ssidx * SSECTOR_SIZE
   LET first_seg = rd_u16_le(g_base, se + SSECTOR_FIRST_OFS)
@@ -500,8 +518,75 @@ LET floor_at(x, y) = VALOF
   LET le = g_line_byte + ld * LINEDEF_SIZE
   LET sd_idx = sd = 0 -> rd_i16_le(g_base, le + LINEDEF_FRONT_OFS),
                          rd_i16_le(g_base, le + LINEDEF_BACK_OFS)
-  IF sd_idx < 0 RESULTIS 0
-  RESULTIS sec_floor(sd_sector(sd_idx))
+  IF sd_idx < 0 RESULTIS -1
+  RESULTIS sd_sector(sd_idx)
+}
+
+LET floor_at(x, y) = VALOF
+{ LET s = sector_at(x, y)
+  IF s < 0 RESULTIS 0
+  RESULTIS sec_floor(s)
+}
+
+LET ceil_at(x, y) = VALOF
+{ LET s = sector_at(x, y)
+  IF s < 0 RESULTIS 0
+  RESULTIS sec_ceil(s)
+}
+
+// True if the line segment (p1..p2) crosses any blocking linedef.
+// A linedef blocks when it's 1-sided OR the two-sided opening on the
+// other side is too small for the player (step too high / ceiling
+// too low).  This is the real wall test — checking the destination
+// sector's floor/ceiling alone is not enough since the BSP covers
+// the whole plane and outside-map points still resolve to some valid
+// sector.
+LET line_blocks_move(p1x, p1y, p2x, p2y) = VALOF
+{ LET cur_floor = floor_at(p1x, p1y)
+  FOR i = 0 TO g_nlines - 1 DO
+  { LET le      = g_line_byte + i * LINEDEF_SIZE
+    LET v1      = rd_u16_le(g_base, le + 0)
+    LET v2      = rd_u16_le(g_base, le + 2)
+    LET front_sd = rd_i16_le(g_base, le + LINEDEF_FRONT_OFS)
+    LET back_sd  = rd_i16_le(g_base, le + LINEDEF_BACK_OFS)
+    LET vo1     = g_vert_byte + v1 * VERTEX_SIZE
+    LET vo2     = g_vert_byte + v2 * VERTEX_SIZE
+    LET ax = rd_i16_le(g_base, vo1 + 0)
+    LET ay = rd_i16_le(g_base, vo1 + 2)
+    LET bx = rd_i16_le(g_base, vo2 + 0)
+    LET by = rd_i16_le(g_base, vo2 + 2)
+    // Segment cross-product side tests.
+    LET d1 = (bx - ax) * (p1y - ay) - (by - ay) * (p1x - ax)
+    LET d2 = (bx - ax) * (p2y - ay) - (by - ay) * (p2x - ax)
+    LET d3 = (p2x - p1x) * (ay - p1y) - (p2y - p1y) * (ax - p1x)
+    LET d4 = (p2x - p1x) * (by - p1y) - (p2y - p1y) * (bx - p1x)
+    UNLESS ((d1 > 0) ~= (d2 > 0)) & ((d3 > 0) ~= (d4 > 0)) LOOP
+    // Linedef IS crossed; decide if blocking.
+    IF back_sd < 0 RESULTIS TRUE
+    IF front_sd < 0 RESULTIS TRUE
+    { LET front_sec = sd_sector(front_sd)
+      LET back_sec  = sd_sector(back_sd)
+      LET ff = sec_floor(front_sec)
+      LET fc = sec_ceil(front_sec)
+      LET bf = sec_floor(back_sec)
+      LET bc = sec_ceil(back_sec)
+      LET higher_floor = bf > ff -> bf, ff
+      LET lower_ceil   = bc < fc -> bc, fc
+      IF higher_floor - cur_floor > STEP_MAX RESULTIS TRUE
+      IF lower_ceil - higher_floor < PLAYER_H RESULTIS TRUE
+    }
+  }
+  RESULTIS FALSE
+}
+
+LET try_move(dx, dy) BE
+{ LET nx = px + dx
+  LET ny = py + dy
+  TEST line_blocks_move(px, py, nx, ny) = FALSE
+  THEN { px := nx;  py := ny }
+  ELSE { IF line_blocks_move(px, py, nx, py) = FALSE DO px := nx
+         IF line_blocks_move(px, py, px, ny) = FALSE DO py := ny
+       }
 }
 
 // ---------- player + input ----------
@@ -675,6 +760,117 @@ LET ensure_sidedef_tex(sd_idx, tex_slot_offset) = VALOF
 }
 
 // Walk every sidedef and pre-composite each unique texture once.
+// ---------- sprite cache (must come after stamp_patch_column) ----------
+
+LET spr_cache_lookup(name_bcpl) = VALOF
+{ LET nlen = name_bcpl % 0
+  FOR i = 0 TO spr_count - 1 DO
+  { LET match = TRUE
+    LET cache_off = i * 8
+    FOR k = 0 TO 7 DO
+    { LET ca = spr_name % (cache_off + k)
+      LET cb = k < nlen -> name_bcpl % (k + 1), 0
+      UNLESS ca = cb DO { match := FALSE; BREAK }
+    }
+    IF match RESULTIS i
+  }
+  RESULTIS -1
+}
+
+LET find_lump_bcpl(name_bcpl) = VALOF
+{ LET nlen = name_bcpl % 0
+  FOR i = 0 TO g_numlumps - 1 DO
+  { LET e = g_dirofs + i * DIR_ENTRY_SIZE + DIR_NAME_OFS
+    LET match = TRUE
+    FOR k = 0 TO 7 DO
+    { LET wad_c = g_base % (e + k)
+      LET want  = k < nlen -> name_bcpl % (k + 1), 0
+      UNLESS wad_c = want DO { match := FALSE; BREAK }
+    }
+    IF match RESULTIS i
+  }
+  RESULTIS -1
+}
+
+LET load_sprite(name_bcpl) = VALOF
+{ LET lump_idx = 0
+  LET le, fp = 0, 0
+  LET pw, ph, lo, to = 0, 0, 0, 0
+  LET buf = 0
+  LET nlen = name_bcpl % 0
+
+  IF spr_count >= MAX_SPRITES RESULTIS -1
+  lump_idx := find_lump_bcpl(name_bcpl)
+  IF lump_idx < 0 RESULTIS -1
+  le := g_dirofs + lump_idx * DIR_ENTRY_SIZE
+  fp := rd_u32_le(g_base, le + DIR_FILEPOS_OFS)
+  pw := rd_i16_le(g_base, fp + 0)
+  ph := rd_i16_le(g_base, fp + 2)
+  lo := rd_i16_le(g_base, fp + 4)
+  to := rd_i16_le(g_base, fp + 6)
+  IF pw <= 0 | ph <= 0 RESULTIS -1
+
+  buf := getvec(pw * ph)
+  IF buf = 0 RESULTIS -1
+  FOR i = 0 TO pw * ph - 1 DO buf!i := 0
+
+  FOR pc = 0 TO pw - 1 DO
+    stamp_patch_column(fp, pc, buf, pw, ph, 0, 0)
+
+  FOR k = 0 TO 7 DO
+    spr_name % (spr_count * 8 + k) := k < nlen -> name_bcpl % (k + 1), 0
+  spr_base!spr_count := buf
+  spr_w!spr_count    := pw
+  spr_h!spr_count    := ph
+  spr_lofs!spr_count := lo
+  spr_tofs!spr_count := to
+  spr_count := spr_count + 1
+  RESULTIS spr_count - 1
+}
+
+LET ensure_sprite(name_bcpl) = VALOF
+{ LET idx = spr_cache_lookup(name_bcpl)
+  IF idx >= 0 RESULTIS idx
+  RESULTIS load_sprite(name_bcpl)
+}
+
+LET thing_sprite_name(thing_type) = VALOF
+{ SWITCHON thing_type INTO
+  { CASE 2035: RESULTIS "BAR1A0"      // explosive barrel
+    CASE 2011: RESULTIS "STIMA0"      // stimpack
+    CASE 2012: RESULTIS "MEDIA0"      // medikit
+    CASE 2014: RESULTIS "BON1A0"      // health bonus
+    CASE 2015: RESULTIS "BON2A0"      // armor bonus
+    CASE 2018: RESULTIS "ARM1A0"      // green armor
+    CASE 2019: RESULTIS "ARM2A0"      // blue armor
+    CASE 2008: RESULTIS "CLIPA0"      // bullet clip
+    CASE 2048: RESULTIS "AMMOA0"      // bullet box
+    CASE 2046: RESULTIS "BROKA0"      // rocket box
+    CASE 2047: RESULTIS "CELLA0"      // cell charge
+    CASE 17:   RESULTIS "CELPA0"      // cell pack
+    CASE 2001: RESULTIS "SHOTA0"      // shotgun
+    CASE 2002: RESULTIS "MGUNA0"      // chaingun
+    CASE 2003: RESULTIS "LAUNA0"      // rocket launcher
+    CASE 2005: RESULTIS "CSAWA0"      // chainsaw
+    CASE 2006: RESULTIS "PLASA0"      // plasma rifle
+    CASE 5:    RESULTIS "BKEYA0"      // blue key
+    CASE 13:   RESULTIS "RKEYA0"      // red key
+    CASE 6:    RESULTIS "YKEYA0"      // yellow key
+    CASE 2025: RESULTIS "SUITA0"      // rad suit
+    CASE 2024: RESULTIS "PINSA0"      // blursphere
+    CASE 2022: RESULTIS "PINVA0"      // invuln
+    CASE 8:    RESULTIS "BPAKA0"      // backpack
+    CASE 2007: RESULTIS "AMMOA0"
+    CASE 3001: RESULTIS "TROOA1"      // imp
+    CASE 3002: RESULTIS "SARGA1"      // demon
+    CASE 3004: RESULTIS "POSSA1"      // zombieman
+    CASE 9:    RESULTIS "SPOSA1"      // shotgun guy
+    CASE 3005: RESULTIS "HEADA1"      // cacodemon
+    CASE 3006: RESULTIS "SKULA1"      // lost soul
+    DEFAULT: RESULTIS 0
+  }
+}
+
 LET prebuild_textures(num_sidedefs) BE
 { FOR sd = 0 TO num_sidedefs - 1 DO
   { ensure_sidedef_tex(sd, SIDEDEF_UPPER_OFS)
@@ -976,6 +1172,9 @@ LET render_seg(seg_byte) BE
     }
     IF col_top!col_x > col_bot!col_x DO { close_column(col_x); LOOP }
 
+    // Track per-column nearest wall depth for sprite occlusion.
+    IF cy < col_z!col_x DO col_z!col_x := cy
+
     // Perspective-correct U for this column.
     u_iz_col := u_iz_left + u_iz_step * (col_x - sx1)
     u_world  := u_iz_col / inv_z
@@ -1104,16 +1303,112 @@ LET fill_remaining() BE
   }
 }
 
+// Render a single sprite at world (wx, wy), bottom at world z = wz,
+// using sprite cache entry `cidx`. Honors per-column z-buffer for
+// wall occlusion. Skips silently if behind the camera.
+LET draw_sprite(wx, wy, wz, cidx) BE
+{ LET rx, ry = 0, 0
+  LET cax, cay = 0, 0
+  LET pw, ph, lo, to = 0, 0, 0, 0
+  LET tb = 0
+  LET scale_q10 = 0          // 1024 * (F_X / cay)
+  LET sw, sh = 0, 0          // screen width / height
+  LET sx_center, sx_left, sx_right = 0, 0, 0
+  LET top_z, bot_z = 0, 0
+  LET y_top, y_bot = 0, 0
+  LET v_step_q16 = 0
+  LET pkd = 0
+
+  IF cidx < 0 RETURN
+  rx := wx - px;  ry := wy - py
+  cax := (rx * sin_t!(pa & (ANG-1)) - ry * cos_t!(pa & (ANG-1))) / 1024
+  cay := (rx * cos_t!(pa & (ANG-1)) + ry * sin_t!(pa & (ANG-1))) / 1024
+  IF cay < NEAR RETURN
+
+  pw := spr_w!cidx;  ph := spr_h!cidx
+  lo := spr_lofs!cidx;  to := spr_tofs!cidx
+  tb := spr_base!cidx
+
+  // 1024-scaled scale factor.
+  scale_q10 := (F_X * 1024) / cay
+  sw := (pw * scale_q10) / 1024
+  sh := (ph * scale_q10) / 1024
+  IF sw <= 0 | sh <= 0 RETURN
+
+  sx_center := W/2 + (cax * F_X) / cay
+  // leftofs measured from left edge to origin; sprite's left in
+  // screen space = center - leftofs * scale.
+  sx_left  := sx_center - (lo * scale_q10) / 1024
+  sx_right := sx_left + sw - 1
+  IF sx_right < 0 | sx_left >= W RETURN
+
+  // World z: bottom at wz, top at wz + ph (in world units).
+  // topofs typically equals ph for floor-anchored sprites; this
+  // simple placement puts the patch's bottom at wz.
+  bot_z := wz
+  top_z := wz + ph
+  y_top := project_y(top_z, cay)
+  y_bot := project_y(bot_z, cay)
+  // Note: sh should match (y_bot - y_top) up to rounding; recompute
+  // for V mapping.
+  IF y_bot <= y_top RETURN
+
+  // V step over the span. drawwallcol's V = (y - anchor) * v_step >> 16.
+  // anchor = y_top so V(y_top) = 0, V(y_bot) = ph - 1.
+  v_step_q16 := ((ph - 1) * 65536) / (y_bot - y_top)
+  pkd := (pw & #xFFFF) | (ph << 16)
+
+  // Sprites use full brightness for now (no fade).
+  sys(Sys_setlight, 255)
+
+  // Iterate visible columns.
+  { LET cx0 = sx_left
+    LET cx1 = sx_right
+    IF cx0 < 0 DO cx0 := 0
+    IF cx1 >= W DO cx1 := W - 1
+    FOR sx = cx0 TO cx1 DO
+    { LET texX = ((sx - sx_left) * pw) / sw
+      IF texX < 0 LOOP
+      IF texX >= pw LOOP
+      IF cay >= col_z!sx LOOP    // occluded by a closer wall
+      // Negate v_step → drawwallcol skips transparent pixels.
+      sys(Sys_drawwallcol, sx, y_top, y_bot, y_top, 0 - v_step_q16,
+          texX, tb, pkd)
+    }
+  }
+}
+
+LET draw_sprites() BE
+{ LET n = g_tsize / THING_SIZE
+  LET name_buf = 0
+  LET cidx = 0
+  LET wz = 0
+  FOR i = 0 TO n - 1 DO
+  { LET o    = g_things_byte + i * THING_SIZE
+    LET wx  = rd_i16_le(g_base, o + THING_X_OFS)
+    LET wy  = rd_i16_le(g_base, o + THING_Y_OFS)
+    LET tp  = rd_u16_le(g_base, o + THING_TYPE_OFS)
+    name_buf := thing_sprite_name(tp)
+    IF name_buf = 0 LOOP
+    cidx := ensure_sprite(name_buf)
+    IF cidx < 0 LOOP
+    wz := floor_at(wx, wy)
+    draw_sprite(wx, wy, wz, cidx)
+  }
+}
+
 LET drawframe() BE
 { reset_clip()
+  // Reset per-column z-buffer.
+  FOR i = 0 TO W - 1 DO col_z!i := Z_INF
   cam_z := floor_at(px, py) + EYE_H
-  // Cache camera basis vectors for per-column flat sampling.
   fwd_x   := cos_t!(pa & (ANG - 1))
   fwd_y   := sin_t!(pa & (ANG - 1))
   right_x := fwd_y
   right_y := 0 - fwd_x
   render_node(g_root_node)
   fill_remaining()
+  draw_sprites()
   sys(Sys_sdl, sdl_flip, surf)
 }
 
@@ -1159,6 +1454,9 @@ LET start() = VALOF
 
   g_vert_byte := rd_u32_le(g_base, g_dirofs + vert_idx * DIR_ENTRY_SIZE + DIR_FILEPOS_OFS)
   g_line_byte := rd_u32_le(g_base, g_dirofs + line_idx * DIR_ENTRY_SIZE + DIR_FILEPOS_OFS)
+  { LET ln_sz = rd_u32_le(g_base, g_dirofs + line_idx * DIR_ENTRY_SIZE + DIR_SIZE_OFS)
+    g_nlines := ln_sz / LINEDEF_SIZE
+  }
   g_side_byte := rd_u32_le(g_base, g_dirofs + side_idx * DIR_ENTRY_SIZE + DIR_FILEPOS_OFS)
   side_sz     := rd_u32_le(g_base, g_dirofs + side_idx * DIR_ENTRY_SIZE + DIR_SIZE_OFS)
   num_sides   := side_sz / SIDEDEF_SIZE
@@ -1168,6 +1466,8 @@ LET start() = VALOF
   g_seg_byte  := rd_u32_le(g_base, g_dirofs + seg_idx  * DIR_ENTRY_SIZE + DIR_FILEPOS_OFS)
   things_byte := rd_u32_le(g_base, g_dirofs + thing_idx * DIR_ENTRY_SIZE + DIR_FILEPOS_OFS)
   tsize       := rd_u32_le(g_base, g_dirofs + thing_idx * DIR_ENTRY_SIZE + DIR_SIZE_OFS)
+  g_things_byte := things_byte
+  g_tsize       := tsize
   g_root_node := (rd_u32_le(g_base, g_dirofs + node_idx * DIR_ENTRY_SIZE + DIR_SIZE_OFS) / NODE_SIZE) - 1
 
   // Texture pipeline lumps.
@@ -1198,6 +1498,13 @@ LET start() = VALOF
   tex_h_vec := getvec(MAX_TEX)
   flat_name := getvec(MAX_FLATS * 2)
   flat_base := getvec(MAX_FLATS)
+  spr_name  := getvec(MAX_SPRITES * 2)
+  spr_base  := getvec(MAX_SPRITES)
+  spr_w     := getvec(MAX_SPRITES)
+  spr_h     := getvec(MAX_SPRITES)
+  spr_lofs  := getvec(MAX_SPRITES)
+  spr_tofs  := getvec(MAX_SPRITES)
+  col_z     := getvec(W)
 
   load_palette(playpal_byte)
 
@@ -1239,8 +1546,7 @@ LET start() = VALOF
     IF fwd ~= 0 DO
     { LET dx = (cos_t!(pa & (ANG-1)) * MOVE * fwd) / 1024
       LET dy = (sin_t!(pa & (ANG-1)) * MOVE * fwd) / 1024
-      px := px + dx
-      py := py + dy
+      try_move(dx, dy)
     }
     IF turn ~= 0 DO pa := (pa + turn) & (ANG - 1)
 
