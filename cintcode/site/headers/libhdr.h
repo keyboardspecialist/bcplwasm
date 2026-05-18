@@ -585,8 +585,14 @@ Sys_playmusic       = 92   // (name_str, loop_flag) — play a binary audio
 Sys_stopmusic       = 93   // () — stop current music track.
 Sys_playmus         = 94   // (word_base, byte_off, byte_size, loop) —
                            //   play a Doom MUS-format lump from wasm
-                           //   memory via the runtime's tiny oscillator
-                           //   synth. Drum channel 15 gets noise bursts.
+                           //   memory. Uses spessasynth + SoundFont if a
+                           //   SoundFont was loaded via Sys_loadsf2; else
+                           //   falls back to a tiny oscillator synth
+                           //   (channel 15 = noise burst drums).
+Sys_loadsf2         = 95   // (name_str) — load a binary asset (.sf2) as
+                           //   the active SoundFont for Sys_playmus.
+                           //   Returns 1 on success, 0 if asset missing
+                           //   or spessasynth fails to initialise.
 
 bootregs = 11 // Registers used to enter the function start in boot.b
 cliregs  = 21 // Registers used by BOOT to start the CLI

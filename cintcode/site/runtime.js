@@ -59,6 +59,206 @@ export const storageBackend = (() => {
   };
 })();
 
+// Convert a Doom MUS lump to a standard SMF type-0 MIDI buffer.
+// MUS event types map onto MIDI status nibbles 8x/9x/Bx/Cx/Ex; channel
+// 15 in MUS is the percussion channel (MIDI channel 9, 0-indexed). MUS
+// runs at 140 ticks/sec; we emit a tempo meta-event so SMF division of
+// 70 ticks/quarter yields 500000 us/quarter (= 120 BPM, 140 Hz frames).
+// Returns Uint8Array of MIDI bytes, or null on parse failure.
+export function mus2mid(bytes) {
+  if (!bytes || bytes.length < 16) return null;
+  if (bytes[0] !== 0x4D || bytes[1] !== 0x55 ||
+      bytes[2] !== 0x53 || bytes[3] !== 0x1A) return null;
+  const dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  const scoreStart = dv.getUint16(6, true);
+
+  // Mapping MUS channel -> MIDI channel. MUS reserves channel 15 for
+  // percussion; MIDI uses 9. We assign MIDI channels lazily so the
+  // first MUS channel we see becomes MIDI 0, etc., skipping 9 which
+  // is always percussion.
+  const chanMap = new Array(16).fill(-1);
+  chanMap[15] = 9;
+  let nextMidi = 0;
+  const getMidiCh = (musCh) => {
+    if (chanMap[musCh] !== -1) return chanMap[musCh];
+    while (nextMidi === 9) nextMidi++;
+    if (nextMidi > 15) nextMidi = 15;
+    chanMap[musCh] = nextMidi++;
+    return chanMap[musCh];
+  };
+
+  // MUS controller index -> MIDI CC number.
+  const ctrlMap = [0, 0, 1, 7, 10, 11, 91, 93, 64, 67, 120, 123, 126, 127, 121];
+
+  // Track: pairs of [delta-ticks, eventBytes...].
+  const track = [];
+  const lastVel = new Array(16).fill(64);
+  let p = scoreStart;
+  let delta = 0;
+  let done = false;
+  while (p < bytes.length && !done) {
+    const ctrl = bytes[p++];
+    const last = ctrl & 0x80;
+    const type = (ctrl >> 4) & 0x07;
+    const ch = ctrl & 0x0F;
+    let evt = null;
+    switch (type) {
+      case 0: {              // note off
+        const n = bytes[p++] & 0x7F;
+        const mc = getMidiCh(ch);
+        evt = [0x80 | mc, n, 0];
+        break;
+      }
+      case 1: {              // note on (+ optional velocity)
+        const nb = bytes[p++];
+        const note = nb & 0x7F;
+        if (nb & 0x80) lastVel[ch] = bytes[p++] & 0x7F;
+        const mc = getMidiCh(ch);
+        evt = [0x90 | mc, note, lastVel[ch]];
+        break;
+      }
+      case 2: {              // pitch wheel: MUS 0..255 -> MIDI 14-bit
+        const pw = bytes[p++];
+        const v = pw * 64;   // 128 = center -> 8192
+        const mc = getMidiCh(ch);
+        evt = [0xE0 | mc, v & 0x7F, (v >> 7) & 0x7F];
+        break;
+      }
+      case 3: {              // system event (controller number, no value)
+        const cn = bytes[p++];
+        if (cn >= 10 && cn <= 14) {
+          const mc = getMidiCh(ch);
+          evt = [0xB0 | mc, ctrlMap[cn], 0];
+        }
+        break;
+      }
+      case 4: {              // controller change
+        const cn = bytes[p++];
+        const val = bytes[p++] & 0x7F;
+        const mc = getMidiCh(ch);
+        if (cn === 0) {
+          evt = [0xC0 | mc, val];   // program change
+        } else if (cn < ctrlMap.length) {
+          evt = [0xB0 | mc, ctrlMap[cn], val];
+        }
+        break;
+      }
+      case 6: done = true; break;
+      default: /* 5,7 ignored */ break;
+    }
+
+    if (evt) {
+      track.push({ delta, bytes: evt });
+      delta = 0;
+    }
+
+    if (last && !done) {
+      let d = 0;
+      while (p < bytes.length) {
+        const b = bytes[p++];
+        d = (d << 7) | (b & 0x7F);
+        if (!(b & 0x80)) break;
+      }
+      delta += d;
+    }
+  }
+
+  // Emit SMF.
+  const writeVlq = (out, v) => {
+    const stack = [v & 0x7F];
+    v >>= 7;
+    while (v > 0) { stack.push((v & 0x7F) | 0x80); v >>= 7; }
+    for (let i = stack.length - 1; i >= 0; i--) out.push(stack[i]);
+  };
+  const body = [];
+  // Tempo meta (500000 us per quarter = 120 BPM).
+  body.push(0x00, 0xFF, 0x51, 0x03, 0x07, 0xA1, 0x20);
+  for (const ev of track) {
+    writeVlq(body, ev.delta);
+    for (const b of ev.bytes) body.push(b);
+  }
+  // End of track meta.
+  body.push(0x00, 0xFF, 0x2F, 0x00);
+
+  const trkLen = body.length;
+  const out = new Uint8Array(14 + 8 + trkLen);
+  let i = 0;
+  // MThd
+  out.set([0x4D, 0x54, 0x68, 0x64, 0, 0, 0, 6, 0, 0, 0, 1, 0, 70], 0); i = 14;
+  out.set([0x4D, 0x54, 0x72, 0x6B,
+           (trkLen >> 24) & 0xFF, (trkLen >> 16) & 0xFF,
+           (trkLen >> 8) & 0xFF, trkLen & 0xFF], i); i += 8;
+  for (let j = 0; j < trkLen; j++) out[i + j] = body[j];
+  return out;
+}
+
+// Spessasynth wrapper: lazy-init the AudioWorklet + WorkletSynthesizer
+// + Sequencer on first SF2 load. Subsequent Sys_playmus calls route
+// through here instead of the oscillator fallback. The class only
+// pulls vendor/spessasynth.js when actually needed — avoids loading
+// ~1MB of JS for examples that never touch SF2.
+class SF2MusPlayer {
+  constructor(audioCtx) {
+    this.ctx = audioCtx;
+    this.ready = false;
+    this.synth = null;
+    this.seq = null;
+    this.SequencerCtor = null;
+    this.pending = null;     // {midi, loop} queued during load
+  }
+  async init() {
+    if (this.ready) return true;
+    const mod = await import("./vendor/spessasynth.js");
+    await this.ctx.audioWorklet.addModule("./vendor/spessasynth_processor.min.js");
+    this.synth = new mod.WorkletSynthesizer(this.ctx);
+    await this.synth.isReady;
+    this.synth.connect(this.ctx.destination);
+    this.SequencerCtor = mod.Sequencer;
+    return true;
+  }
+  async loadSF2(buffer) {
+    await this.init();
+    await this.synth.soundBankManager.addSoundBank(buffer, "main");
+    this.ready = true;
+    if (this.pending) {
+      const { midi, loop } = this.pending;
+      this.pending = null;
+      this._playNow(midi, loop);
+    }
+    return true;
+  }
+  // Caller may invoke before loadSF2 has resolved; we stash and run
+  // automatically once the worklet + soundbank are live.
+  playMidi(midiBytes, loop) {
+    if (!this.ready) {
+      this.pending = { midi: midiBytes, loop };
+      return true;     // accepted (queued)
+    }
+    this._playNow(midiBytes, loop);
+    return true;
+  }
+  _playNow(midiBytes, loop) {
+    if (!this.seq) this.seq = new this.SequencerCtor(this.synth);
+    this.seq.loopCount = loop ? -1 : 0;
+    const buf = midiBytes.buffer.slice(midiBytes.byteOffset,
+                                       midiBytes.byteOffset + midiBytes.byteLength);
+    this.seq.loadNewSongList([{ binary: buf, fileName: "song.mid" }]);
+    this.seq.play();
+  }
+  // True once usable for fresh play() calls. Distinct from .ready
+  // (which means SF2 is loaded); .loading means loadSF2 is in flight
+  // and we should defer to it rather than start the oscillator.
+  get loading() {
+    return this.pending !== null || this._loadInflight;
+  }
+  stop() {
+    this.pending = null;
+    if (this.seq) {
+      try { this.seq.pause(); } catch {}
+    }
+  }
+}
+
 // Minimal Doom MUS-format player. Reads an in-memory MUS lump and
 // drives a tiny oscillator-based polyphonic synth on Web Audio — no
 // SoundFont needed, so it's self-contained. Note: this only renders
@@ -1609,7 +1809,10 @@ export class BcplRuntime {
       // sys(Sys_playmus, word_base, byte_offset, byte_size, loop) —
       // play a MUS lump straight out of wasm memory (no asset upload
       // needed). word_base*4 + byte_offset is the byte address of
-      // the lump's first byte; byte_size is the lump length.
+      // the lump's first byte; byte_size is the lump length. If a
+      // SoundFont has been loaded via Sys_loadsf2, the MUS is
+      // converted to MIDI and routed through spessasynth; otherwise
+      // the built-in oscillator player handles it.
       case 94: {
         const wbase = a1 | 0;
         const off   = a2 | 0;
@@ -1623,11 +1826,44 @@ export class BcplRuntime {
           const Ctor = (typeof window !== "undefined") ? (window.AudioContext || window.webkitAudioContext) : null;
           if (!Ctor) return 0;
           if (!this._audioCtx) this._audioCtx = new Ctor();
+          if (this._sf2Player && (this._sf2Player.ready || this._sf2Player.loading)) {
+            const midi = mus2mid(bytes);
+            if (midi) {
+              if (this._musPlayer) { this._musPlayer.stop(); this._musPlayer = null; }
+              this._sf2Player.playMidi(midi, loop);
+              return 0;
+            }
+          }
           if (this._musPlayer) this._musPlayer.stop();
           this._musPlayer = new MusPlayer(this._audioCtx, bytes, loop);
           this._musPlayer.play();
         } catch { /* swallow */ }
         return 0;
+      }
+
+      // sys(Sys_loadsf2, name_str) — load a binary asset (.sf2) as
+      // the active SoundFont for Sys_playmus. Returns 1 on success,
+      // 0 if asset missing or spessasynth init fails. First call
+      // lazily boots the AudioWorklet (async; user code that wants
+      // music on the very first beat should call this near start()
+      // and accept a few hundred ms before notes begin sounding).
+      case 95: {
+        const name = this.readBcplString(a1);
+        const rec = assetBackend.get(name);
+        if (!rec || !rec.bytes) return 0;
+        try {
+          const Ctor = (typeof window !== "undefined") ? (window.AudioContext || window.webkitAudioContext) : null;
+          if (!Ctor) return 0;
+          if (!this._audioCtx) this._audioCtx = new Ctor();
+          if (!this._sf2Player) this._sf2Player = new SF2MusPlayer(this._audioCtx);
+          const buf = rec.bytes.buffer.slice(rec.bytes.byteOffset,
+                                             rec.bytes.byteOffset + rec.bytes.byteLength);
+          this._sf2Player._loadInflight = true;
+          this._sf2Player.loadSF2(buf)
+            .then(() => { this._sf2Player._loadInflight = false; })
+            .catch(() => { this._sf2Player._loadInflight = false; });
+          return 1;
+        } catch { return 0; }
       }
       // sys(Sys_stopmusic) — pause + free the current music track.
       case 93: {
@@ -1643,6 +1879,7 @@ export class BcplRuntime {
           this._musPlayer.stop();
           this._musPlayer = null;
         }
+        if (this._sf2Player) this._sf2Player.stop();
         return 0;
       }
 

@@ -556,7 +556,14 @@ Sys_stopmusic       = 93    // () — stop current music track
 Sys_playmus         = 94    // (word_base, byte_off, byte_size, loop) —
                             //   play a Doom MUS-format lump straight out
                             //   of wasm memory via a built-in Web Audio
-                            //   oscillator synth (no SoundFont).
+                            //   oscillator synth (no SoundFont). If a
+                            //   SoundFont has been loaded via Sys_loadsf2
+                            //   the runtime instead routes the MUS through
+                            //   spessasynth for proper instrument timbres.
+Sys_loadsf2         = 95    // (name_str) — load named binary asset (.sf2)
+                            //   into spessasynth as the active SoundFont.
+                            //   Returns 1 on success, 0 on failure. Async:
+                            //   first call lazily boots the AudioWorklet.
 
 bootregs = 11 // Registers used to enter the function start in boot.b
 cliregs  = 21 // Registers used by BOOT to start the CLI
