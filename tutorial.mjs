@@ -785,6 +785,21 @@ export const TRACK = [
     ],
     prereqs: ["52-doom-doors"],
   },
+  {
+    slug: "54-doom-weapon",
+    title: "Doom Weapon HUD",
+    level: 9,
+    topic: "graphics",
+    summary: "Held pistol drawn bottom-centre with walk-cycle bob. F / LCtrl fires; frames B→C→D cycle, then back to idle A.",
+    goals: [
+      "ensure_sprite(\"PISGA0\") etc. loads frames into the existing cache",
+      "current_weapon_cidx() picks frame from wep_fire_timer",
+      "Sys_setdepth(0) before draw → weapon always wins z-test",
+      "Bob phase advances faster when moving; sin/cos drive xy offset",
+      "WEAPON_SCALE controls native vs 2x/3x pixel size",
+    ],
+    prereqs: ["53-doom-anim"],
+  },
 ];
 
 // Quick-lookup helpers used by the UI.
