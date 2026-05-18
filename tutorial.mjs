@@ -651,6 +651,21 @@ export const TRACK = [
     ],
     prereqs: ["43-doom-bsp"],
   },
+  {
+    slug: "45-doom-flats",
+    title: "Doom Floor + Ceiling Flats",
+    level: 9,
+    topic: "graphics",
+    summary: "Decode 64×64 flats from PLAYPAL and render textured floor / ceiling via Sys_drawflatspan (per-pixel reverse projection).",
+    goals: [
+      "SECTOR.floor_tex / ceil_tex (8-byte names) → flat cache",
+      "Each flat is 4096 bytes of palette indices → 64×64 RGBA buffer",
+      "Sys_drawflatspan = 87: per-pixel rowDist = abs(cam_above) * F_X / |y-HORIZON|",
+      "Per-column ray dx/dy = fwd + right * (col - W/2) / F_X",
+      "F_SKY1 detected and skipped — falls back to sky_col",
+    ],
+    prereqs: ["44-doom-wall-tex"],
+  },
 ];
 
 // Quick-lookup helpers used by the UI.

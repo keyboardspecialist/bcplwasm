@@ -47,6 +47,7 @@ const RUN_SKIP = new Set([
   "42-doom-3dview",     // same — WAD + canvas + game loop
   "43-doom-bsp",        // same — WAD + canvas + game loop
   "44-doom-wall-tex",   // same — WAD + canvas + game loop
+  "45-doom-flats",      // same — WAD + canvas + game loop
   "stdlib",             // pure library — no start()
 ]);
 

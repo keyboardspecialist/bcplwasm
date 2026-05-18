@@ -554,6 +554,16 @@ Sys_drawwallcol     = 86   // (col, y0, y1, y_anchor, v_step_q16, texX, tex_base
                            //   instead of stretching). v_step_q16 = (cy * 65536)
                            //   / F_X for perspective-correct sampling.
                            //   pkd_wh = (tex_w & #xFFFF) | (tex_h << 16).
+Sys_drawflatspan    = 87   // (col, y0, y1, cam_above, px, py, raydxy_pkd, flat_base)
+                           //   Textured floor/ceiling span for a single
+                           //   screen column. cam_above sign chooses kind:
+                           //     positive → floor (cam_z - floor_h)
+                           //     negative → ceiling (cam_z - ceil_h)
+                           //   raydxy_pkd packs (dx & #xFFFF) | (dy << 16) with
+                           //   dx/dy = 1024-scaled per-column ray direction.
+                           //   Per-pixel rowDist = abs(cam_above) * F_X /
+                           //   |y - HORIZON|; world (px+rowDist*dx, py+...);
+                           //   tx, ty = world coords & 63. Flat fixed at 64x64.
 
 bootregs = 11 // Registers used to enter the function start in boot.b
 cliregs  = 21 // Registers used by BOOT to start the CLI
