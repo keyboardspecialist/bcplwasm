@@ -297,14 +297,34 @@ export class BcplRuntime {
     return this._scbToStream.get(scbPtr) ?? null;
   }
 
-  // Byte view; refresh after memory.grow (we never grow, but keep
-  // pattern correct).
+  // Byte view; refresh after every memory.grow.
   refresh() {
     this.memView = new DataView(this.mem.buffer);
     // Init heap pointer once on first refresh after load.
     if (this.heapTop === 0) {
       this.heapTop = (this.mem.buffer.byteLength >> 2);  // total words
     }
+  }
+
+  // Grow wasm memory by enough pages to cover `needWords` words above
+  // the current heap top, then slide heapTop up so subsequent
+  // descending allocations land in the new region. Returns true on
+  // success, false if the engine refused to grow.
+  //
+  // Memory layout reminder: stack/statics grow up from low addresses;
+  // heap descends from the top. Growing extends the high end, so we
+  // can safely treat the freshly-allocated pages as a new descending
+  // heap window — existing allocations below the old top stay put.
+  growHeapForWords(needWords) {
+    const PAGE_WORDS = 65536 / 4;
+    const pages = Math.ceil(needWords / PAGE_WORDS) + 1;  // +1 slack
+    const before = this.mem.grow(pages);
+    if (before === -1) return false;
+    // before = page count before grow. New top in words:
+    const newTopWords = ((before + pages) * 65536) >> 2;
+    this.heapTop = newTopWords;
+    this.refresh();
+    return true;
   }
 
   loadWord(wordAddr) {
@@ -1009,8 +1029,10 @@ export class BcplRuntime {
           if (dataWordAddr === undefined) {
             const byteLen = rec.bytes.length;
             const wordsNeeded = (byteLen + 3) >> 2;
+            if (this.heapTop - wordsNeeded <= 0) {
+              if (!this.growHeapForWords(wordsNeeded)) return 0;
+            }
             this.heapTop -= wordsNeeded;
-            if (this.heapTop <= 0) { this.heapTop += wordsNeeded; return 0; }
             dataWordAddr = this.heapTop;
             const dstByteAddr = dataWordAddr * 4;
             new Uint8Array(this.mem.buffer, dstByteAddr, byteLen).set(rec.bytes);
@@ -1024,8 +1046,10 @@ export class BcplRuntime {
         // ----- Image asset path -----
         if (dataWordAddr === undefined) {
           const wordsNeeded = rec.w * rec.h;
+          if (this.heapTop - wordsNeeded <= 0) {
+            if (!this.growHeapForWords(wordsNeeded)) return 0;
+          }
           this.heapTop -= wordsNeeded;
-          if (this.heapTop <= 0) { this.heapTop += wordsNeeded; return 0; }
           dataWordAddr = this.heapTop;
           // RGBA byte-stream -> packed-RGB int per texel. Runtime
           // colour packing (sdl_maprgb) puts r in high byte:

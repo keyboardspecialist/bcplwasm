@@ -53,17 +53,19 @@ MANIFEST {
 }
 
 STATIC {
-  wmap      = 0
-  sin_t     = 0
-  cos_t     = 0
-  keys      = 0
-  surf      = 0
-  running   = 1
-  tex_base  = 0
-  tex_w     = 0
-  tex_h     = 0
-  sky_w     = 0
-  wall_name = 0
+  wmap       = 0
+  sin_t      = 0
+  cos_t      = 0
+  keys       = 0
+  surf       = 0
+  running    = 1
+  tex_base   = 0
+  tex_w      = 0
+  tex_h      = 0
+  sky_w      = 0
+  wall_name  = 0
+  sky_name   = 0
+  floor_name = 0
 }
 
 LET fsin(x) = VALOF
@@ -235,24 +237,93 @@ LET load_bg(name, slot, info) = VALOF
   RESULTIS TRUE
 }
 
-// Try a slot's candidate names in order, then fall back to the wall
-// texture as a universal last resort. Without this, a user who only
-// uploaded e.g. brick.png (used by walls) would see no floor — the
-// previous chain only tried stone/checker. Returns TRUE on first hit.
-LET load_bg_with_fallback(slot, info, n1, n2, n3) = VALOF
-{ IF load_bg(n1,        slot, info) RESULTIS TRUE
-  IF load_bg(n2,        slot, info) RESULTIS TRUE
-  IF load_bg(n3,        slot, info) RESULTIS TRUE
-  IF load_bg(wall_name, slot, info) RESULTIS TRUE
+// ---- Asset-list discovery helpers --------------------------------
+// The hardcoded fallback chain was brittle: a user who uploaded
+// brick.png as the wall and wood.png as the intended floor would
+// see floor=brick (chain matched brick before reaching wood, since
+// wood wasn't in the floor chain at all).
+//
+// Fix: after trying preferred names, walk Sys_assetlist for any
+// uploaded .png that isn't already assigned to another role, and
+// load that.
+
+LET lc(c) = c >= 'A' & c <= 'Z' -> c + ('a' - 'A'), c
+
+LET ends_with_png(buf, start, end) = VALOF
+{ LET n = end - start
+  IF n < 4 RESULTIS FALSE
+  RESULTIS lc(buf % (end - 4)) = '.' &
+           lc(buf % (end - 3)) = 'p' &
+           lc(buf % (end - 2)) = 'n' &
+           lc(buf % (end - 1)) = 'g'
+}
+
+LET cp_substr(buf, start, end, dest) BE
+{ LET n = end - start
+  dest % 0 := n
+  FOR i = 0 TO n - 1 DO dest % (i + 1) := buf % (start + i)
+}
+
+// Case-insensitive BCPL-string equality. Either arg may be 0
+// (treated as never-matching).
+LET str_ieq(a, b) = VALOF
+{ LET la, lb = 0, 0
+  IF a = 0 | b = 0 RESULTIS FALSE
+  la := a % 0
+  lb := b % 0
+  UNLESS la = lb RESULTIS FALSE
+  FOR i = 1 TO la DO UNLESS lc(a % i) = lc(b % i) RESULTIS FALSE
+  RESULTIS TRUE
+}
+
+// load_bg variant that refuses to load `name` if it matches any of
+// the skip strings (case-insensitive). Lets the ceiling pick refuse
+// "wood.png" even when wood is the user's preferred ceil name, if
+// the floor already picked it.
+LET load_unique(name, slot, info, skip1, skip2, skip3) = VALOF
+{ UNLESS name RESULTIS FALSE
+  IF str_ieq(name, skip1) RESULTIS FALSE
+  IF str_ieq(name, skip2) RESULTIS FALSE
+  IF str_ieq(name, skip3) RESULTIS FALSE
+  RESULTIS load_bg(name, slot, info)
+}
+
+// Walk the asset list; pick the first .png whose name doesn't
+// case-insensitively match skip1/skip2/skip3, load it into `slot`.
+// Returns TRUE on hit; copies the chosen name to `out_name` so the
+// caller can record it.
+LET pick_unused_png(slot, info, skip1, skip2, skip3, out_name) = VALOF
+{ LET listbuf = VEC 64
+  LET cand    = VEC 32
+  LET totlen, start, end = 0, 0, 0
+  sys(Sys_assetlist, listbuf)
+  totlen := listbuf % 0
+  start  := 1
+  end    := 1
+  WHILE end <= totlen DO
+  { WHILE end <= totlen & listbuf % end ~= ',' DO end := end + 1
+    IF ends_with_png(listbuf, start, end) DO
+    { cp_substr(listbuf, start, end, cand)
+      UNLESS str_ieq(cand, skip1) | str_ieq(cand, skip2) | str_ieq(cand, skip3) DO
+        IF load_bg(cand, slot, info) DO
+        { IF out_name DO cp_substr(listbuf, start, end, out_name)
+          RESULTIS TRUE
+        }
+    }
+    end   := end + 1
+    start := end
+  }
   RESULTIS FALSE
 }
+
 
 LET start() = VALOF
 { LET px = 1 * 1024 + 512
   LET py = 1 * 1024 + 512
   LET pa = 0
-  LET info = VEC 3
+  LET info     = VEC 3
   LET sky_info = VEC 3
+  LET floor_buf = VEC 32     // holds picked floor name for ceil's skip-list
 
   wmap := TABLE
     1, 1, 1, 1, 1, 1, 1, 1,
@@ -281,16 +352,28 @@ LET start() = VALOF
   tex_base := info!2
 
   // Sky panorama. Required for sky rendering.
-  UNLESS load_bg("sky.png", BG_SKY, sky_info) DO
-    writef("No sky.png asset. Sky column will be blank.*n")
+  IF load_bg("sky.png", BG_SKY, sky_info) DO sky_name := "sky.png"
+  UNLESS sky_name DO writef("No sky.png asset. Sky column will be blank.*n")
   sky_w := sky_info!0
 
-  // Floor / ceiling. Each tries its preferred names first, then the
-  // wall texture as a last resort so any single uploaded texture
-  // still produces *something* on every surface.
-  UNLESS load_bg_with_fallback(BG_FLOOR, info, "stone.png", "checker.png", "brick.png") DO
-    writef("No floor texture.*n")
-  UNLESS load_bg_with_fallback(BG_CEIL,  info, "wood.png",  "brick.png",   "stone.png") DO
+  // Floor. Order: preferred names (skipped if already taken by wall),
+  // then any uploaded .png that isn't wall or sky, then the wall
+  // texture itself as last resort. Record whatever loaded.
+  TEST load_unique("stone.png", BG_FLOOR, info, wall_name, sky_name, 0)
+  THEN floor_name := "stone.png"
+  ELSE TEST load_unique("checker.png", BG_FLOOR, info, wall_name, sky_name, 0)
+  THEN floor_name := "checker.png"
+  ELSE TEST pick_unused_png(BG_FLOOR, info, wall_name, sky_name, 0, floor_buf)
+  THEN floor_name := floor_buf
+  ELSE TEST load_bg(wall_name, BG_FLOOR, info)
+  THEN floor_name := wall_name
+  ELSE { writef("No floor texture.*n"); floor_name := 0 }
+
+  // Ceiling. Same pattern; skip wall/sky/floor when scanning.
+  UNLESS load_unique("wood.png",    BG_CEIL, info, wall_name, sky_name, floor_name) DO
+  UNLESS load_unique("ceiling.png", BG_CEIL, info, wall_name, sky_name, floor_name) DO
+  UNLESS pick_unused_png(BG_CEIL, info, wall_name, sky_name, floor_name, 0) DO
+  UNLESS load_bg(wall_name, BG_CEIL, info) DO
     writef("No ceiling texture.*n")
 
   sys(Sys_sdl, sdl_init)

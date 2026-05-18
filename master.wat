@@ -81,7 +81,7 @@
   (import "env" "bcpl_changeco"          (func $imp_changeco (type $bcpl_fn)))
   (import "env" "bcpl_delay"             (func $imp_delay (type $bcpl_fn)))
 
-  (memory $mem    (export "mem")    64)                    ;; 4 MB — room for compiler self-hosting
+  (memory $mem    (export "mem")    64 1024)               ;; 4 MB initial, growable to 64 MB (large binary assets)
   (table  $ftable (export "ftable") 512 funcref)
   (global $G      (export "G") i32        (i32.const 1))
   (global $P      (export "P") (mut i32)  (i32.const 0))
