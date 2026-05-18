@@ -680,6 +680,22 @@ export const TRACK = [
     ],
     prereqs: ["45-doom-flats"],
   },
+  {
+    slug: "47-doom-pegging",
+    title: "Doom Texture Pegging + Portal Mid-Textures",
+    level: 9,
+    topic: "graphics",
+    summary: "Honor ML_DONTPEGTOP / ML_DONTPEGBOTTOM flags. Render portal mid-textures (railings, fences) with alpha-test transparency via negated v_step.",
+    goals: [
+      "LINEDEF.flags decoded; per-part y_anchor computed from pegging",
+      "Solid wall: default anchor = front_ceil; ML_DONTPEGBOTTOM = floor + tex_h",
+      "Upper step: default anchor = back_ceil + tex_h; ML_DONTPEGTOP = front_ceil",
+      "Lower step: default = front_ceil; ML_DONTPEGBOTTOM = back_floor + tex_h",
+      "Portal mid-tex: drawn with transparency (drawwallcol skips word==0 when v_step < 0)",
+      "Limitation: mid-tex drawn inline front-to-back, can be overdrawn by farther segs",
+    ],
+    prereqs: ["46-doom-light"],
+  },
 ];
 
 // Quick-lookup helpers used by the UI.
