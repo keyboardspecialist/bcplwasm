@@ -306,6 +306,70 @@ export class BcplRuntime {
     }
   }
 
+  // Unpack a packed BCPL colour word (0xRRGGBBAA → individual bytes).
+  _fbUnpack(c) {
+    return [
+      (c >>> 24) & 0xFF,
+      (c >>> 16) & 0xFF,
+      (c >>>  8) & 0xFF,
+      (c & 0xFF) || 0xFF,
+    ];
+  }
+
+  // Write a vertical line into the back buffer (no canvas hit).
+  // Used by sdl_drawvline and the sky/floor fill paths so we can
+  // flip the whole frame in one putImageData.
+  _fbVline(x, y0, y1, color) {
+    const fb = this._fb;
+    if (!fb) return;
+    const W = this._fbW, H = this._fbH;
+    if (x < 0 || x >= W) return;
+    if (y0 > y1) { const t = y0; y0 = y1; y1 = t; }
+    if (y0 < 0) y0 = 0;
+    if (y1 >= H) y1 = H - 1;
+    if (y0 > y1) return;
+    const r = (color >>> 24) & 0xFF;
+    const g = (color >>> 16) & 0xFF;
+    const b = (color >>>  8) & 0xFF;
+    const a = (color & 0xFF) || 0xFF;
+    let p = (y0 * W + x) * 4;
+    const stride = W * 4;
+    for (let y = y0; y <= y1; y++) {
+      fb[p]     = r;
+      fb[p + 1] = g;
+      fb[p + 2] = b;
+      fb[p + 3] = a;
+      p += stride;
+    }
+  }
+
+  // Filled rect (x..x+w-1, y..y+h-1).
+  _fbRect(x, y, w, h, color) {
+    const fb = this._fb;
+    if (!fb) return;
+    const W = this._fbW, H = this._fbH;
+    let x0 = x, y0 = y, x1 = x + w, y1 = y + h;
+    if (x0 < 0) x0 = 0;
+    if (y0 < 0) y0 = 0;
+    if (x1 > W) x1 = W;
+    if (y1 > H) y1 = H;
+    if (x0 >= x1 || y0 >= y1) return;
+    const r = (color >>> 24) & 0xFF;
+    const g = (color >>> 16) & 0xFF;
+    const b = (color >>>  8) & 0xFF;
+    const a = (color & 0xFF) || 0xFF;
+    for (let yy = y0; yy < y1; yy++) {
+      let p = (yy * W + x0) * 4;
+      for (let xx = x0; xx < x1; xx++) {
+        fb[p]     = r;
+        fb[p + 1] = g;
+        fb[p + 2] = b;
+        fb[p + 3] = a;
+        p += 4;
+      }
+    }
+  }
+
   // Grow wasm memory by enough pages to cover `needWords` words above
   // the current heap top, then slide heapTop up so subsequent
   // descending allocations land in the new region. Returns true on
@@ -1083,55 +1147,39 @@ export class BcplRuntime {
         const top   = a2 | 0;
         const h     = a3 | 0;
         const texX  = a4 | 0;
-        const tBase = a5 | 0;     // word address of texel array
+        const tBase = a5 | 0;
         const tw    = a6 | 0;
         const th    = a7 | 0;
         const dim   = a8 | 0;
-        if (!this.sdlCtx || h <= 0 || tw <= 0 || th <= 0) return 0;
-        // Clip to canvas.
-        const can = this.sdlCanvas;
+        const fb    = this._fb;
+        if (!fb || h <= 0 || tw <= 0 || th <= 0) return 0;
+        const W = this._fbW, H = this._fbH;
         let y0 = top, y1 = top + h;
-        if (col < 0 || col >= can.width) return 0;
+        if (col < 0 || col >= W) return 0;
         if (y0 < 0) y0 = 0;
-        if (y1 > can.height) y1 = can.height;
+        if (y1 > H) y1 = H;
         const drawH = y1 - y0;
         if (drawH <= 0) return 0;
-        // Reusable column buffer.
-        const buf = this._texColBuf ??= { arr: null, h: 0 };
-        if (buf.h !== drawH) {
-          buf.arr = new Uint8ClampedArray(drawH * 4);
-          buf.h = drawH;
-        }
-        const arr = buf.arr;
-        // mem is little-endian i32; texel layout is 0xRRGGBBAA so
-        // little-endian bytes read as [A, B, G, R]. Need to flip.
         const mv = this.memView;
         const tx = ((texX % tw) + tw) % tw;
-        const startY = y0 - top;
+        const stride = W * 4;
+        let fbIdx = (y0 * W + col) * 4;
         for (let i = 0; i < drawH; i++) {
           const screenY = y0 + i;
-          // Math.floor (not |0) — h can exceed i32 once the player
-          // presses against a wall, and (screenY-top)*th can spill
-          // past 2^31. JS numbers stay precise up to 2^53.
           const tY = Math.floor((screenY - top) * th / h);
           const ty = tY >= 0 ? (tY < th ? tY : th - 1) : 0;
           const word = mv.getInt32((tBase + ty * tw + tx) * 4, true);
-          // word stored as ((r<<24)|(g<<16)|(b<<8)|a) but mv reads it
-          // as little-endian → low byte first. So:
-          //   byte0 = a, byte1 = b, byte2 = g, byte3 = r
           let r = (word >>> 24) & 0xFF;
           let g = (word >>> 16) & 0xFF;
           let b = (word >>>  8) & 0xFF;
           const a = word & 0xFF;
           if (dim) { r >>= 1; g >>= 1; b >>= 1; }
-          const o = i * 4;
-          arr[o]     = r;
-          arr[o + 1] = g;
-          arr[o + 2] = b;
-          arr[o + 3] = a || 0xFF;
+          fb[fbIdx]     = r;
+          fb[fbIdx + 1] = g;
+          fb[fbIdx + 2] = b;
+          fb[fbIdx + 3] = a || 0xFF;
+          fbIdx += stride;
         }
-        const imgData = new ImageData(arr, 1, drawH);
-        this.sdlCtx.putImageData(imgData, col, y0);
         return 0;
       }
 
@@ -1158,37 +1206,29 @@ export class BcplRuntime {
         const h_top = a2 | 0;
         const u     = a3 | 0;
         const bg = this._bgTex;
-        if (!this.sdlCtx || !bg || !bg[0] || h_top <= 0) return 0;
+        const fb = this._fb;
+        if (!fb || !bg || !bg[0] || h_top <= 0) return 0;
         const tex = bg[0];
-        const can = this.sdlCanvas;
-        if (col < 0 || col >= can.width) return 0;
+        const W = this._fbW, H = this._fbH;
+        if (col < 0 || col >= W) return 0;
         let drawH = h_top;
-        if (drawH > can.height) drawH = can.height;
-        const horizon = can.height >> 1;
-        const buf = this._skyColBuf ??= { arr: null, h: 0 };
-        if (buf.h !== drawH) {
-          buf.arr = new Uint8ClampedArray(drawH * 4);
-          buf.h = drawH;
-        }
-        const arr = buf.arr;
+        if (drawH > H) drawH = H;
+        const horizon = H >> 1;
         const mv = this.memView;
         const tw = tex.w, th = tex.h;
         const tx = ((u % tw) + tw) % tw;
+        const stride = W * 4;
+        let fbIdx = col * 4;
         for (let y = 0; y < drawH; y++) {
           let tY = Math.floor(y * th / horizon);
           if (tY < 0) tY = 0; else if (tY >= th) tY = th - 1;
           const word = mv.getInt32((tex.base + tY * tw + tx) * 4, true);
-          const r = (word >>> 24) & 0xFF;
-          const g = (word >>> 16) & 0xFF;
-          const b = (word >>>  8) & 0xFF;
-          const a = word & 0xFF;
-          const o = y * 4;
-          arr[o]     = r;
-          arr[o + 1] = g;
-          arr[o + 2] = b;
-          arr[o + 3] = a || 0xFF;
+          fb[fbIdx]     = (word >>> 24) & 0xFF;
+          fb[fbIdx + 1] = (word >>> 16) & 0xFF;
+          fb[fbIdx + 2] = (word >>>  8) & 0xFF;
+          fb[fbIdx + 3] = (word & 0xFF) || 0xFF;
+          fbIdx += stride;
         }
-        this.sdlCtx.putImageData(new ImageData(arr, 1, drawH), col, 0);
         return 0;
       }
 
@@ -1212,72 +1252,46 @@ export class BcplRuntime {
         const dx      = a5 | 0;
         const dy      = a6 | 0;
         const bg = this._bgTex;
-        if (!this.sdlCtx || !bg) return 0;
+        const fb = this._fb;
+        if (!fb || !bg) return 0;
         const floor = bg[1], ceil = bg[2];
         if (!floor && !ceil) return 0;
-        const can = this.sdlCanvas;
-        if (col < 0 || col >= can.width) return 0;
-        const H = can.height;
-        // Floor strip: y in [horizon, H-1]; ceiling strip: y in [0, horizon-1].
-        // Two separate putImageData calls so the middle wall region is
-        // never touched here (walls overpaint after).
-        const floorY0 = Math.max(horizon, 0);
-        const floorH  = H - floorY0;
-        const ceilH   = Math.max(horizon, 0);
-        const bufF = this._floorBufF ??= { arr: null, h: 0 };
-        const bufC = this._floorBufC ??= { arr: null, h: 0 };
-        if (bufF.h !== floorH) {
-          bufF.arr = floorH > 0 ? new Uint8ClampedArray(floorH * 4) : null;
-          bufF.h = floorH;
-        }
-        if (bufC.h !== ceilH) {
-          bufC.arr = ceilH > 0 ? new Uint8ClampedArray(ceilH * 4) : null;
-          bufC.h = ceilH;
-        }
-        // Reset per-column so leftover bytes from prior columns don't
-        // show through. The y=horizon pixel itself is left at 0 too —
-        // skipped by the loop (denom=0 would divide).
-        if (bufF.arr) bufF.arr.fill(0);
-        if (bufC.arr) bufC.arr.fill(0);
+        const W = this._fbW, H = this._fbH;
+        if (col < 0 || col >= W) return 0;
+        const stride = W * 4;
         const mv = this.memView;
-        for (let y = floorY0 + 1; y < H; y++) {
-          const denom = y - horizon;          // > 0
+        for (let y = horizon + 1; y < H; y++) {
+          const denom = y - horizon;
           const rowDist = ((horizon * 1024) / denom) | 0;
           const worldX = px + ((rowDist * dx) / 1024 | 0);
           const worldY = py + ((rowDist * dy) / 1024 | 0);
           const fx = ((worldX % 1024) + 1024) % 1024;
           const fy = ((worldY % 1024) + 1024) % 1024;
-          if (floor && bufF.arr) {
+          if (floor) {
             const tw = floor.w, th = floor.h;
             const tx = (fx * tw / 1024) | 0;
             const ty = (fy * th / 1024) | 0;
             const word = mv.getInt32((floor.base + ty * tw + tx) * 4, true);
-            const o = (y - floorY0) * 4;
-            bufF.arr[o]     = (word >>> 24) & 0xFF;
-            bufF.arr[o + 1] = (word >>> 16) & 0xFF;
-            bufF.arr[o + 2] = (word >>>  8) & 0xFF;
-            bufF.arr[o + 3] = (word & 0xFF) || 0xFF;
+            const fbIdx = (y * W + col) * 4;
+            fb[fbIdx]     = (word >>> 24) & 0xFF;
+            fb[fbIdx + 1] = (word >>> 16) & 0xFF;
+            fb[fbIdx + 2] = (word >>>  8) & 0xFF;
+            fb[fbIdx + 3] = (word & 0xFF) || 0xFF;
           }
-          if (ceil && bufC.arr) {
+          if (ceil) {
             const my = horizon - denom;
-            if (my >= 0 && my < ceilH) {
+            if (my >= 0 && my < horizon) {
               const tw = ceil.w, th = ceil.h;
               const tx = (fx * tw / 1024) | 0;
               const ty = (fy * th / 1024) | 0;
               const word = mv.getInt32((ceil.base + ty * tw + tx) * 4, true);
-              const o = my * 4;
-              bufC.arr[o]     = (word >>> 24) & 0xFF;
-              bufC.arr[o + 1] = (word >>> 16) & 0xFF;
-              bufC.arr[o + 2] = (word >>>  8) & 0xFF;
-              bufC.arr[o + 3] = (word & 0xFF) || 0xFF;
+              const fbIdx = (my * W + col) * 4;
+              fb[fbIdx]     = (word >>> 24) & 0xFF;
+              fb[fbIdx + 1] = (word >>> 16) & 0xFF;
+              fb[fbIdx + 2] = (word >>>  8) & 0xFF;
+              fb[fbIdx + 3] = (word & 0xFF) || 0xFF;
             }
           }
-        }
-        if (floor && bufF.arr && floorH > 0) {
-          this.sdlCtx.putImageData(new ImageData(bufF.arr, 1, floorH), col, floorY0);
-        }
-        if (ceil && bufC.arr && ceilH > 0) {
-          this.sdlCtx.putImageData(new ImageData(bufC.arr, 1, ceilH), col, 0);
         }
         return 0;
       }
@@ -1299,44 +1313,36 @@ export class BcplRuntime {
         const pkd       = a8 | 0;
         const tex_w     = pkd & 0xFFFF;
         const tex_h     = (pkd >>> 16) & 0xFFFF;
-        if (!this.sdlCtx || tex_w <= 0 || tex_h <= 0) return 0;
+        const fb        = this._fb;
+        if (!fb || tex_w <= 0 || tex_h <= 0) return 0;
         if (y_top > y_bot) return 0;
-        const can = this.sdlCanvas;
-        if (col_x < 0 || col_x >= can.width) return 0;
+        const W = this._fbW, H = this._fbH;
+        if (col_x < 0 || col_x >= W) return 0;
         let y0 = y_top, y1 = y_bot;
         if (y0 < 0) y0 = 0;
-        if (y1 >= can.height) y1 = can.height - 1;
+        if (y1 >= H) y1 = H - 1;
         if (y0 > y1) return 0;
-        const drawH = y1 - y0 + 1;
-        const buf = this._wallColBuf ??= { arr: null, h: 0 };
-        if (buf.h !== drawH) {
-          buf.arr = new Uint8ClampedArray(drawH * 4);
-          buf.h = drawH;
-        }
-        const arr = buf.arr;
         const mv = this.memView;
         const tx = ((texX % tex_w) + tex_w) % tex_w;
-        const DBG_VHASH = false;  // flip to true to show v-hash colours
-        for (let i = 0; i < drawH; i++) {
-          // Use Math.floor to keep multi-million V values precise —
-          // (y - y_anchor) can be large and so can v_step.
-          const vRaw = Math.floor((y0 + i - y_anchor) * v_step / 65536);
-          const v = ((vRaw % tex_h) + tex_h) % tex_h;
-          const o = i * 4;
-          if (DBG_VHASH) {
-            arr[o]     = (v * 53) & 0xFF;
-            arr[o + 1] = (v * 97) & 0xFF;
-            arr[o + 2] = (v * 191) & 0xFF;
-            arr[o + 3] = 0xFF;
-          } else {
-            const word = mv.getInt32((tex_base + v * tex_w + tx) * 4, true);
-            arr[o]     = (word >>> 24) & 0xFF;
-            arr[o + 1] = (word >>> 16) & 0xFF;
-            arr[o + 2] = (word >>>  8) & 0xFF;
-            arr[o + 3] = (word & 0xFF) || 0xFF;
-          }
+        const texColBase = tex_base + tx;
+        // Q16.16 walk: vRaw = (y - y_anchor) * v_step >> 16.
+        // Use integer arithmetic only inside the loop; accumulate.
+        let vQ = (y0 - y_anchor) * v_step;        // safe enough for typical Doom values
+        const stride = W * 4;
+        let fbIdx = (y0 * W + col_x) * 4;
+        for (let y = y0; y <= y1; y++) {
+          // Math.floor of (vQ / 65536) — handle negatives via shift.
+          let vRaw = vQ >> 16;
+          let v = vRaw % tex_h;
+          if (v < 0) v += tex_h;
+          const word = mv.getInt32((texColBase + v * tex_w) * 4, true);
+          fb[fbIdx]     = (word >>> 24) & 0xFF;
+          fb[fbIdx + 1] = (word >>> 16) & 0xFF;
+          fb[fbIdx + 2] = (word >>>  8) & 0xFF;
+          fb[fbIdx + 3] = (word & 0xFF) || 0xFF;
+          fbIdx += stride;
+          vQ   += v_step;
         }
-        this.sdlCtx.putImageData(new ImageData(arr, 1, drawH), col_x, y0);
         return 0;
       }
 
@@ -1939,6 +1945,13 @@ export class BcplRuntime {
       case 2: {                                       // sdl_setvideomode w,h,bpp,flags
         can.width = a; can.height = b;
         ctx.imageSmoothingEnabled = false;
+        // Allocate full-frame backbuffer so heavy draw ops (vline,
+        // drawwallcol, etc.) can accumulate into typed-array memory
+        // and flip once per frame instead of hitting the canvas API
+        // per primitive.
+        this._fb   = new Uint8ClampedArray(a * b * 4);
+        this._fbW  = a;
+        this._fbH  = b;
         return 1;                                     // surfptr (any non-zero)
       }
       case 3: return 0;                               // sdl_quit
@@ -1961,6 +1974,16 @@ export class BcplRuntime {
       }
       case 28: case 29: {                             // drawhline/drawvline: (surf,x1,x2,y,col) / (surf,x,y1,y2,col)
         const colour = e ?? d;
+        if (this._fb) {
+          if (sub === 28) {
+            // hline: span (b..c, y=d)
+            this._fbRect(Math.min(b, c), d, Math.abs(c - b) + 1, 1, colour);
+          } else {
+            // vline: x=b, span (c..d)
+            this._fbVline(b, c, d, colour);
+          }
+          return 0;
+        }
         this._sdlSetStroke(colour);
         ctx.beginPath();
         if (sub === 28) { ctx.moveTo(b + 0.5, d + 0.5); ctx.lineTo(c + 0.5, d + 0.5); }
@@ -2007,6 +2030,7 @@ export class BcplRuntime {
         return 0;
       }
       case 38: case 39: {                             // drawfillrect / fillrect (surf, x1, y1, x2, y2, col)
+        if (this._fb) { this._fbRect(b, c, d - b, e - c, f); return 0; }
         this._sdlSetFill(f);
         ctx.fillRect(b, c, d - b, e - c);
         return 0;
@@ -2020,7 +2044,10 @@ export class BcplRuntime {
       // ships its own minimal sdl.h with hand-picked op constants —
       // NOT the same as cintsys g/sdl.h, which uses MANIFEST auto-
       // increment from sdl_avail=0 and lands these elsewhere.
-      case 15: {                                      // sdl_flip — Canvas auto-presents.
+      case 15: {                                      // sdl_flip — push backbuffer to canvas (one putImageData).
+        if (this._fb) {
+          this.sdlCtx.putImageData(new ImageData(this._fb, this._fbW, this._fbH), 0, 0);
+        }
         return 0;
       }
       case 17: case 18: {                             // waitevent / pollevent
