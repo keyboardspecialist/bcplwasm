@@ -618,6 +618,23 @@ export const TRACK = [
     ],
     prereqs: ["41-doom-mapnav"],
   },
+  {
+    slug: "43-doom-bsp",
+    title: "Doom BSP Traversal + Clip Windows",
+    level: 9,
+    topic: "graphics",
+    summary: "Replaces 42's brute-force linedef loop with a real Doom-style BSP walk. Per-column clip windows fix overdraw; point_in_subsector gives a real camera floor height.",
+    goals: [
+      "Parse NODES (28 B), SSECTORS (4 B), SEGS (12 B)",
+      "render_node() walks BSP front-to-back via R_PointOnSide test",
+      "Per-column col_top[] / col_bot[] track open vertical band",
+      "Portal step closes the column from top/bottom; solid wall closes it entirely",
+      "Early-out when cols_open reaches 0 — far subsectors skipped",
+      "point_in_subsector(x, y) → real sector → cam_z = floor + 41",
+      "Leftover open columns filled with sky / floor backdrop",
+    ],
+    prereqs: ["42-doom-3dview"],
+  },
 ];
 
 // Quick-lookup helpers used by the UI.
