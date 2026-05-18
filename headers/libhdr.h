@@ -574,6 +574,11 @@ Sys_drawskyspan     = 89   // (col, y0, y1, u) — Doom sky cylinder span for
                            //   sky tex cached in Sys_setbgtex slot 0.
                            //   V = y * sky_h / horizon (absolute screen y,
                            //   so the sky doesn't pitch with view).
+Sys_setdepth        = 90   // (cy) — cache depth value the next opaque
+                           //   drawwallcol / drawflatspan will write into
+                           //   the runtime z-buffer (and that sprite-mode
+                           //   drawwallcol will test against). World units.
+Sys_clearzbuf       = 91   // () — reset z-buffer to +infinity (once/frame).
 
 bootregs = 11 // Registers used to enter the function start in boot.b
 cliregs  = 21 // Registers used by BOOT to start the CLI
