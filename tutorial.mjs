@@ -755,6 +755,22 @@ export const TRACK = [
     ],
     prereqs: ["50-doom-sky"],
   },
+  {
+    slug: "52-doom-doors",
+    title: "Doom Door / Use Action",
+    level: 9,
+    topic: "graphics",
+    summary: "Press E/Space to open doors. Sector ceiling animates upward to (lowest_neighbor_ceil − 4) at DOOR_SPEED units/frame.",
+    goals: [
+      "ceil_h_runtime[] overrides static WAD ceiling; sec_ceil() reads runtime",
+      "pick_use_line: nearest linedef in front of player within USE_RANGE",
+      "is_use_door_special: specials 1 / 31 / 117 / 118 trigger open",
+      "lowest_neighbor_ceil(s): scan all linedefs touching s, find min other-side ceil",
+      "tick_doors() each frame raises opening sectors by DOOR_SPEED",
+      "Edge-detect on use_prev so a held key opens once",
+    ],
+    prereqs: ["51-doom-rot"],
+  },
 ];
 
 // Quick-lookup helpers used by the UI.

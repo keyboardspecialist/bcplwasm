@@ -75,6 +75,37 @@
       background: var(--border);
       overflow: hidden;
     }
+    /* When the SDL canvas is active, give the output pane more room
+       so 960×720 renders aren't shrunk down to a postage stamp. */
+    body:has(.output-pane.with-canvas) .workspace {
+      grid-template-rows: 1fr 32rem;
+    }
+    /* Collapsed output pane — only the header strip remains, giving
+       the editor the rest of the screen. Overrides the with-canvas
+       expansion above. */
+    body.output-collapsed .workspace,
+    body.output-collapsed:has(.output-pane.with-canvas) .workspace {
+      grid-template-rows: 1fr 1.9rem;
+    }
+    body.output-collapsed .output-pane > :not(.pane-header):not(.collapse-btn) {
+      display: none !important;
+    }
+    .output-pane { position: relative; }
+    .collapse-btn {
+      position: absolute;
+      top: 0.2rem;
+      left: 0.4rem;
+      z-index: 5;
+      background: var(--bg-2);
+      color: var(--fg-dim);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 0 0.45rem;
+      cursor: pointer;
+      font-size: 0.75rem;
+      line-height: 1.4rem;
+    }
+    .collapse-btn:hover { color: var(--fg); }
     .left-pane, .right-pane, .output-pane {
       background: var(--bg);
       display: flex;
@@ -475,7 +506,7 @@
       background: var(--border);
     }
     .output-pane.with-canvas {
-      grid-template-columns: 1fr 20rem 24rem;
+      grid-template-columns: 1fr 18rem 48rem;
     }
     .output-pane .pane-header {
       padding: 0.3rem 0.6rem;
@@ -645,6 +676,8 @@
 
     <!-- OUTPUT / STDIN / GRAPHICS -->
     <section class="output-pane" id="outputPane">
+      <button id="outputCollapse" class="collapse-btn"
+              title="collapse output pane">▾</button>
       <div class="pane-header">Program output</div>
       <div class="pane-header">Stdin (consumed by rdch)</div>
       <pre id="output"></pre>
@@ -1814,6 +1847,22 @@ LET start() = VALOF
       const next = cur === "light" ? "dark" : "light";
       applyTheme(next);
       localStorage.setItem(THEME_LS_KEY, next);
+    });
+
+    // Output pane collapse — persisted; gives the editor the full row
+    // when the user just wants to see code.
+    const OUTPUT_COLLAPSE_LS_KEY = "bcpl-playground-output-collapsed";
+    const outputCollapseBtn = document.getElementById("outputCollapse");
+    function applyOutputCollapse(state) {
+      document.body.classList.toggle("output-collapsed", state);
+      outputCollapseBtn.textContent = state ? "▴" : "▾";
+      outputCollapseBtn.title = state ? "expand output pane" : "collapse output pane";
+    }
+    applyOutputCollapse(localStorage.getItem(OUTPUT_COLLAPSE_LS_KEY) === "1");
+    outputCollapseBtn.addEventListener("click", () => {
+      const collapsed = !document.body.classList.contains("output-collapsed");
+      applyOutputCollapse(collapsed);
+      localStorage.setItem(OUTPUT_COLLAPSE_LS_KEY, collapsed ? "1" : "0");
     });
 
     // ------------------ URL-based file references --------------------
