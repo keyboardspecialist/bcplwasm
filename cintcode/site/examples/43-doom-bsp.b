@@ -564,7 +564,14 @@ LET render_subsector(ssidx) BE
 
 LET render_node(node_idx) BE
 { IF cols_open <= 0 RETURN
-  IF node_idx & SUBSECTOR_BIT DO
+  // BCPL's `&` inside an IF condition is a short-circuit logical AND
+  // (the jumpcond optimisation in bcpltrn.b treats s_logand specially:
+  // it tests each operand for truthiness independently rather than
+  // evaluating the bitwise AND of the two values). So `IF n & FLAG DO`
+  // fires whenever both n and FLAG are nonzero, regardless of the
+  // actual bitwise overlap. Wrap in a compare-to-0 to force a real
+  // bitwise evaluation.
+  IF (node_idx & SUBSECTOR_BIT) ~= 0 DO
   { render_subsector(node_idx & ~SUBSECTOR_BIT)
     RETURN
   }
