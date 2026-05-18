@@ -637,33 +637,18 @@ LET vline_clipped(col, y0, y1, c) BE
 LET project_y(world_z, cy) =
   HORIZON - ((world_z - cam_z) * F_X) / cy
 
-// Debug toggle. When TRUE the renderer fills each wall column with a
-// flat colour hashed from texU — vertical stripes if U advances
-// per-column, horizontal/uniform bands if it doesn't. Walls reveal
-// the per-column U directly so you can tell whether texU is varying
-// before texture sampling happens.
-MANIFEST { DBG_UTEST = FALSE }
-
 LET draw_textured_band(col_x, clip_top, clip_bot, y_anchor, cy,
                        texU, cidx, flat_c) BE
-{ IF DBG_UTEST DO
-  { // Hash texU to RGB.  Each adjacent col should differ visibly.
-    LET r = (texU * 53) & #xFF
-    LET g = (texU * 97) & #xFF
-    LET b = (texU * 191) & #xFF
-    LET c = sys(Sys_sdl, sdl_maprgb, 0, r, g, b)
-    vline_clipped(col_x, clip_top, clip_bot, c)
-    RETURN
-  }
-  TEST cidx < 0
+{ TEST cidx < 0
   THEN vline_clipped(col_x, clip_top, clip_bot, flat_c)
   ELSE { LET tw = tex_w_vec!cidx
          LET th = tex_h_vec!cidx
          LET tb = tex_base!cidx
          LET v_step_q16 = (cy * 65536) / F_X
-         LET texX = ((texU % tw) + tw) % tw
+         // NB: BCPL's `%` is byte-fetch (s_byteap), NOT modulo.
+         // Use MOD / REM for arithmetic modulo.
+         LET texX = ((texU REM tw) + tw) REM tw
          LET pkd  = (tw & #xFFFF) | (th << 16)
-         // Clip y range to the current open band of the column.
          LET y0 = clip_top
          LET y1 = clip_bot
          IF y0 < col_top!col_x DO y0 := col_top!col_x
