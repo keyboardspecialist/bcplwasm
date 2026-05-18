@@ -332,8 +332,9 @@ LET drawplayer() BE
   LET facing_len = 0
   sx := project_x(px)
   sy := project_y(py)
-  // Small filled rect for the player position dot.
-  sys(Sys_sdl, sdl_drawfillrect, surf, sx - 3, sy - 3, 6, 6, player_col)
+  // Small filled rect for the player position dot. sdl_drawfillrect
+  // takes (x1, y1, x2, y2) corners, not (x, y, w, h).
+  sys(Sys_sdl, sdl_drawfillrect, surf, sx - 3, sy - 3, sx + 3, sy + 3, player_col)
   // Facing line in world units, scaled to projection units. Length
   // chosen so it's visible at typical scales.
   facing_len := 48
