@@ -457,7 +457,7 @@ LET point_on_side(x, y, no) = VALOF
 
 LET point_in_subsector(x, y) = VALOF
 { LET n = g_root_node
-  WHILE (n & SUBSECTOR_BIT) ~= 0 = FALSE DO
+  WHILE (n & SUBSECTOR_BIT) = 0 DO
   { LET no = g_node_byte + n * NODE_SIZE
     LET side = point_on_side(x, y, no)
     TEST side = 0
