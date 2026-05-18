@@ -696,6 +696,22 @@ export const TRACK = [
     ],
     prereqs: ["46-doom-light"],
   },
+  {
+    slug: "48-doom-sprites",
+    title: "Doom Sprites",
+    level: 9,
+    topic: "graphics",
+    summary: "Per-column z-buffer + sprite cache + Doom THING type → sprite name map. Renders barrels, ammo, armor, monsters, etc. with wall occlusion via col_z.",
+    goals: [
+      "col_z[W] tracks nearest wall cy per column during BSP traversal",
+      "Sprite cache: load patch by name, store w/h/leftofs/topofs + RGBA buffer",
+      "Hardcoded THING type → 4-char sprite + frame letter + rotation digit",
+      "draw_sprite: cam transform → screen rect → per-column drawwallcol",
+      "Sprite occlusion: skip col if sprite cy >= col_z[col_x]",
+      "Transparency via negated v_step_q16",
+    ],
+    prereqs: ["47-doom-pegging"],
+  },
 ];
 
 // Quick-lookup helpers used by the UI.

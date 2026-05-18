@@ -50,6 +50,7 @@ const RUN_SKIP = new Set([
   "45-doom-flats",      // same — WAD + canvas + game loop
   "46-doom-light",      // same — WAD + canvas + game loop
   "47-doom-pegging",    // same — WAD + canvas + game loop
+  "48-doom-sprites",    // same — WAD + canvas + game loop
   "stdlib",             // pure library — no start()
 ]);
 
