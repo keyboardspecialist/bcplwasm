@@ -16,21 +16,46 @@
 // Browser storage shim. Uses localStorage when available (browser),
 // otherwise an in-memory Map (Node tests). Keys namespaced under
 // "bcpl:" so other app data isn't touched.
+// Keys starting with this prefix are compiler intermediates (WAT/OBJ
+// scratch).  They can be huge (800KB+) on big Doom examples, so we
+// always route them to an in-memory map even when localStorage is
+// available — otherwise a few compiles in a row will blow the ~5MB
+// localStorage quota.
+const SCRATCH_PREFIX = "__out_";
 export const storageBackend = (() => {
-  try {
-    if (typeof localStorage !== "undefined") {
-      return {
-        get: (k) => localStorage.getItem("bcpl:" + k),
-        set: (k, v) => localStorage.setItem("bcpl:" + k, v),
-        del: (k) => localStorage.removeItem("bcpl:" + k),
-      };
-    }
-  } catch { /* fallthrough */ }
   const mem = new Map();
+  const isScratch = (k) => typeof k === "string" && k.startsWith(SCRATCH_PREFIX);
+  let local = null;
+  try {
+    if (typeof localStorage !== "undefined") local = localStorage;
+  } catch { /* fallthrough */ }
+  // Sweep any stale scratch blobs that landed in localStorage from
+  // previous builds (before scratch routing existed).  Frees quota
+  // for actual persistent files.
+  if (local) {
+    try {
+      const stale = [];
+      for (let i = 0; i < local.length; i++) {
+        const k = local.key(i);
+        if (k && k.startsWith("bcpl:" + SCRATCH_PREFIX)) stale.push(k);
+      }
+      for (const k of stale) local.removeItem(k);
+    } catch { /* ignore */ }
+  }
   return {
-    get: (k) => mem.has(k) ? mem.get(k) : null,
-    set: (k, v) => mem.set(k, v),
-    del: (k) => mem.delete(k),
+    get: (k) => {
+      if (isScratch(k) || !local) return mem.has(k) ? mem.get(k) : null;
+      return local.getItem("bcpl:" + k);
+    },
+    set: (k, v) => {
+      if (isScratch(k) || !local) { mem.set(k, v); return; }
+      try { local.setItem("bcpl:" + k, v); }
+      catch { mem.set(k, v); }   // quota / SecurityError fallback
+    },
+    del: (k) => {
+      if (isScratch(k) || !local) { mem.delete(k); return; }
+      local.removeItem("bcpl:" + k);
+    },
   };
 })();
 
@@ -1302,6 +1327,43 @@ export class BcplRuntime {
       //   V = ((y - y_anchor) * v_step_q16) >> 16
       // wrapped modulo tex_h so tall walls tile vertically rather than
       // stretching. pkd_wh = (tex_w & 0xFFFF) | (tex_h << 16).
+      // sys(Sys_drawskyspan, col, y0, y1, u) — sky cylinder span.
+      // Reads from cached sky tex (Sys_setbgtex slot 0). V is mapped
+      // by absolute screen y, so sky doesn't tilt as camera rises.
+      case 89: {
+        const col = a1 | 0;
+        const y0  = a2 | 0;
+        const y1  = a3 | 0;
+        const u   = a4 | 0;
+        const fb  = this._fb;
+        const bg  = this._bgTex;
+        if (!fb || !bg || !bg[0]) return 0;
+        const tex = bg[0];
+        const W = this._fbW, H = this._fbH;
+        if (col < 0 || col >= W) return 0;
+        let yy0 = y0, yy1 = y1;
+        if (yy0 < 0) yy0 = 0;
+        if (yy1 >= H) yy1 = H - 1;
+        if (yy0 > yy1) return 0;
+        const horizon = H >> 1;
+        const tw = tex.w, th = tex.h;
+        const tx = ((u % tw) + tw) % tw;
+        const stride = W * 4;
+        const mv = this.memView;
+        let fbIdx = (yy0 * W + col) * 4;
+        for (let y = yy0; y <= yy1; y++) {
+          let tY = Math.floor(y * th / horizon);
+          if (tY < 0) tY = 0; else if (tY >= th) tY = th - 1;
+          const word = mv.getInt32((tex.base + tY * tw + tx) * 4, true);
+          fb[fbIdx]     = (word >>> 24) & 0xFF;
+          fb[fbIdx + 1] = (word >>> 16) & 0xFF;
+          fb[fbIdx + 2] = (word >>>  8) & 0xFF;
+          fb[fbIdx + 3] = (word & 0xFF) || 0xFF;
+          fbIdx += stride;
+        }
+        return 0;
+      }
+
       // sys(Sys_setlight, light_0_255) — cache light scale for the
       // subsequent drawwallcol / drawflatspan calls. Stored as 0..256
       // (256 = full bright, used as `(channel * scale) >> 8`).
