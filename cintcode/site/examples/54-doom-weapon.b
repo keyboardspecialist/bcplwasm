@@ -1,24 +1,17 @@
-// 53-doom-anim: 52 + monster animation cycling, sprite clipping
-// through portals, and proper per-pixel z-buffer occlusion.
+// 54-doom-weapon: 53 + held pistol HUD.
 //
-// What's new vs 52:
-//   - Monsters cycle between frame letters A and B every ANIM_TICKS
-//     frames. Falls back to A if B isn't in the WAD.
-//   - Runtime now keeps a per-pixel z-buffer (Sys_clearzbuf each
-//     frame, Sys_setdepth before draw ops). Walls/flats write their
-//     cy as they paint; sprite-mode drawwallcol z-tests before
-//     painting → sprites correctly occluded by any closer wall or
-//     step at the pixel level.
-//   - draw_sprite still uses sector-band + open-band clip as a fast
-//     pre-filter (skips cols that wouldn't draw anything).
+// What's new vs 53:
+//   - Pre-loads PISG[A|B|C|D]0 frames at startup.
+//   - drawframe ends with a draw_weapon() pass: native 2x-scaled
+//     pistol bottom-centre of the canvas, drawn at depth 0 so it
+//     always wins the z-test.
+//   - Movement bobs the weapon along sin/cos curves.
+//   - F or LCtrl fires; cycle B → C → D → A over ~16 frames.
 //
-// Known edge case: sprites can briefly vanish when very close to
-// camera (extreme perspective). Z-test margin sensitivity; left for
-// a later phase.
-//
-// Controls: WASD/arrows = move/turn, E or Space = use, Esc = quit.
+// Controls: WASD/arrows = move/turn, E or Space = use, F or LCtrl
+//           = fire, Esc = quit.
 
-SECTION "danim"
+SECTION "dwep"
 
 GET "libhdr"
 GET "sdl"
@@ -52,6 +45,9 @@ MANIFEST {
   DOOR_GAP   = 4                  // final gap below neighbour ceiling
 
   ANIM_TICKS = 14                 // frames per monster anim step
+
+  WEAPON_SCALE = 3                // 1=native, 2=2x pixels, etc.
+  WEAPON_FIRE_TICKS = 4           // frames per fire-cycle step
 
   ML_DONTPEGTOP    = #x0008
   ML_DONTPEGBOTTOM = #x0010
@@ -150,6 +146,8 @@ MANIFEST {
   K_ESC    = 27
   K_E      = 69
   K_SPACE  = 32
+  K_F      = 70
+  K_LCTRL  = 17
 }
 
 STATIC {
@@ -251,6 +249,15 @@ STATIC {
   door_target      = 0
   use_prev         = 0   // edge-detect for Use key
   g_frame_count    = 0
+
+  // Weapon HUD state.
+  wep_cidx_a = -1
+  wep_cidx_b = -1
+  wep_cidx_c = -1
+  wep_cidx_d = -1
+  wep_fire_timer = 0    // counts DOWN while firing
+  wep_fire_prev  = 0    // edge-detect for fire key
+  wep_bob_t      = 0    // walking phase, 0..ANG-1
 }
 
 // ---------- byte helpers (same as 43) ----------
@@ -1690,6 +1697,59 @@ LET draw_sprites() BE
     draw_sprite(vs_x!i, vs_y!i, vs_z!i, vs_cidx!i)
 }
 
+// Pick the current weapon frame's cache index based on fire timer.
+LET current_weapon_cidx() = VALOF
+{ LET t = wep_fire_timer
+  IF t <= 0 RESULTIS wep_cidx_a
+  // Fire cycle: each WEAPON_FIRE_TICKS frames advances B → C → D.
+  { LET phase = (3 * WEAPON_FIRE_TICKS - t) / WEAPON_FIRE_TICKS
+    IF phase = 0 RESULTIS wep_cidx_b
+    IF phase = 1 RESULTIS wep_cidx_c
+    RESULTIS wep_cidx_d
+  }
+}
+
+LET draw_weapon() BE
+{ LET cidx = current_weapon_cidx()
+  LET pw, ph, tb = 0, 0, 0
+  LET sw, sh = 0, 0
+  LET sx0, sy0, sx1, sy1 = 0, 0, 0, 0
+  LET bob_x, bob_y = 0, 0
+  LET pkd, v_step_q16 = 0, 0
+  IF cidx < 0 RETURN
+  pw := spr_w!cidx
+  ph := spr_h!cidx
+  tb := spr_base!cidx
+  sw := pw * WEAPON_SCALE
+  sh := ph * WEAPON_SCALE
+  // Walk-cycle bob: cos for horizontal sway, sin for vertical bounce.
+  // Quartered so even idle gets a subtle drift.
+  bob_x := (cos_t!(wep_bob_t & (ANG-1)) * 12) / 1024
+  bob_y := (sin_t!(wep_bob_t & (ANG-1)) *  8) / 1024
+  IF bob_y < 0 DO bob_y := 0 - bob_y     // sin gives ±; bounce is upward only
+  sx0 := W / 2 - sw / 2 + bob_x
+  sy0 := H - sh + bob_y
+  sx1 := sx0 + sw - 1
+  sy1 := sy0 + sh - 1
+  v_step_q16 := (ph * 65536) / sh        // tex_h pixels over sh screen pixels
+  pkd := (pw & #xFFFF) | (ph << 16)
+  // Always-on-top: depth 0 beats every wall/flat (z_buf cleared to MAX).
+  sys(Sys_setlight, 255)
+  sys(Sys_setdepth, 0)
+  { LET cx0 = sx0
+    LET cx1 = sx1
+    IF cx0 < 0 DO cx0 := 0
+    IF cx1 >= W DO cx1 := W - 1
+    FOR sx = cx0 TO cx1 DO
+    { LET texX = ((sx - sx0) * pw) / sw
+      IF texX < 0 LOOP
+      IF texX >= pw LOOP
+      sys(Sys_drawwallcol, sx, sy0, sy1, sy0, 0 - v_step_q16,
+          texX, tb, pkd)
+    }
+  }
+}
+
 LET drawframe() BE
 { reset_clip()
   // Per-pixel z-buffer is the source of truth; col_z is kept as a
@@ -1704,6 +1764,7 @@ LET drawframe() BE
   render_node(g_root_node)
   fill_remaining()
   draw_sprites()
+  draw_weapon()
   sys(Sys_sdl, sdl_flip, surf)
 }
 
@@ -1822,6 +1883,12 @@ LET start() = VALOF
   writef("player start  px=%n py=%n pa=%n*n", px, py, pa)
 
   prebuild_textures(num_sides)
+  // Held-weapon HUD frames. Falls back gracefully if a frame is
+  // missing in the WAD (only the idle frame is strictly required).
+  wep_cidx_a := ensure_sprite("PISGA0")
+  wep_cidx_b := ensure_sprite("PISGB0")
+  wep_cidx_c := ensure_sprite("PISGC0")
+  wep_cidx_d := ensure_sprite("PISGD0")
   // Composite SKY1 like any wall texture; register as bg slot 0 so
   // Sys_drawskyspan finds it.  Falls back gracefully if missing.
   { LET sky_name = VEC 2
@@ -1879,12 +1946,25 @@ LET start() = VALOF
       use_prev := use_now
     }
 
+    // Fire action — edge-trigger on F or LCtrl; resets fire timer.
+    { LET fire_now = key_down(K_F) | key_down(K_LCTRL)
+      IF fire_now ~= 0 & wep_fire_prev = 0 DO
+        wep_fire_timer := 3 * WEAPON_FIRE_TICKS
+      wep_fire_prev := fire_now
+    }
+    IF wep_fire_timer > 0 DO wep_fire_timer := wep_fire_timer - 1
+
     IF fwd ~= 0 DO
     { LET dx = (cos_t!(pa & (ANG-1)) * MOVE * fwd) / 1024
       LET dy = (sin_t!(pa & (ANG-1)) * MOVE * fwd) / 1024
       try_move(dx, dy)
     }
     IF turn ~= 0 DO pa := (pa + turn) & (ANG - 1)
+
+    // Advance bob phase faster when moving, slowly while idle.
+    TEST fwd ~= 0 | turn ~= 0
+    THEN wep_bob_t := (wep_bob_t + 96) & (ANG - 1)
+    ELSE wep_bob_t := (wep_bob_t + 16) & (ANG - 1)
 
     tick_doors()
     g_frame_count := g_frame_count + 1
