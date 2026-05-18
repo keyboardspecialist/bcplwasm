@@ -42,6 +42,7 @@ const RUN_SKIP = new Set([
   "37-raycaster-textured",  // ditto
   "38-raycaster-skyfloor",  // ditto
   "39-wad-reader",      // needs a binary WAD asset uploaded
+  "40-doom-mapview",    // needs a WAD asset + SDL canvas; runs game loop
   "stdlib",             // pure library — no start()
 ]);
 
