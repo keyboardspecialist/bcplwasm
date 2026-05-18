@@ -77,7 +77,7 @@ for (const s of slots) {
 out.push("");
 
 // Memory, table, globals
-out.push(`  (memory $mem    (export "mem")    64)                    ;; 4 MB — room for compiler self-hosting`);
+out.push(`  (memory $mem    (export "mem")    64 1024)               ;; 4 MB initial, growable to 64 MB (large binary assets)`);
 out.push(`  (table  $ftable (export "ftable") 512 funcref)`);
 out.push(`  (global $G      (export "G") i32        (i32.const 1))`);
 out.push(`  (global $P      (export "P") (mut i32)  (i32.const 0))`);
