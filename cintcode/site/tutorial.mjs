@@ -666,6 +666,20 @@ export const TRACK = [
     ],
     prereqs: ["44-doom-wall-tex"],
   },
+  {
+    slug: "46-doom-light",
+    title: "Doom Distance Light Diminishing",
+    level: 9,
+    topic: "graphics",
+    summary: "Per-column sector-light + distance fade. Sys_setlight caches a scale; drawwallcol/drawflatspan multiply per-pixel RGB. Iconic Doom dark-edge look.",
+    goals: [
+      "Sys_setlight = 88: caches light scale (0..256) for next draw calls",
+      "Per-column: light = sector_light − cy/LIGHT_DROP, floored at LIGHT_FADE_MIN",
+      "Drawwallcol / drawflatspan apply ((c * scale) >> 8) per channel",
+      "Fast-path identity loop when scale = 256 (full bright) preserved",
+    ],
+    prereqs: ["45-doom-flats"],
+  },
 ];
 
 // Quick-lookup helpers used by the UI.

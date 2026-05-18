@@ -540,6 +540,10 @@ Sys_drawflatspan    = 87    // (col, y0, y1, cam_above, px, py, raydxy_pkd, flat
                             //   raydxy_pkd = (dx & #xFFFF) | (dy << 16)
                             //     dx/dy = 1024-scaled per-column ray dir
                             //   flat assumed 64x64 packed-RGBA at flat_base
+Sys_setlight        = 88    // (light_0_255) — cache light scale for next
+                            //   drawwallcol / drawflatspan calls. Pixel RGB
+                            //   is multiplied by light/255. light=255 (default
+                            //   on startup) means no shading.
 
 bootregs = 11 // Registers used to enter the function start in boot.b
 cliregs  = 21 // Registers used by BOOT to start the CLI
