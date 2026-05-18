@@ -531,6 +531,9 @@ Sys_drawtexcol      = 82
 Sys_setbgtex        = 83    // (slot, base, w, h) — slot 0=sky, 1=floor, 2=ceil
 Sys_drawskycol      = 84    // (col, h_top, u) — panorama sky column 0..h_top-1
 Sys_drawfloorcol    = 85    // (col, horizon, px, py, dx, dy) — floor+ceil cast
+Sys_drawwallcol     = 86    // (col, y0, y1, y_anchor, v_step_q16, texX, tex_base, pkd_wh)
+                            //   pkd_wh = (tex_w & #xFFFF) | (tex_h << 16)
+                            //   per-pixel V wraps modulo tex_h (Doom-style tile)
 
 bootregs = 11 // Registers used to enter the function start in boot.b
 cliregs  = 21 // Registers used by BOOT to start the CLI

@@ -635,6 +635,22 @@ export const TRACK = [
     ],
     prereqs: ["42-doom-3dview"],
   },
+  {
+    slug: "44-doom-wall-tex",
+    title: "Doom Wall Textures",
+    level: 9,
+    topic: "graphics",
+    summary: "Decode PLAYPAL + PNAMES + TEXTURE1, composite patches into RGBA buffers, render walls with perspective-correct U via the new Sys_drawwallcol op (tiles V instead of stretching).",
+    goals: [
+      "PLAYPAL → 256 packed RGBA words",
+      "TEXTURE1 + PNAMES → composite patches into per-texture RGBA buffer",
+      "Texture cache keyed by 8-byte name; pre-built from all sidedefs",
+      "Sys_drawwallcol = 86: per-pixel V wrapped mod tex_h (Doom-style tiling)",
+      "Perspective-correct U via linear interp of u/z + 1/z, divide per column",
+      "Integer sqrt for world wall length",
+    ],
+    prereqs: ["43-doom-bsp"],
+  },
 ];
 
 // Quick-lookup helpers used by the UI.
