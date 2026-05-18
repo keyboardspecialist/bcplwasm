@@ -1377,7 +1377,9 @@ export class BcplRuntime {
         const y_top     = a2 | 0;
         const y_bot     = a3 | 0;
         const y_anchor  = a4 | 0;
-        const v_step    = a5 | 0;        // Q16.16
+        const v_step_raw = a5 | 0;        // Q16.16; negative = transparency mode
+        const transparent = v_step_raw < 0;
+        const v_step    = transparent ? -v_step_raw : v_step_raw;
         const texX      = a6 | 0;
         const tex_base  = a7 | 0;
         const pkd       = a8 | 0;
@@ -1399,32 +1401,26 @@ export class BcplRuntime {
         const stride = W * 4;
         let fbIdx = (y0 * W + col_x) * 4;
         const ls = this._lightScale ?? 256;
-        if (ls >= 256) {
-          for (let y = y0; y <= y1; y++) {
-            let vRaw = vQ >> 16;
-            let v = vRaw % tex_h;
-            if (v < 0) v += tex_h;
-            const word = mv.getInt32((texColBase + v * tex_w) * 4, true);
-            fb[fbIdx]     = (word >>> 24) & 0xFF;
-            fb[fbIdx + 1] = (word >>> 16) & 0xFF;
-            fb[fbIdx + 2] = (word >>>  8) & 0xFF;
+        const bright = ls >= 256;
+        for (let y = y0; y <= y1; y++) {
+          let vRaw = vQ >> 16;
+          let v = vRaw % tex_h;
+          if (v < 0) v += tex_h;
+          const word = mv.getInt32((texColBase + v * tex_w) * 4, true);
+          if (!transparent || word !== 0) {
+            if (bright) {
+              fb[fbIdx]     = (word >>> 24) & 0xFF;
+              fb[fbIdx + 1] = (word >>> 16) & 0xFF;
+              fb[fbIdx + 2] = (word >>>  8) & 0xFF;
+            } else {
+              fb[fbIdx]     = (((word >>> 24) & 0xFF) * ls) >> 8;
+              fb[fbIdx + 1] = (((word >>> 16) & 0xFF) * ls) >> 8;
+              fb[fbIdx + 2] = (((word >>>  8) & 0xFF) * ls) >> 8;
+            }
             fb[fbIdx + 3] = (word & 0xFF) || 0xFF;
-            fbIdx += stride;
-            vQ   += v_step;
           }
-        } else {
-          for (let y = y0; y <= y1; y++) {
-            let vRaw = vQ >> 16;
-            let v = vRaw % tex_h;
-            if (v < 0) v += tex_h;
-            const word = mv.getInt32((texColBase + v * tex_w) * 4, true);
-            fb[fbIdx]     = (((word >>> 24) & 0xFF) * ls) >> 8;
-            fb[fbIdx + 1] = (((word >>> 16) & 0xFF) * ls) >> 8;
-            fb[fbIdx + 2] = (((word >>>  8) & 0xFF) * ls) >> 8;
-            fb[fbIdx + 3] = (word & 0xFF) || 0xFF;
-            fbIdx += stride;
-            vQ   += v_step;
-          }
+          fbIdx += stride;
+          vQ   += v_step;
         }
         return 0;
       }
