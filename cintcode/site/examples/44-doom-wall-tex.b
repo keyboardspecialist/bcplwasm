@@ -642,7 +642,7 @@ LET project_y(world_z, cy) =
 // per-column, horizontal/uniform bands if it doesn't. Walls reveal
 // the per-column U directly so you can tell whether texU is varying
 // before texture sampling happens.
-MANIFEST { DBG_UTEST = TRUE }
+MANIFEST { DBG_UTEST = FALSE }
 
 LET draw_textured_band(col_x, clip_top, clip_bot, y_anchor, cy,
                        texU, cidx, flat_c) BE

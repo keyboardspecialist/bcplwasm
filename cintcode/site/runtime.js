@@ -1316,17 +1316,25 @@ export class BcplRuntime {
         const arr = buf.arr;
         const mv = this.memView;
         const tx = ((texX % tex_w) + tex_w) % tex_w;
+        const DBG_VHASH = true;   // flip to true to show v-hash colours
         for (let i = 0; i < drawH; i++) {
           // Use Math.floor to keep multi-million V values precise —
           // (y - y_anchor) can be large and so can v_step.
           const vRaw = Math.floor((y0 + i - y_anchor) * v_step / 65536);
           const v = ((vRaw % tex_h) + tex_h) % tex_h;
-          const word = mv.getInt32((tex_base + v * tex_w + tx) * 4, true);
           const o = i * 4;
-          arr[o]     = (word >>> 24) & 0xFF;
-          arr[o + 1] = (word >>> 16) & 0xFF;
-          arr[o + 2] = (word >>>  8) & 0xFF;
-          arr[o + 3] = (word & 0xFF) || 0xFF;
+          if (DBG_VHASH) {
+            arr[o]     = (v * 53) & 0xFF;
+            arr[o + 1] = (v * 97) & 0xFF;
+            arr[o + 2] = (v * 191) & 0xFF;
+            arr[o + 3] = 0xFF;
+          } else {
+            const word = mv.getInt32((tex_base + v * tex_w + tx) * 4, true);
+            arr[o]     = (word >>> 24) & 0xFF;
+            arr[o + 1] = (word >>> 16) & 0xFF;
+            arr[o + 2] = (word >>>  8) & 0xFF;
+            arr[o + 3] = (word & 0xFF) || 0xFF;
+          }
         }
         this.sdlCtx.putImageData(new ImageData(arr, 1, drawH), col_x, y0);
         return 0;

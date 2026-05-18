@@ -4639,7 +4639,7 @@
     (local $t31 i32)
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
-    (local.set $t11 (i32.const -1))
+    (local.set $t11 (i32.const 0))
     (if (i32.eqz (local.get $t11)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     ))
