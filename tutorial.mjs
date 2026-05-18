@@ -889,6 +889,21 @@ export const TRACK = [
     ],
     prereqs: ["59-doom-music"],
   },
+  {
+    slug: "61-doom-sf2",
+    title: "Doom WAD Music with SoundFont (SF2)",
+    level: 9,
+    topic: "graphics",
+    summary: "Load a .sf2 SoundFont and route the WAD's MUS lump through spessasynth (AudioWorklet + SF2 sample playback) so each MIDI channel plays with proper instrument timbres instead of a triangle oscillator.",
+    goals: [
+      "Sys_loadsf2 = 95: asset-name in, async addModule + WorkletSynthesizer + addSoundBank",
+      "Runtime mus2mid converter: MUS event stream → SMF type-0 MIDI",
+      "SF2MusPlayer queues MIDI while worklet is still booting; plays once ready",
+      "Sys_playmus auto-routes through SF2 when a soundfont is loaded; oscillator fallback otherwise",
+      "BCPL: scan asset list for first '.sf2', call Sys_loadsf2 on first user gesture",
+    ],
+    prereqs: ["60-doom-wadmus"],
+  },
 ];
 
 // Quick-lookup helpers used by the UI.
