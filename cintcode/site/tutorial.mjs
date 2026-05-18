@@ -741,6 +741,20 @@ export const TRACK = [
     ],
     prereqs: ["49-doom-collide"],
   },
+  {
+    slug: "51-doom-rot",
+    title: "Doom Sprite Sort + Monster Rotations",
+    level: 9,
+    topic: "graphics",
+    summary: "Painter's back-to-front sort fixes sprite overlap flicker. 8 rotation frames per monster picked by viewer bearing in monster's local frame.",
+    goals: [
+      "viewer_octant: rotate (px-tx, py-ty) into monster's local frame; pick 0..7",
+      "build_monster_name: base + 'A' + ('1' + octant) → sprite lump",
+      "draw_sprites: collect visible into vs_* arrays; insertion-sort by cay desc; draw",
+      "Pickups still use frame ?A0 (no rotation)",
+    ],
+    prereqs: ["50-doom-sky"],
+  },
 ];
 
 // Quick-lookup helpers used by the UI.
