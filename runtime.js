@@ -59,6 +59,174 @@ export const storageBackend = (() => {
   };
 })();
 
+// Minimal Doom MUS-format player. Reads an in-memory MUS lump and
+// drives a tiny oscillator-based polyphonic synth on Web Audio — no
+// SoundFont needed, so it's self-contained. Note: this only renders
+// pitched tones and a noise-burst on channel 15 for percussion. Real
+// instrument patches are ignored.
+class MusPlayer {
+  constructor(audioCtx, bytes, loop = true) {
+    this.ctx    = audioCtx;
+    this.events = this.parseMus(bytes);
+    this.loop   = loop;
+    this.channels = new Array(16).fill(null).map(() => ({
+      vol: 0.6, oscs: new Map(),
+    }));
+    this.playing = false;
+    this.timer   = null;
+    this.startTime = 0;
+    this.eventIdx  = 0;
+    this.songTicks = 0;
+    if (this.events.length) {
+      this.songTicks = this.events[this.events.length - 1].t + 35;
+    }
+  }
+
+  parseMus(bytes) {
+    if (!bytes || bytes.length < 16) return [];
+    if (bytes[0] !== 0x4D || bytes[1] !== 0x55 ||
+        bytes[2] !== 0x53 || bytes[3] !== 0x1A) return [];
+    const dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+    const scoreStart = dv.getUint16(6, true);
+    const events = [];
+    let p = scoreStart, t = 0;
+    while (p < bytes.length) {
+      const ctrl = bytes[p++];
+      const last = ctrl & 0x80;
+      const type = (ctrl >> 4) & 0x07;
+      const ch   = ctrl & 0x0F;
+      switch (type) {
+        case 0: { // release
+          const n = bytes[p++] & 0x7F;
+          events.push({ t, type: 'off', ch, note: n });
+          break;
+        }
+        case 1: { // play
+          const nb = bytes[p++];
+          const note = nb & 0x7F;
+          let vel = 100;
+          if (nb & 0x80) vel = bytes[p++] & 0x7F;
+          events.push({ t, type: 'on', ch, note, vel });
+          break;
+        }
+        case 2: p++; break;   // pitch wheel (ignored)
+        case 3: p++; break;   // system event (ignored)
+        case 4: {             // controller
+          const cn = bytes[p++];
+          const val = bytes[p++];
+          if (cn === 3) events.push({ t, type: 'vol', ch, val });
+          break;
+        }
+        case 6: return events; // end
+        case 7: break;
+      }
+      if (last) {
+        let d = 0;
+        while (p < bytes.length) {
+          const b = bytes[p++];
+          d = (d << 7) | (b & 0x7F);
+          if (!(b & 0x80)) break;
+        }
+        t += d;
+      }
+    }
+    return events;
+  }
+
+  play() {
+    if (!this.events.length) return;
+    this.stop();
+    this.playing = true;
+    this.startTime = this.ctx.currentTime + 0.05;
+    this.eventIdx = 0;
+    this._tick();
+  }
+
+  _tick() {
+    if (!this.playing) return;
+    const tickSec = 1 / 140;
+    const horizon = this.ctx.currentTime + 0.4;
+    while (this.eventIdx < this.events.length) {
+      const ev = this.events[this.eventIdx];
+      const evTime = this.startTime + ev.t * tickSec;
+      if (evTime > horizon) break;
+      this._handle(ev, Math.max(evTime, this.ctx.currentTime));
+      this.eventIdx++;
+    }
+    if (this.eventIdx >= this.events.length) {
+      if (this.loop && this.songTicks > 0) {
+        this.startTime += this.songTicks * tickSec;
+        this.eventIdx = 0;
+      } else {
+        this.playing = false;
+        return;
+      }
+    }
+    this.timer = setTimeout(() => this._tick(), 180);
+  }
+
+  _handle(ev, time) {
+    const ch = this.channels[ev.ch];
+    if (ev.type === 'on') {
+      // Drum channel (15) gets a short noise burst instead of a pitch.
+      if (ev.ch === 15) {
+        const dur = 0.08;
+        const bufLen = Math.max(1, Math.floor(this.ctx.sampleRate * dur));
+        const buf = this.ctx.createBuffer(1, bufLen, this.ctx.sampleRate);
+        const d = buf.getChannelData(0);
+        for (let i = 0; i < bufLen; i++) {
+          d[i] = (Math.random() * 2 - 1) * (1 - i / bufLen);
+        }
+        const src = this.ctx.createBufferSource();
+        const gain = this.ctx.createGain();
+        src.buffer = buf;
+        gain.gain.value = (ev.vel / 127) * ch.vol * 0.18;
+        src.connect(gain).connect(this.ctx.destination);
+        src.start(time);
+        return;
+      }
+      const freq = 440 * Math.pow(2, (ev.note - 69) / 12);
+      const osc  = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.value = freq;
+      const vol = (ev.vel / 127) * ch.vol * 0.08;
+      gain.gain.setValueAtTime(0, time);
+      gain.gain.linearRampToValueAtTime(vol, time + 0.012);
+      osc.connect(gain).connect(this.ctx.destination);
+      osc.start(time);
+      // Replace any in-flight note of same pitch on this channel.
+      const prev = ch.oscs.get(ev.note);
+      if (prev) {
+        try { prev.gain.gain.setTargetAtTime(0, time, 0.01); prev.osc.stop(time + 0.05); } catch {}
+      }
+      ch.oscs.set(ev.note, { osc, gain });
+    } else if (ev.type === 'off') {
+      const e = ch.oscs.get(ev.note);
+      if (e) {
+        try {
+          e.gain.gain.setTargetAtTime(0, time, 0.02);
+          e.osc.stop(time + 0.2);
+        } catch {}
+        ch.oscs.delete(ev.note);
+      }
+    } else if (ev.type === 'vol') {
+      ch.vol = ev.val / 127;
+    }
+  }
+
+  stop() {
+    this.playing = false;
+    if (this.timer) { clearTimeout(this.timer); this.timer = null; }
+    for (const ch of this.channels) {
+      for (const e of ch.oscs.values()) {
+        try { e.osc.stop(); } catch {}
+      }
+      ch.oscs.clear();
+    }
+  }
+}
+
 // Binary asset registry (textures etc.). In-memory only — bundles are
 // the persistence path. Two record shapes:
 //   image:  { w, h, rgba: Uint8Array(w*h*4) }    — RGBA byte order
@@ -365,6 +533,34 @@ export class BcplRuntime {
       fb[p + 2] = b;
       fb[p + 3] = a;
       p += stride;
+    }
+  }
+
+  // Bresenham line (x0, y0) → (x1, y1) into the backbuffer.
+  _fbLine(x0, y0, x1, y1, color) {
+    const fb = this._fb;
+    if (!fb) return;
+    const W = this._fbW, H = this._fbH;
+    const r = (color >>> 24) & 0xFF;
+    const g = (color >>> 16) & 0xFF;
+    const b = (color >>>  8) & 0xFF;
+    const a = (color & 0xFF) || 0xFF;
+    const dx = Math.abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
+    const dy = -Math.abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
+    let err = dx + dy;
+    let x = x0 | 0, y = y0 | 0;
+    while (true) {
+      if (x >= 0 && x < W && y >= 0 && y < H) {
+        const p = (y * W + x) * 4;
+        fb[p]     = r;
+        fb[p + 1] = g;
+        fb[p + 2] = b;
+        fb[p + 3] = a;
+      }
+      if (x === x1 && y === y1) break;
+      const e2 = 2 * err;
+      if (e2 >= dy) { err += dy; x += sx; }
+      if (e2 <= dx) { err += dx; y += sy; }
     }
   }
 
@@ -1372,9 +1568,81 @@ export class BcplRuntime {
         return 0;
       }
       // sys(Sys_clearzbuf) — reset the z-buffer to "infinity" so a
-      // new frame starts fresh.
+      // new frame starts fresh. Also wipes the back framebuffer so
+      // any column the renderer doesn't subsequently touch shows
+      // black instead of stale pixels from the previous frame.
       case 91: {
         if (this._zBuf) this._zBuf.fill(0x7FFFFFFF);
+        if (this._fb)   this._fb.fill(0);
+        return 0;
+      }
+      // sys(Sys_playmusic, name_str, loop_flag) — start an HTMLAudio
+      // element on the named binary asset (.ogg / .mp3 / .wav). Stops
+      // any previous track. loop_flag=1 → continuous play.
+      case 92: {
+        const name = this.readBcplString(a1);
+        const loop = !!(a2 | 0);
+        const rec = assetBackend.get(name);
+        if (!rec || !rec.bytes) return 0;
+        try {
+          if (this._musicAudio) {
+            this._musicAudio.pause();
+            if (this._musicURL) URL.revokeObjectURL(this._musicURL);
+          }
+          const lower = name.toLowerCase();
+          const mime = lower.endsWith(".ogg")  ? "audio/ogg"
+                     : lower.endsWith(".mp3")  ? "audio/mpeg"
+                     : lower.endsWith(".wav")  ? "audio/wav"
+                     : lower.endsWith(".flac") ? "audio/flac"
+                     :                            "audio/mpeg";
+          const blob = new Blob([rec.bytes], { type: mime });
+          const url  = URL.createObjectURL(blob);
+          const aud  = new Audio(url);
+          aud.loop  = loop;
+          aud.volume = 0.55;
+          aud.play().catch(() => { /* user-gesture gate — caller can retry */ });
+          this._musicAudio = aud;
+          this._musicURL   = url;
+        } catch { /* swallow */ }
+        return 0;
+      }
+      // sys(Sys_playmus, word_base, byte_offset, byte_size, loop) —
+      // play a MUS lump straight out of wasm memory (no asset upload
+      // needed). word_base*4 + byte_offset is the byte address of
+      // the lump's first byte; byte_size is the lump length.
+      case 94: {
+        const wbase = a1 | 0;
+        const off   = a2 | 0;
+        const size  = a3 | 0;
+        const loop  = !!(a4 | 0);
+        if (size <= 0) return 0;
+        const startByte = wbase * 4 + off;
+        const bytes = new Uint8Array(
+          this.mem.buffer.slice(startByte, startByte + size));
+        try {
+          const Ctor = (typeof window !== "undefined") ? (window.AudioContext || window.webkitAudioContext) : null;
+          if (!Ctor) return 0;
+          if (!this._audioCtx) this._audioCtx = new Ctor();
+          if (this._musPlayer) this._musPlayer.stop();
+          this._musPlayer = new MusPlayer(this._audioCtx, bytes, loop);
+          this._musPlayer.play();
+        } catch { /* swallow */ }
+        return 0;
+      }
+      // sys(Sys_stopmusic) — pause + free the current music track.
+      case 93: {
+        if (this._musicAudio) {
+          this._musicAudio.pause();
+          this._musicAudio = null;
+        }
+        if (this._musicURL) {
+          URL.revokeObjectURL(this._musicURL);
+          this._musicURL = null;
+        }
+        if (this._musPlayer) {
+          this._musPlayer.stop();
+          this._musPlayer = null;
+        }
         return 0;
       }
 
@@ -2135,13 +2403,10 @@ export class BcplRuntime {
       case 4: case 5: return 0;                       // lock/unlock surface (noop)
       case 27: {                                      // sdl_drawline x1,y1,x2,y2,color  OR  surfptr,x1,y1,x2,y2,color (varies)
         const colour = (f !== undefined) ? f : (e !== undefined ? e : this.sdlCurrentColor);
-        // Two arg shapes seen in sdl.b: (surf,x1,y1,x2,y2,col) -> 6 args
-        // and  (x1,y1,x2,y2,col) -> 5 args. We can't distinguish from
-        // count alone, so try a heuristic: if `a` looks like a small
-        // surface-handle (1) treat as the 6-arg form.
         let x1, y1, x2, y2;
         if (a === 1 && f !== undefined) { x1 = b; y1 = c; x2 = d; y2 = e; }
         else                            { x1 = a; y1 = b; x2 = c; y2 = d; }
+        if (this._fb) { this._fbLine(x1, y1, x2, y2, colour); return 0; }
         this._sdlSetStroke(colour);
         ctx.beginPath();
         ctx.moveTo(x1 + 0.5, y1 + 0.5);

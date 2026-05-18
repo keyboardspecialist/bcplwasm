@@ -1,17 +1,18 @@
-// 54-doom-weapon: 53 + held pistol HUD.
+// 60-doom-wadmus: 59 + WAD's own MUS-format music.
 //
-// What's new vs 53:
-//   - Pre-loads PISG[A|B|C|D]0 frames at startup.
-//   - drawframe ends with a draw_weapon() pass: native 2x-scaled
-//     pistol bottom-centre of the canvas, drawn at depth 0 so it
-//     always wins the z-test.
-//   - Movement bobs the weapon along sin/cos curves.
-//   - F or LCtrl fires; cycle B → C → D → A over ~16 frames.
+// What's new vs 59:
+//   - Look up "D_" + map-marker name in the WAD lump directory
+//     (e.g. D_E1M1, D_E2M1, D_RUNNIN). Pass the raw bytes via
+//     Sys_playmus straight from wasm memory.
+//   - Runtime parses MUS and drives a tiny oscillator synth.
+//   - Drum channel 15 plays noise bursts.
+//   - If no MUS lump matches, falls back to the asset-audio path
+//     from 59 (.ogg / .mp3 / .wav / .flac).
 //
-// Controls: WASD/arrows = move/turn, E or Space = use, F or LCtrl
-//           = fire, Esc = quit.
+// Controls: WASD/arrows = move/turn, E or Space = use, F or LCtrl =
+//           fire, M = automap, +/- = zoom, Esc = quit.
 
-SECTION "dwep"
+SECTION "dwmus"
 
 GET "libhdr"
 GET "sdl"
@@ -48,6 +49,30 @@ MANIFEST {
 
   WEAPON_SCALE = 3                // 1=native, 2=2x pixels, etc.
   WEAPON_FIRE_TICKS = 4           // frames per fire-cycle step
+
+  HUD_SCALE = 3                   // STBAR native is 320×32; 3× = 960×96
+
+  // STBAR-relative element positions, in native Doom pixels.  Multiply
+  // by HUD_SCALE for screen coords.  STBAR top-left maps to (0, H - hud_bar_h).
+  ST_AMMOX  = 44
+  ST_AMMOY  = 3
+  ST_HEALTHX = 90
+  ST_HEALTHY = 3
+  ST_ARMORX  = 221
+  ST_ARMORY  = 3
+  ST_FX      = 143
+  ST_FY      = 0
+
+  FACE_TICKS = 18                 // frames between idle face cycle steps
+
+  FAKECONTRAST = 16               // Doom's wall-orientation light bias
+  SECTOR_SPEC_OFS = 22            // i16 special at byte 22
+
+  STROBE_BRIGHT = 5               // bright duration ticks
+  STROBE_DARK_F = 15              // fast strobe dark duration
+  STROBE_DARK_S = 35              // slow strobe dark duration
+  GLOW_STEP     = 8               // light units per frame in glow
+  FLICKER_RAND_MAX = 7            // bigger = rarer flickers
 
   ML_DONTPEGTOP    = #x0008
   ML_DONTPEGBOTTOM = #x0010
@@ -148,6 +173,11 @@ MANIFEST {
   K_SPACE  = 32
   K_F      = 70
   K_LCTRL  = 17
+  K_M      = 77
+  K_PLUS   = 187    // browser keyCode for '='/'+'
+  K_MINUS  = 189    // browser keyCode for '-'/'_'
+  K_PGUP   = 33
+  K_PGDN   = 34
 }
 
 STATIC {
@@ -258,6 +288,37 @@ STATIC {
   wep_fire_timer = 0    // counts DOWN while firing
   wep_fire_prev  = 0    // edge-detect for fire key
   wep_bob_t      = 0    // walking phase, 0..ANG-1
+
+  // Light animation state.
+  sec_light_runtime = 0   // VEC num_sectors — current light per sector
+  sec_min_light     = 0   // VEC num_sectors — lowest neighbour light
+  sec_special_v     = 0   // VEC num_sectors — cached SECTOR.special
+  sec_light_state   = 0   // VEC num_sectors — substate (bright/dark)
+  sec_light_timer   = 0   // VEC num_sectors — ticks left in substate
+  rand_state        = 1
+
+  hud_cidx     = -1
+  hud_bar_h    = 0      // STBAR scaled screen height; weapon anchors above it
+
+  face_cidx    = 0      // VEC 3 — STFST00..02
+  digit_cidx   = 0      // VEC 10 — STTNUM0..9
+
+  // Placeholder values (real game state will replace these).
+  hud_health = 100
+  hud_ammo   = 50
+  hud_armor  = 100
+
+  // Automap state.
+  automap_on   = FALSE
+  automap_scale_q10 = 256   // 1024-scaled "screen px per world unit"; 256 = 0.25
+  automap_prev = 0
+  am_col_wall  = 0
+  am_col_portal = 0
+  am_col_player = 0
+  am_col_bg    = 0
+
+  music_started = FALSE
+  g_map_idx     = 0
 }
 
 // ---------- byte helpers (same as 43) ----------
@@ -277,6 +338,28 @@ LET ends_with_wad(buf, start, end) = VALOF
            lc(buf % (end - 3)) = 'w' &
            lc(buf % (end - 2)) = 'a' &
            lc(buf % (end - 1)) = 'd'
+}
+
+// TRUE if the comma-list substring (buf[start..end-1]) ends in a
+// known audio extension (.ogg / .mp3 / .wav / .flac).
+LET ends_with_audio(buf, start, end) = VALOF
+{ LET n = end - start
+  IF n < 4 RESULTIS FALSE
+  IF lc(buf % (end - 4)) = '.' DO
+  { LET e1 = lc(buf % (end - 3))
+    LET e2 = lc(buf % (end - 2))
+    LET e3 = lc(buf % (end - 1))
+    IF e1 = 'o' & e2 = 'g' & e3 = 'g' RESULTIS TRUE
+    IF e1 = 'm' & e2 = 'p' & e3 = '3' RESULTIS TRUE
+    IF e1 = 'w' & e2 = 'a' & e3 = 'v' RESULTIS TRUE
+  }
+  IF n >= 5 & lc(buf % (end - 5)) = '.' DO
+  { IF lc(buf % (end - 4)) = 'f' &
+       lc(buf % (end - 3)) = 'l' &
+       lc(buf % (end - 2)) = 'a' &
+       lc(buf % (end - 1)) = 'c' RESULTIS TRUE
+  }
+  RESULTIS FALSE
 }
 
 LET try_load_wad(info) = VALOF
@@ -459,8 +542,19 @@ LET sec_ceil_static(idx) =
 LET sec_ceil(idx) = ceil_h_runtime = 0 -> sec_ceil_static(idx),
                                           ceil_h_runtime!idx
 
-LET sec_light(idx) =
+// Static light from WAD.
+LET sec_light_static(idx) =
   rd_i16_le(g_base, g_sec_byte + idx * SECTOR_SIZE + SECTOR_LIGHT_OFS)
+
+LET sec_special(idx) =
+  rd_i16_le(g_base, g_sec_byte + idx * SECTOR_SIZE + SECTOR_SPEC_OFS)
+
+// Runtime light (animation-aware). Falls back to static before the
+// runtime array is allocated.
+LET sec_light(idx) = VALOF
+{ IF sec_light_runtime = 0 RESULTIS sec_light_static(idx)
+  RESULTIS sec_light_runtime!idx
+}
 
 LET sec_floortex_byte(idx) =
   g_sec_byte + idx * SECTOR_SIZE + SECTOR_FLOORTEX_OFS
@@ -632,6 +726,106 @@ LET line_blocks_move(p1x, p1y, p2x, p2y) = VALOF
     }
   }
   RESULTIS FALSE
+}
+
+// ---------- light animation ----------
+
+// xorshift 32-bit PRNG.
+LET next_rand() = VALOF
+{ LET x = rand_state
+  x := x XOR (x << 13)
+  x := x XOR ((x >> 17) & #x7FFF)
+  x := x XOR (x << 5)
+  rand_state := x
+  RESULTIS x
+}
+
+// Lowest light among sectors connected to `sect` via any linedef.
+LET lowest_neighbor_light(sect) = VALOF
+{ LET best = sec_light_static(sect)
+  LET first = TRUE
+  FOR i = 0 TO g_nlines - 1 DO
+  { LET le  = g_line_byte + i * LINEDEF_SIZE
+    LET front_sd = rd_i16_le(g_base, le + LINEDEF_FRONT_OFS)
+    LET back_sd  = rd_i16_le(g_base, le + LINEDEF_BACK_OFS)
+    LET front_sec, back_sec, other = 0, 0, -1
+    IF front_sd < 0 LOOP
+    IF back_sd  < 0 LOOP
+    front_sec := sd_sector(front_sd)
+    back_sec  := sd_sector(back_sd)
+    IF front_sec = sect DO other := back_sec
+    IF back_sec  = sect DO other := front_sec
+    IF other < 0 LOOP
+    { LET l = sec_light_static(other)
+      TEST first
+      THEN { best := l; first := FALSE }
+      ELSE IF l < best DO best := l
+    }
+  }
+  RESULTIS best
+}
+
+// Step one sector's light per frame based on its special type.
+LET tick_one_light(s) BE
+{ LET spec = sec_special_v!s
+  LET base = sec_light_static(s)
+  LET dark = sec_min_light!s
+  LET st = sec_light_state!s
+  LET t  = sec_light_timer!s
+  SWITCHON spec INTO
+  { CASE 1:           // random flicker — usually bright, occasional dip
+    CASE 17:
+    { IF t > 0 DO { sec_light_timer!s := t - 1; ENDCASE }
+      TEST st = 0
+      THEN { // bright; maybe go dark
+             IF (next_rand() & FLICKER_RAND_MAX) = 0 DO
+             { sec_light_state!s := 1
+               sec_light_timer!s := 1 + (next_rand() & 7)
+               sec_light_runtime!s := dark
+               ENDCASE
+             }
+             sec_light_runtime!s := base
+           }
+      ELSE { // dark; return to bright
+             sec_light_state!s := 0
+             sec_light_runtime!s := base
+             sec_light_timer!s := 1 + (next_rand() & 31)
+           }
+      ENDCASE
+    }
+    CASE 2: CASE 13:    // fast strobe
+    CASE 3: CASE 12:    // slow strobe
+    { LET dark_dur = (spec = 3 | spec = 12) -> STROBE_DARK_S, STROBE_DARK_F
+      IF t > 0 DO { sec_light_timer!s := t - 1; ENDCASE }
+      TEST st = 0
+      THEN { sec_light_state!s := 1
+             sec_light_timer!s := dark_dur
+             sec_light_runtime!s := dark
+           }
+      ELSE { sec_light_state!s := 0
+             sec_light_timer!s := STROBE_BRIGHT
+             sec_light_runtime!s := base
+           }
+      ENDCASE
+    }
+    CASE 8:             // glow — ramp between base and dark
+    { LET cur = sec_light_runtime!s
+      TEST st = 0
+      THEN { cur := cur - GLOW_STEP
+             IF cur <= dark DO { cur := dark; sec_light_state!s := 1 }
+           }
+      ELSE { cur := cur + GLOW_STEP
+             IF cur >= base DO { cur := base; sec_light_state!s := 0 }
+           }
+      sec_light_runtime!s := cur
+      ENDCASE
+    }
+    DEFAULT: ENDCASE     // no animation
+  }
+}
+
+LET tick_lights() BE
+{ FOR s = 0 TO num_sectors - 1 DO tick_one_light(s)
 }
 
 // Lowest static ceiling among sectors connected to `sect` via any
@@ -944,6 +1138,60 @@ LET find_lump_bcpl(name_bcpl) = VALOF
     IF match RESULTIS i
   }
   RESULTIS -1
+}
+
+// Try to play the WAD's MUS lump for the current map ("D_" + marker).
+// Returns TRUE on hit, FALSE if no lump.
+LET try_start_wad_mus() = VALOF
+{ LET name_buf = VEC 2          // 8 bytes BCPL string
+  LET mm_byte = g_dirofs + g_map_idx * DIR_ENTRY_SIZE + DIR_NAME_OFS
+  LET map_name_len = 0
+  LET lump_idx = 0
+  LET le, fp, fsize = 0, 0, 0
+  FOR i = 0 TO 7 DO
+  { LET c = g_base % (mm_byte + i)
+    IF c = 0 BREAK
+    map_name_len := i + 1
+  }
+  IF map_name_len = 0 RESULTIS FALSE
+  name_buf % 0 := 2 + map_name_len
+  name_buf % 1 := 'D'
+  name_buf % 2 := '_'
+  FOR i = 0 TO map_name_len - 1 DO
+    name_buf % (3 + i) := g_base % (mm_byte + i)
+  lump_idx := find_lump_bcpl(name_buf)
+  IF lump_idx < 0 RESULTIS FALSE
+  le := g_dirofs + lump_idx * DIR_ENTRY_SIZE
+  fp := rd_u32_le(g_base, le + DIR_FILEPOS_OFS)
+  fsize := rd_u32_le(g_base, le + DIR_SIZE_OFS)
+  IF fsize < 16 RESULTIS FALSE
+  writef("music: ")
+  FOR i = 1 TO name_buf % 0 DO wrch(name_buf % i)
+  writef("  (%n bytes)*n", fsize)
+  sys(Sys_playmus, g_base, fp, fsize, 1)
+  RESULTIS TRUE
+}
+
+LET try_start_music() BE
+{ LET listbuf = VEC 64
+  LET namebuf = VEC 32
+  LET totlen, start, end = 0, 0, 0
+  sys(Sys_assetlist, listbuf)
+  totlen := listbuf % 0
+  start := 1; end := 1
+  WHILE end <= totlen DO
+  { WHILE end <= totlen & listbuf % end ~= ',' DO end := end + 1
+    IF ends_with_audio(listbuf, start, end) DO
+    { cp_substr(listbuf, start, end, namebuf)
+      writef("music: ")
+      FOR i = start TO end - 1 DO wrch(listbuf % i)
+      newline()
+      sys(Sys_playmusic, namebuf, 1)
+      RETURN
+    }
+    end := end + 1
+    start := end
+  }
 }
 
 LET load_sprite(name_bcpl) = VALOF
@@ -1291,6 +1539,16 @@ LET render_seg(seg_byte) BE
 
   UNLESS two_sided DO
     UNLESS front_facing(v1x, v1y, v2x, v2y) RETURN
+
+  // Fake contrast: walls running mostly N–S get a bonus, mostly E–W
+  // get a penalty.  Doom's classic "lit from above" feel.
+  { LET ddx = ABS (v2x - v1x)
+    LET ddy = ABS (v2y - v1y)
+    IF ddy > ddx DO fl := fl + FAKECONTRAST
+    IF ddx > ddy DO fl := fl - FAKECONTRAST
+    IF fl < 0 DO fl := 0
+    IF fl > 255 DO fl := 255
+  }
 
   // World wall length, for U computation.
   { LET dxw = v2x - v1x
@@ -1751,7 +2009,7 @@ LET draw_weapon() BE
   bob_y := (sin_t!(wep_bob_t & (ANG-1)) *  8) / 1024
   IF bob_y < 0 DO bob_y := 0 - bob_y     // sin gives ±; bounce is upward only
   sx0 := W / 2 - sw / 2 + bob_x
-  sy0 := H - sh + bob_y
+  sy0 := H - hud_bar_h - sh + bob_y
   sx1 := sx0 + sw - 1
   sy1 := sy0 + sh - 1
   v_step_q16 := (ph * 65536) / sh        // tex_h pixels over sh screen pixels
@@ -1773,6 +2031,136 @@ LET draw_weapon() BE
   }
 }
 
+// Scale-blit any cached patch at screen (sx_top, sy_top) at `scale`.
+// Goes through drawwallcol with transparency so palette-0 pixels stay
+// see-through. Depth is set by the caller (typically 0 for HUD).
+LET draw_patch_at(cidx, sx_top, sy_top, scale) BE
+{ LET pw, ph, tb = 0, 0, 0
+  LET sw, sh = 0, 0
+  LET sy_bot = 0
+  LET pkd, v_step_q16 = 0, 0
+  IF cidx < 0 RETURN
+  pw := spr_w!cidx
+  ph := spr_h!cidx
+  tb := spr_base!cidx
+  sw := pw * scale
+  sh := ph * scale
+  sy_bot := sy_top + sh - 1
+  v_step_q16 := (ph * 65536) / sh
+  pkd := (pw & #xFFFF) | (ph << 16)
+  { LET cx0 = sx_top
+    LET cx1 = sx_top + sw - 1
+    IF cx0 < 0 DO cx0 := 0
+    IF cx1 >= W DO cx1 := W - 1
+    FOR sx = cx0 TO cx1 DO
+    { LET texX = ((sx - sx_top) * pw) / sw
+      IF texX < 0 LOOP
+      IF texX >= pw LOOP
+      sys(Sys_drawwallcol, sx, sy_top, sy_bot, sy_top, 0 - v_step_q16,
+          texX, tb, pkd)
+    }
+  }
+}
+
+// Right-align an integer at (right_x_native, y_native) using STTNUM
+// digits. Coords are STBAR-native pixels (pre-scale).
+LET draw_number(n, max_digits, right_x_native, y_native, hud_origin_x, hud_origin_y) BE
+{ LET v = n
+  LET digs = VEC 4
+  IF v < 0 DO v := 0
+  // Extract digits (rightmost first).
+  FOR i = 0 TO max_digits - 1 DO
+  { digs!i := v REM 10
+    v := v / 10
+  }
+  // Find leading non-zero so we don't render leading-zero digits.
+  { LET shown = 1
+    FOR i = max_digits - 1 TO 0 BY -1 DO
+      IF digs!i ~= 0 DO { shown := i + 1; BREAK }
+    // Always show at least one digit even when n = 0.
+    IF n = 0 DO shown := 1
+    // Render right-to-left.  Each digit occupies its own native width;
+    // STTNUM glyphs are all 14 wide so we use that.
+    { LET native_w = 14
+      FOR i = 0 TO shown - 1 DO
+      { LET d  = digs!i
+        LET nx = right_x_native - (i + 1) * native_w
+        draw_patch_at(digit_cidx!d,
+                      hud_origin_x + nx * HUD_SCALE,
+                      hud_origin_y + y_native * HUD_SCALE,
+                      HUD_SCALE)
+      }
+    }
+  }
+}
+
+LET draw_hud() BE
+{ LET hud_origin_x = 0
+  LET hud_origin_y = 0
+  LET face_idx = 0
+  IF hud_cidx < 0 RETURN
+  hud_origin_x := W / 2 - (spr_w!hud_cidx * HUD_SCALE) / 2
+  hud_origin_y := H - spr_h!hud_cidx * HUD_SCALE
+  sys(Sys_setlight, 255)
+  sys(Sys_setdepth, 0)
+  // 1) Status bar art.
+  draw_patch_at(hud_cidx, hud_origin_x, hud_origin_y, HUD_SCALE)
+  // 2) Numbers.
+  draw_number(hud_ammo,   3, ST_AMMOX,   ST_AMMOY,   hud_origin_x, hud_origin_y)
+  draw_number(hud_health, 3, ST_HEALTHX, ST_HEALTHY, hud_origin_x, hud_origin_y)
+  draw_number(hud_armor,  3, ST_ARMORX,  ST_ARMORY,  hud_origin_x, hud_origin_y)
+  // 3) Idle face cycle (3 frames).
+  face_idx := (g_frame_count / FACE_TICKS) REM 3
+  draw_patch_at(face_cidx!face_idx,
+                hud_origin_x + ST_FX * HUD_SCALE,
+                hud_origin_y + ST_FY * HUD_SCALE,
+                HUD_SCALE)
+}
+
+// Project a world point to automap screen coords. Centre = (W/2, am_cy).
+LET am_proj_x(wx) = W / 2 + ((wx - px) * automap_scale_q10) / 1024
+LET am_proj_y(wy) = (H - hud_bar_h) / 2 - ((wy - py) * automap_scale_q10) / 1024
+
+LET draw_automap() BE
+{ LET cx, cy = 0, 0
+  // Dim background fill across the play area (above hud_bar_h).
+  sys(Sys_sdl, sdl_drawfillrect, surf, 0, 0, W, H - hud_bar_h, am_col_bg)
+  FOR i = 0 TO g_nlines - 1 DO
+  { LET le  = g_line_byte + i * LINEDEF_SIZE
+    LET v1 = rd_u16_le(g_base, le + 0)
+    LET v2 = rd_u16_le(g_base, le + 2)
+    LET back_sd = rd_i16_le(g_base, le + LINEDEF_BACK_OFS)
+    LET vo1 = g_vert_byte + v1 * VERTEX_SIZE
+    LET vo2 = g_vert_byte + v2 * VERTEX_SIZE
+    LET ax = rd_i16_le(g_base, vo1 + 0)
+    LET ay = rd_i16_le(g_base, vo1 + 2)
+    LET bx = rd_i16_le(g_base, vo2 + 0)
+    LET by = rd_i16_le(g_base, vo2 + 2)
+    LET col = back_sd < 0 -> am_col_wall, am_col_portal
+    sys(Sys_sdl, sdl_drawline, surf,
+        am_proj_x(ax), am_proj_y(ay),
+        am_proj_x(bx), am_proj_y(by),
+        col)
+  }
+  // Player marker — small triangle pointing along facing.
+  cx := W / 2
+  cy := (H - hud_bar_h) / 2
+  { LET dx = cos_t!(pa & (ANG - 1))
+    LET dy = sin_t!(pa & (ANG - 1))
+    LET nlen = (automap_scale_q10 * 16) / 1024
+    LET tipx = cx + (dx * nlen) / 1024
+    LET tipy = cy - (dy * nlen) / 1024
+    LET basel = (automap_scale_q10 * 10) / 1024
+    LET blx = cx - (dy * basel) / 1024
+    LET bly = cy - (dx * basel) / 1024
+    LET brx = cx + (dy * basel) / 1024
+    LET bry = cy + (dx * basel) / 1024
+    sys(Sys_sdl, sdl_drawline, surf, tipx, tipy, blx, bly, am_col_player)
+    sys(Sys_sdl, sdl_drawline, surf, tipx, tipy, brx, bry, am_col_player)
+    sys(Sys_sdl, sdl_drawline, surf, blx, bly, brx, bry, am_col_player)
+  }
+}
+
 LET drawframe() BE
 { reset_clip()
   // Per-pixel z-buffer is the source of truth; col_z is kept as a
@@ -1789,10 +2177,14 @@ LET drawframe() BE
   fwd_y   := sin_t!(pa & (ANG - 1))
   right_x := fwd_y
   right_y := 0 - fwd_x
-  render_node(g_root_node)
-  fill_remaining()
-  draw_sprites()
-  draw_weapon()
+  TEST automap_on
+  THEN { draw_automap() }
+  ELSE { render_node(g_root_node)
+         fill_remaining()
+         draw_sprites()
+         draw_weapon()
+       }
+  draw_hud()
   sys(Sys_sdl, sdl_flip, surf)
 }
 
@@ -1821,6 +2213,7 @@ LET start() = VALOF
   g_dirofs   := rd_u32_le(g_base, HDR_INFOOFS_OFS)
 
   map_idx := find_first_map(g_base, g_dirofs, g_numlumps)
+  g_map_idx := map_idx
   IF map_idx < 0 DO { writef("No map marker.*n"); RESULTIS 1 }
   writef("map: "); pr_lump_name(g_base, g_dirofs + map_idx * DIR_ENTRY_SIZE); newline()
 
@@ -1917,6 +2310,23 @@ LET start() = VALOF
   wep_cidx_b := ensure_sprite("PISGB0")
   wep_cidx_c := ensure_sprite("PISGC0")
   wep_cidx_d := ensure_sprite("PISGD0")
+  hud_cidx   := ensure_sprite("STBAR")
+  IF hud_cidx >= 0 DO hud_bar_h := spr_h!hud_cidx * HUD_SCALE
+  face_cidx  := getvec(3)
+  face_cidx!0 := ensure_sprite("STFST00")
+  face_cidx!1 := ensure_sprite("STFST01")
+  face_cidx!2 := ensure_sprite("STFST02")
+  digit_cidx := getvec(10)
+  digit_cidx!0 := ensure_sprite("STTNUM0")
+  digit_cidx!1 := ensure_sprite("STTNUM1")
+  digit_cidx!2 := ensure_sprite("STTNUM2")
+  digit_cidx!3 := ensure_sprite("STTNUM3")
+  digit_cidx!4 := ensure_sprite("STTNUM4")
+  digit_cidx!5 := ensure_sprite("STTNUM5")
+  digit_cidx!6 := ensure_sprite("STTNUM6")
+  digit_cidx!7 := ensure_sprite("STTNUM7")
+  digit_cidx!8 := ensure_sprite("STTNUM8")
+  digit_cidx!9 := ensure_sprite("STTNUM9")
   // Composite SKY1 like any wall texture; register as bg slot 0 so
   // Sys_drawskyspan finds it.  Falls back gracefully if missing.
   { LET sky_name = VEC 2
@@ -1944,10 +2354,20 @@ LET start() = VALOF
   ceil_h_runtime := getvec(num_sectors)
   door_state     := getvec(num_sectors)
   door_target    := getvec(num_sectors)
+  sec_light_runtime := getvec(num_sectors)
+  sec_min_light     := getvec(num_sectors)
+  sec_special_v     := getvec(num_sectors)
+  sec_light_state   := getvec(num_sectors)
+  sec_light_timer   := getvec(num_sectors)
   FOR s = 0 TO num_sectors - 1 DO
   { ceil_h_runtime!s := sec_ceil_static(s)
     door_state!s     := 0
     door_target!s    := 0
+    sec_light_runtime!s := sec_light_static(s)
+    sec_min_light!s     := lowest_neighbor_light(s)
+    sec_special_v!s     := sec_special(s)
+    sec_light_state!s   := 0
+    sec_light_timer!s   := next_rand() & 15   // stagger phases
   }
 
   sys(Sys_sdl, sdl_init)
@@ -1955,6 +2375,10 @@ LET start() = VALOF
 
   sky_col   := sys(Sys_sdl, sdl_maprgb, 0,  60, 110, 180)
   floor_col := sys(Sys_sdl, sdl_maprgb, 0,  40,  40,  40)
+  am_col_bg     := sys(Sys_sdl, sdl_maprgb, 0,  16,  16,  16)
+  am_col_wall   := sys(Sys_sdl, sdl_maprgb, 0, 220, 100, 100)
+  am_col_portal := sys(Sys_sdl, sdl_maprgb, 0, 110,  90, 110)
+  am_col_player := sys(Sys_sdl, sdl_maprgb, 0, 100, 220, 100)
 
   keys := getvec(KEYCAP)
   FOR i = 0 TO KEYCAP DO keys!i := 0
@@ -1963,6 +2387,19 @@ LET start() = VALOF
   { LET fwd  = 0
     LET turn = 0
     poll_events()
+
+    // Autoplay gate: most browsers block .play() until the page sees
+    // a user gesture. Defer the first Sys_playmusic until any key.
+    UNLESS music_started DO
+    { LET any_key = FALSE
+      FOR k = 0 TO KEYCAP - 1 DO IF keys!k DO { any_key := TRUE; BREAK }
+      IF any_key DO
+      { // Prefer the WAD's own MUS lump; fall back to an uploaded
+        // audio asset if there's no D_<map> lump (or a non-Doom WAD).
+        UNLESS try_start_wad_mus() DO try_start_music()
+        music_started := TRUE
+      }
+    }
     IF key_down(K_W) | key_down(K_UP)    DO fwd  := fwd  + 1
     IF key_down(K_S) | key_down(K_DOWN)  DO fwd  := fwd  - 1
     IF key_down(K_A) | key_down(K_LEFT)  DO turn := turn - TURN
@@ -1972,6 +2409,22 @@ LET start() = VALOF
     { LET use_now = key_down(K_E) | key_down(K_SPACE)
       IF use_now ~= 0 & use_prev = 0 DO use_action()
       use_prev := use_now
+    }
+
+    // Automap toggle — edge-trigger on M.
+    { LET m_now = key_down(K_M)
+      IF m_now ~= 0 & automap_prev = 0 DO
+        automap_on := automap_on -> FALSE, TRUE
+      automap_prev := m_now
+    }
+    // Automap zoom — held keys; clamp to sane range.
+    IF automap_on DO
+    { IF key_down(K_PLUS) | key_down(K_PGUP) DO
+        automap_scale_q10 := automap_scale_q10 + 16
+      IF key_down(K_MINUS) | key_down(K_PGDN) DO
+        automap_scale_q10 := automap_scale_q10 - 16
+      IF automap_scale_q10 < 32 DO automap_scale_q10 := 32
+      IF automap_scale_q10 > 2048 DO automap_scale_q10 := 2048
     }
 
     // Fire action — edge-trigger on F or LCtrl; resets fire timer.
@@ -1995,6 +2448,7 @@ LET start() = VALOF
     ELSE wep_bob_t := (wep_bob_t + 16) & (ANG - 1)
 
     tick_doors()
+    tick_lights()
     g_frame_count := g_frame_count + 1
 
     drawframe()
