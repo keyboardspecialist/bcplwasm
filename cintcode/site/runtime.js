@@ -1316,7 +1316,7 @@ export class BcplRuntime {
         const arr = buf.arr;
         const mv = this.memView;
         const tx = ((texX % tex_w) + tex_w) % tex_w;
-        const DBG_VHASH = true;   // flip to true to show v-hash colours
+        const DBG_VHASH = false;  // flip to true to show v-hash colours
         for (let i = 0; i < drawH; i++) {
           // Use Math.floor to keep multi-million V values precise —
           // (y - y_anchor) can be large and so can v_step.
