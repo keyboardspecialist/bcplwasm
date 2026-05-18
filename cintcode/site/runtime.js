@@ -1302,6 +1302,57 @@ export class BcplRuntime {
       //   V = ((y - y_anchor) * v_step_q16) >> 16
       // wrapped modulo tex_h so tall walls tile vertically rather than
       // stretching. pkd_wh = (tex_w & 0xFFFF) | (tex_h << 16).
+      // sys(Sys_drawflatspan, col, y0, y1, cam_above, px, py, raydxy_pkd, flat_base)
+      // Doom-style textured floor / ceiling span for one screen column.
+      // cam_above > 0 → floor (camera above floor plane);
+      // cam_above < 0 → ceiling (camera below ceiling plane).
+      // Flat texture is 64×64 packed RGBA at flat_base (word addr).
+      case 87: {
+        const col      = a1 | 0;
+        const y_top    = a2 | 0;
+        const y_bot    = a3 | 0;
+        const cam_above = a4 | 0;
+        const px       = a5 | 0;
+        const py       = a6 | 0;
+        const raydxy   = a7 | 0;
+        const flat_base = a8 | 0;
+        const fb = this._fb;
+        if (!fb || cam_above === 0 || !flat_base) return 0;
+        const W = this._fbW, H = this._fbH;
+        if (col < 0 || col >= W) return 0;
+        let y0 = y_top, y1 = y_bot;
+        if (y0 < 0) y0 = 0;
+        if (y1 >= H) y1 = H - 1;
+        if (y0 > y1) return 0;
+        // Sign-extend dx (low 16) and dy (high 16) from raydxy.
+        const ray_dx = (raydxy << 16) >> 16;
+        const ray_dy = raydxy >> 16;
+        const horizon = H >> 1;
+        const F_X = W >> 1;
+        const cam_abs = Math.abs(cam_above);
+        const is_ceil = cam_above < 0;
+        const mv = this.memView;
+        const stride = W * 4;
+        let fbIdx = (y0 * W + col) * 4;
+        for (let y = y0; y <= y1; y++) {
+          const delta_y = is_ceil ? (horizon - y) : (y - horizon);
+          if (delta_y > 0) {
+            const rowDist = (cam_abs * F_X / delta_y) | 0;
+            const worldX = px + ((rowDist * ray_dx) / 1024 | 0);
+            const worldY = py + ((rowDist * ray_dy) / 1024 | 0);
+            const tx = ((worldX % 64) + 64) & 63;
+            const ty = ((worldY % 64) + 64) & 63;
+            const word = mv.getInt32((flat_base + ty * 64 + tx) * 4, true);
+            fb[fbIdx]     = (word >>> 24) & 0xFF;
+            fb[fbIdx + 1] = (word >>> 16) & 0xFF;
+            fb[fbIdx + 2] = (word >>>  8) & 0xFF;
+            fb[fbIdx + 3] = (word & 0xFF) || 0xFF;
+          }
+          fbIdx += stride;
+        }
+        return 0;
+      }
+
       case 86: {
         const col_x     = a1 | 0;
         const y_top     = a2 | 0;

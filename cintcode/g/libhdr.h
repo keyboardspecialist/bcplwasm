@@ -534,6 +534,12 @@ Sys_drawfloorcol    = 85    // (col, horizon, px, py, dx, dy) — floor+ceil cas
 Sys_drawwallcol     = 86    // (col, y0, y1, y_anchor, v_step_q16, texX, tex_base, pkd_wh)
                             //   pkd_wh = (tex_w & #xFFFF) | (tex_h << 16)
                             //   per-pixel V wraps modulo tex_h (Doom-style tile)
+Sys_drawflatspan    = 87    // (col, y0, y1, cam_above, px, py, raydxy_pkd, flat_base)
+                            //   cam_above > 0  → floor span (cam_z - floor_h)
+                            //   cam_above < 0  → ceiling span (cam_z - ceil_h, negative)
+                            //   raydxy_pkd = (dx & #xFFFF) | (dy << 16)
+                            //     dx/dy = 1024-scaled per-column ray dir
+                            //   flat assumed 64x64 packed-RGBA at flat_base
 
 bootregs = 11 // Registers used to enter the function start in boot.b
 cliregs  = 21 // Registers used by BOOT to start the CLI
