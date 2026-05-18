@@ -1302,6 +1302,18 @@ export class BcplRuntime {
       //   V = ((y - y_anchor) * v_step_q16) >> 16
       // wrapped modulo tex_h so tall walls tile vertically rather than
       // stretching. pkd_wh = (tex_w & 0xFFFF) | (tex_h << 16).
+      // sys(Sys_setlight, light_0_255) — cache light scale for the
+      // subsequent drawwallcol / drawflatspan calls. Stored as 0..256
+      // (256 = full bright, used as `(channel * scale) >> 8`).
+      case 88: {
+        let l = a1 | 0;
+        if (l < 0) l = 0; else if (l > 255) l = 255;
+        // Map 255 → 256 so the common full-bright case is multiply-shift
+        // identity (255*256 >> 8 = 255 still).
+        this._lightScale = l === 255 ? 256 : l;
+        return 0;
+      }
+
       // sys(Sys_drawflatspan, col, y0, y1, cam_above, px, py, raydxy_pkd, flat_base)
       // Doom-style textured floor / ceiling span for one screen column.
       // cam_above > 0 → floor (camera above floor plane);
@@ -1333,6 +1345,7 @@ export class BcplRuntime {
         const is_ceil = cam_above < 0;
         const mv = this.memView;
         const stride = W * 4;
+        const ls = this._lightScale ?? 256;
         let fbIdx = (y0 * W + col) * 4;
         for (let y = y0; y <= y1; y++) {
           const delta_y = is_ceil ? (horizon - y) : (y - horizon);
@@ -1343,9 +1356,15 @@ export class BcplRuntime {
             const tx = ((worldX % 64) + 64) & 63;
             const ty = ((worldY % 64) + 64) & 63;
             const word = mv.getInt32((flat_base + ty * 64 + tx) * 4, true);
-            fb[fbIdx]     = (word >>> 24) & 0xFF;
-            fb[fbIdx + 1] = (word >>> 16) & 0xFF;
-            fb[fbIdx + 2] = (word >>>  8) & 0xFF;
+            if (ls >= 256) {
+              fb[fbIdx]     = (word >>> 24) & 0xFF;
+              fb[fbIdx + 1] = (word >>> 16) & 0xFF;
+              fb[fbIdx + 2] = (word >>>  8) & 0xFF;
+            } else {
+              fb[fbIdx]     = (((word >>> 24) & 0xFF) * ls) >> 8;
+              fb[fbIdx + 1] = (((word >>> 16) & 0xFF) * ls) >> 8;
+              fb[fbIdx + 2] = (((word >>>  8) & 0xFF) * ls) >> 8;
+            }
             fb[fbIdx + 3] = (word & 0xFF) || 0xFF;
           }
           fbIdx += stride;
@@ -1376,23 +1395,36 @@ export class BcplRuntime {
         const mv = this.memView;
         const tx = ((texX % tex_w) + tex_w) % tex_w;
         const texColBase = tex_base + tx;
-        // Q16.16 walk: vRaw = (y - y_anchor) * v_step >> 16.
-        // Use integer arithmetic only inside the loop; accumulate.
-        let vQ = (y0 - y_anchor) * v_step;        // safe enough for typical Doom values
+        let vQ = (y0 - y_anchor) * v_step;
         const stride = W * 4;
         let fbIdx = (y0 * W + col_x) * 4;
-        for (let y = y0; y <= y1; y++) {
-          // Math.floor of (vQ / 65536) — handle negatives via shift.
-          let vRaw = vQ >> 16;
-          let v = vRaw % tex_h;
-          if (v < 0) v += tex_h;
-          const word = mv.getInt32((texColBase + v * tex_w) * 4, true);
-          fb[fbIdx]     = (word >>> 24) & 0xFF;
-          fb[fbIdx + 1] = (word >>> 16) & 0xFF;
-          fb[fbIdx + 2] = (word >>>  8) & 0xFF;
-          fb[fbIdx + 3] = (word & 0xFF) || 0xFF;
-          fbIdx += stride;
-          vQ   += v_step;
+        const ls = this._lightScale ?? 256;
+        if (ls >= 256) {
+          for (let y = y0; y <= y1; y++) {
+            let vRaw = vQ >> 16;
+            let v = vRaw % tex_h;
+            if (v < 0) v += tex_h;
+            const word = mv.getInt32((texColBase + v * tex_w) * 4, true);
+            fb[fbIdx]     = (word >>> 24) & 0xFF;
+            fb[fbIdx + 1] = (word >>> 16) & 0xFF;
+            fb[fbIdx + 2] = (word >>>  8) & 0xFF;
+            fb[fbIdx + 3] = (word & 0xFF) || 0xFF;
+            fbIdx += stride;
+            vQ   += v_step;
+          }
+        } else {
+          for (let y = y0; y <= y1; y++) {
+            let vRaw = vQ >> 16;
+            let v = vRaw % tex_h;
+            if (v < 0) v += tex_h;
+            const word = mv.getInt32((texColBase + v * tex_w) * 4, true);
+            fb[fbIdx]     = (((word >>> 24) & 0xFF) * ls) >> 8;
+            fb[fbIdx + 1] = (((word >>> 16) & 0xFF) * ls) >> 8;
+            fb[fbIdx + 2] = (((word >>>  8) & 0xFF) * ls) >> 8;
+            fb[fbIdx + 3] = (word & 0xFF) || 0xFF;
+            fbIdx += stride;
+            vQ   += v_step;
+          }
         }
         return 0;
       }
