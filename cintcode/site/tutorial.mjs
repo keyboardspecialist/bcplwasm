@@ -587,6 +587,21 @@ export const TRACK = [
     ],
     prereqs: ["39-wad-reader"],
   },
+  {
+    slug: "41-doom-mapnav",
+    title: "Doom Map + Player Nav",
+    level: 9,
+    topic: "graphics",
+    summary: "Lay the camera transform code: parse THINGS, spawn at player1 start, WASD/arrows pan and turn the player marker over the 2D map.",
+    goals: [
+      "Parse THINGS lump (10 bytes/entry); pick type=1 (player1 start)",
+      "Convert Doom degrees to our 8192-tick angle space",
+      "Sin/cos LUT (same shape as raycasters 35–38)",
+      "Player marker + facing line drawn through the same projection",
+      "Free-fly nav (no wall collision yet) — sets up state the 3D renderer will need",
+    ],
+    prereqs: ["40-doom-mapview"],
+  },
 ];
 
 // Quick-lookup helpers used by the UI.

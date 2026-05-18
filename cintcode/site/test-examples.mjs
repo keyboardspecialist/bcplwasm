@@ -43,6 +43,7 @@ const RUN_SKIP = new Set([
   "38-raycaster-skyfloor",  // ditto
   "39-wad-reader",      // needs a binary WAD asset uploaded
   "40-doom-mapview",    // needs a WAD asset + SDL canvas; runs game loop
+  "41-doom-mapnav",     // same — WAD + canvas + game loop
   "stdlib",             // pure library — no start()
 ]);
 
