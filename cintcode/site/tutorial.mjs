@@ -771,6 +771,20 @@ export const TRACK = [
     ],
     prereqs: ["51-doom-rot"],
   },
+  {
+    slug: "53-doom-anim",
+    title: "Doom Monster Animation + Portal Sprite Clipping",
+    level: 9,
+    topic: "graphics",
+    summary: "Monsters cycle frames A↔B every ANIM_TICKS. col_z is only updated by solid walls so sprites in adjacent sectors show through portals, clipped to the per-column open band.",
+    goals: [
+      "current_anim_letter(): (g_frame_count / ANIM_TICKS) REM 2 → 'A' or 'B'",
+      "build_monster_name now takes letter; fallback A on missing B",
+      "col_z update moved to the solid-wall ELSE branch only",
+      "draw_sprite clips per-column y range to col_top..col_bot before drawwallcol",
+    ],
+    prereqs: ["52-doom-doors"],
+  },
 ];
 
 // Quick-lookup helpers used by the UI.

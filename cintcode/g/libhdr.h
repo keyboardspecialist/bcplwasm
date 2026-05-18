@@ -548,6 +548,9 @@ Sys_drawskyspan     = 89    // (col, y0, y1, u) — sky cylinder column. Fills
                             //   screen rows y0..y1 from cached sky tex (slot 0).
                             //   V = y * sky_h / (canvas_h / 2) anchored to
                             //   absolute screen y (sky doesn't tilt).
+Sys_setdepth        = 90    // (cy) — cache per-column z written/tested by
+                            //   the next drawwallcol/drawflatspan. World units.
+Sys_clearzbuf       = 91    // () — reset full z-buffer to "infinity"
 
 bootregs = 11 // Registers used to enter the function start in boot.b
 cliregs  = 21 // Registers used by BOOT to start the CLI

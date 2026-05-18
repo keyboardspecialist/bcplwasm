@@ -1364,6 +1364,20 @@ export class BcplRuntime {
         return 0;
       }
 
+      // sys(Sys_setdepth, cy) — cache the per-column depth value the
+      // next opaque draw will write into the z-buffer, and the depth
+      // sprites compare against. World units.
+      case 90: {
+        this._zVal = a1 | 0;
+        return 0;
+      }
+      // sys(Sys_clearzbuf) — reset the z-buffer to "infinity" so a
+      // new frame starts fresh.
+      case 91: {
+        if (this._zBuf) this._zBuf.fill(0x7FFFFFFF);
+        return 0;
+      }
+
       // sys(Sys_setlight, light_0_255) — cache light scale for the
       // subsequent drawwallcol / drawflatspan calls. Stored as 0..256
       // (256 = full bright, used as `(channel * scale) >> 8`).
@@ -1408,7 +1422,9 @@ export class BcplRuntime {
         const mv = this.memView;
         const stride = W * 4;
         const ls = this._lightScale ?? 256;
+        const zBuf = this._zBuf;
         let fbIdx = (y0 * W + col) * 4;
+        let zIdx  = y0 * W + col;
         for (let y = y0; y <= y1; y++) {
           const delta_y = is_ceil ? (horizon - y) : (y - horizon);
           if (delta_y > 0) {
@@ -1428,8 +1444,10 @@ export class BcplRuntime {
               fb[fbIdx + 2] = (((word >>>  8) & 0xFF) * ls) >> 8;
             }
             fb[fbIdx + 3] = (word & 0xFF) || 0xFF;
+            if (zBuf) zBuf[zIdx] = rowDist;
           }
           fbIdx += stride;
+          zIdx += W;
         }
         return 0;
       }
@@ -1464,12 +1482,22 @@ export class BcplRuntime {
         let fbIdx = (y0 * W + col_x) * 4;
         const ls = this._lightScale ?? 256;
         const bright = ls >= 256;
+        const z = this._zVal | 0;
+        const zBuf = this._zBuf;
+        // Walls are opaque → write z + colour.
+        // Sprites use `transparent` (negated v_step) → z-TEST: only
+        // paint when this depth beats whatever's already there.
+        let zIdx = y0 * W + col_x;
         for (let y = y0; y <= y1; y++) {
           let vRaw = vQ >> 16;
           let v = vRaw % tex_h;
           if (v < 0) v += tex_h;
           const word = mv.getInt32((texColBase + v * tex_w) * 4, true);
-          if (!transparent || word !== 0) {
+          let drawPixel = true;
+          if (transparent) {
+            drawPixel = word !== 0 && (zBuf ? z < zBuf[zIdx] : true);
+          }
+          if (drawPixel) {
             if (bright) {
               fb[fbIdx]     = (word >>> 24) & 0xFF;
               fb[fbIdx + 1] = (word >>> 16) & 0xFF;
@@ -1480,8 +1508,10 @@ export class BcplRuntime {
               fb[fbIdx + 2] = (((word >>>  8) & 0xFF) * ls) >> 8;
             }
             fb[fbIdx + 3] = (word & 0xFF) || 0xFF;
+            if (!transparent && zBuf) zBuf[zIdx] = z;
           }
           fbIdx += stride;
+          zIdx += W;
           vQ   += v_step;
         }
         return 0;
@@ -2093,6 +2123,12 @@ export class BcplRuntime {
         this._fb   = new Uint8ClampedArray(a * b * 4);
         this._fbW  = a;
         this._fbH  = b;
+        // Per-pixel depth buffer (i32, world units). Walls and flats
+        // write their cy as they paint; sprites test it before
+        // writing so they get occluded by any closer surface, not
+        // just the single-depth col_z heuristic in BCPL.
+        this._zBuf = new Int32Array(a * b);
+        this._zVal = 0x7FFFFFFF;
         return 1;                                     // surfptr (any non-zero)
       }
       case 3: return 0;                               // sdl_quit
