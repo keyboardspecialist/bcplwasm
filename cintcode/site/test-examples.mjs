@@ -44,6 +44,7 @@ const RUN_SKIP = new Set([
   "39-wad-reader",      // needs a binary WAD asset uploaded
   "40-doom-mapview",    // needs a WAD asset + SDL canvas; runs game loop
   "41-doom-mapnav",     // same — WAD + canvas + game loop
+  "42-doom-3dview",     // same — WAD + canvas + game loop
   "stdlib",             // pure library — no start()
 ]);
 

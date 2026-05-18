@@ -602,6 +602,22 @@ export const TRACK = [
     ],
     prereqs: ["40-doom-mapview"],
   },
+  {
+    slug: "42-doom-3dview",
+    title: "Doom 3D Walls (no BSP, no textures)",
+    level: 9,
+    topic: "graphics",
+    summary: "First-person Doom wall renderer. Per-column projection, near-plane clip, backface cull. Flat-shaded by sector light. No BSP yet — overdraw is visible in cluttered scenes.",
+    goals: [
+      "Parse SIDEDEFS (30 bytes) and SECTORS (26 bytes) for floor/ceil/light",
+      "Camera transform: camY = rx·cos+ry·sin (depth), camX = rx·sin-ry·cos (lateral)",
+      "Backface cull for 1-sided linedefs via cross product",
+      "Near-plane clip by interpolating to NEAR before dividing by z",
+      "Per-column perspective-correct interp of 1/z, project floor/ceil",
+      "Two-sided portals draw lower/upper steps where sector heights differ",
+    ],
+    prereqs: ["41-doom-mapnav"],
+  },
 ];
 
 // Quick-lookup helpers used by the UI.
