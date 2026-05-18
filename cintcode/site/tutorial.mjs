@@ -726,6 +726,21 @@ export const TRACK = [
     ],
     prereqs: ["48-doom-sprites"],
   },
+  {
+    slug: "50-doom-sky",
+    title: "Doom Sky Cylinder",
+    level: 9,
+    topic: "graphics",
+    summary: "Render SKY1 as a 360° panorama. Sectors with F_SKY1 ceilings + leftover void columns sample the sky by player angle.",
+    goals: [
+      "Composite SKY1 from TEXTURE1 via existing wall-tex pipeline",
+      "Register via Sys_setbgtex slot 0",
+      "Sys_drawskyspan = 89: V mapped to absolute screen y (sky doesn't tilt)",
+      "U = (pa * sky_w / (ANG/4) + col_x * sky_w / W) REM sky_w",
+      "Ceiling band uses sky when sector_ceil_is_sky(front_sec)",
+    ],
+    prereqs: ["49-doom-collide"],
+  },
 ];
 
 // Quick-lookup helpers used by the UI.

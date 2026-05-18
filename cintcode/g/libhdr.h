@@ -544,6 +544,10 @@ Sys_setlight        = 88    // (light_0_255) — cache light scale for next
                             //   drawwallcol / drawflatspan calls. Pixel RGB
                             //   is multiplied by light/255. light=255 (default
                             //   on startup) means no shading.
+Sys_drawskyspan     = 89    // (col, y0, y1, u) — sky cylinder column. Fills
+                            //   screen rows y0..y1 from cached sky tex (slot 0).
+                            //   V = y * sky_h / (canvas_h / 2) anchored to
+                            //   absolute screen y (sky doesn't tilt).
 
 bootregs = 11 // Registers used to enter the function start in boot.b
 cliregs  = 21 // Registers used by BOOT to start the CLI

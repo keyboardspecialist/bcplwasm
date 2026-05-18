@@ -569,6 +569,11 @@ Sys_setlight        = 88   // (light_0_255) — cache light scale for subsequent
                            //   is multiplied by light/255. Default 255 (full
                            //   bright). Call once per column before draw to
                            //   get Doom-style distance/sector shading.
+Sys_drawskyspan     = 89   // (col, y0, y1, u) — Doom sky cylinder span for
+                           //   one column. Fills rows y0..y1 from the
+                           //   sky tex cached in Sys_setbgtex slot 0.
+                           //   V = y * sky_h / horizon (absolute screen y,
+                           //   so the sky doesn't pitch with view).
 
 bootregs = 11 // Registers used to enter the function start in boot.b
 cliregs  = 21 // Registers used by BOOT to start the CLI

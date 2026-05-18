@@ -1446,6 +1446,10 @@ LET start() = VALOF
         throw new Error(`${fromName}: runtime error: ${e.message ?? e}\n${diag}`);
       }
       const wat = storageBackend.get(toName);
+      // Drop the intermediate from storage right away so 800KB+ WAT
+      // blobs don't accumulate across runs and blow the localStorage
+      // quota (~5–10MB) on the bigger Doom examples.
+      storageBackend.del?.(toName);
       if (!wat) throw new Error(`${fromName}: no .wat (exit=${exitCode})\n${diag}`);
       return { wat, diag, exitCode };
     }
