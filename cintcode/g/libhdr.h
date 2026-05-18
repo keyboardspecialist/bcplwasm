@@ -551,6 +551,12 @@ Sys_drawskyspan     = 89    // (col, y0, y1, u) — sky cylinder column. Fills
 Sys_setdepth        = 90    // (cy) — cache per-column z written/tested by
                             //   the next drawwallcol/drawflatspan. World units.
 Sys_clearzbuf       = 91    // () — reset full z-buffer to "infinity"
+Sys_playmusic       = 92    // (name_str, loop_flag) — play binary audio asset
+Sys_stopmusic       = 93    // () — stop current music track
+Sys_playmus         = 94    // (word_base, byte_off, byte_size, loop) —
+                            //   play a Doom MUS-format lump straight out
+                            //   of wasm memory via a built-in Web Audio
+                            //   oscillator synth (no SoundFont).
 
 bootregs = 11 // Registers used to enter the function start in boot.b
 cliregs  = 21 // Registers used by BOOT to start the CLI

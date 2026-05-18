@@ -579,6 +579,14 @@ Sys_setdepth        = 90   // (cy) — cache depth value the next opaque
                            //   the runtime z-buffer (and that sprite-mode
                            //   drawwallcol will test against). World units.
 Sys_clearzbuf       = 91   // () — reset z-buffer to +infinity (once/frame).
+Sys_playmusic       = 92   // (name_str, loop_flag) — play a binary audio
+                           //   asset (ogg/mp3/wav/flac). loop_flag=1 → loop.
+                           //   Replaces any current track.
+Sys_stopmusic       = 93   // () — stop current music track.
+Sys_playmus         = 94   // (word_base, byte_off, byte_size, loop) —
+                           //   play a Doom MUS-format lump from wasm
+                           //   memory via the runtime's tiny oscillator
+                           //   synth. Drum channel 15 gets noise bursts.
 
 bootregs = 11 // Registers used to enter the function start in boot.b
 cliregs  = 21 // Registers used by BOOT to start the CLI

@@ -1,17 +1,21 @@
-// 54-doom-weapon: 53 + held pistol HUD.
+// 55-doom-light: 54 + Doom-style fake contrast and animated light
+// sector specials.
 //
-// What's new vs 53:
-//   - Pre-loads PISG[A|B|C|D]0 frames at startup.
-//   - drawframe ends with a draw_weapon() pass: native 2x-scaled
-//     pistol bottom-centre of the canvas, drawn at depth 0 so it
-//     always wins the z-test.
-//   - Movement bobs the weapon along sin/cos curves.
-//   - F or LCtrl fires; cycle B → C → D → A over ~16 frames.
+// What's new vs 54:
+//   - Fake contrast: walls running mostly N–S get a +FAKECONTRAST
+//     light bonus; walls running mostly E–W get a -FAKECONTRAST
+//     penalty. Iconic Doom "lit-from-above" look.
+//   - Sector light overrides via sec_light_runtime[]. Sectors with
+//     SPECIAL = 1 (random flicker), 2 / 13 (fast strobe), 3 / 12
+//     (slow strobe), 8 (glow), 17 (alt flicker) animate their light
+//     between base_light and the lowest-neighbour light.
+//   - sec_light() reads the runtime cache; the renderer picks up the
+//     animation automatically.
 //
 // Controls: WASD/arrows = move/turn, E or Space = use, F or LCtrl
 //           = fire, Esc = quit.
 
-SECTION "dwep"
+SECTION "dlight2"
 
 GET "libhdr"
 GET "sdl"
@@ -48,6 +52,15 @@ MANIFEST {
 
   WEAPON_SCALE = 3                // 1=native, 2=2x pixels, etc.
   WEAPON_FIRE_TICKS = 4           // frames per fire-cycle step
+
+  FAKECONTRAST = 16               // Doom's wall-orientation light bias
+  SECTOR_SPEC_OFS = 22            // i16 special at byte 22
+
+  STROBE_BRIGHT = 5               // bright duration ticks
+  STROBE_DARK_F = 15              // fast strobe dark duration
+  STROBE_DARK_S = 35              // slow strobe dark duration
+  GLOW_STEP     = 8               // light units per frame in glow
+  FLICKER_RAND_MAX = 7            // bigger = rarer flickers
 
   ML_DONTPEGTOP    = #x0008
   ML_DONTPEGBOTTOM = #x0010
@@ -258,6 +271,14 @@ STATIC {
   wep_fire_timer = 0    // counts DOWN while firing
   wep_fire_prev  = 0    // edge-detect for fire key
   wep_bob_t      = 0    // walking phase, 0..ANG-1
+
+  // Light animation state.
+  sec_light_runtime = 0   // VEC num_sectors — current light per sector
+  sec_min_light     = 0   // VEC num_sectors — lowest neighbour light
+  sec_special_v     = 0   // VEC num_sectors — cached SECTOR.special
+  sec_light_state   = 0   // VEC num_sectors — substate (bright/dark)
+  sec_light_timer   = 0   // VEC num_sectors — ticks left in substate
+  rand_state        = 1
 }
 
 // ---------- byte helpers (same as 43) ----------
@@ -459,8 +480,19 @@ LET sec_ceil_static(idx) =
 LET sec_ceil(idx) = ceil_h_runtime = 0 -> sec_ceil_static(idx),
                                           ceil_h_runtime!idx
 
-LET sec_light(idx) =
+// Static light from WAD.
+LET sec_light_static(idx) =
   rd_i16_le(g_base, g_sec_byte + idx * SECTOR_SIZE + SECTOR_LIGHT_OFS)
+
+LET sec_special(idx) =
+  rd_i16_le(g_base, g_sec_byte + idx * SECTOR_SIZE + SECTOR_SPEC_OFS)
+
+// Runtime light (animation-aware). Falls back to static before the
+// runtime array is allocated.
+LET sec_light(idx) = VALOF
+{ IF sec_light_runtime = 0 RESULTIS sec_light_static(idx)
+  RESULTIS sec_light_runtime!idx
+}
 
 LET sec_floortex_byte(idx) =
   g_sec_byte + idx * SECTOR_SIZE + SECTOR_FLOORTEX_OFS
@@ -632,6 +664,106 @@ LET line_blocks_move(p1x, p1y, p2x, p2y) = VALOF
     }
   }
   RESULTIS FALSE
+}
+
+// ---------- light animation ----------
+
+// xorshift 32-bit PRNG.
+LET next_rand() = VALOF
+{ LET x = rand_state
+  x := x XOR (x << 13)
+  x := x XOR ((x >> 17) & #x7FFF)
+  x := x XOR (x << 5)
+  rand_state := x
+  RESULTIS x
+}
+
+// Lowest light among sectors connected to `sect` via any linedef.
+LET lowest_neighbor_light(sect) = VALOF
+{ LET best = sec_light_static(sect)
+  LET first = TRUE
+  FOR i = 0 TO g_nlines - 1 DO
+  { LET le  = g_line_byte + i * LINEDEF_SIZE
+    LET front_sd = rd_i16_le(g_base, le + LINEDEF_FRONT_OFS)
+    LET back_sd  = rd_i16_le(g_base, le + LINEDEF_BACK_OFS)
+    LET front_sec, back_sec, other = 0, 0, -1
+    IF front_sd < 0 LOOP
+    IF back_sd  < 0 LOOP
+    front_sec := sd_sector(front_sd)
+    back_sec  := sd_sector(back_sd)
+    IF front_sec = sect DO other := back_sec
+    IF back_sec  = sect DO other := front_sec
+    IF other < 0 LOOP
+    { LET l = sec_light_static(other)
+      TEST first
+      THEN { best := l; first := FALSE }
+      ELSE IF l < best DO best := l
+    }
+  }
+  RESULTIS best
+}
+
+// Step one sector's light per frame based on its special type.
+LET tick_one_light(s) BE
+{ LET spec = sec_special_v!s
+  LET base = sec_light_static(s)
+  LET dark = sec_min_light!s
+  LET st = sec_light_state!s
+  LET t  = sec_light_timer!s
+  SWITCHON spec INTO
+  { CASE 1:           // random flicker — usually bright, occasional dip
+    CASE 17:
+    { IF t > 0 DO { sec_light_timer!s := t - 1; ENDCASE }
+      TEST st = 0
+      THEN { // bright; maybe go dark
+             IF (next_rand() & FLICKER_RAND_MAX) = 0 DO
+             { sec_light_state!s := 1
+               sec_light_timer!s := 1 + (next_rand() & 7)
+               sec_light_runtime!s := dark
+               ENDCASE
+             }
+             sec_light_runtime!s := base
+           }
+      ELSE { // dark; return to bright
+             sec_light_state!s := 0
+             sec_light_runtime!s := base
+             sec_light_timer!s := 1 + (next_rand() & 31)
+           }
+      ENDCASE
+    }
+    CASE 2: CASE 13:    // fast strobe
+    CASE 3: CASE 12:    // slow strobe
+    { LET dark_dur = (spec = 3 | spec = 12) -> STROBE_DARK_S, STROBE_DARK_F
+      IF t > 0 DO { sec_light_timer!s := t - 1; ENDCASE }
+      TEST st = 0
+      THEN { sec_light_state!s := 1
+             sec_light_timer!s := dark_dur
+             sec_light_runtime!s := dark
+           }
+      ELSE { sec_light_state!s := 0
+             sec_light_timer!s := STROBE_BRIGHT
+             sec_light_runtime!s := base
+           }
+      ENDCASE
+    }
+    CASE 8:             // glow — ramp between base and dark
+    { LET cur = sec_light_runtime!s
+      TEST st = 0
+      THEN { cur := cur - GLOW_STEP
+             IF cur <= dark DO { cur := dark; sec_light_state!s := 1 }
+           }
+      ELSE { cur := cur + GLOW_STEP
+             IF cur >= base DO { cur := base; sec_light_state!s := 0 }
+           }
+      sec_light_runtime!s := cur
+      ENDCASE
+    }
+    DEFAULT: ENDCASE     // no animation
+  }
+}
+
+LET tick_lights() BE
+{ FOR s = 0 TO num_sectors - 1 DO tick_one_light(s)
 }
 
 // Lowest static ceiling among sectors connected to `sect` via any
@@ -1292,6 +1424,16 @@ LET render_seg(seg_byte) BE
   UNLESS two_sided DO
     UNLESS front_facing(v1x, v1y, v2x, v2y) RETURN
 
+  // Fake contrast: walls running mostly N–S get a bonus, mostly E–W
+  // get a penalty.  Doom's classic "lit from above" feel.
+  { LET ddx = ABS (v2x - v1x)
+    LET ddy = ABS (v2y - v1y)
+    IF ddy > ddx DO fl := fl + FAKECONTRAST
+    IF ddx > ddy DO fl := fl - FAKECONTRAST
+    IF fl < 0 DO fl := 0
+    IF fl > 255 DO fl := 255
+  }
+
   // World wall length, for U computation.
   { LET dxw = v2x - v1x
     LET dyw = v2y - v1y
@@ -1944,10 +2086,20 @@ LET start() = VALOF
   ceil_h_runtime := getvec(num_sectors)
   door_state     := getvec(num_sectors)
   door_target    := getvec(num_sectors)
+  sec_light_runtime := getvec(num_sectors)
+  sec_min_light     := getvec(num_sectors)
+  sec_special_v     := getvec(num_sectors)
+  sec_light_state   := getvec(num_sectors)
+  sec_light_timer   := getvec(num_sectors)
   FOR s = 0 TO num_sectors - 1 DO
   { ceil_h_runtime!s := sec_ceil_static(s)
     door_state!s     := 0
     door_target!s    := 0
+    sec_light_runtime!s := sec_light_static(s)
+    sec_min_light!s     := lowest_neighbor_light(s)
+    sec_special_v!s     := sec_special(s)
+    sec_light_state!s   := 0
+    sec_light_timer!s   := next_rand() & 15   // stagger phases
   }
 
   sys(Sys_sdl, sdl_init)
@@ -1995,6 +2147,7 @@ LET start() = VALOF
     ELSE wep_bob_t := (wep_bob_t + 16) & (ANG - 1)
 
     tick_doors()
+    tick_lights()
     g_frame_count := g_frame_count + 1
 
     drawframe()
