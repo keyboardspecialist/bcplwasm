@@ -519,32 +519,51 @@ LET render_seg(seg_byte) BE
     IF inv_z <= 0 LOOP
     cy := (1024 * 1024) / inv_z
 
-    // Front sector projected y's.
-    y_fc := project_y(fc, cy)         // top of front wall
-    y_cc := project_y(ff, cy)         // bottom of front wall
+    y_fc := project_y(fc, cy)
+    y_cc := project_y(ff, cy)
+
+    // Ceiling band above front ceiling — anything in the current open
+    // window above y_fc is "looking past" the wall top and shows the
+    // ceiling flat (sky_col for the basic renderer). Without this the
+    // top of every solid wall would leave HOM streaks.
+    { LET top = col_top!col_x
+      LET bot = col_bot!col_x
+      IF top < y_fc DO
+      { LET y1 = y_fc - 1
+        IF y1 > bot DO y1 := bot
+        IF top <= y1 DO
+          sys(Sys_sdl, sdl_drawvline, surf, col_x, top, y1, sky_col)
+        col_top!col_x := y_fc
+      }
+    }
+    // Floor band below front floor — same idea below the wall.
+    { LET top = col_top!col_x
+      LET bot = col_bot!col_x
+      IF bot > y_cc DO
+      { LET y0 = y_cc + 1
+        IF y0 < top DO y0 := top
+        IF y0 <= bot DO
+          sys(Sys_sdl, sdl_drawvline, surf, col_x, y0, bot, floor_col)
+        col_bot!col_x := y_cc
+      }
+    }
+    IF col_top!col_x > col_bot!col_x DO { close_column(col_x); LOOP }
 
     TEST two_sided
-    THEN { y_bc := project_y(bc, cy)  // top of back opening (back ceil)
-           y_bf := project_y(bf, cy)  // bottom of back opening (back floor)
-           // Upper step: gap between front ceil and back ceil, when
-           // back ceil is BELOW front ceil (so back_ceil > front_ceil
-           // is impossible here — bc > fc would mean back sticks up).
+    THEN { y_bc := project_y(bc, cy)
+           y_bf := project_y(bf, cy)
            IF bc < fc DO
            { vline_clipped(col_x, y_fc, y_bc, upper_c)
-             IF y_bc > col_top!col_x DO col_top!col_x := y_bc
+             IF y_bc + 1 > col_top!col_x DO col_top!col_x := y_bc + 1
              IF col_top!col_x > col_bot!col_x DO close_column(col_x)
            }
-           // Lower step: gap between back floor and front floor, when
-           // back floor is ABOVE front floor.
            IF bf > ff DO
            { vline_clipped(col_x, y_bf, y_cc, lower_c)
              IF y_bf - 1 < col_bot!col_x DO col_bot!col_x := y_bf - 1
              IF col_top!col_x > col_bot!col_x DO close_column(col_x)
            }
          }
-    ELSE { // Solid wall — fills the whole front opening then closes
-           // the column.
-           vline_clipped(col_x, y_fc, y_cc, wall_c)
+    ELSE { vline_clipped(col_x, y_fc, y_cc, wall_c)
            close_column(col_x)
          }
   }
