@@ -1282,6 +1282,56 @@ export class BcplRuntime {
         return 0;
       }
 
+      // sys(Sys_drawwallcol, col, y0, y1, y_anchor, v_step_q16, texX,
+      //                       tex_base, pkd_wh)
+      // Doom-style textured wall column. Per-pixel V is computed as
+      //   V = ((y - y_anchor) * v_step_q16) >> 16
+      // wrapped modulo tex_h so tall walls tile vertically rather than
+      // stretching. pkd_wh = (tex_w & 0xFFFF) | (tex_h << 16).
+      case 86: {
+        const col_x     = a1 | 0;
+        const y_top     = a2 | 0;
+        const y_bot     = a3 | 0;
+        const y_anchor  = a4 | 0;
+        const v_step    = a5 | 0;        // Q16.16
+        const texX      = a6 | 0;
+        const tex_base  = a7 | 0;
+        const pkd       = a8 | 0;
+        const tex_w     = pkd & 0xFFFF;
+        const tex_h     = (pkd >>> 16) & 0xFFFF;
+        if (!this.sdlCtx || tex_w <= 0 || tex_h <= 0) return 0;
+        if (y_top > y_bot) return 0;
+        const can = this.sdlCanvas;
+        if (col_x < 0 || col_x >= can.width) return 0;
+        let y0 = y_top, y1 = y_bot;
+        if (y0 < 0) y0 = 0;
+        if (y1 >= can.height) y1 = can.height - 1;
+        if (y0 > y1) return 0;
+        const drawH = y1 - y0 + 1;
+        const buf = this._wallColBuf ??= { arr: null, h: 0 };
+        if (buf.h !== drawH) {
+          buf.arr = new Uint8ClampedArray(drawH * 4);
+          buf.h = drawH;
+        }
+        const arr = buf.arr;
+        const mv = this.memView;
+        const tx = ((texX % tex_w) + tex_w) % tex_w;
+        for (let i = 0; i < drawH; i++) {
+          // Use Math.floor to keep multi-million V values precise —
+          // (y - y_anchor) can be large and so can v_step.
+          const vRaw = Math.floor((y0 + i - y_anchor) * v_step / 65536);
+          const v = ((vRaw % tex_h) + tex_h) % tex_h;
+          const word = mv.getInt32((tex_base + v * tex_w + tx) * 4, true);
+          const o = i * 4;
+          arr[o]     = (word >>> 24) & 0xFF;
+          arr[o + 1] = (word >>> 16) & 0xFF;
+          arr[o + 2] = (word >>>  8) & 0xFF;
+          arr[o + 3] = (word & 0xFF) || 0xFF;
+        }
+        this.sdlCtx.putImageData(new ImageData(arr, 1, drawH), col_x, y0);
+        return 0;
+      }
+
       // sys(Sys_assetlist, dest_str) — copy a comma-separated list of
       // asset names into dest_str (BCPL string layout). Useful for
       // discovery. Returns count.

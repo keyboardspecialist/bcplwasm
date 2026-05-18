@@ -546,6 +546,14 @@ Sys_drawfloorcol    = 85   // (col, horizon, px, py, dx, dy) — per-pixel
                            //   floor tex below horizon, ceil tex above. px/py
                            //   in 1024-scaled cell coords; dx/dy are
                            //   cos/sin*1024 of the ray angle for this column.
+Sys_drawwallcol     = 86   // (col, y0, y1, y_anchor, v_step_q16, texX, tex_base,
+                           //  pkd_wh) — Doom-style textured wall column.
+                           //   Fills screen rows y0..y1 (inclusive, clipped).
+                           //   V at row y = (y - y_anchor) * v_step_q16 >> 16,
+                           //   wrapped modulo tex_h (so walls tile vertically
+                           //   instead of stretching). v_step_q16 = (cy * 65536)
+                           //   / F_X for perspective-correct sampling.
+                           //   pkd_wh = (tex_w & #xFFFF) | (tex_h << 16).
 
 bootregs = 11 // Registers used to enter the function start in boot.b
 cliregs  = 21 // Registers used by BOOT to start the CLI
