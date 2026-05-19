@@ -376,12 +376,21 @@ AND emit_mod_header() BE
 { selectoutput(tostream)
   writef("(module*n")
   writef("  (type $bcpl_fn (func (result i32)))*n")
+  writef("  (type $void_fn (func))*n")
   writef("  (import *"env*" *"mem*"    (memory 4))*n")
   writef("  (import *"env*" *"ftable*" (table $ftable 256 funcref))*n")
   writef("  (import *"env*" *"P*" (global $P (mut i32)))*n")
   writef("  (import *"env*" *"G*" (global $G i32))*n")
   writef("  (import *"env*" *"static_base*" (global $SB i32))*n")
-  writef("  (import *"env*" *"table_base*"  (global $TB i32))*n*n")
+  writef("  (import *"env*" *"table_base*"  (global $TB i32))*n")
+  writef("  (import *"env*" *"__line*" (global $__line (mut i32)))*n")
+  // Debug-hook host call. The runtime makes this a no-op when no
+  // breakpoint is set on the current line. When the user has armed
+  // a bp and the program was compiled with asyncify (debugger mode),
+  // imp_break suspends execution and the host's Continue button
+  // resumes it. Cost when nothing is paused: one call_indirect-shaped
+  // call per BCPL statement that returns immediately.
+  writef("  (import *"env*" *"bcpl_break*" (func $__break (type $void_fn)))*n*n")
   selectoutput(sysprint)
 }
 
@@ -866,13 +875,23 @@ AND scan_emit() BE
       CASE 0: RETURN
 
       CASE s_line:
-      { // checksyn-only source position marker. Emit as a WAT comment
-        // for readability; useful if debug mapping ever wanted.
+      { // Source-position marker from the frontend (checksyn). Emit:
+        //   1. A WAT comment for readability when inspecting .wat.
+        //   2. A (global.set $__line ...) so the host can read the
+        //      most-recent BCPL line at any suspend/crash point —
+        //      drives the "you are here" overlay and Crash tab's
+        //      line annotation.
+        // Cost: one i32 store per statement boundary. Negligible.
         LET fno = rdn()
         LET lno = rdn()
         IF fn_entrylab > 0 DO
         { selectoutput(tostream)
           writef("    ;; line %n:%n*n", fno, lno)
+          writef("    (global.set $__line (i32.const %n))*n", lno)
+          // Debug hook. Host returns immediately when no breakpoint
+          // is set on $__line; suspends via asyncify when one is hit
+          // (debugger-mode builds only).
+          writef("    (call $__break)*n")
           selectoutput(sysprint)
         }
         ENDCASE

@@ -85,6 +85,10 @@
   (table  $ftable (export "ftable") 512 funcref)
   (global $G      (export "G") i32        (i32.const 1))
   (global $P      (export "P") (mut i32)  (i32.const 0))
+  ;; Debug: most-recent BCPL source line emitted by the backend's s_line
+  ;; tracker. Read by the host on crash/pause to surface "you are here"
+  ;; in the editor. Written by every program module via env import.
+  (global $__line (export "__line") (mut i32) (i32.const 0))
 
   (elem (table $ftable) (i32.const 0) func
     $imp_stop  $imp_rdch  $imp_wrch  $imp_newline

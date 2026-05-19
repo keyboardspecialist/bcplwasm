@@ -168,6 +168,10 @@ proccontext   // =0  Not in a function or routine
 
 
 context; comline; procname
+last_outline_comline   // Last comline value emitted as s_line to OCODE.
+                       // Used to dedupe per-statement source markers
+                       // so trans recursion within one statement
+                       // doesn't flood the stream.
 matchcontext // Equals s_patfndef, s_patrtdef,
              //        s_matche,   s_matche,
 	     //        s_everye,   s_everyc,
@@ -275,6 +279,7 @@ AND translate(x) = VALOF
   patresultpos := 0  // Only non zero when in an EVERY expression 
 
   context, comline := 0, 1
+  last_outline_comline := 0  // No s_line emitted yet this translation
   labnumber := 9 // Make L10 the first usable label number
                  // smaller values may be used for  other purposes
   ssp, vecssp := savespacesize, savespacesize
@@ -342,6 +347,15 @@ LET trans(x, next) BE
 
   op := h1!x // op is the leading operator of
              // the command to translate.
+
+  // Emit a source-position marker (s_line) when comline advances.
+  // Lets backends (wasm cg, debugger) map OCODE positions back to
+  // source lines. Deduped — recursive trans() within one statement
+  // shares the same comline and only the first emits.
+  IF comline ~= 0 & comline ~= last_outline_comline DO
+  { out3(s_line, comline>>20, comline&#xFFFFF)
+    last_outline_comline := comline
+  }
 
   SWITCHON op INTO // All possible commands.
   { DEFAULT: trnerr("System error in Trans, op = %s", opname(op))

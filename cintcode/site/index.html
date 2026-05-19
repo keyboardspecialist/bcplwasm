@@ -25,24 +25,196 @@
        black text, blue keywords, green comments, maroon strings. */
     [data-theme="light"] {
       color-scheme: light;
+      /* Classic VC++ 6 / Win9x palette. bg-2 (#d4d0c8) is the
+         "ButtonFace" chrome color used for menus, tabs, status bars,
+         button surfaces. bg (#ffffff) is the document/code window
+         color. bg-3 stays a slightly darker hover tint. */
       --bg:       #ffffff;
-      --bg-2:     #ffffff;
-      --bg-3:     #f0f0f0;
-      --border:   #a0a0a0;
+      --bg-2:     #d4d0c8;
+      --bg-3:     #c0bcb4;
+      --border:   #808080;
       --fg:       #000000;
-      --fg-dim:   #808080;
-      --accent:   #0000ff;
+      --fg-dim:   #606060;
+      --accent:   #0a246a;   /* VC6 active-titlebar deep navy */
       --entry:    #800080;
-      --err:      #ff0000;
+      --err:      #c80000;
+      --vc6-hi:   #ffffff;   /* bevel highlight (top/left) */
+      --vc6-lo:   #404040;   /* bevel deep shadow (bottom/right outer) */
+      --vc6-sh:   #808080;   /* bevel mid shadow */
+      --vc6-sel:  #0a246a;   /* selected row background */
       --tok-kw:   #0000ff;   /* classic VC6 keyword blue */
       --tok-str:  #a31515;   /* maroon for string literals */
       --tok-num:  #000000;   /* numbers stay black like in VC6 */
       --tok-com:  #008000;   /* green comments */
       --tok-op:   #000000;   /* operators black */
     }
+    [data-theme="light"] body {
+      font-family: "MS Sans Serif", "Tahoma", "Segoe UI", sans-serif;
+      font-size: 12px;
+      background: var(--bg-2);
+    }
+    [data-theme="light"] header {
+      background: var(--bg-2);
+      border-bottom: 1px solid var(--vc6-lo);
+      box-shadow: inset 0 -1px 0 var(--vc6-hi), inset 0 1px 0 var(--vc6-hi);
+    }
     [data-theme="light"] .tok-kw  { font-weight: normal; }
     [data-theme="light"] .tok-com { font-style: normal; }
-    [data-theme="light"] .gutter  { background: #ece9d8; color: #2b2b2b; }
+    [data-theme="light"] .gutter  {
+      background: #c0c0c0; color: #000;
+      border-right: 1px solid var(--vc6-sh);
+    }
+    /* Classic 3D raised bevel (buttons, toolbar surfaces). */
+    [data-theme="light"] .action-row button,
+    [data-theme="light"] .file-actions button,
+    [data-theme="light"] .preview-note button,
+    [data-theme="light"] .mem-controls button,
+    [data-theme="light"] .theme-toggle,
+    [data-theme="light"] .collapse-btn,
+    [data-theme="light"] .canvas-fs-btn {
+      background: #d4d0c8;
+      color: #000;
+      border-top:    1px solid var(--vc6-hi);
+      border-left:   1px solid var(--vc6-hi);
+      border-right:  1px solid var(--vc6-lo);
+      border-bottom: 1px solid var(--vc6-lo);
+      box-shadow: inset -1px -1px 0 var(--vc6-sh),
+                  inset  1px  1px 0 #f0f0f0;
+      border-radius: 0;
+      font-family: inherit;
+      font-weight: 400;
+      cursor: pointer;
+    }
+    [data-theme="light"] .action-row button:hover:not(:disabled),
+    [data-theme="light"] .file-actions button:hover,
+    [data-theme="light"] .preview-note button:hover,
+    [data-theme="light"] .mem-controls button:hover,
+    [data-theme="light"] .theme-toggle:hover,
+    [data-theme="light"] .collapse-btn:hover,
+    [data-theme="light"] .canvas-fs-btn:hover {
+      background: #e0dcd4;
+      border-color: #000;
+    }
+    [data-theme="light"] .action-row button:active:not(:disabled),
+    [data-theme="light"] .file-actions button:active,
+    [data-theme="light"] .preview-note button:active,
+    [data-theme="light"] .mem-controls button:active,
+    [data-theme="light"] .theme-toggle:active,
+    [data-theme="light"] .collapse-btn:active,
+    [data-theme="light"] .canvas-fs-btn:active {
+      border-top:    1px solid var(--vc6-lo);
+      border-left:   1px solid var(--vc6-lo);
+      border-right:  1px solid var(--vc6-hi);
+      border-bottom: 1px solid var(--vc6-hi);
+      box-shadow: inset 1px 1px 0 var(--vc6-sh);
+    }
+    /* Sunken bevel for input fields and selects (the classic
+       Win9x EDIT-control look). */
+    [data-theme="light"] .mem-controls input,
+    [data-theme="light"] .mem-controls select,
+    [data-theme="light"] #stdin {
+      background: #ffffff;
+      color: #000;
+      border-top:    1px solid var(--vc6-sh);
+      border-left:   1px solid var(--vc6-sh);
+      border-right:  1px solid var(--vc6-hi);
+      border-bottom: 1px solid var(--vc6-hi);
+      box-shadow: inset 1px 1px 0 var(--vc6-lo),
+                  inset -1px -1px 0 #f0f0f0;
+      border-radius: 0;
+    }
+    /* Notebook-style tabs (top tabs in left pane + source tabs +
+       output tabs). Inactive tabs sit on the chrome face, active
+       tab raised flush with the content below it. */
+    [data-theme="light"] .tabs,
+    [data-theme="light"] .source-tabs,
+    [data-theme="light"] .output-tabs {
+      background: var(--bg-2);
+      border-bottom: 1px solid var(--vc6-lo);
+    }
+    [data-theme="light"] .tabs .tab,
+    [data-theme="light"] .right-pane .source-tabs .tab,
+    [data-theme="light"] .output-tabs .otab {
+      background: #d4d0c8;
+      color: #000;
+      border-top:    1px solid var(--vc6-hi);
+      border-left:   1px solid var(--vc6-hi);
+      border-right:  1px solid var(--vc6-lo);
+      border-bottom: 0;
+      padding: 0.25rem 0.7rem;
+      font-family: inherit;
+      font-size: 12px;
+      text-transform: none;
+      letter-spacing: 0;
+      cursor: pointer;
+    }
+    [data-theme="light"] .tabs .tab.active,
+    [data-theme="light"] .right-pane .source-tabs .tab.active,
+    [data-theme="light"] .output-tabs .otab.active {
+      background: #ffffff;
+      color: #000;
+      font-weight: 700;
+      box-shadow: none;
+      border-bottom: 1px solid #ffffff;   /* punch through divider */
+      margin-bottom: -1px;
+    }
+    /* Pane chrome (left-pane, right-pane, output-pane backgrounds).
+       Only the bare pane root stays gray — that's the strip behind
+       the tab bar / pane-header. The content bodies inside each pane
+       (tab bodies, editor, output panes) get pure-white code-window
+       backgrounds so the gray chrome only frames active content. */
+    [data-theme="light"] .left-pane,
+    [data-theme="light"] .right-pane,
+    [data-theme="light"] .output-pane {
+      background: var(--bg-2);
+    }
+    [data-theme="light"] .tab-body,
+    [data-theme="light"] .editor-wrap,
+    [data-theme="light"] .editor-host,
+    [data-theme="light"] .hl-wrap {
+      background: #ffffff;
+    }
+    /* #userSrc must stay background:transparent — the .hl pane
+       underneath holds the syntax-coloured text. Making the textarea
+       opaque-white blanks the highlight layer. */
+    [data-theme="light"] .workspace {
+      background: var(--vc6-lo);   /* 1px gutter between panes */
+    }
+    /* Pane headers (the "STDIN (consumed by rdch)" style strip). */
+    [data-theme="light"] .pane-header {
+      background: var(--bg-2);
+      color: #000;
+      border-bottom: 1px solid var(--vc6-sh);
+      box-shadow: inset 0 1px 0 var(--vc6-hi);
+      text-transform: none;
+      letter-spacing: 0;
+      font-weight: 700;
+    }
+    /* File list rows: selected row gets classic blue highlight. */
+    [data-theme="light"] .file-list li {
+      background: transparent;
+    }
+    [data-theme="light"] .file-list li.active {
+      background: var(--vc6-sel);
+      color: #ffffff;
+    }
+    [data-theme="light"] .file-list li.active a,
+    [data-theme="light"] .file-list li.active button,
+    [data-theme="light"] .file-list li.active span { color: #ffffff; }
+    /* Output bodies: white code-window look. */
+    [data-theme="light"] #output,
+    [data-theme="light"] #diagBody,
+    [data-theme="light"] #crashBody,
+    [data-theme="light"] #memDump,
+    [data-theme="light"] #liveWat {
+      background: #ffffff;
+      color: #000;
+    }
+    /* Compile-status text + paused marker readable on gray chrome. */
+    [data-theme="light"] .compile-status { color: #000; }
+    [data-theme="light"] .compile-status.err { color: var(--err); }
+    /* Debugger checkbox label readable. */
+    [data-theme="light"] .dbg-toggle { color: #000; }
     * { box-sizing: border-box; }
     body {
       margin: 0;
@@ -393,6 +565,19 @@
       content: "●";
       margin-right: 0.2rem;
     }
+    .gutter .gut-line.bp {
+      color: #4a9eff;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .gutter .gut-line.bp::before {
+      content: "●";
+      color: #4a9eff;
+      margin-right: 0.2rem;
+    }
+    /* err + bp: bp dot wins (blue), text stays red */
+    .gutter .gut-line.err.bp { color: var(--err); }
+    .gutter .gut-line.err.bp::before { color: #4a9eff; }
     .err-bands {
       position: absolute;
       inset: 0;
@@ -409,6 +594,17 @@
     }
     [data-theme="light"] .err-bands .err-band {
       background: rgba(200, 0, 0, 0.08);
+    }
+    .err-bands .pause-band {
+      position: absolute;
+      left: 0; right: 0;
+      background: rgba(255, 220, 80, 0.18);
+      border-left: 3px solid #d4a017;
+      pointer-events: none;
+    }
+    [data-theme="light"] .err-bands .pause-band {
+      background: rgba(255, 200, 80, 0.35);
+      border-left-color: #b87f00;
     }
     .tok-kw  { color: var(--tok-kw); font-weight: 600; }
     .tok-str { color: var(--tok-str); }
@@ -523,6 +719,18 @@
       color: var(--fg-dim);
     }
     .compile-status.err { color: var(--err); }
+    .compile-status.paused { color: #d4a017; font-weight: 600; }
+    [data-theme="light"] .compile-status.paused { color: #b87f00; }
+    .dbg-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.8rem;
+      color: var(--fg-dim);
+      user-select: none;
+      cursor: pointer;
+    }
+    .dbg-toggle input { margin: 0; }
 
     /* Output / stdin / canvas */
     .output-pane {
@@ -560,7 +768,10 @@
       display: flex;
       gap: 0;
       background: var(--bg-2);
-      padding: 0;
+      /* leave clearance for the absolute-positioned collapse button
+         (top:0.2rem / left:0.4rem, ~2.2rem wide); otherwise the first
+         tab sits under it and is unclickable. */
+      padding-left: 2.4rem;
       align-items: stretch;
     }
     .output-tabs .otab {
@@ -612,6 +823,52 @@
       margin-top: 0.7rem;
     }
     #crashBody .cr-row { padding-left: 1rem; }
+    #memBody {
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+    }
+    /* ID specificity of #memBody { display:flex } beats the shared
+       .otab-body.hidden { display:none } rule, so the tab body would
+       stay visible when other tabs are active. Re-assert hidden at
+       ID specificity. */
+    #memBody.hidden { display: none; }
+    .mem-controls {
+      flex: 0 0 auto;
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      padding: 0.35rem 0.6rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      font-size: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .mem-controls select,
+    .mem-controls input,
+    .mem-controls button {
+      font: inherit;
+      background: var(--bg-2);
+      color: var(--fg);
+      border: 1px solid var(--border);
+      padding: 0.15rem 0.4rem;
+      border-radius: 2px;
+    }
+    .mem-controls .mem-info { color: var(--fg-dim); margin-left: auto; }
+    #memDump {
+      margin: 0;
+      flex: 1;
+      overflow: auto;
+      padding: 0.5rem 0.6rem;
+      font-family: ui-monospace, monospace;
+      font-size: 0.78rem;
+      white-space: pre;
+      background: var(--bg-2);
+      color: var(--fg);
+    }
+    #memDump .mem-marker { color: var(--accent); font-weight: 600; }
+    #memDump .mem-addr { color: var(--fg-dim); }
+    #memDump .mem-zero { color: var(--fg-dim); }
     .canvas-cell {
       display: none;
       grid-row: 1 / span 2;
@@ -753,7 +1010,11 @@
       <div class="action-row">
         <button id="compileRun">Compile &amp; Run</button>
         <button id="stopRun" disabled title="stop the running program">Stop</button>
+        <button id="continueRun" disabled title="continue from breakpoint" style="display:none">Continue</button>
         <button id="shareLink" title="copy share URL of current file">Share link</button>
+        <label class="dbg-toggle" title="enable breakpoints + post-mortem pause (slower, forces asyncify on every module)">
+          <input type="checkbox" id="dbgMode"> Debugger
+        </label>
         <span id="compileStatus" class="compile-status"></span>
       </div>
     </main>
@@ -766,12 +1027,29 @@
         <button class="otab active" data-otab="output">Output</button>
         <button class="otab"        data-otab="diag" id="diagTabBtn">Diagnostics</button>
         <button class="otab"        data-otab="crash" id="crashTabBtn">Crash</button>
+        <button class="otab"        data-otab="mem" id="memTabBtn">Memory</button>
       </div>
       <div class="pane-header">Stdin (consumed by rdch)</div>
       <div class="output-stack">
         <pre id="output"   class="otab-body"></pre>
         <pre id="diagBody" class="otab-body hidden"></pre>
         <pre id="crashBody" class="otab-body hidden"></pre>
+        <div id="memBody" class="otab-body hidden">
+          <div class="mem-controls">
+            <select id="memRegion">
+              <option value="globals">Globals (G!1..G!300)</option>
+              <option value="static">Static data</option>
+              <option value="stack">Stack window @ P</option>
+              <option value="heap">Heap top</option>
+              <option value="custom">Custom range</option>
+            </select>
+            <label>start <input id="memStart" type="number" value="1" min="0" style="width:6rem"></label>
+            <label>words <input id="memCount" type="number" value="64" min="1" max="2048" style="width:5rem"></label>
+            <button id="memRefresh">Refresh</button>
+            <span id="memInfo" class="mem-info"></span>
+          </div>
+          <pre id="memDump"></pre>
+        </div>
       </div>
       <textarea id="stdin" spellcheck="false" placeholder="type input here before Compile &amp; Run"></textarea>
       <div class="canvas-cell" id="canvasCell">
@@ -827,12 +1105,22 @@
     const outputEl      = document.getElementById("output");
     const diagBodyEl    = document.getElementById("diagBody");
     const crashBodyEl   = document.getElementById("crashBody");
+    const memBodyEl     = document.getElementById("memBody");
+    const memDumpEl     = document.getElementById("memDump");
+    const memRegionEl   = document.getElementById("memRegion");
+    const memStartEl    = document.getElementById("memStart");
+    const memCountEl    = document.getElementById("memCount");
+    const memRefreshEl  = document.getElementById("memRefresh");
+    const memInfoEl     = document.getElementById("memInfo");
     const diagTabBtnEl  = document.getElementById("diagTabBtn");
     const crashTabBtnEl = document.getElementById("crashTabBtn");
+    const memTabBtnEl   = document.getElementById("memTabBtn");
     const outputTabsEl  = document.getElementById("outputTabs");
     const stdinEl       = document.getElementById("stdin");
     const compileBtn    = document.getElementById("compileRun");
     const stopBtn       = document.getElementById("stopRun");
+    const continueBtn   = document.getElementById("continueRun");
+    const dbgModeEl     = document.getElementById("dbgMode");
     let   currentRt     = null;   // BcplRuntime of the active program, if any
     const statusEl      = document.getElementById("compileStatus");
 
@@ -857,10 +1145,14 @@
       outputTabsEl.querySelectorAll(".otab").forEach(t => {
         t.classList.toggle("active", t.getAttribute("data-otab") === key);
       });
-      const m = { output: outputEl, diag: diagBodyEl, crash: crashBodyEl };
+      const m = {
+        output: outputEl, diag: diagBodyEl,
+        crash: crashBodyEl, mem: memBodyEl,
+      };
       for (const [k, el] of Object.entries(m)) {
         el.classList.toggle("hidden", k !== key);
       }
+      if (key === "mem") refreshMemory();
     }
     outputTabsEl.addEventListener("click", (e) => {
       const btn = e.target.closest(".otab");
@@ -869,6 +1161,7 @@
     });
     diagBodyEl.textContent = "no compile errors";
     crashBodyEl.textContent = "no crash";
+    memDumpEl.textContent = "no runtime loaded yet — Compile & Run first";
 
     // ------------------ Files tab ------------------
     const FILES_LS_KEY = "bcpl-playground-files-v1";
@@ -1524,10 +1817,23 @@ LET start() = VALOF
       if (typeof mod.setFeatures === "function" && binaryen.Features) {
         mod.setFeatures(binaryen.Features.All);
       }
-      // Don't pass asyncify-imports: user modules call all stdlib
-      // (incl. cowait/callco) via call_indirect to master's shared
-      // ftable. They have no direct bcpl_* imports. Default asyncify
-      // treats indirect calls as suspending, which is what we need.
+      // Explicit asyncify-imports list. Default (no list) is supposed
+      // to treat ALL imports as suspending, but in practice some
+      // binaryen builds optimize away the post-call state check for
+      // void-returning direct imports — so bcpl_break sets the unwind
+      // flag, the call returns, and the unwind only fires at the next
+      // instrumented call boundary (which is the NEXT statement's
+      // break call). Naming each suspending import explicitly forces
+      // the check at exactly the call site, so breakpoints pause
+      // BEFORE the statement body runs rather than after.
+      const suspending = [
+        "env.bcpl_cowait", "env.bcpl_callco", "env.bcpl_resumeco",
+        "env.bcpl_changeco", "env.bcpl_delay",
+        "env.bcpl_break",
+      ].join(",");
+      if (typeof binaryen.setPassArgument === "function") {
+        binaryen.setPassArgument("asyncify-imports", suspending);
+      }
       mod.runPasses(["asyncify"]);
       const out = mod.emitBinary();
       mod.dispose();
@@ -1541,6 +1847,9 @@ LET start() = VALOF
     // (calls go through G!N dispatch via master), so .wat content
     // can't be inspected here — scan the BCPL source text.
     function srcNeedsAsyncify(srcText) {
+      // Debugger mode forces asyncify on every module so breakpoints
+      // can suspend any program (otherwise bcpl_break can't unwind).
+      if (dbgModeEl?.checked) return true;
       return /\b(cowait|callco|resumeco|changeco|createco|delay)\b/.test(srcText);
     }
 
@@ -1739,6 +2048,32 @@ LET start() = VALOF
           stdinEl.value
         );
         currentRt = rt;
+        lastMemRt = rt;
+        rt.setBreakpoints(allBpLines());
+        rt.onPause = (line) => {
+          setStatus(`paused at line ${line}`);
+          statusEl.classList.add("paused");
+          continueBtn.style.display = "";
+          continueBtn.disabled = false;
+          // Pick best file: entry, fall back to active editor file.
+          const entryName = (files.find(f => f.entry) ?? files[0])?.name;
+          setPausedLine(line, entryName);
+          if (entryName) {
+            const idx = files.findIndex(f => f.name === entryName);
+            if (idx >= 0) openFileTab(idx);
+          }
+          jumpToLine(line);
+          activateOutputTab("mem");
+        };
+        rt.onResume = () => {
+          statusEl.classList.remove("paused");
+          continueBtn.disabled = true;
+        };
+        if (dbgModeEl.checked) {
+          continueBtn.style.display = "";
+        } else {
+          continueBtn.style.display = "none";
+        }
         stopBtn.disabled = false;
         // Wire the canvas + reveal callback so SDL ops have a target.
         const canvasEl = document.getElementById("sdlCanvas");
@@ -1783,8 +2118,9 @@ LET start() = VALOF
         const isCompileErr = compileErrAcc.size > 0;
         if (currentRt && !isCompileErr) {
           try {
+            const entryFile = (files.find(f => f.entry) ?? files[0])?.name;
             const snap = currentRt.crashSnapshot(err);
-            renderCrash(snap, { phase: "runtime" });
+            renderCrash(snap, { phase: "runtime", entryFile });
           } catch (e) {
             console.error("crashSnapshot failed", e);
           }
@@ -1803,6 +2139,24 @@ LET start() = VALOF
       if (currentRt) {
         currentRt.abort();
         setStatus("stopping…");
+      }
+    });
+
+    // Persist debugger toggle. Survives reload so users don't have to
+    // re-enable it after every refresh.
+    const DBG_KEY = "bcpl-playground-debugger";
+    dbgModeEl.checked = localStorage.getItem(DBG_KEY) === "1";
+    dbgModeEl.addEventListener("change", () => {
+      localStorage.setItem(DBG_KEY, dbgModeEl.checked ? "1" : "0");
+      syncEditor();   // refresh gutter (bp dots toggle visibility)
+    });
+
+    continueBtn.addEventListener("click", () => {
+      if (currentRt && currentRt.isPaused()) {
+        currentRt.resume();
+        setStatus("running…");
+        clearPausedLine();
+        continueBtn.disabled = true;
       }
     });
 
@@ -1990,6 +2344,40 @@ LET start() = VALOF
     // the map then re-syncs the editor so gutter dots + err-bands
     // refresh. Persists across edits — caller clears explicitly.
     const errorsByFile = new Map();
+    // Active breakpoints. Map<filename, Set<lineNumber>>. Survives
+    // recompiles within a session; persisted to localStorage so they
+    // survive reloads. Gutter clicks (when Debugger toggle on) flip
+    // a line in this set, then push the union of all bp lines to
+    // the runtime via setBreakpoints() before run().
+    const bpByFile = new Map();
+    const BP_KEY = "bcpl-playground-bps";
+    try {
+      const raw = localStorage.getItem(BP_KEY);
+      if (raw) {
+        const obj = JSON.parse(raw);
+        for (const [f, arr] of Object.entries(obj)) bpByFile.set(f, new Set(arr));
+      }
+    } catch { /* corrupt persist — start fresh */ }
+    function persistBps() {
+      const obj = {};
+      for (const [f, s] of bpByFile) if (s.size) obj[f] = [...s];
+      try { localStorage.setItem(BP_KEY, JSON.stringify(obj)); } catch {}
+    }
+    function toggleBp(file, line) {
+      if (!bpByFile.has(file)) bpByFile.set(file, new Set());
+      const s = bpByFile.get(file);
+      if (s.has(line)) s.delete(line); else s.add(line);
+      if (!s.size) bpByFile.delete(file);
+      persistBps();
+      syncEditor();
+      // Live update — push to running rt if present.
+      if (currentRt) currentRt.setBreakpoints(allBpLines());
+    }
+    function allBpLines() {
+      const out = [];
+      for (const s of bpByFile.values()) for (const n of s) out.push(n);
+      return out;
+    }
     const errBandsEl = document.getElementById("errBands");
 
     function activeFileName() {
@@ -2059,7 +2447,23 @@ LET start() = VALOF
       lines.push(`message:  ${snap.message}`);
       if (ctx.phase) lines.push(`phase:    ${ctx.phase}`);
       lines.push(`aborted:  ${snap.aborted}`);
+      if (snap.line > 0) {
+        const fileTxt = ctx.entryFile ? ` (${ctx.entryFile} — multi-file: line may belong to a GET'd source)` : "";
+        lines.push(`line:     ${snap.line}${fileTxt}`);
+      } else {
+        lines.push(`line:     (unknown — backend may pre-date s_line tracking)`);
+      }
       lines.push(`P:        ${snap.P}  (heapTop ${snap.heapTop}, freeList ${snap.freeList})`);
+
+      // Auto-paint "you are here" overlay + jump editor to the line.
+      if (snap.line > 0) {
+        setPausedLine(snap.line, ctx.entryFile);
+        if (ctx.entryFile) {
+          const idx = files.findIndex(f => f.name === ctx.entryFile);
+          if (idx >= 0) openFileTab(idx);
+        }
+        jumpToLine(snap.line);
+      }
 
       if (snap.lastSysOp) {
         const a = snap.lastSysOp.args;
@@ -2115,7 +2519,122 @@ LET start() = VALOF
     function clearCrash() {
       crashTabBtnEl.classList.remove("has-errors");
       crashBodyEl.textContent = "no crash";
+      clearPausedLine();
     }
+
+    // "You are here" indicator. line=N highlights line N in the editor
+    // with a yellow band; file= names the source file the line belongs
+    // to (so the overlay only renders when that tab is the active
+    // editor view). Called by renderCrash and any future
+    // breakpoint/pause path. Stored separately from the per-statement
+    // err bands so toggling tabs preserves it.
+    let pausedLine = 0;
+    let pausedFile = null;
+    function setPausedLine(line, file) {
+      pausedLine = line | 0;
+      pausedFile = file || null;
+      syncEditor();
+    }
+    function clearPausedLine() {
+      if (!pausedLine) return;
+      pausedLine = 0;
+      pausedFile = null;
+      syncEditor();
+    }
+
+    // ------------------ Memory tab ----------------------------------
+    // Held across runs. compileAndRun sets this to the active rt
+    // while a program is loaded; on crash we keep the layout snapshot
+    // so the user can poke around after currentRt is dropped.
+    let lastMemRt = null;
+    let lastMemLayout = null;
+
+    function regionToRange(region, layout) {
+      switch (region) {
+        case "globals": return { start: 1,       count: 300 };
+        case "static":  return { start: layout.staticBase,
+                                 count: Math.max(16, layout.staticTop - layout.staticBase) };
+        case "stack":   return { start: Math.max(0, layout.P - 16), count: 64 };
+        case "heap":    return { start: Math.max(0, layout.heapTop - 16), count: 64 };
+        default:        return null;
+      }
+    }
+
+    function fmtHex32(n) {
+      return (n >>> 0).toString(16).padStart(8, "0");
+    }
+    function fmtAscii(words) {
+      const out = [];
+      for (const w of words) {
+        for (let b = 0; b < 4; b++) {
+          const c = (w >> (b * 8)) & 0xFF;
+          out.push((c >= 0x20 && c < 0x7F) ? String.fromCharCode(c) : ".");
+        }
+      }
+      return out.join("");
+    }
+
+    function renderMemDump(start, words, layout) {
+      const rows = [];
+      const COLS = 4;
+      const Pword = layout ? layout.P : -1;
+      for (let i = 0; i < words.length; i += COLS) {
+        const addr = start + i;
+        const ws = [];
+        for (let j = 0; j < COLS && i + j < words.length; j++) ws.push(words[i + j]);
+        const wHex = ws.map((w, j) => {
+          const cls = w === 0 ? "mem-zero" : "";
+          const mark = (addr + j === Pword) ? "mem-marker" : cls;
+          return `<span class="${mark}">${fmtHex32(w)}</span>`;
+        }).join(" ");
+        const ascii = fmtAscii(ws);
+        const pMark = (Pword >= addr && Pword < addr + COLS) ? " ← P" : "";
+        rows.push(
+          `<span class="mem-addr">[${String(addr).padStart(7)}]</span>  ${wHex}  ${escHtml(ascii)}${pMark}`
+        );
+      }
+      return rows.join("\n");
+    }
+
+    // Refresh re-reads current start/count from the inputs without
+    // rewriting them. Region change is what seeds defaults — once seeded,
+    // user can scroll the window by editing start/count freely.
+    function refreshMemory() {
+      const rt = currentRt ?? lastMemRt;
+      if (!rt) {
+        memDumpEl.textContent = "no runtime loaded yet — Compile & Run first";
+        memInfoEl.textContent = "";
+        return;
+      }
+      lastMemRt = rt;
+      const layout = rt.memLayout();
+      lastMemLayout = layout;
+      const start = parseInt(memStartEl.value, 10) | 0;
+      const count = Math.min(2048, Math.max(1, parseInt(memCountEl.value, 10) | 0));
+      const words = rt.readWords(start, count);
+      memDumpEl.innerHTML = renderMemDump(start, words, layout);
+      memInfoEl.textContent =
+        `P=${layout.P}  line=${layout.line}  heapTop=${layout.heapTop}  ` +
+        `static=${layout.staticBase}..${layout.staticTop}  ` +
+        `mem=${(layout.memBytes / 1024 / 1024).toFixed(1)}MB`;
+    }
+    function seedFromRegion() {
+      const rt = currentRt ?? lastMemRt;
+      const layout = rt ? rt.memLayout() : lastMemLayout;
+      if (!layout) { refreshMemory(); return; }
+      const r = regionToRange(memRegionEl.value, layout);
+      if (r) {
+        memStartEl.value = r.start;
+        memCountEl.value = r.count;
+      }
+      refreshMemory();
+    }
+    memRegionEl.addEventListener("change", seedFromRegion);
+    memRefreshEl.addEventListener("click", refreshMemory);
+    memStartEl.addEventListener("change", refreshMemory);
+    memCountEl.addEventListener("change", refreshMemory);
+    memStartEl.addEventListener("input", refreshMemory);
+    memCountEl.addEventListener("input", refreshMemory);
 
     function syncEditor() {
       const src = userSrcEl.value;
@@ -2127,19 +2646,26 @@ LET start() = VALOF
         if (!errByLine.has(e.line)) errByLine.set(e.line, []);
         errByLine.get(e.line).push(e);
       }
-      // Gutter — per-line spans so we can mark error lines with a
-      // hover tooltip + red dot.
+      // Gutter — per-line spans for error dot + breakpoint dot.
+      // Breakpoints render only when Debugger toggle is on so the
+      // gutter doesn't get noisy in non-debug sessions.
+      const bps = (dbgModeEl?.checked && name)
+        ? (bpByFile.get(name) ?? new Set())
+        : new Set();
       const parts = [];
       for (let k = 1; k <= lines; k++) {
         const list = errByLine.get(k);
+        const cls = ["gut-line"];
+        let title = "";
         if (list) {
-          const msg = list.map(e => e.msg).join(" | ").replace(/"/g, "&quot;");
-          parts.push(
-            `<span class="gut-line err" data-line="${k}" title="${msg}">${k}</span>`
-          );
-        } else {
-          parts.push(`<span class="gut-line" data-line="${k}">${k}</span>`);
+          cls.push("err");
+          title = ` title="${list.map(e => e.msg).join(" | ").replace(/"/g, "&quot;")}"`;
         }
+        if (bps.has(k)) {
+          cls.push("bp");
+          if (!title) title = ` title="breakpoint — click to remove"`;
+        }
+        parts.push(`<span class="${cls.join(" ")}" data-line="${k}"${title}>${k}</span>`);
       }
       editorGutterEl.innerHTML = parts.join("");
 
@@ -2157,6 +2683,16 @@ LET start() = VALOF
         const d = document.createElement("div");
         d.className = "err-band";
         d.style.top = `${padTop + (e.line - 1) * lh - userSrcEl.scrollTop}px`;
+        d.style.height = `${lh}px`;
+        errBandsEl.appendChild(d);
+      }
+      // Paused-line ("you are here") overlay. Renders only when the
+      // active file matches the paused file (or no pause is set).
+      if (pausedLine > 0 && pausedLine <= lines &&
+          (!pausedFile || pausedFile === name)) {
+        const d = document.createElement("div");
+        d.className = "pause-band";
+        d.style.top = `${padTop + (pausedLine - 1) * lh - userSrcEl.scrollTop}px`;
         d.style.height = `${lh}px`;
         errBandsEl.appendChild(d);
       }
@@ -2185,14 +2721,30 @@ LET start() = VALOF
         bands[i].style.top =
           `${padTop + (errs[i].line - 1) * lh - userSrcEl.scrollTop}px`;
       }
+      // Pause band (always last child if present).
+      const last = bands[bands.length - 1];
+      if (last && last.classList.contains("pause-band") && pausedLine > 0) {
+        last.style.top =
+          `${padTop + (pausedLine - 1) * lh - userSrcEl.scrollTop}px`;
+      }
     });
 
-    // Click an error gutter dot → focus the textarea on that line.
+    // Gutter click:
+    //   - Debugger mode on, plain line → toggle breakpoint.
+    //   - Error line → focus that line in the editor.
+    //   - Error line WITH debugger mode → still toggle bp (error
+    //     dot + bp dot share the gutter; bp wins so devs can set
+    //     a bp at an erroring line to inspect post-fix).
     editorGutterEl.addEventListener("click", (e) => {
-      const sp = e.target.closest(".gut-line.err");
+      const sp = e.target.closest(".gut-line");
       if (!sp) return;
       const line = parseInt(sp.getAttribute("data-line"), 10);
-      jumpToLine(line);
+      const file = activeFileName();
+      if (dbgModeEl?.checked && file) {
+        toggleBp(file, line);
+        return;
+      }
+      if (sp.classList.contains("err")) jumpToLine(line);
     });
 
     function jumpToLine(line) {
@@ -2217,7 +2769,7 @@ LET start() = VALOF
       else document.documentElement.removeAttribute("data-theme");
       themeToggleEl.textContent = name === "light" ? "☾" : "☀︎";
     }
-    applyTheme(localStorage.getItem(THEME_LS_KEY) || "dark");
+    applyTheme(localStorage.getItem(THEME_LS_KEY) || "light");
     themeToggleEl.addEventListener("click", () => {
       const cur = document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
       const next = cur === "light" ? "dark" : "light";

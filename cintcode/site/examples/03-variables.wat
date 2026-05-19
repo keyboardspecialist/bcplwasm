@@ -1,11 +1,14 @@
 (module
   (type $bcpl_fn (func (result i32)))
+  (type $void_fn (func))
   (import "env" "mem"    (memory 4))
   (import "env" "ftable" (table $ftable 256 funcref))
   (import "env" "P" (global $P (mut i32)))
   (import "env" "G" (global $G i32))
   (import "env" "static_base" (global $SB i32))
   (import "env" "table_base"  (global $TB i32))
+  (import "env" "__line" (global $__line (mut i32)))
+  (import "env" "bcpl_break" (func $__break (type $void_fn)))
 
   ;; SECTION: vars
   ;; BCPL fn start (L10)
@@ -29,14 +32,29 @@
     (local $t14 i32)
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
+    ;; line 0:13
+    (global.set $__line (i32.const 13))
+    (call $__break)
     (local.set $t3 (i32.const 42))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)) (local.get $t3)) ;; STORE slot 3
+    ;; line 0:14
+    (global.set $__line (i32.const 14))
+    (call $__break)
     (local.set $t4 (i32.const 255))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (local.get $t4)) ;; STORE slot 4
+    ;; line 0:15
+    (global.set $__line (i32.const 15))
+    (call $__break)
     (local.set $t5 (i32.const 10))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t5)) ;; STORE slot 5
+    ;; line 0:16
+    (global.set $__line (i32.const 16))
+    (call $__break)
     (local.set $t6 (i32.const 0))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
+    ;; line 0:17
+    (global.set $__line (i32.const 17))
+    (call $__break)
     (local.set $t10 (i32.add (global.get $SB) (i32.const 0))) ;; LSTR
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
@@ -51,6 +69,9 @@
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t14)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 7)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t14)))
+    ;; line 0:19
+    (global.set $__line (i32.const 19))
+    (call $__break)
     (local.set $t7 (i32.const 2))
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
     (local.set $t7 (i32.mul (local.get $t7) (local.get $t8)))
@@ -58,6 +79,9 @@
     (local.set $t7 (i32.add (local.get $t7) (local.get $t8)))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t7))
     (local.set $t6 (local.get $t7))
+    ;; line 0:21
+    (global.set $__line (i32.const 21))
+    (call $__break)
     (local.set $t10 (i32.add (global.get $SB) (i32.const 4))) ;; LSTR
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
@@ -68,11 +92,17 @@
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t12)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 7)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t12)))
+    ;; line 0:22
+    (global.set $__line (i32.const 22))
+    (call $__break)
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
     (local.set $t8 (i32.const 100))
     (local.set $t7 (i32.sub (local.get $t7) (local.get $t8)))
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t7))
     (local.set $t6 (local.get $t7))
+    ;; line 0:24
+    (global.set $__line (i32.const 24))
+    (call $__break)
     (local.set $t10 (i32.add (global.get $SB) (i32.const 9))) ;; LSTR
     (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
@@ -83,6 +113,9 @@
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t12)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 7)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t12)))
+    ;; line 0:25
+    (global.set $__line (i32.const 25))
+    (call $__break)
     (local.set $t10 (i32.add (global.get $SB) (i32.const 13))) ;; LSTR
     (local.set $t11 (i32.const 2))
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
@@ -93,6 +126,9 @@
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t12)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 7)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t12)))
+    ;; line 0:27
+    (global.set $__line (i32.const 27))
+    (call $__break)
     (local.set $t7 (i32.const 0))
     ;; FNRN
     (local.set $__res (local.get $t7))

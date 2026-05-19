@@ -534,6 +534,63 @@ export class BcplRuntime {
   // (JS is single-threaded; the wasm call has to return on its own).
   abort() {
     this.aborted = true;
+    // If currently paused at a breakpoint, unblock the run loop so
+    // it can see the aborted flag and exit cleanly. Without this,
+    // Stop-while-paused leaves the run loop awaiting forever.
+    if (this._pauseResolve) {
+      const r = this._pauseResolve;
+      this._pauseResolve = null;
+      this._pausePromise = null;
+      this._pausedLine = 0;
+      r();
+    }
+  }
+
+  // Read an arbitrary slice of linear memory as i32 words. Used by
+  // the host's Memory tab to render hex dumps without exposing the
+  // raw memView (which is a typed array over a SharedArrayBuffer-ish
+  // surface that can detach on memory.grow).
+  readWords(startWord, countWords) {
+    const out = new Int32Array(Math.max(0, countWords | 0));
+    if (!this.memView) return out;
+    // memView is a DataView — read i32s via getInt32, not array
+    // indexing. byteLength bounds the safe range.
+    const maxWord = (this.memView.byteLength / 4) | 0;
+    for (let i = 0; i < out.length; i++) {
+      const w = (startWord | 0) + i;
+      if (w < 0 || w >= maxWord) break;
+      out[i] = this.memView.getInt32(w * 4, true);
+    }
+    return out;
+  }
+
+  // Live state snapshot for the Memory tab. Cheaper than
+  // crashSnapshot — just the region indices needed to drive the UI,
+  // no per-region word copies. Caller pulls actual words via
+  // readWords() so it can paginate without copying multi-MB blobs.
+  memLayout() {
+    return {
+      P: this.P | 0,
+      G: 1,                              // global vec base (word addr)
+      gLen: 1000,
+      staticBase: 1001,
+      staticTop: this.nextStaticWord | 0,
+      heapTop: this.heapTop | 0,
+      freeList: this.freeList | 0,
+      memBytes: this.mem?.buffer?.byteLength | 0,
+      line: this.currentLine(),
+    };
+  }
+
+  // Most-recent BCPL source line touched by the running program.
+  // Backend emits `(global.set $__line (i32.const N))` at every
+  // statement boundary; the host reads it whenever the program is
+  // suspended or crashes so the UI can highlight where execution is.
+  // Returns 0 before any statement runs (also when the program has
+  // no s_line markers — e.g. older pre-debug builds).
+  currentLine() {
+    const g = this.master?.exports?.__line;
+    return g ? (g.value | 0) : 0;
   }
 
   // Build a structured post-mortem of the runtime's current state.
@@ -552,6 +609,7 @@ export class BcplRuntime {
       stack:   err?.stack ?? null,
       aborted: !!this.aborted,
       P:       this.P | 0,
+      line:    this.currentLine(),
       heapTop: this.heapTop | 0,
       freeList: this.freeList | 0,
       lastSysOp: this._lastSysOp ?? null,
@@ -561,25 +619,28 @@ export class BcplRuntime {
       stackTop: [],
     };
     if (!this.memView) return snap;
+    // memView is a DataView — use getInt32 for word reads. byteLength
+    // bounds the safe range. memView[idx] returns undefined.
+    const memWords = (this.memView.byteLength / 4) | 0;
+    const rd = (w) => this.memView.getInt32(w * 4, true);
 
     // Walk P-chain. Each frame: { P, prevP, retLab, fnIdx, args[] }
     const MAX_DEPTH = 32;
-    const memWords = this.memView.length;
     let p = this.P | 0;
     const seen = new Set();
     for (let depth = 0; depth < MAX_DEPTH; depth++) {
       if (p <= 0 || p >= memWords || seen.has(p)) break;
       seen.add(p);
-      const prevP  = this.memView[p + 0] | 0;
-      const retLab = this.memView[p + 1] | 0;
-      const fnIdx  = this.memView[p + 2] | 0;
+      const prevP  = rd(p + 0);
+      const retLab = rd(p + 1);
+      const fnIdx  = rd(p + 2);
       // Sample first 6 word slots after the saved-P/ret-addr/fn-idx
       // triple — these are the callee's args.
       const args = [];
       for (let i = 0; i < 6; i++) {
         const a = p + 3 + i;
         if (a >= memWords) break;
-        args.push(this.memView[a] | 0);
+        args.push(rd(a));
       }
       snap.frames.push({ P: p, prevP, retLab, fnIdx, args });
       p = prevP;
@@ -589,7 +650,7 @@ export class BcplRuntime {
     for (let g = 0; g < 100; g++) {
       const w = 1 + g;
       if (w >= memWords) break;
-      snap.globals.push({ g, val: this.memView[w] | 0 });
+      snap.globals.push({ g, val: rd(w) });
     }
 
     // Top of stack: 16 words at and around current P.
@@ -597,7 +658,7 @@ export class BcplRuntime {
     for (let i = 0; i < 16; i++) {
       const w = top + i;
       if (w >= memWords) break;
-      snap.stackTop.push({ w, val: this.memView[w] | 0, isP: w === this.P });
+      snap.stackTop.push({ w, val: rd(w), isP: w === this.P });
     }
     return snap;
   }
@@ -3296,6 +3357,84 @@ export class BcplRuntime {
   // Asyncify-backed: triggers an unwind, JS scheduler awaits a real
   // timer, then asyncify-rewinds to resume. Lets the browser repaint
   // between frames in animation loops.
+  // Per-statement debug hook. Called by codegen-emitted
+  // (call $__break) after each $__line update. Fast path returns
+  // immediately; only triggers asyncify-suspend when:
+  //   (1) caller has armed at least one breakpoint via setBreakpoints,
+  //   (2) the current $__line is in the bp set, AND
+  //   (3) the program was compiled with asyncify (debugger mode).
+  // Synchronous no-debug builds skip even the suspend path because
+  // _coroutineExportsRequired() returns null when no asyncify exports
+  // exist — the call then becomes a near-free no-op.
+  //
+  // NOTE: this import is NOT a BCPL-convention function call. It does
+  // not touch P, does not call restoreP — the codegen emits a direct
+  // (call $__break) from the middle of a function body. Treat like
+  // a void-returning helper.
+  imp_break() {
+    // Rewind side of an earlier suspend: stop the unwind and continue
+    // where the breakpoint paused.
+    if (this._asyncifyMode === "rewinding") {
+      const exp = this._coroutineExports();
+      if (exp) {
+        exp.asyncify_stop_rewind();
+        this._asyncifyMode = "normal";
+      }
+      return;
+    }
+    if (!this._breakpoints || this._breakpoints.size === 0) return;
+    const line = this.currentLine();
+    if (line === 0 || !this._breakpoints.has(line)) return;
+    // Step-over: callers can mark a single hit then mute the bp so
+    // continuing doesn't immediately re-trigger on the same line.
+    if (this._stepOverLine === line) return;
+
+    const exp = this._coroutineExports();
+    if (!exp) return;                  // not a debug build — give up
+
+    const co = this._currentCo ?? this._rootCo;
+    if (!co) return;
+    this._resetAsyncifyBuffer(co.asyncifyData, co.asyncifyWords ?? 256);
+    co.savedP = this.P;
+    co.status = "suspended";
+    this._scheduleResume = co.handle;
+    // The run loop awaits this promise instead of a delay-style
+    // setTimeout; UI.resume() resolves it.
+    this._pausedLine = line;
+    this._pausePromise = new Promise((r) => { this._pauseResolve = r; });
+    exp.asyncify_start_unwind(co.asyncifyData);
+    this._asyncifyMode = "unwinding";
+    if (this.onPause) this.onPause(line);
+  }
+
+  // UI-initiated continue from a breakpoint pause. Resolves the
+  // pause promise so the run loop re-enters the suspended ctx.
+  // stepOver=true mutes the just-hit bp once so we don't re-trigger
+  // on the same line before any other statement runs.
+  resume({ stepOver = false } = {}) {
+    if (!this._pauseResolve) return false;
+    if (stepOver) this._stepOverLine = this._pausedLine;
+    else          this._stepOverLine = 0;
+    const r = this._pauseResolve;
+    this._pauseResolve = null;
+    this._pausePromise = null;
+    this._pausedLine = 0;
+    if (this.onResume) this.onResume();
+    r();
+    return true;
+  }
+
+  // Update the set of source lines that should trigger imp_break.
+  // Pass an iterable of line numbers (numbers, not strings).
+  setBreakpoints(lines) {
+    this._breakpoints = new Set();
+    for (const n of lines) this._breakpoints.add(n | 0);
+    this._stepOverLine = 0;
+  }
+
+  isPaused() { return this._pausePromise !== null && this._pausePromise !== undefined; }
+  pausedLine() { return this._pausedLine | 0; }
+
   imp_delay() {
     const ms = this.arg(0) | 0;
     const exp = this._coroutineExportsRequired();
@@ -3450,6 +3589,10 @@ export class BcplRuntime {
         bcpl_initco:          () => this.imp_initco(),
         bcpl_changeco:        () => this.imp_changeco(),
         bcpl_delay:           () => this.imp_delay(),
+        // Debug-mode breakpoint hook. Always present so wasm with
+        // (call $__break) instantiates either way; behavior depends
+        // on whether asyncify is in the build (debugger mode).
+        bcpl_break:           () => this.imp_break(),
       }
     };
   }
@@ -3481,6 +3624,7 @@ export class BcplRuntime {
     const m = this.master.exports;
     return {
       mem: m.mem, ftable: m.ftable, P: m.P, G: m.G,
+      __line: m.__line,
       static_base: sbGlobal, table_base: tbGlobal,
       ...this.imports().env,
     };
@@ -3705,6 +3849,12 @@ export class BcplRuntime {
           if (ms > 16) {
             await new Promise((resolve) => setTimeout(resolve, ms - 16));
           }
+        }
+        // Breakpoint pause: imp_break set this. Wait indefinitely
+        // until UI's resume() fires (or abort()). The host's
+        // _pauseResolve is bound to the awaited promise.
+        if (this._pausePromise) {
+          await this._pausePromise;
         }
         if (this.aborted) return 0;
         if (nextHandle === null || nextHandle === 0) {
