@@ -81,6 +81,10 @@ out.push(`  (memory $mem    (export "mem")    64 1024)               ;; 4 MB ini
 out.push(`  (table  $ftable (export "ftable") 512 funcref)`);
 out.push(`  (global $G      (export "G") i32        (i32.const 1))`);
 out.push(`  (global $P      (export "P") (mut i32)  (i32.const 0))`);
+out.push(`  ;; Debug: most-recent BCPL source line emitted by the backend's s_line`);
+out.push(`  ;; tracker. Read by the host on crash/pause to surface "you are here"`);
+out.push(`  ;; in the editor. Written by every program module via env import.`);
+out.push(`  (global $__line (export "__line") (mut i32) (i32.const 0))`);
 out.push("");
 
 // Elem

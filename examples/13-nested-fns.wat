@@ -1,11 +1,14 @@
 (module
   (type $bcpl_fn (func (result i32)))
+  (type $void_fn (func))
   (import "env" "mem"    (memory 4))
   (import "env" "ftable" (table $ftable 256 funcref))
   (import "env" "P" (global $P (mut i32)))
   (import "env" "G" (global $G i32))
   (import "env" "static_base" (global $SB i32))
   (import "env" "table_base"  (global $TB i32))
+  (import "env" "__line" (global $__line (mut i32)))
+  (import "env" "bcpl_break" (func $__break (type $void_fn)))
 
   ;; SECTION: nested
   ;; BCPL fn start (L10)
@@ -26,10 +29,16 @@
     (local $t11 i32)
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
+    ;; line 0:12
+    (global.set $__line (i32.const 12))
+    (call $__break)
       (local.set $__lab (i32.const 1)) (br $__dispatch) ;; JUMP L12
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     )) ;; end block / LAB L12 = idx 1
     (if (i32.eq (local.get $__lab) (i32.const 1)) (then ;; L12
+    ;; line 0:13
+    (global.set $__line (i32.const 13))
+    (call $__break)
     (local.set $t6 (i32.add (global.get $SB) (i32.const 0))) ;; LSTR
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6)) ;; flush t6 (pre-stack-up)
     (local.set $t10 (i32.const 3))
@@ -49,6 +58,9 @@
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t8)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 3)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t8)))
+    ;; line 0:18
+    (global.set $__line (i32.const 18))
+    (call $__break)
     (local.set $t3 (i32.const 0))
     ;; FNRN
     (local.set $__res (local.get $t3))
@@ -79,10 +91,16 @@
     (local $t8 i32)
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
+    ;; line 0:13
+    (global.set $__line (i32.const 13))
+    (call $__break)
       (local.set $__lab (i32.const 1)) (br $__dispatch) ;; JUMP L14
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     )) ;; end block / LAB L14 = idx 1
     (if (i32.eq (local.get $__lab) (i32.const 1)) (then ;; L14
+    ;; line 0:14
+    (global.set $__line (i32.const 14))
+    (call $__break)
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
     (local.set $t8 (i32.add (global.get $TB) (i32.const 2))) ;; LF L13
     (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7))
