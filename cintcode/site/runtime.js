@@ -536,6 +536,72 @@ export class BcplRuntime {
     this.aborted = true;
   }
 
+  // Build a structured post-mortem of the runtime's current state.
+  // Called by the harness after a non-BcplHalt throw escapes run() so
+  // the UI can render a Crash tab. Pure read of in-memory state — no
+  // side effects, safe to call after a trap.
+  //
+  // Frame walk: BCPL's calling convention saves the previous P at
+  // mem[P*4 + 0]. We follow that pointer until we hit 0, walk off the
+  // stack, or hit MAX_DEPTH. mem[P*4 + 2] holds the callee's table
+  // index; we record it so the UI can name-resolve later if a map
+  // becomes available.
+  crashSnapshot(err) {
+    const snap = {
+      message: err?.message ?? String(err),
+      stack:   err?.stack ?? null,
+      aborted: !!this.aborted,
+      P:       this.P | 0,
+      heapTop: this.heapTop | 0,
+      freeList: this.freeList | 0,
+      lastSysOp: this._lastSysOp ?? null,
+      sysOpHistory: (this._sysOpHistory ?? []).slice(),
+      frames: [],
+      globals: [],
+      stackTop: [],
+    };
+    if (!this.memView) return snap;
+
+    // Walk P-chain. Each frame: { P, prevP, retLab, fnIdx, args[] }
+    const MAX_DEPTH = 32;
+    const memWords = this.memView.length;
+    let p = this.P | 0;
+    const seen = new Set();
+    for (let depth = 0; depth < MAX_DEPTH; depth++) {
+      if (p <= 0 || p >= memWords || seen.has(p)) break;
+      seen.add(p);
+      const prevP  = this.memView[p + 0] | 0;
+      const retLab = this.memView[p + 1] | 0;
+      const fnIdx  = this.memView[p + 2] | 0;
+      // Sample first 6 word slots after the saved-P/ret-addr/fn-idx
+      // triple — these are the callee's args.
+      const args = [];
+      for (let i = 0; i < 6; i++) {
+        const a = p + 3 + i;
+        if (a >= memWords) break;
+        args.push(this.memView[a] | 0);
+      }
+      snap.frames.push({ P: p, prevP, retLab, fnIdx, args });
+      p = prevP;
+    }
+
+    // Globals: G!1..G!100. G lives at word 1.
+    for (let g = 0; g < 100; g++) {
+      const w = 1 + g;
+      if (w >= memWords) break;
+      snap.globals.push({ g, val: this.memView[w] | 0 });
+    }
+
+    // Top of stack: 16 words at and around current P.
+    const top = Math.max(0, this.P - 4);
+    for (let i = 0; i < 16; i++) {
+      const w = top + i;
+      if (w >= memWords) break;
+      snap.stackTop.push({ w, val: this.memView[w] | 0, isP: w === this.P });
+    }
+    return snap;
+  }
+
   // Wire up the canvas + a callback to flip its container visible.
   // Browser code calls this before run() if a canvas is available.
   setSdlCanvas(canvasEl, onShow) {
@@ -1213,6 +1279,15 @@ export class BcplRuntime {
     const a1 = this.arg(1), a2 = this.arg(2), a3 = this.arg(3);
     const a4 = this.arg(4), a5 = this.arg(5), a6 = this.arg(6);
     const a7 = this.arg(7), a8 = this.arg(8);
+    // Post-mortem trail: remember the most recent few sys() calls so
+    // crashSnapshot() can show what user code was doing when it
+    // trapped. Cheap — small ring buffer in JS, never touched by
+    // wasm. _sysOpHistory is allocated lazily.
+    if (!this._sysOpHistory) this._sysOpHistory = [];
+    const sysRec = { op, args: [a1, a2, a3, a4, a5, a6, a7, a8], t: Date.now() };
+    this._lastSysOp = sysRec;
+    this._sysOpHistory.push(sysRec);
+    if (this._sysOpHistory.length > 16) this._sysOpHistory.shift();
     this.restoreP();
 
     switch (op) {
