@@ -383,6 +383,33 @@
     .editor-wrap.is-readonly { background: var(--bg); }
     .editor-wrap.is-readonly .hl,
     .editor-wrap.is-readonly .hl span { color: var(--fg-dim); }
+    .gutter .gut-line { display: block; }
+    .gutter .gut-line.err {
+      color: var(--err);
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .gutter .gut-line.err::before {
+      content: "●";
+      margin-right: 0.2rem;
+    }
+    .err-bands {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+    .err-bands .err-band {
+      position: absolute;
+      left: 0; right: 0;
+      background: rgba(255, 80, 80, 0.10);
+      border-left: 2px solid var(--err);
+      pointer-events: none;
+    }
+    [data-theme="light"] .err-bands .err-band {
+      background: rgba(200, 0, 0, 0.08);
+    }
     .tok-kw  { color: var(--tok-kw); font-weight: 600; }
     .tok-str { color: var(--tok-str); }
     .tok-num { color: var(--tok-num); }
@@ -516,7 +543,7 @@
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
-    #output, #stdin {
+    #output, #stdin, .otab-body {
       margin: 0;
       padding: 0.5rem 0.6rem;
       background: var(--bg-2);
@@ -529,6 +556,62 @@
       resize: none;
       white-space: pre-wrap;
     }
+    .output-tabs {
+      display: flex;
+      gap: 0;
+      background: var(--bg-2);
+      padding: 0;
+      align-items: stretch;
+    }
+    .output-tabs .otab {
+      background: transparent;
+      border: 0;
+      border-right: 1px solid var(--border);
+      color: var(--fg-dim);
+      padding: 0.3rem 0.8rem;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .output-tabs .otab.active {
+      color: var(--fg);
+      background: var(--bg);
+      box-shadow: inset 0 -2px 0 var(--accent);
+    }
+    .output-tabs .otab.has-errors {
+      color: var(--err);
+    }
+    .output-tabs .otab.has-errors::after {
+      content: " ●";
+      font-size: 0.7rem;
+    }
+    .output-stack {
+      position: relative;
+      background: var(--bg-2);
+      overflow: hidden;
+      min-height: 6rem;
+    }
+    .output-stack .otab-body {
+      position: absolute;
+      inset: 0;
+    }
+    .output-stack .otab-body.hidden { display: none; }
+    #diagBody .diag-row {
+      cursor: pointer;
+      padding: 0.15rem 0;
+    }
+    #diagBody .diag-row:hover { background: var(--bg-3, #2a2a2a); }
+    #diagBody .diag-loc { color: var(--accent); }
+    #diagBody .diag-fn  { color: var(--fg-dim); }
+    #diagBody .diag-msg { color: var(--err); }
+    #crashBody .cr-section {
+      color: var(--accent);
+      font-weight: 600;
+      margin-top: 0.7rem;
+    }
+    #crashBody .cr-row { padding-left: 1rem; }
     .canvas-cell {
       display: none;
       grid-row: 1 / span 2;
@@ -658,6 +741,7 @@
           <div class="gutter" id="editorGutter">1
 </div>
           <div class="hl-wrap">
+            <div class="err-bands" id="errBands"></div>
             <pre class="hl" id="editorHl"></pre>
             <textarea id="userSrc" spellcheck="false"
               autocorrect="off" autocapitalize="off" autocomplete="off"
@@ -678,9 +762,17 @@
     <section class="output-pane" id="outputPane">
       <button id="outputCollapse" class="collapse-btn"
               title="collapse output pane">▾</button>
-      <div class="pane-header">Program output</div>
+      <div class="output-tabs" id="outputTabs">
+        <button class="otab active" data-otab="output">Output</button>
+        <button class="otab"        data-otab="diag" id="diagTabBtn">Diagnostics</button>
+        <button class="otab"        data-otab="crash" id="crashTabBtn">Crash</button>
+      </div>
       <div class="pane-header">Stdin (consumed by rdch)</div>
-      <pre id="output"></pre>
+      <div class="output-stack">
+        <pre id="output"   class="otab-body"></pre>
+        <pre id="diagBody" class="otab-body hidden"></pre>
+        <pre id="crashBody" class="otab-body hidden"></pre>
+      </div>
       <textarea id="stdin" spellcheck="false" placeholder="type input here before Compile &amp; Run"></textarea>
       <div class="canvas-cell" id="canvasCell">
         <button id="canvasFullscreen" class="canvas-fs-btn" title="toggle fullscreen">⛶</button>
@@ -733,6 +825,11 @@
     const nextLessonBtn = document.getElementById("nextLesson");
     const savePreviewBtn = document.getElementById("savePreview");
     const outputEl      = document.getElementById("output");
+    const diagBodyEl    = document.getElementById("diagBody");
+    const crashBodyEl   = document.getElementById("crashBody");
+    const diagTabBtnEl  = document.getElementById("diagTabBtn");
+    const crashTabBtnEl = document.getElementById("crashTabBtn");
+    const outputTabsEl  = document.getElementById("outputTabs");
     const stdinEl       = document.getElementById("stdin");
     const compileBtn    = document.getElementById("compileRun");
     const stopBtn       = document.getElementById("stopRun");
@@ -754,6 +851,24 @@
       });
     }
     bindLeftTabs();
+
+    // ------------------ Output-pane tab switching ------------------
+    function activateOutputTab(key) {
+      outputTabsEl.querySelectorAll(".otab").forEach(t => {
+        t.classList.toggle("active", t.getAttribute("data-otab") === key);
+      });
+      const m = { output: outputEl, diag: diagBodyEl, crash: crashBodyEl };
+      for (const [k, el] of Object.entries(m)) {
+        el.classList.toggle("hidden", k !== key);
+      }
+    }
+    outputTabsEl.addEventListener("click", (e) => {
+      const btn = e.target.closest(".otab");
+      if (!btn) return;
+      activateOutputTab(btn.getAttribute("data-otab"));
+    });
+    diagBodyEl.textContent = "no compile errors";
+    crashBodyEl.textContent = "no crash";
 
     // ------------------ Files tab ------------------
     const FILES_LS_KEY = "bcpl-playground-files-v1";
@@ -1463,6 +1578,28 @@ LET start() = VALOF
       return out;
     }
 
+    // Pull cintsys "Error near <file>[<line>]: <msg>" lines out of a
+    // diag blob into structured records. Two flavours:
+    //   syntax  (bcplsyn): `Error near <file>[<line>]:  <msg>`
+    //   semantic (bcpltrn): `Error in function <fn> near <file>[<line>]: <msg>`
+    // File paths come back basename-stripped so they match the user's
+    // tab name in the editor (compileBcplFile passes them as bare
+    // names like "61-doom-sf2.b" already).
+    function parseDiagErrors(diag) {
+      if (!diag) return [];
+      const re = /Error(?: in function (\S+))? near ([^[\n]+)\[(\d+)\]:\s*(.+?)$/gm;
+      const out = [];
+      let m;
+      while ((m = re.exec(diag)) !== null) {
+        const fnName = m[1] ?? null;
+        const file   = m[2].trim().replace(/^.*\//, "");  // basename
+        const line   = parseInt(m[3], 10);
+        const msg    = m[4].trim();
+        out.push({ file, line, fnName, msg });
+      }
+      return out;
+    }
+
     async function compileBcplFile(fromName, toName) {
       storageBackend.del?.(toName);
       const cmd = `FROM ${fromName} TO ${toName}\n`;
@@ -1476,15 +1613,20 @@ LET start() = VALOF
       let exitCode = 0;
       try { exitCode = await rt.run(); }
       catch (e) {
-        throw new Error(`${fromName}: runtime error: ${e.message ?? e}\n${diag}`);
+        const err = new Error(`${fromName}: runtime error: ${e.message ?? e}\n${diag}`);
+        err.diagErrors = parseDiagErrors(diag);
+        err.diagRaw = diag;
+        throw err;
       }
       const wat = storageBackend.get(toName);
-      // Drop the intermediate from storage right away so 800KB+ WAT
-      // blobs don't accumulate across runs and blow the localStorage
-      // quota (~5–10MB) on the bigger Doom examples.
       storageBackend.del?.(toName);
-      if (!wat) throw new Error(`${fromName}: no .wat (exit=${exitCode})\n${diag}`);
-      return { wat, diag, exitCode };
+      if (!wat) {
+        const err = new Error(`${fromName}: no .wat (exit=${exitCode})\n${diag}`);
+        err.diagErrors = parseDiagErrors(diag);
+        err.diagRaw = diag;
+        throw err;
+      }
+      return { wat, diag, exitCode, diagErrors: parseDiagErrors(diag) };
     }
 
     function setStatus(text, isErr = false) {
@@ -1535,6 +1677,10 @@ LET start() = VALOF
       setStatus("compiling…");
       commitActiveEdit();
       persistFiles();
+      clearCompileErrors();
+      clearCrash();
+      activateOutputTab("output");
+      const compileErrAcc = new Map();
       try {
         await seedBuiltinHeaders();
         seedUserFiles();
@@ -1561,7 +1707,15 @@ LET start() = VALOF
         for (const f of sources) {
           setStatus(`compiling ${f.name}…`);
           const toName = `__out_${f.name}.wat`;
-          const { wat } = await compileBcplFile(f.name, toName);
+          const { wat, diagErrors } = await compileBcplFile(f.name, toName);
+          // Bucket parsed errors by their owning source file (basename
+          // from the diag matches the user's tab name).
+          if (diagErrors && diagErrors.length) {
+            for (const e of diagErrors) {
+              if (!compileErrAcc.has(e.file)) compileErrAcc.set(e.file, []);
+              compileErrAcc.get(e.file).push(e);
+            }
+          }
           watByName.set(f.name, wat);
         }
 
@@ -1617,7 +1771,29 @@ LET start() = VALOF
         setStatus(err.message ?? String(err), true);
         outputEl.textContent += `\n[compile+run error] ${err.message ?? err}`;
         console.error(err);
+        // If the failure carried parsed compile errors (cintsys
+        // diagnostic stream), merge them into the per-file map.
+        if (err.diagErrors && err.diagErrors.length) {
+          for (const e of err.diagErrors) {
+            if (!compileErrAcc.has(e.file)) compileErrAcc.set(e.file, []);
+            compileErrAcc.get(e.file).push(e);
+          }
+        }
+        // Runtime trap: snapshot before currentRt is dropped.
+        const isCompileErr = compileErrAcc.size > 0;
+        if (currentRt && !isCompileErr) {
+          try {
+            const snap = currentRt.crashSnapshot(err);
+            renderCrash(snap, { phase: "runtime" });
+          } catch (e) {
+            console.error("crashSnapshot failed", e);
+          }
+        } else if (isCompileErr) {
+          activateOutputTab("diag");
+        }
       } finally {
+        if (compileErrAcc.size > 0) setCompileErrors(compileErrAcc);
+        else { syncEditor(); renderDiagnostics(); }
         compileBtn.disabled = false;
         stopBtn.disabled = true;
         currentRt = null;
@@ -1809,17 +1985,182 @@ LET start() = VALOF
       }
       return out.join("");
     }
+    // Compile-error overlays. Keyed by filename (basename). Each value
+    // is an array of { line, msg, fnName? }. setCompileErrors() updates
+    // the map then re-syncs the editor so gutter dots + err-bands
+    // refresh. Persists across edits — caller clears explicitly.
+    const errorsByFile = new Map();
+    const errBandsEl = document.getElementById("errBands");
+
+    function activeFileName() {
+      const i = activeFileIdx();
+      return i >= 0 ? files[i].name : null;
+    }
+    function setCompileErrors(map) {
+      errorsByFile.clear();
+      for (const [name, list] of map) errorsByFile.set(name, list.slice());
+      syncEditor();
+      renderDiagnostics();
+    }
+    function clearCompileErrors() {
+      if (errorsByFile.size === 0) return;
+      errorsByFile.clear();
+      syncEditor();
+      renderDiagnostics();
+    }
+
+    function totalErrorCount() {
+      let n = 0;
+      for (const list of errorsByFile.values()) n += list.length;
+      return n;
+    }
+
+    // Repaint the Diagnostics tab and update the tab-strip badge.
+    function renderDiagnostics() {
+      const n = totalErrorCount();
+      diagTabBtnEl.classList.toggle("has-errors", n > 0);
+      diagTabBtnEl.textContent = n > 0 ? `Diagnostics (${n})` : "Diagnostics";
+      if (n === 0) {
+        diagBodyEl.textContent = "no compile errors";
+        return;
+      }
+      const rows = [];
+      for (const [file, list] of errorsByFile) {
+        for (const e of list) {
+          const fnTxt = e.fnName ? ` <span class="diag-fn">in ${escHtml(e.fnName)}</span>` : "";
+          rows.push(
+            `<div class="diag-row" data-file="${escHtml(file)}" data-line="${e.line}">` +
+            `<span class="diag-loc">${escHtml(file)}:${e.line}</span>${fnTxt}  ` +
+            `<span class="diag-msg">${escHtml(e.msg)}</span>` +
+            `</div>`
+          );
+        }
+      }
+      diagBodyEl.innerHTML = rows.join("\n");
+    }
+
+    diagBodyEl.addEventListener("click", (e) => {
+      const row = e.target.closest(".diag-row");
+      if (!row) return;
+      const file = row.getAttribute("data-file");
+      const line = parseInt(row.getAttribute("data-line"), 10);
+      const idx = files.findIndex(f => f.name === file);
+      if (idx >= 0) openFileTab(idx);
+      jumpToLine(line);
+    });
+
+    // Render a crashSnapshot() result into the Crash tab and bring
+    // the tab forward. Called by compileAndRun's catch arm when a
+    // non-BcplHalt throw escapes rt.run().
+    function renderCrash(snap, ctx = {}) {
+      crashTabBtnEl.classList.add("has-errors");
+      const hex = (n) => "0x" + (n >>> 0).toString(16).padStart(8, "0");
+      const lines = [];
+      lines.push(`message:  ${snap.message}`);
+      if (ctx.phase) lines.push(`phase:    ${ctx.phase}`);
+      lines.push(`aborted:  ${snap.aborted}`);
+      lines.push(`P:        ${snap.P}  (heapTop ${snap.heapTop}, freeList ${snap.freeList})`);
+
+      if (snap.lastSysOp) {
+        const a = snap.lastSysOp.args;
+        lines.push(`<span class="cr-section">last sys() call</span>`);
+        lines.push(`<span class="cr-row">op=${snap.lastSysOp.op}  args=[${a.join(", ")}]</span>`);
+      }
+
+      if (snap.sysOpHistory && snap.sysOpHistory.length > 1) {
+        lines.push(`<span class="cr-section">recent sys() ops (oldest → newest)</span>`);
+        for (const r of snap.sysOpHistory) {
+          lines.push(`<span class="cr-row">op=${r.op}  args=[${r.args.slice(0, 4).join(", ")}…]</span>`);
+        }
+      }
+
+      if (snap.frames.length) {
+        lines.push(`<span class="cr-section">P-chain (most-recent first)</span>`);
+        for (const f of snap.frames) {
+          const args = f.args.slice(0, 4).map(hex).join(" ");
+          lines.push(
+            `<span class="cr-row">` +
+            `P=${f.P}  prevP=${f.prevP}  fnIdx=${f.fnIdx}  ret=${f.retLab}  ` +
+            `args=[${args}]` +
+            `</span>`
+          );
+        }
+      }
+
+      lines.push(`<span class="cr-section">globals G!1..G!100 (non-zero)</span>`);
+      const nonZero = snap.globals.filter(g => g.val !== 0);
+      if (nonZero.length === 0) {
+        lines.push(`<span class="cr-row">(all zero)</span>`);
+      } else {
+        for (const g of nonZero) {
+          lines.push(`<span class="cr-row">G!${g.g + 1} = ${hex(g.val)} (${g.val})</span>`);
+        }
+      }
+
+      lines.push(`<span class="cr-section">stack window @ P</span>`);
+      for (const s of snap.stackTop) {
+        const mark = s.isP ? " ← P" : "";
+        lines.push(`<span class="cr-row">[${s.w}] = ${hex(s.val)}${mark}</span>`);
+      }
+
+      if (snap.stack) {
+        lines.push(`<span class="cr-section">JS stack</span>`);
+        lines.push(`<span class="cr-row">${escHtml(snap.stack)}</span>`);
+      }
+
+      crashBodyEl.innerHTML = lines.join("\n");
+      activateOutputTab("crash");
+    }
+
+    function clearCrash() {
+      crashTabBtnEl.classList.remove("has-errors");
+      crashBodyEl.textContent = "no crash";
+    }
+
     function syncEditor() {
       const src = userSrcEl.value;
-      // Line numbers — count \n + 1.
       const lines = src.split("\n").length;
-      let g = "";
-      for (let k = 1; k <= lines; k++) g += k + "\n";
-      editorGutterEl.textContent = g;
-      // Highlight pane — append trailing newline so final blank line
-      // gets a rendered line height matching the textarea.
+      const name = activeFileName();
+      const errs = name ? (errorsByFile.get(name) ?? []) : [];
+      const errByLine = new Map();
+      for (const e of errs) {
+        if (!errByLine.has(e.line)) errByLine.set(e.line, []);
+        errByLine.get(e.line).push(e);
+      }
+      // Gutter — per-line spans so we can mark error lines with a
+      // hover tooltip + red dot.
+      const parts = [];
+      for (let k = 1; k <= lines; k++) {
+        const list = errByLine.get(k);
+        if (list) {
+          const msg = list.map(e => e.msg).join(" | ").replace(/"/g, "&quot;");
+          parts.push(
+            `<span class="gut-line err" data-line="${k}" title="${msg}">${k}</span>`
+          );
+        } else {
+          parts.push(`<span class="gut-line" data-line="${k}">${k}</span>`);
+        }
+      }
+      editorGutterEl.innerHTML = parts.join("");
+
       editorHlEl.innerHTML = highlightBCPL(src) + "\n";
-      // Sync scroll: textarea drives gutter + hl positions.
+
+      // Error-line bands. Position each band at top = (line-1) * lineH
+      // + paddingTop, height = lineH. Reads computed line-height to
+      // stay correct across font-size tweaks.
+      const cs = window.getComputedStyle(editorHlEl);
+      const lh = parseFloat(cs.lineHeight) || 19;
+      const padTop = parseFloat(cs.paddingTop) || 0;
+      errBandsEl.innerHTML = "";
+      for (const e of errs) {
+        if (e.line < 1 || e.line > lines) continue;
+        const d = document.createElement("div");
+        d.className = "err-band";
+        d.style.top = `${padTop + (e.line - 1) * lh - userSrcEl.scrollTop}px`;
+        d.style.height = `${lh}px`;
+        errBandsEl.appendChild(d);
+      }
+
       editorHlEl.scrollTop  = userSrcEl.scrollTop;
       editorHlEl.scrollLeft = userSrcEl.scrollLeft;
       editorGutterEl.scrollTop = userSrcEl.scrollTop;
@@ -1832,7 +2173,42 @@ LET start() = VALOF
       editorHlEl.scrollTop  = userSrcEl.scrollTop;
       editorHlEl.scrollLeft = userSrcEl.scrollLeft;
       editorGutterEl.scrollTop = userSrcEl.scrollTop;
+      // Bands sit in the hl-wrap (not in the scrolling textarea), so
+      // they need their top offset adjusted by the current scroll.
+      const cs = window.getComputedStyle(editorHlEl);
+      const lh = parseFloat(cs.lineHeight) || 19;
+      const padTop = parseFloat(cs.paddingTop) || 0;
+      const bands = errBandsEl.children;
+      const name = activeFileName();
+      const errs = name ? (errorsByFile.get(name) ?? []) : [];
+      for (let i = 0; i < bands.length && i < errs.length; i++) {
+        bands[i].style.top =
+          `${padTop + (errs[i].line - 1) * lh - userSrcEl.scrollTop}px`;
+      }
     });
+
+    // Click an error gutter dot → focus the textarea on that line.
+    editorGutterEl.addEventListener("click", (e) => {
+      const sp = e.target.closest(".gut-line.err");
+      if (!sp) return;
+      const line = parseInt(sp.getAttribute("data-line"), 10);
+      jumpToLine(line);
+    });
+
+    function jumpToLine(line) {
+      const src = userSrcEl.value;
+      let pos = 0;
+      for (let k = 1; k < line; k++) {
+        const nl = src.indexOf("\n", pos);
+        if (nl < 0) { pos = src.length; break; }
+        pos = nl + 1;
+      }
+      userSrcEl.focus();
+      userSrcEl.selectionStart = userSrcEl.selectionEnd = pos;
+      const cs = window.getComputedStyle(editorHlEl);
+      const lh = parseFloat(cs.lineHeight) || 19;
+      userSrcEl.scrollTop = Math.max(0, (line - 3) * lh);
+    }
 
     // ------------------ Theme toggle ----------------------------------
     const THEME_LS_KEY = "bcpl-playground-theme";
