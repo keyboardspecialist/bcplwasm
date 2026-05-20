@@ -1,26 +1,51 @@
-// 27-every-sum: EVERY evaluates every matching arm and sums results.
+// 27-every-sum: EVERY expressions + commands.
 //
-// Concepts:
-//   - EVERY (args) : pat,..,pat => expr
-//   - Unlike MATCH, all matching arms contribute — the results are
-//     added (or OR'd, depending on arm types).
-//   - Handy for flag accumulation or scoring.
+// MATCH stops at the first arm that fires (see 26-match-patterns).
+// EVERY runs every arm whose patterns match, in order. Two forms:
+//
+//   EVERY (args)              — expression form, results combined
+//   : pat => expr             —   with + (or | for non-numeric).
+//   : pat => expr
+//
+//   EVERY (args)              — command form, runs each matching
+//   : pat BE stmt             —   arm for its side effects.
+//   : pat BE stmt
+//
+// Useful for flag tallies (expression) and dispatch tables where
+// multiple categories apply (command).
 
 SECTION "every"
 
 GET "libhdr"
 
-LET tally(n) = EVERY (n)
-  :   >0       => 1
-  :   >10      => 10
-  :   >100     => 100
-  :   1|2|3    => 1000
+// Module-level mutable counters live in STATIC.
+STATIC { digits = 0; evens = 0; letters = 0 }
+
+// Expression form: every matching arm contributes to the sum.
+// score(150) hits >0 and >10 and >100  =>  1 + 10 + 100 = 111.
+LET score(n) = EVERY (n)
+: >0     => 1
+: >10    => 10
+: >100   => 100
+
+// Command form: classify each char into multiple bucket counters.
+// A digit that's also even runs both arms.
+LET tally(ch) BE EVERY (ch)
+: '0'..'9'                    BE digits  +:= 1
+: '0' | '2' | '4' | '6' | '8' BE evens   +:= 1
+: 'A'..'Z' | 'a'..'z'         BE letters +:= 1
+: ?                           BE { /* ignore */ }
 
 LET start() = VALOF
-{ FOR i = 0 TO 5 DO
-  { LET v = i * 50
-    writef("tally(%i3) = %i4*n", v, tally(v))
+{ FOR n = 0 TO 4 DO
+  { LET v = n * 75
+    writef("score(%i4) = %i4*n", v, score(v))
   }
-  writef("tally(  2) = %i4  (expect 1+1000 = 1001)*n", tally(2))
+
+  FOR ch = '0' TO '9' DO tally(ch)
+  FOR ch = 'a' TO 'f' DO tally(ch)
+  tally('!') ; tally('?')
+
+  writef("*ndigits=%n  evens=%n  letters=%n*n", digits, evens, letters)
   RESULTIS 0
 }
