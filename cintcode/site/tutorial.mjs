@@ -905,6 +905,21 @@ export const TRACK = [
     ],
     prereqs: ["60-doom-wadmus"],
   },
+  {
+    slug: "62-doom-engine",
+    title: "Doom Engine as a Library",
+    level: 9,
+    topic: "graphics",
+    summary: "Refactor of the Doom demo into a reusable engine. doomengine.b owns rendering / WAD / BSP / sprites / HUD / music; 62-doom-engine.b is a thin consumer driving input + the main loop through engine_* entry points (declared in g/doomengine.h, slot range 300+).",
+    goals: [
+      "GLOBAL slot exports — function pointers live in G!N for cross-section calls",
+      "Header (.h) as the API surface: MANIFEST constants + GLOBAL declarations",
+      "SECTION 'doomengine' as library, SECTION 'game' as consumer",
+      "engine_init / engine_load_wad_from_assets / engine_load_map driver",
+      "Consumer-owned edge detection + main loop pacing",
+    ],
+    prereqs: ["61-doom-sf2"],
+  },
 ];
 
 // Quick-lookup helpers used by the UI.
