@@ -544,6 +544,25 @@ export class BcplRuntime {
       this._pausedLine = 0;
       r();
     }
+    // Silence any in-flight audio. MusPlayer + SF2MusPlayer schedule
+    // notes on AudioContext that keep playing after the wasm program
+    // halts; without this, Stop leaves background music running until
+    // the page reloads.
+    try {
+      if (this._musicAudio) {
+        this._musicAudio.pause();
+        this._musicAudio = null;
+      }
+      if (this._musicURL) {
+        URL.revokeObjectURL(this._musicURL);
+        this._musicURL = null;
+      }
+      if (this._musPlayer) {
+        this._musPlayer.stop();
+        this._musPlayer = null;
+      }
+      if (this._sf2Player) this._sf2Player.stop();
+    } catch { /* swallow */ }
   }
 
   // Read an arbitrary slice of linear memory as i32 words. Used by
@@ -3156,13 +3175,50 @@ export class BcplRuntime {
   //   c!5  co_c      — self-pointer
   //   c!6+ stack space
 
-  // Probe that returns the asyncify exports (or null) silently. Used
-  // by run() to decide between plain entry and the cooperative loop.
+  // Probe that returns ONE asyncify-instrumented module's exports
+  // (or null) silently. Used by run() for the asyncify-aware path
+  // probe. Note: in multi-module programs (library + consumer, etc.)
+  // each instrumented module has its OWN asyncify state globals. To
+  // unwind a call stack that spans modules, asyncify_start_unwind /
+  // stop_unwind / start_rewind / stop_rewind must be applied to ALL
+  // of them — see _allAsyncifyExports + _asyncifyAll* below.
+  // Returns the asyncify exports of the LAST loaded instrumented
+  // module. Programs are loaded libs-first / entry-last, so the
+  // last-loaded module is the consumer / entry — that's where the
+  // suspending call (delay, cowait, bcpl_break) usually originates,
+  // so its asyncify state is the one that actually needs flipping
+  // to drive the unwind on the live call stack.
+  //
+  // Earlier this returned the FIRST module (the library) — which
+  // worked for single-module programs but in lib+consumer setups it
+  // set state on a module whose code wasn't on the stack, leaving
+  // consumer code running past the suspend point and trapping.
+  //
+  // Setting state on EVERY instrumented module is also wrong: the
+  // rewind path would restore frames from the asyncify buffer into
+  // modules that never contributed frames, corrupting their locals.
   _coroutineExports() {
+    let last = null;
     for (const p of this.programs) {
-      if (p.instance.exports.asyncify_start_unwind) return p.instance.exports;
+      if (p.instance.exports.asyncify_start_unwind) last = p.instance.exports;
     }
-    return null;
+    return last;
+  }
+  _asyncifyAllStartUnwind(buf) {
+    const exp = this._coroutineExports();
+    if (exp) exp.asyncify_start_unwind(buf);
+  }
+  _asyncifyAllStopUnwind() {
+    const exp = this._coroutineExports();
+    if (exp) exp.asyncify_stop_unwind();
+  }
+  _asyncifyAllStartRewind(buf) {
+    const exp = this._coroutineExports();
+    if (exp) exp.asyncify_start_rewind(buf);
+  }
+  _asyncifyAllStopRewind() {
+    const exp = this._coroutineExports();
+    if (exp) exp.asyncify_stop_rewind();
   }
   // Same probe but warns if the caller (a coroutine import) needs
   // asyncify and it's not present.
@@ -3270,7 +3326,7 @@ export class BcplRuntime {
     if (!exp || !this._currentCo) { this.restoreP(); return arg; }
     const co = this._currentCo;
     if (this._asyncifyMode === "rewinding") {
-      exp.asyncify_stop_rewind();
+      this._asyncifyAllStopRewind();
       this._asyncifyMode = "normal";
       this.restoreP();
       return co.resumeArg;
@@ -3282,7 +3338,7 @@ export class BcplRuntime {
     if (parent) parent.resumeArg = arg;
     this._resetAsyncifyBuffer(co.asyncifyData, co.asyncifyWords ?? 256);
     co.savedP = this.P;            // callee frame P, for replay on rewind
-    exp.asyncify_start_unwind(co.asyncifyData);
+    this._asyncifyAllStartUnwind(co.asyncifyData);
     this._asyncifyMode = "unwinding";
     this._scheduleResume = parent ? parent.handle : 0;
     return 0;
@@ -3299,7 +3355,7 @@ export class BcplRuntime {
     const arg     = this.arg(1);
     const exp = this._coroutineExportsRequired();
     if (this._asyncifyMode === "rewinding") {
-      exp.asyncify_stop_rewind();
+      this._asyncifyAllStopRewind();
       this._asyncifyMode = "normal";
       this.restoreP();
       return this._currentCo?.resumeArg ?? 0;
@@ -3316,7 +3372,7 @@ export class BcplRuntime {
       // Capture the callee-frame P so on rewind asyncify-replay sees
       // the same args at P!3/P!4.
       this._currentCo.savedP = this.P;
-      exp.asyncify_start_unwind(this._currentCo.asyncifyData);
+      this._asyncifyAllStartUnwind(this._currentCo.asyncifyData);
       this._asyncifyMode = "unwinding";
     }
     this._scheduleResume = cHandle;
@@ -3339,14 +3395,14 @@ export class BcplRuntime {
     const target = this._coroutines?.get(cHandle);
     if (!target) return 0;
     if (this._asyncifyMode === "rewinding") {
-      exp.asyncify_stop_rewind();
+      this._asyncifyAllStopRewind();
       this._asyncifyMode = "normal";
       return this._currentCo?.resumeArg ?? 0;
     }
     target.resumeArg = val;
     if (this._currentCo) {
       this._currentCo.status = "ready";
-      exp.asyncify_start_unwind(this._currentCo.asyncifyData);
+      this._asyncifyAllStartUnwind(this._currentCo.asyncifyData);
       this._asyncifyMode = "unwinding";
     }
     this._scheduleResume = cHandle;
@@ -3377,7 +3433,7 @@ export class BcplRuntime {
     if (this._asyncifyMode === "rewinding") {
       const exp = this._coroutineExports();
       if (exp) {
-        exp.asyncify_stop_rewind();
+        this._asyncifyAllStopRewind();
         this._asyncifyMode = "normal";
       }
       return;
@@ -3402,7 +3458,7 @@ export class BcplRuntime {
     // setTimeout; UI.resume() resolves it.
     this._pausedLine = line;
     this._pausePromise = new Promise((r) => { this._pauseResolve = r; });
-    exp.asyncify_start_unwind(co.asyncifyData);
+    this._asyncifyAllStartUnwind(co.asyncifyData);
     this._asyncifyMode = "unwinding";
     if (this.onPause) this.onPause(line);
   }
@@ -3443,7 +3499,7 @@ export class BcplRuntime {
       return 0;
     }
     if (this._asyncifyMode === "rewinding") {
-      exp.asyncify_stop_rewind();
+      this._asyncifyAllStopRewind();
       this._asyncifyMode = "normal";
       this.restoreP();
       return 0;
@@ -3458,7 +3514,7 @@ export class BcplRuntime {
     co.status = "suspended";
     this._delayMs = Math.max(0, ms);
     this._scheduleResume = co.handle;          // resume self after timer
-    exp.asyncify_start_unwind(co.asyncifyData);
+    this._asyncifyAllStartUnwind(co.asyncifyData);
     this._asyncifyMode = "unwinding";
     return 0;
   }
@@ -3810,7 +3866,7 @@ export class BcplRuntime {
         this.storeWord(this.P + 3, ctx.resumeArg | 0);    // arg
       }
       if (isResume) {
-        exp.asyncify_start_rewind(ctx.asyncifyData);
+        this._asyncifyAllStartRewind(ctx.asyncifyData);
         this._asyncifyMode = "rewinding";
       } else {
         ctx.status = "running";
@@ -3825,7 +3881,7 @@ export class BcplRuntime {
       }
 
       if (this._asyncifyMode === "unwinding") {
-        exp.asyncify_stop_unwind();
+        this._asyncifyAllStopUnwind();
         this._asyncifyMode = "normal";
         ctx.savedP = this.P;
         ctx.status = "suspended";

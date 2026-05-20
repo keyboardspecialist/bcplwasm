@@ -64,6 +64,8 @@ const RUN_SKIP = new Set([
   "59-doom-music",      // same — WAD + canvas + game loop
   "60-doom-wadmus",     // same — WAD + canvas + game loop
   "61-doom-sf2",        // same — WAD + canvas + game loop + SF2
+  "62-doom-engine",     // same — depends on doomengine lib
+  "doomengine",         // pure library — no start()
   "stdlib",             // pure library — no start()
 ]);
 

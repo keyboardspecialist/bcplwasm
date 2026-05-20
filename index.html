@@ -1766,7 +1766,7 @@ LET start() = VALOF
       return r.ok ? await r.text() : fallback;
     }
 
-    const BUILTIN_HEADERS = ["libhdr.h", "bcplfecg.h", "sdl.h"];
+    const BUILTIN_HEADERS = ["libhdr.h", "bcplfecg.h", "sdl.h", "doomengine.h"];
     async function seedBuiltinHeaders() {
       // Always re-fetch — the shipped header may have been updated
       // (e.g. new Sys_* manifests) since the user's last visit.
@@ -1979,6 +1979,29 @@ LET start() = VALOF
       return ordered;
     }
 
+    // Shipped library .b files (in addition to BUILTIN_HEADERS). If a
+    // user source GETs one of these names and no matching .b lives in
+    // their files[] yet, fetch from site/examples/ and add it as a
+    // companion file so resolveDeps can pick it up.
+    const SHIPPED_LIBS = new Set(["doomengine"]);
+
+    async function attachShippedDeps() {
+      const namesPresent = new Set(files.map(f => f.name));
+      // Scan every user .b for GET'd shipped libs.
+      const wanted = new Set();
+      for (const f of files) {
+        if (!f.name.endsWith(".b")) continue;
+        const gets = [...f.content.matchAll(/\bGET\s+"([^"]+)"/g)].map(m => m[1]);
+        for (const g of gets) if (SHIPPED_LIBS.has(g)) wanted.add(g);
+      }
+      for (const lib of wanted) {
+        if (namesPresent.has(lib + ".b")) continue;
+        const src = await fetchText(`examples/${lib}.b?v=${V}`, "");
+        if (!src) continue;
+        files.push({ name: lib + ".b", entry: false, content: src });
+      }
+    }
+
     async function compileAndRun() {
       compileBtn.disabled = true;
       outputEl.textContent = "";
@@ -1992,6 +2015,7 @@ LET start() = VALOF
       const compileErrAcc = new Map();
       try {
         await seedBuiltinHeaders();
+        await attachShippedDeps();
         seedUserFiles();
 
         const allSources = files.filter(f => f.name.endsWith(".b"));
@@ -2851,10 +2875,22 @@ LET start() = VALOF
     }
     // Bundle format: byte 0 = 'J' (0x4A) plain JSON, or 'Z' (0x5A)
     // deflate-raw of JSON. Bytes 1.. = payload.
+    //
+    // Shipped libs (doomengine.b etc.) are EXCLUDED from the bundle —
+    // the recipient's playground auto-attaches them from site/examples/
+    // via attachShippedDeps(), so re-shipping their bytes just bloats
+    // the URL (doomengine.b is ~70KB). Same for files whose content
+    // is byte-identical to a shipped tutorial example.
     async function packBundle(files) {
-      const json = JSON.stringify(files.map(f => ({
-        name: f.name, entry: !!f.entry, content: f.content ?? "",
-      })));
+      const slim = [];
+      for (const f of files) {
+        if (f.name.endsWith(".b")) {
+          const base = f.name.slice(0, -2);
+          if (SHIPPED_LIBS.has(base)) continue;  // recipient re-fetches
+        }
+        slim.push({ name: f.name, entry: !!f.entry, content: f.content ?? "" });
+      }
+      const json = JSON.stringify(slim);
       const jsonBytes = new TextEncoder().encode(json);
       // Try compression; fall back to plain if unavailable or bigger.
       if (typeof CompressionStream === "function") {
