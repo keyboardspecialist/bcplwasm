@@ -2490,6 +2490,150 @@ export class BcplRuntime {
     return v;
   }
 
+  // -------- byte-position primitives (point / note) --------
+  //
+  // BCPL streams use a (block, byteOffset) pair for random-access
+  // positioning; recordpoint / recordnote compose on top of these.
+  // The playground's stream model is a flat byte buffer (s.data + s.pos);
+  // we encode positions with a virtual block size = the buffer's
+  // current end (s.data.length, never zero). That keeps muldiv math
+  // identical to cintsys / blib while staying single-buffer.
+  _streamBlockSize(s) {
+    const n = (s.data || "").length;
+    return n > 0 ? n : 1;
+  }
+
+  // point(scb, posv) — set the stream's read/write position from a
+  // (block, offset) vector. Returns -1 on success, 0 if scb invalid.
+  imp_point() {
+    const h    = this.arg(0);
+    const posv = this.arg(1);
+    this.restoreP();
+    const s = this._stream(h);
+    if (!s) return 0;
+    const block  = this.loadWord(posv + 0);
+    const offset = this.loadWord(posv + 1);
+    const bs = this._streamBlockSize(s);
+    const newPos = (block * bs) + offset;
+    s.pos = newPos | 0;
+    this.storeWord(h + BcplRuntime.SCB.pos, s.pos);
+    return -1;
+  }
+
+  // note(scb, posv) — read the stream's current position into posv:
+  //   posv!0 = block, posv!1 = byte offset within block. Returns -1.
+  imp_note() {
+    const h    = this.arg(0);
+    const posv = this.arg(1);
+    this.restoreP();
+    const s = this._stream(h);
+    if (!s) return 0;
+    const bs = this._streamBlockSize(s);
+    const block  = Math.floor(s.pos / bs) | 0;
+    const offset = (s.pos - block * bs) | 0;
+    this.storeWord(posv + 0, block);
+    this.storeWord(posv + 1, offset);
+    return -1;
+  }
+
+  // -------- record-mode (fixed-size records) --------
+  //
+  // setrecordlength stashes the byte-length on the SCB struct (slot 15
+  // matches BcplRuntime.SCB.reclen). recordpoint seeks to a record by
+  // number; recordnote returns the current record number; get_record /
+  // put_record copy reclen bytes into / out of a BCPL byte vector.
+
+  // setrecordlength(scb, length) → previous length. length in bytes.
+  imp_setrecordlength() {
+    const h   = this.arg(0);
+    const len = this.arg(1) | 0;
+    this.restoreP();
+    if (!this._stream(h)) return 0;
+    const slot = h + BcplRuntime.SCB.reclen;
+    const old = this.loadWord(slot);
+    this.storeWord(slot, len);
+    return old | 0;
+  }
+
+  // recordpoint(scb, recno) — seek so the next get_record/put_record
+  // hits record `recno`. Returns -1 on success, 0 on bad reclen / scb.
+  imp_recordpoint() {
+    const h     = this.arg(0);
+    const recno = this.arg(1) | 0;
+    this.restoreP();
+    const s = this._stream(h);
+    if (!s) return 0;
+    const reclen = this.loadWord(h + BcplRuntime.SCB.reclen) | 0;
+    if (reclen <= 0 || recno < 0) return 0;
+    s.pos = (recno * reclen) | 0;
+    this.storeWord(h + BcplRuntime.SCB.pos, s.pos);
+    return -1;
+  }
+
+  // recordnote(scb) → current record number. Returns -1 if no reclen.
+  imp_recordnote() {
+    const h = this.arg(0);
+    this.restoreP();
+    const s = this._stream(h);
+    if (!s) return -1;
+    const reclen = this.loadWord(h + BcplRuntime.SCB.reclen) | 0;
+    if (reclen <= 0) return -1;
+    return (s.pos / reclen) | 0;
+  }
+
+  // get_record(vector, recno, scb) — read reclen bytes of record
+  // `recno` into the byte vector (vector%0..vector%(reclen-1)).
+  // Returns TRUE on success, FALSE on EOF / bad scb / no reclen.
+  imp_get_record() {
+    const vec   = this.arg(0);
+    const recno = this.arg(1) | 0;
+    const h     = this.arg(2);
+    this.restoreP();
+    const s = this._stream(h);
+    if (!s) return 0;
+    const reclen = this.loadWord(h + BcplRuntime.SCB.reclen) | 0;
+    if (reclen <= 0) return 0;
+    const start = recno * reclen;
+    const data = s.data || "";
+    if (start + reclen > data.length) return 0;
+    for (let i = 0; i < reclen; i++) {
+      this.storeByte(vec * 4 + i, data.charCodeAt(start + i) & 0xFF);
+    }
+    s.pos = (start + reclen) | 0;
+    this.storeWord(h + BcplRuntime.SCB.pos, s.pos);
+    return -1;   // TRUE
+  }
+
+  // put_record(vector, recno, scb) — write reclen bytes from the
+  // byte vector into record `recno` of the stream. Extends data if
+  // recno is past the current end. Returns TRUE on success, FALSE
+  // on bad scb / no reclen / wrong mode.
+  imp_put_record() {
+    const vec   = this.arg(0);
+    const recno = this.arg(1) | 0;
+    const h     = this.arg(2);
+    this.restoreP();
+    const s = this._stream(h);
+    if (!s) return 0;
+    if (s.mode !== "w" && s.mode !== "rw") return 0;
+    const reclen = this.loadWord(h + BcplRuntime.SCB.reclen) | 0;
+    if (reclen <= 0 || recno < 0) return 0;
+    const start = recno * reclen;
+    let data = s.data || "";
+    if (start > data.length) data = data + " ".repeat(start - data.length);
+    let bytes = "";
+    for (let i = 0; i < reclen; i++) {
+      bytes += String.fromCharCode(this.loadByte(vec * 4 + i) & 0xFF);
+    }
+    s.data = data.slice(0, start) + bytes + data.slice(start + reclen);
+    s.pos = (start + reclen) | 0;
+    this.storeWord(h + BcplRuntime.SCB.pos, s.pos);
+    const newEnd = s.data.length;
+    this.storeWord(h + BcplRuntime.SCB.end,    newEnd);
+    this.storeWord(h + BcplRuntime.SCB.bufend, newEnd);
+    return -1;   // TRUE
+  }
+
   // writebin(n, d) — write n as an unsigned binary integer in a
   // d-character field, zero-padded. blib's writef("%b", n) routes
   // through the same logic; exposing this as a standalone global so
@@ -3796,6 +3940,13 @@ export class BcplRuntime {
         bcpl_datstamp:        () => this.imp_datstamp(),
         bcpl_delayuntil:      () => this.imp_delayuntil(),
         bcpl_writebin:        () => this.imp_writebin(),
+        bcpl_note:            () => this.imp_note(),
+        bcpl_point:           () => this.imp_point(),
+        bcpl_setrecordlength: () => this.imp_setrecordlength(),
+        bcpl_recordpoint:     () => this.imp_recordpoint(),
+        bcpl_recordnote:      () => this.imp_recordnote(),
+        bcpl_get_record:      () => this.imp_get_record(),
+        bcpl_put_record:      () => this.imp_put_record(),
         // Debug-mode breakpoint hook. Always present so wasm with
         // (call $__break) instantiates either way; behavior depends
         // on whether asyncify is in the build (debugger mode).
@@ -3811,7 +3962,7 @@ export class BcplRuntime {
   // table_base) and export register()/stat_words()/fn_count(). The
   // loader two-pass-instantiates each program: probe sizes, bump-
   // allocate bases, then real instantiate + register.
-  static STDLIB_TABLE_SLOTS = 82;
+  static STDLIB_TABLE_SLOTS = 89;
   static STATIC_WORD_BASE   = 1001;  // first word past G
 
   async loadMaster(url = "master.wasm") {
