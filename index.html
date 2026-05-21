@@ -1052,6 +1052,7 @@
     <button id="runOnly"      title="run the last compiled program (no recompile)" disabled>Run</button>
     <button id="stopRun"      disabled title="stop the running program">Stop</button>
     <button id="continueRun"  disabled title="continue from breakpoint" style="display:none">Continue</button>
+    <button id="stepRun"      disabled title="step one statement" style="display:none">Step</button>
     <span class="cmd-sep"></span>
     <button id="shareLink"    title="copy share URL of current file">Share link</button>
     <button id="dbgMode"
@@ -1242,6 +1243,7 @@
     const runOnlyBtn    = document.getElementById("runOnly");
     const stopBtn       = document.getElementById("stopRun");
     const continueBtn   = document.getElementById("continueRun");
+    const stepBtn       = document.getElementById("stepRun");
     // Debug-mode toggle button. Replaced the old checkbox so the
     // control matches the rest of the cmd-strip visually. We expose a
     // .checked accessor so the existing call sites that read/write
@@ -2446,6 +2448,8 @@ LET start() = VALOF
         statusEl.classList.add("paused");
         continueBtn.style.display = "";
         continueBtn.disabled = false;
+        stepBtn.style.display = "";
+        stepBtn.disabled = false;
         const entryName = (files.find(f => f.entry) ?? files[0])?.name;
         setPausedLine(line, entryName);
         if (entryName) {
@@ -2458,8 +2462,10 @@ LET start() = VALOF
       rt.onResume = () => {
         statusEl.classList.remove("paused");
         continueBtn.disabled = true;
+        stepBtn.disabled = true;
       };
       continueBtn.style.display = dbgModeEl.checked ? "" : "none";
+      stepBtn.style.display     = dbgModeEl.checked ? "" : "none";
       stopBtn.disabled = false;
       const canvasEl = document.getElementById("sdlCanvas");
       const outputPaneEl = document.getElementById("outputPane");
@@ -2568,6 +2574,16 @@ LET start() = VALOF
         setStatus("running…");
         clearPausedLine();
         continueBtn.disabled = true;
+        stepBtn.disabled = true;
+      }
+    });
+    stepBtn.addEventListener("click", () => {
+      if (currentRt && currentRt.isPaused()) {
+        currentRt.step();
+        setStatus("stepping…");
+        clearPausedLine();
+        continueBtn.disabled = true;
+        stepBtn.disabled = true;
       }
     });
 

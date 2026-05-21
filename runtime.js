@@ -3438,12 +3438,16 @@ export class BcplRuntime {
       }
       return;
     }
-    if (!this._breakpoints || this._breakpoints.size === 0) return;
+    // Fast-path: when no breakpoints are armed and we're not in
+    // step mode, every (call $__break) returns immediately.
+    const haveBps = this._breakpoints && this._breakpoints.size > 0;
+    if (!haveBps && !this._stepMode) return;
     const line = this.currentLine();
-    if (line === 0 || !this._breakpoints.has(line)) return;
-    // Step-over: callers can mark a single hit then mute the bp so
-    // continuing doesn't immediately re-trigger on the same line.
+    if (line === 0) return;
     if (this._stepOverLine === line) return;
+    const inBp = haveBps && this._breakpoints.has(line);
+    if (!this._stepMode && !inBp) return;
+    if (this._stepMode) this._stepMode = false;
 
     const exp = this._coroutineExports();
     if (!exp) return;                  // not a debug build — give up
@@ -3471,6 +3475,23 @@ export class BcplRuntime {
     if (!this._pauseResolve) return false;
     if (stepOver) this._stepOverLine = this._pausedLine;
     else          this._stepOverLine = 0;
+    const r = this._pauseResolve;
+    this._pauseResolve = null;
+    this._pausePromise = null;
+    this._pausedLine = 0;
+    if (this.onResume) this.onResume();
+    r();
+    return true;
+  }
+
+  // Single-step: resume execution and arm a one-shot break on the
+  // very next statement boundary (irrespective of the bp set). The
+  // current line is muted so we don't re-trigger on the line we're
+  // leaving. imp_break clears _stepMode the moment it fires.
+  step() {
+    if (!this._pauseResolve) return false;
+    this._stepMode = true;
+    this._stepOverLine = this._pausedLine;
     const r = this._pauseResolve;
     this._pauseResolve = null;
     this._pausePromise = null;
