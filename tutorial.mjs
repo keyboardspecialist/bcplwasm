@@ -343,6 +343,21 @@ export const TRACK = [
     prereqs: ["03-variables"],
   },
   {
+    slug: "63-writef-formatters",
+    title: "writef() Format Codes",
+    level: 5,
+    topic: "io",
+    summary: "End-to-end tour of every writef() format code: %n %i %u %x %o %b %z %c %s %t %f %e %g, width.precision form, %# unicode, %% literal, %+/%- arg cursor moves.",
+    goals: [
+      "%i N / %z N / %x N / %o N / %b N — width-padded variants",
+      "%n.mD pre-code width.precision form",
+      "%# codewrch — print a Unicode codepoint as UTF-8",
+      "%+ skips an argument, %- re-uses the previous one",
+      "%% emits a literal '%'",
+    ],
+    prereqs: ["22-format-output"],
+  },
+  {
     slug: "23-parsing",
     title: "Reading Numbers & Tokens",
     level: 5,
@@ -382,6 +397,21 @@ export const TRACK = [
       "Convert via FLT/FIX",
     ],
     prereqs: ["03-variables"],
+  },
+  {
+    slug: "64-flt-modes",
+    title: "FLOAT, FIX, and FLT in depth",
+    level: 5,
+    topic: "io",
+    summary: "Reinterpret int <-> float bits with FLOAT and FIX. Use the FLT tag on function parameters and locals so '+', '*' etc are taken as float ops without manual '#' on each operator. Compare integer vs float division semantics.",
+    goals: [
+      "FLOAT x — int -> f32 bit pattern",
+      "FIX x — f32 bits -> int (truncation, not rounding)",
+      "LET hypot2(FLT a, FLT b) = a*a + b*b — FLT params propagate float math",
+      "LET FLT x = 3.14 — typed local accepts float literal directly",
+      "Mixed examples: integer / vs float #/ and FIX of result",
+    ],
+    prereqs: ["25-floats"],
   },
 
   // ---- Level 6 — Advanced / Bonus -------------------------------
