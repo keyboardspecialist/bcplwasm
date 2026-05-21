@@ -69,6 +69,7 @@
     [data-theme="light"] .file-actions button,
     [data-theme="light"] .preview-note button,
     [data-theme="light"] .mem-controls button,
+    [data-theme="light"] .ws-bar button,
     [data-theme="light"] .theme-toggle,
     [data-theme="light"] .collapse-btn,
     [data-theme="light"] .canvas-fs-btn {
@@ -89,6 +90,7 @@
     [data-theme="light"] .file-actions button:hover,
     [data-theme="light"] .preview-note button:hover,
     [data-theme="light"] .mem-controls button:hover,
+    [data-theme="light"] .ws-bar button:hover,
     [data-theme="light"] .theme-toggle:hover,
     [data-theme="light"] .collapse-btn:hover,
     [data-theme="light"] .canvas-fs-btn:hover {
@@ -99,6 +101,7 @@
     [data-theme="light"] .file-actions button:active,
     [data-theme="light"] .preview-note button:active,
     [data-theme="light"] .mem-controls button:active,
+    [data-theme="light"] .ws-bar button:active,
     [data-theme="light"] .theme-toggle:active,
     [data-theme="light"] .collapse-btn:active,
     [data-theme="light"] .canvas-fs-btn:active {
@@ -108,10 +111,110 @@
       border-bottom: 1px solid var(--vc6-hi);
       box-shadow: inset 1px 1px 0 var(--vc6-sh);
     }
+    .cmd-strip {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.3rem 0.6rem;
+      background: var(--bg-2);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .cmd-strip button {
+      font: inherit;
+      font-size: 0.78rem;
+      background: var(--bg-2);
+      color: var(--fg);
+      border: 1px solid var(--border);
+      padding: 0.15rem 0.55rem;
+      border-radius: 2px;
+      cursor: pointer;
+    }
+    .cmd-strip button.primary {
+      background: var(--accent);
+      color: #000;
+      font-weight: 600;
+      border-color: var(--accent);
+    }
+    .cmd-strip button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    .cmd-strip button:hover:not(:disabled) { border-color: var(--accent); }
+    .cmd-strip .cmd-sep {
+      width: 1px;
+      align-self: stretch;
+      background: var(--border);
+      margin: 0 0.3rem;
+    }
+    .cmd-strip .compile-status { margin-left: auto; }
+    /* Sticky toggle button — looks like a regular cmd-strip button,
+       but stays "pressed" when .on is set. Click flips state. */
+    .cmd-strip .toggle-btn.on {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+      box-shadow: inset 1px 1px 2px rgba(0,0,0,0.25);
+    }
+    [data-theme="light"] .cmd-strip .toggle-btn.on {
+      background: #b8d4f0;
+      color: #000;
+      border-top:    1px solid var(--vc6-lo);
+      border-left:   1px solid var(--vc6-lo);
+      border-right:  1px solid var(--vc6-hi);
+      border-bottom: 1px solid var(--vc6-hi);
+      box-shadow: inset 1px 1px 0 var(--vc6-sh);
+    }
+    /* Re-apply VC++6 raised bevel + sunken active to the cmd-strip
+       buttons under the light theme. */
+    [data-theme="light"] .cmd-strip {
+      background: var(--bg-2);
+      border-bottom: 1px solid var(--vc6-lo);
+      box-shadow: inset 0 -1px 0 var(--vc6-hi);
+    }
+    [data-theme="light"] .cmd-strip button {
+      background: #d4d0c8;
+      color: #000;
+      border-top:    1px solid var(--vc6-hi);
+      border-left:   1px solid var(--vc6-hi);
+      border-right:  1px solid var(--vc6-lo);
+      border-bottom: 1px solid var(--vc6-lo);
+      box-shadow: inset -1px -1px 0 var(--vc6-sh), inset 1px 1px 0 #f0f0f0;
+      border-radius: 0;
+    }
+    [data-theme="light"] .cmd-strip button.primary {
+      font-weight: 700;
+      background: #d4d0c8;
+      color: var(--vc6-sel);
+    }
+    [data-theme="light"] .cmd-strip button:hover:not(:disabled) {
+      background: #e0dcd4;
+      border-color: #000;
+    }
+    [data-theme="light"] .cmd-strip button:active:not(:disabled) {
+      border-top:    1px solid var(--vc6-lo);
+      border-left:   1px solid var(--vc6-lo);
+      border-right:  1px solid var(--vc6-hi);
+      border-bottom: 1px solid var(--vc6-hi);
+      box-shadow: inset 1px 1px 0 var(--vc6-sh);
+    }
+    .ws-bar select, .ws-bar button, .ws-bar input {
+      font: inherit;
+      font-size: 0.78rem;
+      background: var(--bg-2);
+      color: var(--fg);
+      border: 1px solid var(--border);
+      padding: 0.1rem 0.4rem;
+      border-radius: 2px;
+      cursor: pointer;
+    }
+    .ws-bar select { min-width: 8rem; }
+    .ws-bar button:hover { border-color: var(--accent); }
     /* Sunken bevel for input fields and selects (the classic
        Win9x EDIT-control look). */
     [data-theme="light"] .mem-controls input,
     [data-theme="light"] .mem-controls select,
+    [data-theme="light"] .ws-bar select,
     [data-theme="light"] #stdin {
       background: #ffffff;
       color: #000;
@@ -922,11 +1025,43 @@
   <header>
     <h1>BCPL &rarr; WebAssembly</h1>
     <span class="sub">
-      self-hosted <code>bcplwasm</code> + browser runtime. multi-file programs supported.
+      BCPL by
+      <a href="https://www.cl.cam.ac.uk/~mr10/" target="_blank" rel="noopener noreferrer">Martin Richards</a>.
+      &nbsp;
+      <a href="https://github.com/keyboardspecialist/bcplwasm" target="_blank" rel="noopener noreferrer">source on GitHub</a>.
     </span>
-    <span class="sub" id="buildTag" style="margin-left: auto; font-family: ui-monospace, monospace; font-size: 0.75rem;"></span>
+    <span class="ws-bar" id="wsBar" style="margin-left:auto;display:flex;align-items:center;gap:0.35rem;">
+      <label class="sub" style="font-size:0.75rem;color:var(--fg-dim);">workspace:</label>
+      <select id="wsSelect" title="active workspace"></select>
+      <button id="wsNew"    title="new workspace">+</button>
+      <button id="wsRename" title="rename current workspace">rename</button>
+      <button id="wsDelete" title="delete current workspace">−</button>
+      <button id="wsExport" title="download workspace (.bcplws)">export</button>
+      <button id="wsImport" title="import workspace from .bcplws">import</button>
+      <input  id="wsImportFile" type="file" accept=".bcplws,.bcplproj,.json" style="display:none">
+    </span>
+    <span class="sub" id="buildTag" style="font-family: ui-monospace, monospace; font-size: 0.75rem;"></span>
     <button class="theme-toggle" id="themeToggle" title="Toggle light/dark theme">☀︎</button>
   </header>
+
+  <!-- Top command strip: build + run controls for the active workspace. -->
+  <nav class="cmd-strip" id="cmdStrip">
+    <button id="compileRun"   class="primary" title="compile all + run">▶ Compile &amp; Run</button>
+    <button id="compileOnly"  title="compile without running (re-uses bytes on next Run)">Compile</button>
+    <button id="runOnly"      title="run the last compiled program (no recompile)" disabled>Run</button>
+    <button id="stopRun"      disabled title="stop the running program">Stop</button>
+    <button id="continueRun"  disabled title="continue from breakpoint" style="display:none">Continue</button>
+    <span class="cmd-sep"></span>
+    <button id="shareLink"    title="copy share URL of current file">Share link</button>
+    <button id="dbgMode"
+            class="toggle-btn"
+            type="button"
+            aria-pressed="false"
+            title="toggle debug mode — breakpoints + post-mortem pause (slower, forces asyncify on every module)">
+      Debug mode
+    </button>
+    <span id="compileStatus" class="compile-status"></span>
+  </nav>
 
   <div class="workspace">
     <!-- LEFT PANE -->
@@ -944,12 +1079,6 @@
           <button id="addFile">+ file</button>
           <button id="renameFile">rename</button>
           <button id="setEntryBtn">set entry</button>
-          <button id="resetFiles">reset</button>
-        </div>
-        <div class="file-actions" style="margin-top:0.4rem;">
-          <button id="exportBundle" title="download project bundle">export</button>
-          <button id="importBundle" title="load project bundle">import</button>
-          <input id="bundleFile" type="file" accept=".bcplproj,.json" style="display:none">
         </div>
       </div>
 
@@ -1006,16 +1135,6 @@
           </div>
         </div>
         <pre id="liveWat">(not yet compiled)</pre>
-      </div>
-      <div class="action-row">
-        <button id="compileRun">Compile &amp; Run</button>
-        <button id="stopRun" disabled title="stop the running program">Stop</button>
-        <button id="continueRun" disabled title="continue from breakpoint" style="display:none">Continue</button>
-        <button id="shareLink" title="copy share URL of current file">Share link</button>
-        <label class="dbg-toggle" title="enable breakpoints + post-mortem pause (slower, forces asyncify on every module)">
-          <input type="checkbox" id="dbgMode"> Debugger
-        </label>
-        <span id="compileStatus" class="compile-status"></span>
       </div>
     </main>
 
@@ -1118,9 +1237,35 @@
     const outputTabsEl  = document.getElementById("outputTabs");
     const stdinEl       = document.getElementById("stdin");
     const compileBtn    = document.getElementById("compileRun");
+    const compileOnlyBtn= document.getElementById("compileOnly");
+    const runOnlyBtn    = document.getElementById("runOnly");
     const stopBtn       = document.getElementById("stopRun");
     const continueBtn   = document.getElementById("continueRun");
-    const dbgModeEl     = document.getElementById("dbgMode");
+    // Debug-mode toggle button. Replaced the old checkbox so the
+    // control matches the rest of the cmd-strip visually. We expose a
+    // .checked accessor so the existing call sites that read/write
+    // dbgModeEl.checked don't need to change. Press state is mirrored
+    // to aria-pressed (+ .on class for CSS styling).
+    const dbgModeBtn = document.getElementById("dbgMode");
+    const dbgModeEl = {
+      get checked() { return dbgModeBtn.classList.contains("on"); },
+      set checked(v) {
+        const on = !!v;
+        dbgModeBtn.classList.toggle("on", on);
+        dbgModeBtn.setAttribute("aria-pressed", on ? "true" : "false");
+      },
+      addEventListener(type, fn) {
+        // Only "change" is used in the rest of the file. We toggle
+        // first so handlers see the NEW state via .checked, matching
+        // the checkbox's natural ordering.
+        if (type === "change") {
+          dbgModeBtn.addEventListener("click", (e) => {
+            dbgModeEl.checked = !dbgModeEl.checked;
+            fn(e);
+          });
+        }
+      },
+    };
     let   currentRt     = null;   // BcplRuntime of the active program, if any
     const statusEl      = document.getElementById("compileStatus");
 
@@ -1328,9 +1473,60 @@ LET start() = VALOF
       openFileTab(newFileIdx);
     }
 
+    // ---------- Workspaces (named, switchable) ----------
+    //
+    // localStorage layout:
+    //   bcpl-ws:list     JSON array of workspace names
+    //   bcpl-ws:active   string — currently-loaded workspace name
+    //   bcpl-ws:<name>:files   JSON files array
+    //   bcpl-ws:<name>:assets  JSON assetBackend.serialise() output
+    //
+    // Legacy single-workspace data (FILES_LS_KEY) is migrated on first
+    // load into a workspace called "default".
+    const WS_LIST_KEY   = "bcpl-ws:list";
+    const WS_ACTIVE_KEY = "bcpl-ws:active";
+    const WS_FILES_KEY  = (n) => `bcpl-ws:${n}:files`;
+    const WS_ASSETS_KEY = (n) => `bcpl-ws:${n}:assets`;
+
+    function wsList() {
+      try {
+        const raw = localStorage.getItem(WS_LIST_KEY);
+        if (raw) {
+          const arr = JSON.parse(raw);
+          if (Array.isArray(arr) && arr.length) return arr;
+        }
+      } catch {}
+      return [];
+    }
+    function wsSetList(arr) {
+      try { localStorage.setItem(WS_LIST_KEY, JSON.stringify(arr)); } catch {}
+    }
+    function wsActive() {
+      return localStorage.getItem(WS_ACTIVE_KEY) || "default";
+    }
+    function wsSetActive(name) {
+      try { localStorage.setItem(WS_ACTIVE_KEY, name); } catch {}
+    }
+    function wsMigrateLegacy() {
+      // First-run migration: if the old FILES_LS_KEY has data and no
+      // workspace list exists, move it under "default".
+      if (wsList().length > 0) return;
+      let legacy = null;
+      try { legacy = localStorage.getItem(FILES_LS_KEY); } catch {}
+      if (legacy) {
+        try {
+          localStorage.setItem(WS_FILES_KEY("default"), legacy);
+          localStorage.removeItem(FILES_LS_KEY);
+        } catch {}
+      }
+      wsSetList(["default"]);
+      wsSetActive("default");
+    }
+    wsMigrateLegacy();
+
     function loadFiles() {
       try {
-        const raw = localStorage.getItem(FILES_LS_KEY);
+        const raw = localStorage.getItem(WS_FILES_KEY(wsActive()));
         if (raw) {
           const parsed = JSON.parse(raw);
           if (Array.isArray(parsed) && parsed.length) return parsed;
@@ -1339,7 +1535,167 @@ LET start() = VALOF
       return structuredClone(DEFAULT_FILES);
     }
     function persistFiles() {
-      try { localStorage.setItem(FILES_LS_KEY, JSON.stringify(files)); } catch {}
+      try {
+        localStorage.setItem(WS_FILES_KEY(wsActive()), JSON.stringify(files));
+      } catch {}
+    }
+    async function persistAssetsForActive() {
+      const { assetBackend } = await import(`./runtime.js?v=${V}`);
+      try {
+        localStorage.setItem(WS_ASSETS_KEY(wsActive()),
+                             JSON.stringify(assetBackend.serialise()));
+      } catch {}
+    }
+    async function loadAssetsForActive() {
+      const { assetBackend } = await import(`./runtime.js?v=${V}`);
+      assetBackend.clear();
+      try {
+        const raw = localStorage.getItem(WS_ASSETS_KEY(wsActive()));
+        if (raw) assetBackend.deserialise(JSON.parse(raw));
+      } catch {}
+    }
+
+    // ---------- Workspace switcher actions ----------
+    function renderWsSelect() {
+      const sel = document.getElementById("wsSelect");
+      if (!sel) return;
+      const names = wsList();
+      const active = wsActive();
+      sel.innerHTML = "";
+      for (const n of names) {
+        const o = document.createElement("option");
+        o.value = n; o.textContent = n;
+        if (n === active) o.selected = true;
+        sel.appendChild(o);
+      }
+    }
+
+    async function saveCurrentWorkspace() {
+      commitActiveEdit();
+      persistFiles();
+      await persistAssetsForActive();
+    }
+
+    async function switchWorkspace(name) {
+      if (!wsList().includes(name)) return;
+      await saveCurrentWorkspace();
+      wsSetActive(name);
+      files = loadFiles();
+      sourceTabs = [];
+      activeTab  = 0;
+      await loadAssetsForActive();
+      rebuildSourceTabs(false);
+      renderAssetList();
+      renderWsSelect();
+      // Workspaces have independent sources; last build is stale.
+      invalidateLastBuilt();
+    }
+
+    async function wsCreate(name) {
+      const trimmed = (name || "").trim();
+      if (!trimmed) return null;
+      const list = wsList();
+      if (list.includes(trimmed)) { alert(`Workspace "${trimmed}" already exists.`); return null; }
+      list.push(trimmed);
+      wsSetList(list);
+      // Seed empty workspace state.
+      try {
+        localStorage.setItem(WS_FILES_KEY(trimmed),
+                             JSON.stringify(structuredClone(DEFAULT_FILES)));
+        localStorage.setItem(WS_ASSETS_KEY(trimmed), JSON.stringify({}));
+      } catch {}
+      await switchWorkspace(trimmed);
+      return trimmed;
+    }
+
+    async function wsDelete(name) {
+      const list = wsList();
+      if (list.length <= 1) { alert("Can't delete the last workspace."); return; }
+      if (!list.includes(name)) return;
+      if (!confirm(`Delete workspace "${name}"? Files + assets in it are gone.`)) return;
+      try {
+        localStorage.removeItem(WS_FILES_KEY(name));
+        localStorage.removeItem(WS_ASSETS_KEY(name));
+      } catch {}
+      const next = list.filter(n => n !== name);
+      wsSetList(next);
+      if (wsActive() === name) {
+        wsSetActive(next[0]);
+        files = loadFiles();
+        sourceTabs = [];
+        activeTab = 0;
+        await loadAssetsForActive();
+        rebuildSourceTabs(false);
+        renderAssetList();
+      }
+      renderWsSelect();
+    }
+
+    async function wsRename(oldName, newName) {
+      const trimmed = (newName || "").trim();
+      if (!trimmed || trimmed === oldName) return;
+      const list = wsList();
+      if (!list.includes(oldName)) return;
+      if (list.includes(trimmed)) { alert(`Workspace "${trimmed}" already exists.`); return; }
+      try {
+        const f = localStorage.getItem(WS_FILES_KEY(oldName));
+        const a = localStorage.getItem(WS_ASSETS_KEY(oldName));
+        if (f !== null) localStorage.setItem(WS_FILES_KEY(trimmed), f);
+        if (a !== null) localStorage.setItem(WS_ASSETS_KEY(trimmed), a);
+        localStorage.removeItem(WS_FILES_KEY(oldName));
+        localStorage.removeItem(WS_ASSETS_KEY(oldName));
+      } catch {}
+      const next = list.map(n => (n === oldName ? trimmed : n));
+      wsSetList(next);
+      if (wsActive() === oldName) wsSetActive(trimmed);
+      renderWsSelect();
+    }
+
+    async function wsExportCurrent() {
+      await saveCurrentWorkspace();
+      const { assetBackend } = await import(`./runtime.js?v=${V}`);
+      const name = wsActive();
+      const payload = {
+        version: 2,
+        kind: "bcpl-workspace",
+        name,
+        exported: new Date().toISOString(),
+        files: files.map(f => ({ name: f.name, entry: !!f.entry, content: f.content ?? "" })),
+        assets: assetBackend.serialise(),
+      };
+      const blob = new Blob([JSON.stringify(payload)], { type: "application/json" });
+      const url  = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = `${name}.bcplws`;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    async function wsImportFromFile(file) {
+      try {
+        const text = await file.text();
+        const obj = JSON.parse(text);
+        if (!Array.isArray(obj.files)) throw new Error("missing files[]");
+        let target = (obj.name || file.name.replace(/\.[^.]+$/, "")).trim() || "imported";
+        const list = wsList();
+        // Avoid clobbering: if name taken, suffix (2), (3)...
+        if (list.includes(target)) {
+          let i = 2;
+          while (list.includes(`${target} (${i})`)) i++;
+          target = `${target} (${i})`;
+        }
+        list.push(target);
+        wsSetList(list);
+        // Persist incoming files + assets under the new name.
+        localStorage.setItem(WS_FILES_KEY(target),
+                             JSON.stringify(obj.files.map(f => ({
+                               name: f.name, entry: !!f.entry, content: f.content ?? "" }))));
+        localStorage.setItem(WS_ASSETS_KEY(target),
+                             JSON.stringify(obj.assets ?? {}));
+        await switchWorkspace(target);
+      } catch (e) {
+        alert(`Import failed: ${e.message ?? e}`);
+      }
     }
     // Return the file-index of the currently-active file tab, or -1 if
     // the active tab is a preview/WAT.
@@ -1432,14 +1788,6 @@ LET start() = VALOF
       renderSourceTabs();
       renderFileList();
     }
-    function resetFiles() {
-      if (!confirm("Reset to default file list?")) return;
-      files = structuredClone(DEFAULT_FILES);
-      sourceTabs = [];
-      persistFiles();
-      rebuildSourceTabs(false);
-    }
-
     // ------------------ Assets tab ----------------------------------
     // Image extensions get decoded to RGBA; everything else is stored
     // raw as a binary blob (WADs, .bin, etc.) and reachable from BCPL
@@ -1456,6 +1804,7 @@ LET start() = VALOF
           rec = { bytes: new Uint8Array(await file.arrayBuffer()) };
         }
         assetBackend.set(file.name, rec);
+        await persistAssetsForActive();
         renderAssetList();
       } catch (e) {
         alert(`Asset load failed: ${e.message ?? e}`);
@@ -1477,7 +1826,11 @@ LET start() = VALOF
         const del = document.createElement("button");
         del.textContent = "×";
         del.title = "remove";
-        del.onclick = () => { assetBackend.del(name); renderAssetList(); };
+        del.onclick = async () => {
+          assetBackend.del(name);
+          await persistAssetsForActive();
+          renderAssetList();
+        };
         li.appendChild(title);
         li.appendChild(del);
         ul.appendChild(li);
@@ -1492,58 +1845,34 @@ LET start() = VALOF
       e.target.value = "";
     });
 
-    // ------------------ Project bundle export / import -------------
-    async function exportBundle() {
-      const { assetBackend } = await import(`./runtime.js?v=${V}`);
-      const bundle = {
-        version: 1,
-        exported: new Date().toISOString(),
-        files: files.map(f => ({ name: f.name, entry: !!f.entry, content: f.content })),
-        assets: assetBackend.serialise(),
-      };
-      const blob = new Blob([JSON.stringify(bundle)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "project.bcplproj";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
-    async function importBundle(file) {
-      try {
-        const text = await file.text();
-        const bundle = JSON.parse(text);
-        if (!Array.isArray(bundle.files)) throw new Error("missing files[]");
-        const { assetBackend } = await import(`./runtime.js?v=${V}`);
-        files = bundle.files.map(f => ({
-          name: f.name, entry: !!f.entry, content: f.content ?? "",
-        }));
-        if (!files.some(f => f.entry)) {
-          const i = files.findIndex(f => f.name.endsWith(".b"));
-          if (i >= 0) files[i].entry = true;
-        }
-        if (bundle.assets && typeof bundle.assets === "object") {
-          assetBackend.deserialise(bundle.assets);
-        }
-        persistFiles();
-        sourceTabs = [];
-        rebuildSourceTabs(false);
-        renderAssetList();
-      } catch (e) {
-        alert(`Import failed: ${e.message ?? e}`);
-      }
-    }
-    document.getElementById("exportBundle").addEventListener("click", exportBundle);
-    document.getElementById("importBundle").addEventListener("click", () => {
-      document.getElementById("bundleFile").click();
+    // Project bundle export / import lives entirely under the
+    // workspace bar now (wsExportCurrent / wsImportFromFile).
+    // Header workspace bar.
+    document.getElementById("wsSelect").addEventListener("change", (e) => {
+      switchWorkspace(e.target.value);
     });
-    document.getElementById("bundleFile").addEventListener("change", async (e) => {
+    document.getElementById("wsNew").addEventListener("click", async () => {
+      const name = prompt("New workspace name:");
+      if (name) await wsCreate(name);
+    });
+    document.getElementById("wsRename").addEventListener("click", async () => {
+      const cur = wsActive();
+      const next = prompt(`Rename "${cur}" to:`, cur);
+      if (next && next !== cur) await wsRename(cur, next);
+    });
+    document.getElementById("wsDelete").addEventListener("click", async () => {
+      await wsDelete(wsActive());
+    });
+    document.getElementById("wsExport").addEventListener("click", wsExportCurrent);
+    document.getElementById("wsImport").addEventListener("click", () => {
+      document.getElementById("wsImportFile").click();
+    });
+    document.getElementById("wsImportFile").addEventListener("change", async (e) => {
       const f = e.target.files?.[0];
-      if (f) await importBundle(f);
+      if (f) await wsImportFromFile(f);
       e.target.value = "";
     });
+    renderWsSelect();
 
     // ------------------ Examples tab (tutorial track) ------------------
     let selectedExample = TRACK[0]?.slug ?? EXTRAS[0];
@@ -2002,8 +2331,20 @@ LET start() = VALOF
       }
     }
 
-    async function compileAndRun() {
-      compileBtn.disabled = true;
+    // Last successful compile cache, consumed by Run-only.
+    // Cleared whenever files change or a compile fails.
+    let lastBuilt = null;
+    // { libBufs: [[Uint8Array,...], ...], entryBufs: [Uint8Array,...],
+    //   modulesPerSource: [n,n,...] }
+
+    function invalidateLastBuilt() {
+      lastBuilt = null;
+      if (runOnlyBtn) runOnlyBtn.disabled = true;
+    }
+
+    // Compile current workspace into wasm bytes. Returns the build
+    // artifact (or null on failure — diagnostics already routed).
+    async function doCompile() {
       outputEl.textContent = "";
       liveWatEl.textContent = "(compiling…)";
       setStatus("compiling…");
@@ -2013,6 +2354,7 @@ LET start() = VALOF
       clearCrash();
       activateOutputTab("output");
       const compileErrAcc = new Map();
+      let built = null;
       try {
         await seedBuiltinHeaders();
         await attachShippedDeps();
@@ -2021,12 +2363,8 @@ LET start() = VALOF
         const allSources = files.filter(f => f.name.endsWith(".b"));
         if (allSources.length === 0) throw new Error("no .b source files");
         const entry = allSources.find(f => f.entry) ?? allSources[0];
-
-        // Only compile entry + its transitive GET-resolved deps.
-        // Other .b files in the list are seeded into storageBackend
-        // (so a future GET resolves them) but not compiled this run.
         const sources = resolveDeps(entry, files);
-        const libs  = sources.filter(f => f !== entry);
+        const libs    = sources.filter(f => f !== entry);
 
         const skipped = allSources.filter(f => !sources.includes(f));
         if (skipped.length) {
@@ -2041,8 +2379,6 @@ LET start() = VALOF
           setStatus(`compiling ${f.name}…`);
           const toName = `__out_${f.name}.wat`;
           const { wat, diagErrors } = await compileBcplFile(f.name, toName);
-          // Bucket parsed errors by their owning source file (basename
-          // from the diag matches the user's tab name).
           if (diagErrors && diagErrors.length) {
             for (const e of diagErrors) {
               if (!compileErrAcc.has(e.file)) compileErrAcc.set(e.file, []);
@@ -2051,7 +2387,6 @@ LET start() = VALOF
           }
           watByName.set(f.name, wat);
         }
-
         liveWatEl.textContent = watByName.get(entry.name);
 
         setStatus("assembling…");
@@ -2065,98 +2400,149 @@ LET start() = VALOF
           }
           return bufs;
         };
-
-        setStatus("loading…");
-        const rt = new BcplRuntime(
-          (s) => { outputEl.textContent += s; },
-          stdinEl.value
-        );
-        currentRt = rt;
-        lastMemRt = rt;
-        rt.setBreakpoints(allBpLines());
-        rt.onPause = (line) => {
-          setStatus(`paused at line ${line}`);
-          statusEl.classList.add("paused");
-          continueBtn.style.display = "";
-          continueBtn.disabled = false;
-          // Pick best file: entry, fall back to active editor file.
-          const entryName = (files.find(f => f.entry) ?? files[0])?.name;
-          setPausedLine(line, entryName);
-          if (entryName) {
-            const idx = files.findIndex(f => f.name === entryName);
-            if (idx >= 0) openFileTab(idx);
-          }
-          jumpToLine(line);
-          activateOutputTab("mem");
-        };
-        rt.onResume = () => {
-          statusEl.classList.remove("paused");
-          continueBtn.disabled = true;
-        };
-        if (dbgModeEl.checked) {
-          continueBtn.style.display = "";
-        } else {
-          continueBtn.style.display = "none";
-        }
-        stopBtn.disabled = false;
-        // Wire the canvas + reveal callback so SDL ops have a target.
-        const canvasEl = document.getElementById("sdlCanvas");
-        const outputPaneEl = document.getElementById("outputPane");
-        // Hide canvas at the start of each run; sdl_init re-enables.
-        outputPaneEl.classList.remove("with-canvas");
-        rt.setSdlCanvas(canvasEl, () => {
-          outputPaneEl.classList.add("with-canvas");
-          canvasEl.focus();
-        });
-        await rt.loadMaster("master.wasm?v=" + V);
-        const modulesPerSource = [];
-        for (const lib of libs) {
-          const bufs = await assemble(lib);
-          modulesPerSource.push(bufs.length);
-          for (const b of bufs) await rt.loadProgramFromBytes(b);
-        }
-        {
-          const bufs = await assemble(entry);
-          modulesPerSource.push(bufs.length);
-          for (const b of bufs) await rt.loadProgramFromBytes(b);
-        }
-        const warn = rt.checkEntryOrdering(modulesPerSource);
-        if (warn) outputEl.textContent += `[warn] ${warn}\n`;
-        rt.initMaster();
-        setStatus("running…");
-        await rt.run();
-        setStatus(rt.aborted ? "stopped" : "ok");
+        const libBufs = [];
+        for (const lib of libs) libBufs.push(await assemble(lib));
+        const entryBufs = await assemble(entry);
+        const modulesPerSource = [...libBufs.map(b => b.length), entryBufs.length];
+        built = { libBufs, entryBufs, modulesPerSource };
+        setStatus("compiled");
       } catch (err) {
-        setStatus(err.message ?? String(err), true);
-        outputEl.textContent += `\n[compile+run error] ${err.message ?? err}`;
+        // Short status only — the full message lands in the Output tab
+        // and any parsed diagnostics show up in the Diagnostics tab.
+        setStatus("compile error", true);
+        outputEl.textContent += `\n[compile error] ${err.message ?? err}`;
         console.error(err);
-        // If the failure carried parsed compile errors (cintsys
-        // diagnostic stream), merge them into the per-file map.
         if (err.diagErrors && err.diagErrors.length) {
           for (const e of err.diagErrors) {
             if (!compileErrAcc.has(e.file)) compileErrAcc.set(e.file, []);
             compileErrAcc.get(e.file).push(e);
           }
         }
-        // Runtime trap: snapshot before currentRt is dropped.
-        const isCompileErr = compileErrAcc.size > 0;
-        if (currentRt && !isCompileErr) {
+      }
+      if (compileErrAcc.size > 0) {
+        setCompileErrors(compileErrAcc);
+        activateOutputTab("diag");
+      } else {
+        syncEditor();
+        renderDiagnostics();
+      }
+      return built;
+    }
+
+    // Run an already-assembled build through a fresh BcplRuntime.
+    async function doRun(built) {
+      if (!built) return;
+      setStatus("loading…");
+      const rt = new BcplRuntime(
+        (s) => { outputEl.textContent += s; },
+        stdinEl.value
+      );
+      currentRt = rt;
+      lastMemRt = rt;
+      rt.setBreakpoints(allBpLines());
+      rt.onPause = (line) => {
+        setStatus(`paused at line ${line}`);
+        statusEl.classList.add("paused");
+        continueBtn.style.display = "";
+        continueBtn.disabled = false;
+        const entryName = (files.find(f => f.entry) ?? files[0])?.name;
+        setPausedLine(line, entryName);
+        if (entryName) {
+          const idx = files.findIndex(f => f.name === entryName);
+          if (idx >= 0) openFileTab(idx);
+        }
+        jumpToLine(line);
+        activateOutputTab("mem");
+      };
+      rt.onResume = () => {
+        statusEl.classList.remove("paused");
+        continueBtn.disabled = true;
+      };
+      continueBtn.style.display = dbgModeEl.checked ? "" : "none";
+      stopBtn.disabled = false;
+      const canvasEl = document.getElementById("sdlCanvas");
+      const outputPaneEl = document.getElementById("outputPane");
+      outputPaneEl.classList.remove("with-canvas");
+      rt.setSdlCanvas(canvasEl, () => {
+        outputPaneEl.classList.add("with-canvas");
+        canvasEl.focus();
+      });
+      try {
+        await rt.loadMaster("master.wasm?v=" + V);
+        for (const bufs of built.libBufs) {
+          for (const b of bufs) await rt.loadProgramFromBytes(b);
+        }
+        for (const b of built.entryBufs) await rt.loadProgramFromBytes(b);
+        const warn = rt.checkEntryOrdering(built.modulesPerSource);
+        if (warn) outputEl.textContent += `[warn] ${warn}\n`;
+        rt.initMaster();
+        setStatus("running…");
+        await rt.run();
+        setStatus(rt.aborted ? "stopped" : "ok");
+      } catch (err) {
+        // Status stays terse — Crash tab gets the detailed snapshot
+        // and the Output tab gets the raw message.
+        setStatus("runtime error", true);
+        outputEl.textContent += `\n[runtime error] ${err.message ?? err}`;
+        console.error(err);
+        if (currentRt) {
           try {
             const entryFile = (files.find(f => f.entry) ?? files[0])?.name;
             const snap = currentRt.crashSnapshot(err);
             renderCrash(snap, { phase: "runtime", entryFile });
-          } catch (e) {
-            console.error("crashSnapshot failed", e);
-          }
-        } else if (isCompileErr) {
-          activateOutputTab("diag");
+          } catch (e) { console.error("crashSnapshot failed", e); }
         }
       } finally {
-        if (compileErrAcc.size > 0) setCompileErrors(compileErrAcc);
-        else { syncEditor(); renderDiagnostics(); }
-        compileBtn.disabled = false;
         stopBtn.disabled = true;
         currentRt = null;
+      }
+    }
+
+    async function compileAndRun() {
+      if (compileBtn.disabled) return;
+      compileBtn.disabled = true;
+      compileOnlyBtn.disabled = true;
+      runOnlyBtn.disabled = true;
+      try {
+        const built = await doCompile();
+        if (built) {
+          lastBuilt = built;
+          runOnlyBtn.disabled = false;
+          await doRun(built);
+        }
+      } finally {
+        compileBtn.disabled = false;
+        compileOnlyBtn.disabled = false;
+      }
+    }
+    async function compileOnly() {
+      if (compileBtn.disabled) return;
+      compileBtn.disabled = true;
+      compileOnlyBtn.disabled = true;
+      runOnlyBtn.disabled = true;
+      try {
+        const built = await doCompile();
+        if (built) {
+          lastBuilt = built;
+          runOnlyBtn.disabled = false;
+        }
+      } finally {
+        compileBtn.disabled = false;
+        compileOnlyBtn.disabled = false;
+      }
+    }
+    async function runOnly() {
+      if (!lastBuilt) return;
+      if (compileBtn.disabled) return;
+      compileBtn.disabled = true;
+      compileOnlyBtn.disabled = true;
+      runOnlyBtn.disabled = true;
+      try {
+        await doRun(lastBuilt);
+      } finally {
+        compileBtn.disabled = false;
+        compileOnlyBtn.disabled = false;
+        runOnlyBtn.disabled = !lastBuilt;
       }
     }
     stopBtn.addEventListener("click", () => {
@@ -2198,10 +2584,11 @@ LET start() = VALOF
 
     // ------------------ Wiring ------------------
     compileBtn.addEventListener("click", compileAndRun);
+    compileOnlyBtn.addEventListener("click", compileOnly);
+    runOnlyBtn.addEventListener("click", runOnly);
     document.getElementById("addFile").addEventListener("click", addFile);
     document.getElementById("renameFile").addEventListener("click", renameFile);
     document.getElementById("setEntryBtn").addEventListener("click", setEntry);
-    document.getElementById("resetFiles").addEventListener("click", resetFiles);
     savePreviewBtn.addEventListener("click", promotePreview);
     prevLessonBtn.addEventListener("click", goPrevLesson);
     nextLessonBtn.addEventListener("click", goNextLesson);
@@ -2247,6 +2634,7 @@ LET start() = VALOF
       if (i < 0) return;  // readonly tab
       files[i].content = userSrcEl.value;
       persistFiles();
+      invalidateLastBuilt();
     });
 
     // ------------------ Editor: line numbers + highlight ------------
@@ -3052,7 +3440,9 @@ LET start() = VALOF
       }
     });
 
-    // Initial render.
+    // Initial render. loadAssetsForActive hydrates the asset registry
+    // from the active workspace before the asset pane paints.
+    await loadAssetsForActive();
     rebuildSourceTabs(false);
     renderFileList();
     renderAssetList();
