@@ -109,6 +109,18 @@ export const slots = [
   { tidx: 79, name: "datstamp",       impl: "imp_datstamp"          },
   { tidx: 80, name: "delayuntil",     impl: "imp_delayuntil"        },
   { tidx: 81, name: "writebin",       impl: "imp_writebin"          },
+
+  // Phase J — Stream record-mode (libhdr slots 63, 64, 68..72).
+  // Generic byte-position primitives (note / point) plus the record-
+  // length plumbing (setrecordlength / recordpoint / recordnote) and
+  // the fixed-size record read/write pair (get_record / put_record).
+  { tidx: 82, name: "note",           impl: "imp_note"              },
+  { tidx: 83, name: "point",          impl: "imp_point"             },
+  { tidx: 84, name: "setrecordlength",impl: "imp_setrecordlength"   },
+  { tidx: 85, name: "recordpoint",    impl: "imp_recordpoint"       },
+  { tidx: 86, name: "recordnote",     impl: "imp_recordnote"        },
+  { tidx: 87, name: "get_record",     impl: "imp_get_record"        },
+  { tidx: 88, name: "put_record",     impl: "imp_put_record"        },
 ];
 
 // Extra BCPL globals that share a table slot with another entry.

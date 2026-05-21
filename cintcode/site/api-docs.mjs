@@ -54,6 +54,13 @@ export const API_DOCS = {
   appendstream:  { sig: "appendstream(h) → -1/0", cat: "streams", desc: "Move an open stream's write position to its end. Returns -1 on success, 0 on bad handle. CIN:y." },
   deletefile:    { sig: "deletefile(name) → -1/0", cat: "streams", desc: "Remove named entry from storage. -1 on success, 0 if missing. CIN:y." },
   renamefile:    { sig: "renamefile(old, new) → -1/0", cat: "streams", desc: "Atomic rename in storage. -1 on success, 0 if old missing or new already exists. CIN:y." },
+  point:         { sig: "point(scb, posv) → -1/0", cat: "streams", desc: "Set stream pos from posv = (block, offset). pos = block * blockSize + offset. blockSize defaults to the stream's current length. -1 on success." },
+  note:          { sig: "note(scb, posv) → -1/0", cat: "streams", desc: "Read current stream pos into posv (posv!0 = block, posv!1 = offset). Inverse of point." },
+  setrecordlength: { sig: "setrecordlength(scb, length) → prev", cat: "streams", desc: "Record-mode: declare reclen (bytes) for subsequent get_record / put_record / recordpoint calls. Returns previous reclen. Length stored in SCB struct slot 15." },
+  recordpoint:   { sig: "recordpoint(scb, recno) → -1/0", cat: "streams", desc: "Seek to byte recno*reclen so the next get_record / put_record hits record `recno`. -1 on success, 0 if no reclen or bad scb." },
+  recordnote:    { sig: "recordnote(scb) → recno", cat: "streams", desc: "Current record number = floor(pos / reclen). -1 if reclen unset." },
+  get_record:    { sig: "get_record(vector, recno, scb) → TRUE/FALSE", cat: "streams", desc: "Read reclen bytes of record `recno` into vector%0..vector%(reclen-1). FALSE on EOF, bad scb, or no reclen." },
+  put_record:    { sig: "put_record(vector, recno, scb) → TRUE/FALSE", cat: "streams", desc: "Write reclen bytes from vector%0..vector%(reclen-1) into record `recno`. Extends stream if recno is past current end. Stream must be in write or read+write mode." },
 
   // ---- Memory / bits ----
   getvec:     { sig: "getvec(n) → v",           cat: "memory", desc: "Allocate n+1 words. Returns pointer or 0 on OOM." },

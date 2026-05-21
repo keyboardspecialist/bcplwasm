@@ -87,6 +87,13 @@
   (import "env" "bcpl_datstamp"          (func $imp_datstamp (type $bcpl_fn)))
   (import "env" "bcpl_delayuntil"        (func $imp_delayuntil (type $bcpl_fn)))
   (import "env" "bcpl_writebin"          (func $imp_writebin (type $bcpl_fn)))
+  (import "env" "bcpl_note"              (func $imp_note (type $bcpl_fn)))
+  (import "env" "bcpl_point"             (func $imp_point (type $bcpl_fn)))
+  (import "env" "bcpl_setrecordlength"   (func $imp_setrecordlength (type $bcpl_fn)))
+  (import "env" "bcpl_recordpoint"       (func $imp_recordpoint (type $bcpl_fn)))
+  (import "env" "bcpl_recordnote"        (func $imp_recordnote (type $bcpl_fn)))
+  (import "env" "bcpl_get_record"        (func $imp_get_record (type $bcpl_fn)))
+  (import "env" "bcpl_put_record"        (func $imp_put_record (type $bcpl_fn)))
 
   (memory $mem    (export "mem")    64 1024)               ;; 4 MB initial, growable to 64 MB (large binary assets)
   (table  $ftable (export "ftable") 512 funcref)
@@ -118,7 +125,9 @@
     $imp_callco  $imp_cowait  $imp_resumeco  $imp_deleteco
     $imp_initco  $imp_changeco  $imp_delay  $imp_findappend
     $imp_appendstream  $imp_deletefile  $imp_renamefile  $imp_datstamp
-    $imp_delayuntil  $imp_writebin)
+    $imp_delayuntil  $imp_writebin  $imp_note  $imp_point
+    $imp_setrecordlength  $imp_recordpoint  $imp_recordnote  $imp_get_record
+    $imp_put_record)
 
   (func $init (export "init") (param $stack_base i32)
     (global.set $P (local.get $stack_base))
@@ -162,8 +171,15 @@
     (i32.store (i32.const  244) (i32.const 20)) ;; G!60 endread
     (i32.store (i32.const  248) (i32.const 21)) ;; G!61 endwrite
     (i32.store (i32.const  252) (i32.const 19)) ;; G!62 endstream
+    (i32.store (i32.const  256) (i32.const 82)) ;; G!63 note
+    (i32.store (i32.const  260) (i32.const 83)) ;; G!64 point
     (i32.store (i32.const  264) (i32.const 26)) ;; G!65 rewindstream
     (i32.store (i32.const  268) (i32.const 76)) ;; G!66 appendstream
+    (i32.store (i32.const  276) (i32.const 84)) ;; G!68 setrecordlength
+    (i32.store (i32.const  280) (i32.const 85)) ;; G!69 recordpoint
+    (i32.store (i32.const  284) (i32.const 86)) ;; G!70 recordnote
+    (i32.store (i32.const  288) (i32.const 87)) ;; G!71 get_record
+    (i32.store (i32.const  292) (i32.const 88)) ;; G!72 put_record
     (i32.store (i32.const  296) (i32.const 53)) ;; G!73 writeflt
     (i32.store (i32.const  300) (i32.const 58)) ;; G!74 readflt
     (i32.store (i32.const  308) (i32.const 77)) ;; G!76 deletefile
