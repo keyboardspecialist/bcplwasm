@@ -1992,7 +1992,8 @@ LET start() = VALOF
     // not listed here fall to the bottom in alpha order.
     const API_CAT_ORDER = [
       "I/O", "input", "streams", "memory", "parse",
-      "math", "system", "syscall", "coroutines", "graphics",
+      "math", "system", "syscall", "coroutines",
+      "graphics", "audio", "debug", "constants",
     ];
     // Track which sections are expanded (default: collapsed except
     // when filter is active — then all groups with hits open).
@@ -2004,7 +2005,9 @@ LET start() = VALOF
       const allNames = [
         ...slots.map(s => s.name).filter(n => n !== "stop_fn"),
         ...aliases.map(a => a.name),
-        ...Object.keys(API_DOCS).filter(n => n.startsWith("Sys_") || n.startsWith("sdl_")),
+        // All API_DOCS keys — covers Sys_* / sdl_* / engine_* / manifest
+        // constants, anything not already in slots/aliases.
+        ...Object.keys(API_DOCS),
       ].filter(n => !seen.has(n) && (seen.add(n), true));
       allNames.sort();
 
