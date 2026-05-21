@@ -18,6 +18,7 @@ export const API_DOCS = {
   writez:    { sig: "writez(n, d)",   cat: "I/O", desc: "Signed decimal, zero-padded to d chars." },
   writehex:  { sig: "writehex(n, d)", cat: "I/O", desc: "Unsigned hex, zero-padded to d digits (uppercase)." },
   writeoct:  { sig: "writeoct(n, d)", cat: "I/O", desc: "Unsigned octal, zero-padded." },
+  writebin:  { sig: "writebin(n, d)", cat: "I/O", desc: "Unsigned binary, zero-padded to d digits. BLIB-local helper in upstream cintsys; playground exposes it as a public global. Same logic as writef(\"%b\")." },
   writeflt:  { sig: "writeflt(x, w, p)", cat: "I/O", desc: "Float x (f32 bits) as fixed-point, width w, p decimals." },
   writee:    { sig: "writee(x, w, p)",   cat: "I/O", desc: "Float x as exponential, width w, p decimals." },
   newline:   { sig: "newline()",      cat: "I/O", desc: "Write LF (ASCII 10)." },
@@ -49,6 +50,10 @@ export const API_DOCS = {
   endread:       { sig: "endread()",    cat: "streams", desc: "Close current input stream, reset to stdin." },
   endwrite:      { sig: "endwrite()",   cat: "streams", desc: "Close current output stream, reset to stdout." },
   rewindstream:  { sig: "rewindstream(h)", cat: "streams", desc: "Reset stream position to start." },
+  findappend:    { sig: "findappend(name) → h", cat: "streams", desc: "Open named stream so all subsequent writes append past any existing content. Creates an empty file if it doesn't exist. CIN:y." },
+  appendstream:  { sig: "appendstream(h) → -1/0", cat: "streams", desc: "Move an open stream's write position to its end. Returns -1 on success, 0 on bad handle. CIN:y." },
+  deletefile:    { sig: "deletefile(name) → -1/0", cat: "streams", desc: "Remove named entry from storage. -1 on success, 0 if missing. CIN:y." },
+  renamefile:    { sig: "renamefile(old, new) → -1/0", cat: "streams", desc: "Atomic rename in storage. -1 on success, 0 if old missing or new already exists. CIN:y." },
 
   // ---- Memory / bits ----
   getvec:     { sig: "getvec(n) → v",           cat: "memory", desc: "Allocate n+1 words. Returns pointer or 0 on OOM." },
@@ -145,6 +150,19 @@ export const API_DOCS = {
           "(canvas paints), then setTimeout for any remainder past 16ms. Use between frames " +
           "in animation loops; without it, render code runs synchronously and only the final " +
           "frame is visible.",
+  },
+  delayuntil: {
+    sig: "delayuntil(days, msecs)",
+    cat: "system",
+    desc: "Sleep until wall clock reaches (days since 1 Jan 1978, msecs since midnight). " +
+          "Reuses the asyncify delay path; returns immediately if the target is already past. CIN:y.",
+  },
+  datstamp: {
+    sig: "datstamp(v)",
+    cat: "system",
+    desc: "Fill v[0..2] with the current date/time: v!0 = days since 1 Jan 1978, " +
+          "v!1 = milliseconds since midnight (UTC), v!2 = ticks since boot (ms). " +
+          "Returns v. CIN:y.",
   },
 
   // ---- SDL graphics (sys(Sys_sdl, op, ...)) ----

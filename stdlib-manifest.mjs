@@ -98,6 +98,17 @@ export const slots = [
   { tidx: 73, name: "changeco",       impl: "imp_changeco"          },
   // Phase H — Animation timing (Asyncify-backed delay)
   { tidx: 74, name: "delay",          impl: "imp_delay"             },
+
+  // Phase I — Additional CIN:y library functions from g/libhdr.h
+  // that were missing previously. These extend the stdlib table past
+  // slot 74; BcplRuntime.STDLIB_TABLE_SLOTS must match.
+  { tidx: 75, name: "findappend",     impl: "imp_findappend"        },
+  { tidx: 76, name: "appendstream",   impl: "imp_appendstream"      },
+  { tidx: 77, name: "deletefile",     impl: "imp_deletefile"        },
+  { tidx: 78, name: "renamefile",     impl: "imp_renamefile"        },
+  { tidx: 79, name: "datstamp",       impl: "imp_datstamp"          },
+  { tidx: 80, name: "delayuntil",     impl: "imp_delayuntil"        },
+  { tidx: 81, name: "writebin",       impl: "imp_writebin"          },
 ];
 
 // Extra BCPL globals that share a table slot with another entry.

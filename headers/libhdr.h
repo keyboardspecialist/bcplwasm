@@ -170,6 +170,11 @@ delayuntil:        129  // delayuntil(days, msecs)
 findappend:        130  // Added 18/01/11
 memoryfree:        131  // Returns the amount of free and used memory.
 
+// Playground-added wrappers around BLIB-local helpers that aren't in
+// upstream libhdr's slot table. Pinned high in the stdlib range so
+// CLI / Cintpos / user globals (starting 132+ / 200+) aren't affected.
+writebin:          196  // Playground: write unsigned binary, d-char field
+
 //##### CLI uses globals 132 - 149 #####
 
 cli_tallyflag:     132
