@@ -1375,9 +1375,14 @@ export class BcplRuntime {
       case -1: return 0;                                // Sys_setcount NOOP
       case  0: throw new BcplHalt(a1 | 0, /*isAbort*/ true);  // Sys_quit
       case  1: case  2: case  3: return 0;              // Sys_rti/saveregs/setst NOOP
-      case  4: return 0;                                // Sys_tracing NOOP
-      case  5: return 0;                                // Sys_watch NOOP
-      case  6: return 0;                                // Sys_tally NOOP
+      // These three poke the Cintcode INTERPRETER's per-instruction
+      // hook (instruction-level trace, memory watch, frequency tally).
+      // The playground runs compiled wasm directly — there's no
+      // per-instruction hook to wire them into — so they stay NOOPs.
+      // Use the Debugger toggle + breakpoints for per-statement step.
+      case  4: return 0;                                // Sys_tracing(val)
+      case  5: return 0;                                // Sys_watch(addr)
+      case  6: return 0;                                // Sys_tally(val)
       case  7: return 0;                                // Sys_interpret NOOP
 
       // ---- direct-screen char I/O ----
@@ -1561,8 +1566,28 @@ export class BcplRuntime {
       case 57: return 0;                                // Sys_delay NOOP
       case 58: return 0;                                // Sys_sound NOOP (out of scope)
 
-      // ---- tracing (NOOP) ----
-      case 60: case 61: case 62: return 0;
+      // ---- low-level trace buffer ----
+      // Cintsys ships a 4096-slot circular trace buffer + a "trcount"
+      // cursor. trpush stores at (trcount MOD 4096) and bumps trcount.
+      // settrcount replaces the cursor (returning the old value);
+      // negative values disable tracing. gettrval reads slot
+      // (trcount MOD 4096) — typically called with tracing disabled.
+      case 60: {                                        // Sys_trpush(val)
+        if (this._trcount < 0) return 0;
+        if (!this._traceBuf) this._traceBuf = new Int32Array(4096);
+        this._traceBuf[(this._trcount >>> 0) & 4095] = a1 | 0;
+        this._trcount = (this._trcount | 0) + 1;
+        return 0;
+      }
+      case 61: {                                        // Sys_settrcount(c) → prev
+        const prev = this._trcount | 0;
+        this._trcount = a1 | 0;
+        return prev;
+      }
+      case 62: {                                        // Sys_gettrval(c) → val
+        if (!this._traceBuf) return 0;
+        return this._traceBuf[(a1 >>> 0) & 4095] | 0;
+      }
 
       // ---- float (subop dispatch) ----
       case 63: {
@@ -1606,7 +1631,16 @@ export class BcplRuntime {
         this._syncScb(s);
         return ch;
       }
-      case 65: return 0;                                // Sys_incdcount NOOP
+      // Sys_incdcount(n) — bump counter slot n in an internal map.
+      // Cintsys stores these in rootnode!rtn_dcountv; here it's a
+      // plain Map keyed by n. Inspect via the Memory tab or via
+      // diagnostic prints — not exposed back through libhdr.
+      case 65: {
+        if (!this._dcount) this._dcount = new Map();
+        const k = a1 | 0;
+        this._dcount.set(k, (this._dcount.get(k) | 0) + 1);
+        return 0;
+      }
 
       // ---- SDL: route to dedicated dispatcher ----
       case 66: return this._sdlDispatch(a1, a2, a3, a4, a5, a6, a7);

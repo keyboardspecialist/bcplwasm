@@ -269,6 +269,52 @@ export const API_DOCS = {
           "FLT operators (#:= #+ #- etc) which compile to these calls.",
   },
   Sys_pollsardch: { sig: "sys(Sys_pollsardch) → ch", cat: "syscall", desc: "Non-blocking char read; -3 if none available." },
+
+  // Low-level trace / profiling primitives. Cintsys hooks several of
+  // these into the interpreter loop; the playground runs compiled wasm
+  // directly so per-instruction hooks (tracing / watch / tally) stay
+  // NOOPs. The trace-buffer trio (trpush / settrcount / gettrval) is
+  // pure data and works as documented in the BCPL manual.
+  Sys_tracing: {
+    sig: "sys(Sys_tracing, val) → 0",
+    cat: "debug",
+    desc: "Cintsys: toggle per-Cintcode-instruction trace output. NOOP in playground — no per-instruction hook exists in compiled wasm. Use the Debugger toggle + breakpoints + Step for per-statement tracing.",
+  },
+  Sys_watch: {
+    sig: "sys(Sys_watch, addr) → 0",
+    cat: "debug",
+    desc: "Cintsys: trap when the word at addr changes. NOOP in playground — no per-instruction hook. Closest substitute: bp on the statement that writes the value, then inspect the Memory tab.",
+  },
+  Sys_tally: {
+    sig: "sys(Sys_tally, val) → 0",
+    cat: "debug",
+    desc: "Cintsys: enable/clear the Cintcode frequency-count vector. NOOP in playground — no per-instruction hook.",
+  },
+  Sys_trpush: {
+    sig: "sys(Sys_trpush, val) → 0",
+    cat: "debug",
+    desc: "Push val into the 4096-slot circular trace buffer at position (trcount MOD 4096), increment trcount. Disabled while trcount < 0 (set via Sys_settrcount). Implemented natively.",
+  },
+  Sys_settrcount: {
+    sig: "sys(Sys_settrcount, count) → prev",
+    cat: "debug",
+    desc: "Replace the private trcount cursor; returns the previous value. A negative value disables Sys_trpush. Implemented natively.",
+  },
+  Sys_gettrval: {
+    sig: "sys(Sys_gettrval, count) → val",
+    cat: "debug",
+    desc: "Read the trace buffer at position (count MOD 4096). Usually called with tracing disabled (negative trcount). Implemented natively.",
+  },
+  Sys_incdcount: {
+    sig: "sys(Sys_incdcount, n) → 0",
+    cat: "debug",
+    desc: "Bump debug counter slot n. Counters live in an internal Map (keyed by n) — Cintsys puts them in rootnode!rtn_dcountv. Inspect via JS console or a custom diagnostic print.",
+  },
+  Sys_dumpmem: {
+    sig: "sys(Sys_dumpmem, context) → 0",
+    cat: "debug",
+    desc: "Cintsys writes the whole Cintcode memory image to DUMP.mem. Currently a NOOP in playground — use the Memory tab + crashSnapshot for live inspection.",
+  },
   Sys_memmovewords:{ sig: "sys(Sys_memmovewords, dst, src, n)", cat: "syscall", desc: "memmove n words; handles overlap correctly." },
   Sys_memmovebytes:{ sig: "sys(Sys_memmovebytes, dst, src, n)", cat: "syscall", desc: "memmove n bytes (byte-addressed); handles overlap." },
   Sys_errwrch: { sig: "sys(Sys_errwrch, ch)", cat: "syscall", desc: "Same sink as wrch in playground." },
