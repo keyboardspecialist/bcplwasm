@@ -247,4 +247,297 @@ export const API_DOCS = {
   Sys_memmovewords:{ sig: "sys(Sys_memmovewords, dst, src, n)", cat: "syscall", desc: "memmove n words; handles overlap correctly." },
   Sys_memmovebytes:{ sig: "sys(Sys_memmovebytes, dst, src, n)", cat: "syscall", desc: "memmove n bytes (byte-addressed); handles overlap." },
   Sys_errwrch: { sig: "sys(Sys_errwrch, ch)", cat: "syscall", desc: "Same sink as wrch in playground." },
+
+  // ---- Asset access (playground-specific) ----
+  Sys_assetlist: {
+    sig: "sys(Sys_assetlist, buf) → totlen",
+    cat: "syscall",
+    desc: "Write comma-separated list of uploaded asset names into BCPL string buf. " +
+          "buf%0 is set to the total length. Iterate to find images / .wad / .sf2 / .ogg.",
+  },
+  Sys_assetload: {
+    sig: "sys(Sys_assetload, name_str, info) → ok",
+    cat: "syscall",
+    desc: "Materialise the named asset into wasm memory. info gets filled: " +
+          "info!0 = total byte length, info!1 = 0 for binary asset OR (w<<16)|h for image, " +
+          "info!2 = byte address of the bytes (binary) or packed RGBA (image). Returns TRUE on hit.",
+  },
+
+  // ---- Rendering syscalls (used by raycaster / Doom engine) ----
+  Sys_setbgtex: {
+    sig: "sys(Sys_setbgtex, slot, base, w, h)",
+    cat: "graphics",
+    desc: "Cache a background texture (sky / floor cylinder) at slot 0..3 for later drawskyspan ops.",
+  },
+  Sys_drawcols: {
+    sig: "sys(Sys_drawcols, col, y0, y1, top_col, bot_col)",
+    cat: "graphics",
+    desc: "Paint one screen column as a vertical gradient strip (split sky/floor fill).",
+  },
+  Sys_drawtex: {
+    sig: "sys(Sys_drawtex, col, y0, y1, tex_base, u, v_step, pkd)",
+    cat: "graphics",
+    desc: "Textured single-column wall slice. pkd = (w<<16)|h. Bilinear sampling off.",
+  },
+  Sys_drawtexcol: {
+    sig: "sys(Sys_drawtexcol, col, top, h, tex_base, pkd, tex_x)",
+    cat: "graphics",
+    desc: "Vertical-strip wall column. h-pixel scaled to fill from (top, top+h).",
+  },
+  Sys_drawwallcol: {
+    sig: "sys(Sys_drawwallcol, col, y0, y1, y_anchor, v_step_q16, texX, tex_base, pkd)",
+    cat: "graphics",
+    desc: "Doom-style wall column. v_step_raw < 0 enables transparency. tex_base is word addr of packed RGBA.",
+  },
+  Sys_drawflatspan: {
+    sig: "sys(Sys_drawflatspan, col, y0, y1, cam_above, px, py, raydxy_pkd, flat_base)",
+    cat: "graphics",
+    desc: "Textured floor/ceiling span for one column. cam_above > 0 → floor, < 0 → ceiling.",
+  },
+  Sys_drawskyspan: {
+    sig: "sys(Sys_drawskyspan, col, y0, y1, ray_ang)",
+    cat: "graphics",
+    desc: "Panoramic-sky span from the bg-tex cached at slot 0 (set via Sys_setbgtex).",
+  },
+  Sys_setlight: {
+    sig: "sys(Sys_setlight, light_0_255)",
+    cat: "graphics",
+    desc: "Cache the light scale for the NEXT drawwallcol / drawflatspan call. " +
+          "256 = full bright (multiply identity for 255-mapped channels).",
+  },
+  Sys_setdepth: {
+    sig: "sys(Sys_setdepth, cy)",
+    cat: "graphics",
+    desc: "Cache the per-column depth (world units) the next opaque drawwallcol / drawflatspan " +
+          "writes into the z-buffer (and that sprite-mode drawwallcol tests against).",
+  },
+  Sys_clearzbuf: {
+    sig: "sys(Sys_clearzbuf)",
+    cat: "graphics",
+    desc: "Reset the z-buffer to +infinity and wipe the back framebuffer. Call once per frame " +
+          "before drawing walls/flats; any column not subsequently touched shows black instead " +
+          "of last frame's pixels.",
+  },
+
+  // ---- Audio (Sys_playmusic / Sys_playmus / Sys_loadsf2) ----
+  Sys_playmusic: {
+    sig: "sys(Sys_playmusic, name_str, loop_flag)",
+    cat: "audio",
+    desc: "Play a binary audio asset (.ogg / .mp3 / .wav / .flac) via HTMLAudio. " +
+          "loop_flag = 1 loops forever. Replaces any current track.",
+  },
+  Sys_stopmusic: {
+    sig: "sys(Sys_stopmusic)",
+    cat: "audio",
+    desc: "Silence the current music track (HTMLAudio + MUS oscillator + SF2 sequencer).",
+  },
+  Sys_playmus: {
+    sig: "sys(Sys_playmus, word_base, byte_off, byte_size, loop)",
+    cat: "audio",
+    desc: "Play a Doom MUS-format lump straight out of wasm memory (no asset upload). " +
+          "Routes through spessasynth if a SoundFont was loaded via Sys_loadsf2, otherwise falls " +
+          "back to the built-in oscillator synth (drum channel 15 = noise bursts).",
+  },
+  Sys_loadsf2: {
+    sig: "sys(Sys_loadsf2, name_str) → ok",
+    cat: "audio",
+    desc: "Load a binary asset (.sf2) as the active SoundFont for Sys_playmus. " +
+          "First call lazily boots the AudioWorklet (async). Returns 1 if the asset existed " +
+          "and was queued for loading, 0 otherwise.",
+  },
+
+  // ---- Debug-mode helpers (set by codegen, not by user) ----
+  bcpl_break: {
+    sig: "(call $__break)  -- emitted automatically at every statement",
+    cat: "debug",
+    desc: "Host-imported debug hook. In normal (non-Debugger) runs this is a near-free no-op. " +
+          "When the user has armed at least one breakpoint AND the program was assembled with " +
+          "asyncify (Debug mode), imp_break suspends execution; the host's Continue / Step " +
+          "buttons drive resumption.",
+  },
+
+  // ---- Manifest constants (from libhdr) ----
+  bytesperword: {
+    sig: "bytesperword",
+    cat: "constants",
+    desc: "Bytes in a BCPL word. 4 on the wasm target (T32). Used for byte ↔ word address conversions.",
+  },
+  bitsperbyte: {
+    sig: "bitsperbyte = 8",
+    cat: "constants",
+    desc: "Always 8.",
+  },
+  bitsperword: {
+    sig: "bitsperword",
+    cat: "constants",
+    desc: "bitsperbyte * bytesperword. 32 on the wasm target.",
+  },
+  BITSPERBCPLWORD: {
+    sig: "BITSPERBCPLWORD",
+    cat: "constants",
+    desc: "Language-level constant (a keyword) equal to bitsperword. Resolved at compile time.",
+  },
+  mcaddrinc: {
+    sig: "mcaddrinc",
+    cat: "constants",
+    desc: "Machine-address increment per pointer step = bytesperword.",
+  },
+  minint: {
+    sig: "minint",
+    cat: "constants",
+    desc: "Most-negative signed integer (1<<(bitsperword-1)). −2147483648 on T32.",
+  },
+  maxint: {
+    sig: "maxint",
+    cat: "constants",
+    desc: "Most-positive signed integer (minint − 1). 2147483647 on T32.",
+  },
+  endstreamch: {
+    sig: "endstreamch = -1",
+    cat: "constants",
+    desc: "Character value rdch returns at end-of-stream.",
+  },
+  timeoutch: {
+    sig: "timeoutch = -2",
+    cat: "constants",
+    desc: "rdch return value when a polled read timed out (kbd / serial drivers; unused in the playground).",
+  },
+  pollingch: {
+    sig: "pollingch = -3",
+    cat: "constants",
+    desc: "rdch / Sys_pollsardch return value when no char is currently available.",
+  },
+  TRUE: {
+    sig: "TRUE",
+    cat: "constants",
+    desc: "BCPL boolean true. Equal to −1 (all-ones); the language uses bitwise truthiness.",
+  },
+  FALSE: {
+    sig: "FALSE",
+    cat: "constants",
+    desc: "BCPL boolean false. Equal to 0.",
+  },
+  tg: {
+    sig: "tg = 200",
+    cat: "constants",
+    desc: "First user-reserved global slot that survives between CLI commands. Library authors " +
+          "pick slot numbers ≥ tg to avoid stomping on stdlib globals (G!1..G!130-ish).",
+  },
+  ug: {
+    sig: "ug = 210",
+    cat: "constants",
+    desc: "First user global the CLI resets on every command. Use ug+ for short-lived state.",
+  },
+  g_globsize: {
+    sig: "g_globsize = 0",
+    cat: "constants",
+    desc: "G!0 — total size of the global vector. Reserved by the runtime; not user-writable.",
+  },
+  g_sys: {
+    sig: "g_sys = 3",
+    cat: "constants",
+    desc: "G!3 — table index of the sys() function. Used internally by FNAP dispatch.",
+  },
+  g_currco: {
+    sig: "g_currco = 7",
+    cat: "constants",
+    desc: "G!7 — currently-active coroutine handle, or 0 for the root context.",
+  },
+  g_colist: {
+    sig: "g_colist = 8",
+    cat: "constants",
+    desc: "G!8 — head of the active coroutine list. Reserved.",
+  },
+  g_rootnode: {
+    sig: "g_rootnode = 9",
+    cat: "constants",
+    desc: "G!9 — pointer to the system rootnode struct (Cintpos compat). Unused in playground but reserved.",
+  },
+  g_result2: {
+    sig: "g_result2 = 10",
+    cat: "constants",
+    desc: "G!10 — secondary return slot. Many stdlib functions (muldiv, string_to_number, …) " +
+          "stash extra info here, accessed via the BCPL `result2` global name.",
+  },
+  g_memsize: {
+    sig: "g_memsize = 14",
+    cat: "constants",
+    desc: "G!14 — currentdir pointer (BCPL string). Set / read by Sys_setprefix / Sys_getprefix.",
+  },
+  g_keyboard: {
+    sig: "g_keyboard = 20",
+    cat: "constants",
+    desc: "G!20 — keyboard stream handle (= stdin in playground).",
+  },
+  g_screen: {
+    sig: "g_screen = 21",
+    cat: "constants",
+    desc: "G!21 — screen stream handle (= stdout in playground).",
+  },
+  co_pptr: {
+    sig: "co_pptr = 0",
+    cat: "constants",
+    desc: "Coroutine struct slot 0: parent-frame pointer.",
+  },
+  co_parent: {
+    sig: "co_parent",
+    cat: "constants",
+    desc: "Coroutine struct slot: parent coroutine handle.",
+  },
+  co_list: {
+    sig: "co_list",
+    cat: "constants",
+    desc: "Coroutine struct slot: link to next coroutine in the global list.",
+  },
+  co_fn: {
+    sig: "co_fn",
+    cat: "constants",
+    desc: "Coroutine struct slot: body function pointer (G!N indirection).",
+  },
+  co_size: {
+    sig: "co_size",
+    cat: "constants",
+    desc: "Coroutine struct slot: stack size in words.",
+  },
+  co_c: {
+    sig: "co_c",
+    cat: "constants",
+    desc: "Coroutine struct slot: self-pointer (handle).",
+  },
+  InitObj: {
+    sig: "InitObj = 0",
+    cat: "constants",
+    desc: "Object-method-vector index reserved for the initialiser. Used by the OO demo idiom.",
+  },
+  CloseObj: {
+    sig: "CloseObj = 1",
+    cat: "constants",
+    desc: "Object-method-vector index reserved for the finaliser.",
+  },
+  rootnodeaddr: {
+    sig: "rootnodeaddr = 100",
+    cat: "constants",
+    desc: "Legacy Cintpos compat — byte address of the rootnode in cintsys. Unused on wasm.",
+  },
+  t_hunk:    { sig: "t_hunk = 1000",  cat: "constants", desc: "Object-module hunk type: code in ASCII hex (32-bit Cintcode)." },
+  t_reloc:   { sig: "t_reloc = 1001", cat: "constants", desc: "Object-module reloc-table type." },
+  t_end:     { sig: "t_end = 1002",   cat: "constants", desc: "Object-module end-marker." },
+  t_hunk64:  { sig: "t_hunk64 = 2000",  cat: "constants", desc: "64-bit Cintcode hunk type." },
+  t_reloc64: { sig: "t_reloc64 = 2001", cat: "constants", desc: "64-bit reloc table." },
+  t_end64:   { sig: "t_end64 = 2002",   cat: "constants", desc: "64-bit end marker." },
+  t_bhunk:   { sig: "t_bhunk = 3000",   cat: "constants", desc: "Binary 32-bit hunk type." },
+  t_bhunk64: { sig: "t_bhunk64 = 4000", cat: "constants", desc: "Binary 64-bit hunk type." },
+  globword:  { sig: "globword",  cat: "constants", desc: "Magic stamp written at the top of the global vector for sanity checks." },
+  stackword: { sig: "stackword", cat: "constants", desc: "Magic stamp written into freshly-allocated stack frames." },
+  deadcode:  { sig: "deadcode",  cat: "constants", desc: "Magic value 0xDEADC0DE used to fill uninitialised regions for debugging." },
+  sectword:  { sig: "sectword",  cat: "constants", desc: "Magic 0xFDDF — marks a SECTION boundary in object hunks." },
+  entryword: { sig: "entryword", cat: "constants", desc: "Magic 0xDFDF — marks a function entry point in object hunks." },
+
+  sdle_active:         { sig: "sdle_active = 1",          cat: "constants", desc: "sdl_pollevent event type: window focus change." },
+  sdle_keydown:        { sig: "sdle_keydown = 2",         cat: "constants", desc: "sdl_pollevent event type: key pressed. v[1]=mod, v[2]=keyCode." },
+  sdle_keyup:          { sig: "sdle_keyup = 3",           cat: "constants", desc: "sdl_pollevent event type: key released." },
+  sdle_mousemotion:    { sig: "sdle_mousemotion = 4",     cat: "constants", desc: "sdl_pollevent event type: mouse moved. v[1]=x, v[2]=y." },
+  sdle_mousebuttondown:{ sig: "sdle_mousebuttondown = 5", cat: "constants", desc: "sdl_pollevent event type: mouse button pressed. v[1]=button bits." },
+  sdle_mousebuttonup:  { sig: "sdle_mousebuttonup = 6",   cat: "constants", desc: "sdl_pollevent event type: mouse button released." },
+  sdle_quit:           { sig: "sdle_quit = 12",           cat: "constants", desc: "sdl_pollevent event type: window close requested." },
 };
