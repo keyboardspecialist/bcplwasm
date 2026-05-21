@@ -80,6 +80,13 @@
   (import "env" "bcpl_initco"            (func $imp_initco (type $bcpl_fn)))
   (import "env" "bcpl_changeco"          (func $imp_changeco (type $bcpl_fn)))
   (import "env" "bcpl_delay"             (func $imp_delay (type $bcpl_fn)))
+  (import "env" "bcpl_findappend"        (func $imp_findappend (type $bcpl_fn)))
+  (import "env" "bcpl_appendstream"      (func $imp_appendstream (type $bcpl_fn)))
+  (import "env" "bcpl_deletefile"        (func $imp_deletefile (type $bcpl_fn)))
+  (import "env" "bcpl_renamefile"        (func $imp_renamefile (type $bcpl_fn)))
+  (import "env" "bcpl_datstamp"          (func $imp_datstamp (type $bcpl_fn)))
+  (import "env" "bcpl_delayuntil"        (func $imp_delayuntil (type $bcpl_fn)))
+  (import "env" "bcpl_writebin"          (func $imp_writebin (type $bcpl_fn)))
 
   (memory $mem    (export "mem")    64 1024)               ;; 4 MB initial, growable to 64 MB (large binary assets)
   (table  $ftable (export "ftable") 512 funcref)
@@ -109,7 +116,9 @@
     $imp_str2numb  $imp_string_to_number  $imp_findarg  $imp_memoryfree
     $imp_stackfree  $imp_intflag  $imp_setseed  $imp_createco
     $imp_callco  $imp_cowait  $imp_resumeco  $imp_deleteco
-    $imp_initco  $imp_changeco  $imp_delay)
+    $imp_initco  $imp_changeco  $imp_delay  $imp_findappend
+    $imp_appendstream  $imp_deletefile  $imp_renamefile  $imp_datstamp
+    $imp_delayuntil  $imp_writebin)
 
   (func $init (export "init") (param $stack_base i32)
     (global.set $P (local.get $stack_base))
@@ -154,8 +163,11 @@
     (i32.store (i32.const  248) (i32.const 21)) ;; G!61 endwrite
     (i32.store (i32.const  252) (i32.const 19)) ;; G!62 endstream
     (i32.store (i32.const  264) (i32.const 26)) ;; G!65 rewindstream
+    (i32.store (i32.const  268) (i32.const 76)) ;; G!66 appendstream
     (i32.store (i32.const  296) (i32.const 53)) ;; G!73 writeflt
     (i32.store (i32.const  300) (i32.const 58)) ;; G!74 readflt
+    (i32.store (i32.const  308) (i32.const 77)) ;; G!76 deletefile
+    (i32.store (i32.const  312) (i32.const 78)) ;; G!77 renamefile
     (i32.store (i32.const  336) (i32.const 57)) ;; G!83 readn
     (i32.store (i32.const  340) (i32.const  3)) ;; G!84 newline
     (i32.store (i32.const  344) (i32.const 46)) ;; G!85 writed
@@ -177,6 +189,7 @@
     (i32.store (i32.const  412) (i32.const 24)) ;; G!102 rdargs
     (i32.store (i32.const  416) (i32.const 59)) ;; G!103 rditem
     (i32.store (i32.const  420) (i32.const 62)) ;; G!104 findarg
+    (i32.store (i32.const  440) (i32.const 79)) ;; G!109 datstamp
     (i32.store (i32.const  452) (i32.const 43)) ;; G!112 setbit
     (i32.store (i32.const  456) (i32.const 44)) ;; G!113 testbit
     (i32.store (i32.const  460) (i32.const 36)) ;; G!114 copy_words
@@ -187,10 +200,13 @@
     (i32.store (i32.const  496) (i32.const 64)) ;; G!123 stackfree
     (i32.store (i32.const  508) (i32.const 55)) ;; G!126 codewrch
     (i32.store (i32.const  516) (i32.const 74)) ;; G!128 delay
+    (i32.store (i32.const  520) (i32.const 80)) ;; G!129 delayuntil
+    (i32.store (i32.const  524) (i32.const 75)) ;; G!130 findappend
     (i32.store (i32.const  528) (i32.const 63)) ;; G!131 memoryfree
     (i32.store (i32.const  724) (i32.const 52)) ;; G!180 writee
     (i32.store (i32.const  728) (i32.const 45)) ;; G!181 setvec
     (i32.store (i32.const  768) (i32.const 28)) ;; G!191 errwrch
     (i32.store (i32.const  772) (i32.const 56)) ;; G!192 errwritef
+    (i32.store (i32.const  788) (i32.const 81)) ;; G!196 writebin
   )
 )

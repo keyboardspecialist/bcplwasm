@@ -241,6 +241,12 @@ current_language:  190 // Potentially used by get_text when converting
 
 errwrch:           191 // Write a character to stderr
 errwritef:         192 // Use writef to to stderr
+
+// Playground addition. writebin is a BLIB-local helper in upstream
+// cintsys (sysb/blib.b) — not exposed as a public stdlib global.
+// The wasm playground exposes it directly via this slot so user code
+// can call writebin(n, d) without indirecting through writef("%b").
+writebin:          196
 }
 
 MANIFEST {

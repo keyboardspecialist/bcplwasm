@@ -2412,6 +2412,129 @@ export class BcplRuntime {
     return this._allocStream({ kind: "file", mode: "r", name, data, pos: 0 });
   }
 
+  // findappend(name) — open a stream that appends to the end of an
+  // existing file. If the file doesn't exist, creates an empty one.
+  // CIN:y in the BCPL manual; not implemented previously.
+  imp_findappend() {
+    const name = this.readBcplString(this.arg(0));
+    this.restoreP();
+    if (!name) return 0;
+    const spec = this._streamSpec(name);
+    if (spec.kind === "nil") {
+      return this._allocStream({ kind: "nil", mode: "w", name, data: "", pos: 0 });
+    }
+    if (spec.kind === "ram") {
+      // RAM: streams have no on-disk backing — start fresh.
+      return this._allocStream({ kind: "ram", mode: "w", name, data: "", pos: 0 });
+    }
+    const existing = storageBackend.get(name) ?? "";
+    // pos is where the next write goes — past the existing content.
+    return this._allocStream({
+      kind: "file", mode: "w", name, data: existing, pos: existing.length,
+    });
+  }
+
+  // appendstream(scb) — move a currently-open stream's write
+  // position to its end so subsequent writes append. Returns -1
+  // on success, 0 if the handle is bad.
+  imp_appendstream() {
+    const h = this.arg(0);
+    this.restoreP();
+    const s = this._stream(h);
+    if (!s) return 0;
+    s.pos = (s.data || "").length;
+    return -1;
+  }
+
+  // deletefile(name) — remove the named entry from storage. Returns
+  // -1 on success, 0 if it wasn't there.
+  imp_deletefile() {
+    const name = this.readBcplString(this.arg(0));
+    this.restoreP();
+    if (!name) return 0;
+    if (storageBackend.get(name) === null) return 0;
+    storageBackend.del?.(name);
+    return -1;
+  }
+
+  // renamefile(old, new) — atomic rename in storage. Returns -1 on
+  // success, 0 on failure (old missing OR new already exists).
+  imp_renamefile() {
+    const oldName = this.readBcplString(this.arg(0));
+    const newName = this.readBcplString(this.arg(1));
+    this.restoreP();
+    if (!oldName || !newName) return 0;
+    const data = storageBackend.get(oldName);
+    if (data === null) return 0;
+    if (storageBackend.get(newName) !== null) return 0;
+    storageBackend.set(newName, data);
+    storageBackend.del?.(oldName);
+    return -1;
+  }
+
+  // datstamp(v) — fill v[0..2] with the current date/time:
+  //   v!0 = days since 1 Jan 1978 (BCPL epoch)
+  //   v!1 = ms since midnight (UTC)
+  //   v!2 = ticks since system boot (ms here)
+  // Same payload Sys_datstamp delivers; this is the high-level wrapper.
+  imp_datstamp() {
+    const v = this.arg(0);
+    this.restoreP();
+    const ms = Date.now();
+    const EPOCH_1978 = Date.UTC(1978, 0, 1);
+    const days = Math.floor((ms - EPOCH_1978) / 86400000);
+    const dayMs = ms - EPOCH_1978 - days * 86400000;
+    this.storeWord(v + 0, days | 0);
+    this.storeWord(v + 1, dayMs | 0);
+    this.storeWord(v + 2, (performance.now() | 0));
+    return v;
+  }
+
+  // writebin(n, d) — write n as an unsigned binary integer in a
+  // d-character field, zero-padded. blib's writef("%b", n) routes
+  // through the same logic; exposing this as a standalone global so
+  // user code can call it without going through writef.
+  imp_writebin() {
+    const n = this.arg(0) | 0;
+    const d = this.arg(1) | 0;
+    this.restoreP();
+    let s = (n >>> 0).toString(2);
+    if (d > s.length) s = "0".repeat(d - s.length) + s;
+    this.writeOut(s);
+    return 0;
+  }
+
+  // delayuntil(days, msecs) — sleep until the wall clock reaches the
+  // given (days since 1 Jan 1978, ms since midnight) point. Computes
+  // the wait in ms and reuses the asyncify-based delay path. If the
+  // target is already past, returns immediately.
+  imp_delayuntil() {
+    const days = this.arg(0) | 0;
+    const dayMs = this.arg(1) | 0;
+    const exp = this._coroutineExportsRequired();
+    if (!exp) { this.restoreP(); return 0; }
+    if (this._asyncifyMode === "rewinding") {
+      this._asyncifyAllStopRewind();
+      this._asyncifyMode = "normal";
+      this.restoreP();
+      return 0;
+    }
+    const EPOCH_1978 = Date.UTC(1978, 0, 1);
+    const target = EPOCH_1978 + days * 86400000 + dayMs;
+    const wait = Math.max(0, target - Date.now());
+    this.restoreP();
+    const co = this._currentCo ?? this._rootCo;
+    if (!co) return 0;
+    this._resetAsyncifyBuffer(co.asyncifyData, co.asyncifyWords ?? 256);
+    co.savedP = this.P;
+    co.status = "suspended";
+    this._delayMs = wait;
+    this._scheduleResume = co.handle;
+    this._asyncifyAllStartUnwind(co.asyncifyData);
+    this._asyncifyMode = "unwinding";
+    return 0;
+  }
+
   // selectoutput(scbPtr) — make scbPtr the current output stream.
   // Returns previous handle. Mirrors to G!13 (cos) so BCPL code
   // reading the global directly sees the current handle.
@@ -3666,6 +3789,13 @@ export class BcplRuntime {
         bcpl_initco:          () => this.imp_initco(),
         bcpl_changeco:        () => this.imp_changeco(),
         bcpl_delay:           () => this.imp_delay(),
+        bcpl_findappend:      () => this.imp_findappend(),
+        bcpl_appendstream:    () => this.imp_appendstream(),
+        bcpl_deletefile:      () => this.imp_deletefile(),
+        bcpl_renamefile:      () => this.imp_renamefile(),
+        bcpl_datstamp:        () => this.imp_datstamp(),
+        bcpl_delayuntil:      () => this.imp_delayuntil(),
+        bcpl_writebin:        () => this.imp_writebin(),
         // Debug-mode breakpoint hook. Always present so wasm with
         // (call $__break) instantiates either way; behavior depends
         // on whether asyncify is in the build (debugger mode).
@@ -3681,7 +3811,7 @@ export class BcplRuntime {
   // table_base) and export register()/stat_words()/fn_count(). The
   // loader two-pass-instantiates each program: probe sizes, bump-
   // allocate bases, then real instantiate + register.
-  static STDLIB_TABLE_SLOTS = 75;
+  static STDLIB_TABLE_SLOTS = 82;
   static STATIC_WORD_BASE   = 1001;  // first word past G
 
   async loadMaster(url = "master.wasm") {
