@@ -1188,8 +1188,32 @@ prescan_done:
         // Prime $Pb once at function entry. Re-primed after every
         // (call_indirect ...) since callees restore $P via RTRN/FNRN.
         emit_pb_refresh()
+        // Dispatch shape (br_table; cur_nlab labels were counted by the
+        // prescan, so we know how many blocks to nest):
+        //
+        //   (loop $__dispatch
+        //     (block $__default
+        //       (block $__case_N
+        //         ...
+        //         (block $__case_0
+        //           (br_table $__case_0 ... $__case_N $__default $__lab))
+        //         ;; entry body
+        //       ;; case 1 body
+        //     ;; case N body
+        //     (unreachable))
+        //
+        // Each label body falls through its block's close paren and
+        // ends with either an explicit (br $__dispatch) (set $__lab
+        // then loop back) or a (return ...). The br_table replaces the
+        // earlier if-chain — O(1) dispatch regardless of label count.
         writef("    (loop $__dispatch*n")
-        writef("    (if (i32.eqz (local.get $__lab)) (then ;; entry block*n")
+        writef("      (block $__default*n")
+        FOR i = cur_nlab TO 0 BY -1 DO
+          writef("      (block $__case_%n*n", i)
+        writef("        (br_table")
+        FOR i = 0 TO cur_nlab DO writef(" $__case_%n", i)
+        writef(" $__default (local.get $__lab))*n")
+        writef("      ) ;; close $__case_0 — entry-block body follows*n")
         selectoutput(sysprint)
 
           cssp       := fn_save
@@ -1211,7 +1235,10 @@ prescan_done:
         { writef("      ;; endproc fallthrough*n")
           writef("      (return (i32.const 0))*n")
         }
-        writef("    )) ;; end last block*n")
+        // Close the outermost $__default block, emit unreachable
+        // for the default path, then close the dispatch loop + fn.
+        writef("      ) ;; close $__default*n")
+        writef("      (unreachable)*n")
         writef("    ) ;; end $__dispatch*n")
         writef("    (i32.const 0) ;; unreachable return*n")
         writef("  ) ;; end func $fn_L%n*n*n", fn_entrylab)
@@ -1226,14 +1253,15 @@ prescan_done:
         LET idx = lab_idx(l)
         cgpendingop_wasm()
         selectoutput(tostream)
-        // Close previous block (with fallthrough if not terminated)
+        // End of previous label's body. If it didn't already terminate
+        // (via return or explicit JUMP), emit the dispatch-loop-back so
+        // we don't fall through into the next label's body.
         UNLESS terminated DO
         { writef("      (local.set $__lab (i32.const %n)) (br $__dispatch)*n", idx)
         }
-        writef("    )) ;; end block / LAB L%n = idx %n*n", l, idx)
-        // Open new block for this label
-        writef("    (if (i32.eq (local.get $__lab) (i32.const %n)) (then ;; L%n*n",
-               idx, l)
+        // Close $__case_idx — label `idx` body picks up right after.
+        // (br_table targeting $__case_idx lands here.)
+        writef("      ) ;; close $__case_%n — LAB L%n*n", idx, l)
         selectoutput(sysprint)
         terminated := FALSE
         ENDCASE
