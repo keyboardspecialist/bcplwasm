@@ -60,6 +60,7 @@ GLOBAL {
   emit_apply
   emit_p_addr    // emit WAT expression: byte addr of P!n
   emit_g_addr    // emit WAT expression: byte addr of G!n
+  emit_pb_refresh // re-prime $Pb after $P has changed
   push_const
   push_load_p
   push_load_g
@@ -255,9 +256,18 @@ AND wout(fmt, a, b, c, d) BE
   selectoutput(old)
 }
 
-// Emit WAT byte address of P!n into current output context
+// Emit WAT byte address of P!n. Uses $Pb (per-function wasm local
+// holding P<<2) instead of recomputing the shift every time. Cuts
+// 3 ops down to 1 per P-slot access. $Pb is primed at function
+// entry and re-primed after every (call_indirect ...) that returns
+// to this function (callees restore $P via their RTRN/FNRN).
 AND emit_p_addr(n) BE
-  writef("(i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const %n))", n*4)
+  writef("(i32.add (local.get $Pb) (i32.const %n))", n*4)
+
+// Emit the $Pb refresh line. Call after function entry and after
+// every call_indirect that may have changed $P.
+AND emit_pb_refresh() BE
+  writef("    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))*n")
 
 // Emit WAT byte address of G!n into current output context
 AND emit_g_addr(n) BE
@@ -745,6 +755,8 @@ AND emit_apply(op_kind, k) BE
   { // Capture result in $t{k} (result position in caller's frame).
     writef("    (local.set $t%n (call_indirect $ftable (type $bcpl_fn) (local.get $t%n)))*n",
            k, fn_t)
+    // Callee's RTRN/FNRN restored $P; re-prime the cached byte addr.
+    emit_pb_refresh()
     // Persist result to memory so later LP k reads the fresh value
     // rather than the stale FNAP frame-save that overwrote P!k.
     writef("    (i32.store ")
@@ -758,6 +770,8 @@ AND emit_apply(op_kind, k) BE
   }
   // RTAP: discard result.
   writef("    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t%n)))*n", fn_t)
+  // Callee's RTRN/FNRN restored $P; re-prime the cached byte addr.
+  emit_pb_refresh()
   cssp := k
   // Slots k..k+2 were overwritten by RTAP frame-save (no result saved).
   IF cssp_sync > k DO cssp_sync := k
@@ -1169,7 +1183,11 @@ prescan_done:
         writef("  (func $fn_L%n (export *"fn_L%n*") (type $bcpl_fn)*n", l, l)
         writef("    (local $__lab i32)*n")
         writef("    (local $__res i32)*n")  // scratch for RES/RSTACK pair
+        writef("    (local $Pb i32)*n")     // cached P<<2; refreshed after $P writes
         FOR i = 0 TO fn_peak-1 DO writef("    (local $t%n i32)*n", i)
+        // Prime $Pb once at function entry. Re-primed after every
+        // (call_indirect ...) since callees restore $P via RTRN/FNRN.
+        emit_pb_refresh()
         writef("    (loop $__dispatch*n")
         writef("    (if (i32.eqz (local.get $__lab)) (then ;; entry block*n")
         selectoutput(sysprint)
