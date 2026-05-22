@@ -85,6 +85,10 @@ out.push(`  ;; Debug: most-recent BCPL source line emitted by the backend's s_li
 out.push(`  ;; tracker. Read by the host on crash/pause to surface "you are here"`);
 out.push(`  ;; in the editor. Written by every program module via env import.`);
 out.push(`  (global $__line (export "__line") (mut i32) (i32.const 0))`);
+out.push(`  ;; Debug: host sets this to 1 when any breakpoint is armed. Codegen`);
+out.push(`  ;; gates the per-statement (call $__break) on it so a no-bp run pays`);
+out.push(`  ;; only a global.get + branch per statement instead of a JS call.`);
+out.push(`  (global $__bp_armed (export "__bp_armed") (mut i32) (i32.const 0))`);
 out.push("");
 
 // Elem

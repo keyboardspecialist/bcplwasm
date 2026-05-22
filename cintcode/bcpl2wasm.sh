@@ -51,12 +51,25 @@ asyncify_if_enabled() {
   fi
 }
 
+# Plain optimizer (always-on when wasm-opt is on PATH). Folds the
+# verbose P*4+N address recomputation, sinks loads, inlines small
+# helpers. Trims ~20% off most playground examples; matches the
+# in-browser binaryen.optimize() pass.
+optimize_if_available() {
+  local f="$1"
+  if command -v "$WASM_OPT" >/dev/null 2>&1; then
+    "$WASM_OPT" -O2 --enable-bulk-memory --enable-reference-types \
+      "$f" -o "$f"
+  fi
+}
+
 # Count modules in output. `(module` at column 0 marks each boundary.
 NMOD=$(grep -c '^(module' "$WAT" || true)
 
 if [ "$NMOD" -le 1 ]; then
   "$WAT2WASM" "$WAT" -o "${BASE}.wasm"
   asyncify_if_enabled "${BASE}.wasm" "${BASE}.wasm"
+  optimize_if_available "${BASE}.wasm"
   echo "built: $WAT ${BASE}.wasm"
   exit 0
 fi
@@ -70,6 +83,7 @@ awk -v base="$BASE" '
 for i in $(seq 1 "$NMOD"); do
   "$WAT2WASM" "${BASE}-${i}.wat" -o "${BASE}-${i}.wasm"
   asyncify_if_enabled "${BASE}-${i}.wasm" "${BASE}-${i}.wasm"
+  optimize_if_available "${BASE}-${i}.wasm"
 done
 
 # Keep the combined .wat around too for human inspection, but the

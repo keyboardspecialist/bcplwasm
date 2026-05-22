@@ -2188,6 +2188,33 @@ LET start() = VALOF
       return /\b(cowait|callco|resumeco|changeco|createco|delay)\b/.test(srcText);
     }
 
+    // Post-pass optimizer. Reads bytes, runs binaryen's default O2
+    // pipeline (peephole, inlining, dead-code elim, load sinking),
+    // emits new bytes. Falls back to the input on any failure so a
+    // pathological example never blocks compile.
+    async function optimizeWasm(bytes, label = "opt") {
+      const mod_ns = await getBinaryen();
+      const binaryen = mod_ns.default ?? mod_ns;
+      const mod = binaryen.readBinary(new Uint8Array(bytes));
+      if (typeof mod.setFeatures === "function" && binaryen.Features) {
+        mod.setFeatures(binaryen.Features.All);
+      }
+      try {
+        if (typeof binaryen.setOptimizeLevel === "function") {
+          binaryen.setOptimizeLevel(2);
+          binaryen.setShrinkLevel(1);
+        }
+        mod.optimize();
+        const out = mod.emitBinary();
+        mod.dispose();
+        return out.buffer.slice(out.byteOffset, out.byteOffset + out.byteLength);
+      } catch (e) {
+        console.warn(`[optimize] ${label} failed, using unoptimized bytes:`, e);
+        try { mod.dispose(); } catch { /* ignore */ }
+        return bytes;
+      }
+    }
+
     async function assembleWat(watText, label = "live.wat", needsAsync = false) {
       const wabt = await getWabt();
       const mod  = wabt.parseWat(label, watText);
@@ -2195,21 +2222,34 @@ LET start() = VALOF
       mod.validate();
       const { buffer } = mod.toBinary({ log: false });
       mod.destroy();
+      let bytes = buffer;
+      const rawSize = bytes.byteLength;
+      let asyncSize = null;
       if (needsAsync) {
         try {
-          const out = await asyncifyTransform(buffer);
-          const inSize = buffer.byteLength;
-          const outSize = out.byteLength ?? out.length;
-          console.log(`[asyncify] ${label}: ${inSize} -> ${outSize} bytes`);
-          return out;
+          const out = await asyncifyTransform(bytes);
+          asyncSize = out.byteLength ?? out.length;
+          bytes = out;
         } catch (e) {
           const msg = e?.message ?? String(e);
           outputEl.textContent += `[asyncify] FAILED for ${label}: ${msg}\n`;
           console.error("[asyncify] FAILED:", e);
-          return buffer;
         }
       }
-      return buffer;
+      // Skip the optimizer in Debug mode. binaryen's -O2 + shrink can
+      // (in principle) fold our $__bp_armed gate or move the (call
+      // $__break) somewhere asyncify can't unwind from. Debug runs
+      // care about correctness, not size; release runs get the size
+      // + speed win.
+      let finalBytes = bytes;
+      if (!dbgModeEl.checked) {
+        finalBytes = await optimizeWasm(bytes, label);
+      }
+      const finalSize = finalBytes.byteLength ?? finalBytes.length;
+      const asyncPart = asyncSize !== null ? ` -> ${asyncSize} (async)` : "";
+      const optPart   = dbgModeEl.checked ? " (opt skipped: debug)" : "";
+      console.log(`[build] ${label}: ${rawSize}${asyncPart} -> ${finalSize} bytes${optPart}`);
+      return finalBytes;
     }
 
     function splitModules(watText) {
@@ -2445,7 +2485,6 @@ LET start() = VALOF
       );
       currentRt = rt;
       lastMemRt = rt;
-      rt.setBreakpoints(allBpLines());
       rt.onPause = (line) => {
         setStatus(`paused at line ${line}`);
         statusEl.classList.add("paused");
@@ -2479,6 +2518,11 @@ LET start() = VALOF
       });
       try {
         await rt.loadMaster("master.wasm?v=" + V);
+        // Now that master is loaded, push the bp set in. Earlier
+        // ordering called setBreakpoints BEFORE loadMaster, so the
+        // _syncBpArmed helper early-returned (no master) and the
+        // master's $__bp_armed global stayed 0 — gate never fired.
+        rt.setBreakpoints(allBpLines());
         for (const bufs of built.libBufs) {
           for (const b of bufs) await rt.loadProgramFromBytes(b);
         }
@@ -2568,7 +2612,13 @@ LET start() = VALOF
     dbgModeEl.checked = localStorage.getItem(DBG_KEY) === "1";
     dbgModeEl.addEventListener("change", () => {
       localStorage.setItem(DBG_KEY, dbgModeEl.checked ? "1" : "0");
-      syncEditor();   // refresh gutter (bp dots toggle visibility)
+      syncEditor();           // refresh gutter (bp dots toggle visibility)
+      // Toggling Debug mode changes whether srcNeedsAsyncify forces
+      // asyncify on. Without asyncify imp_break can't unwind, so a
+      // cached non-asyncified build silently no-ops at breakpoints.
+      // Invalidate so Run-only is greyed out and the next click goes
+      // through a full Compile (which will pick up the new mode).
+      invalidateLastBuilt();
     });
 
     continueBtn.addEventListener("click", () => {
@@ -2805,9 +2855,22 @@ LET start() = VALOF
       // Live update — push to running rt if present.
       if (currentRt) currentRt.setBreakpoints(allBpLines());
     }
+    // Lines to arm in the runtime's breakpoint set.
+    //   - In release mode: empty. The codegen-emitted gate stays
+    //     dormant so per-statement (call $__break) cost is zero.
+    //   - In debug mode: only lines from files actually present in
+    //     the current workspace. Stale bps for files no longer in
+    //     files[] (renamed / removed / different workspace) would
+    //     otherwise fire as "phantom" hits because $__line carries
+    //     no file id — every file with the same line number matches.
     function allBpLines() {
+      if (!dbgModeEl.checked) return [];
+      const liveNames = new Set(files.map(f => f.name));
       const out = [];
-      for (const s of bpByFile.values()) for (const n of s) out.push(n);
+      for (const [name, s] of bpByFile) {
+        if (!liveNames.has(name)) continue;
+        for (const n of s) out.push(n);
+      }
       return out;
     }
     const errBandsEl = document.getElementById("errBands");

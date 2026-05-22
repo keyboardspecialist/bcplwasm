@@ -384,12 +384,11 @@ AND emit_mod_header() BE
   writef("  (import *"env*" *"static_base*" (global $SB i32))*n")
   writef("  (import *"env*" *"table_base*"  (global $TB i32))*n")
   writef("  (import *"env*" *"__line*" (global $__line (mut i32)))*n")
-  // Debug-hook host call. The runtime makes this a no-op when no
-  // breakpoint is set on the current line. When the user has armed
-  // a bp and the program was compiled with asyncify (debugger mode),
-  // imp_break suspends execution and the host's Continue button
-  // resumes it. Cost when nothing is paused: one call_indirect-shaped
-  // call per BCPL statement that returns immediately.
+  // $__bp_armed: host flips this to 1 when at least one breakpoint
+  // is set, 0 otherwise. Codegen gates the (call $__break) emit on
+  // it so a no-bp run pays just a global.get + branch per statement
+  // — no JS boundary crossing. Massive perf win on tight loops.
+  writef("  (import *"env*" *"__bp_armed*" (global $__bp_armed (mut i32)))*n")
   writef("  (import *"env*" *"bcpl_break*" (func $__break (type $void_fn)))*n*n")
   selectoutput(sysprint)
 }
@@ -888,10 +887,13 @@ AND scan_emit() BE
         { selectoutput(tostream)
           writef("    ;; line %n:%n*n", fno, lno)
           writef("    (global.set $__line (i32.const %n))*n", lno)
-          // Debug hook. Host returns immediately when no breakpoint
-          // is set on $__line; suspends via asyncify when one is hit
-          // (debugger-mode builds only).
-          writef("    (call $__break)*n")
+          // Gated debug hook. Without a bp armed the body is skipped
+          // entirely — single i32 global.get + branch, no JS call.
+          // When the host raises $__bp_armed (after setBreakpoints),
+          // every statement crosses into imp_break where the line +
+          // step-mode checks decide whether to suspend.
+          writef("    (if (i32.ne (global.get $__bp_armed) (i32.const 0))*n")
+          writef("        (then (call $__break)))*n")
           selectoutput(sysprint)
         }
         ENDCASE
