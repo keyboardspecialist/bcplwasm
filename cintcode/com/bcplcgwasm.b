@@ -79,6 +79,8 @@ GLOBAL {
   fn_save        // SAVE count for current function
   labmap         // array: BCPL label -> sequential index
   nlabmap        // size of labmap
+  slot_addr_taken // bitmap: s_llp N seen this fn? (per slot)
+  slot_addr_max   // size of slot_addr_taken
   op             // current OCODE opcode (shared across all cg functions)
   pendingop      // deferred binary/unary operator
   cssp           // compile-time OCODE stack pointer
@@ -148,6 +150,12 @@ LET codegenerate(workspace, workspacesize) BE
   ftab_v      := p;  p := p + 1536
   pend_v      := p;  p := p + 768;  pend_max := 768
   str_dedup_v := p;  p := p + 2048; str_dedup_max := 1024   // 1024 entries
+  // slot_addr_taken[N] is TRUE iff the BCPL OCODE for the current
+  // function ever emits s_llp N (i.e. takes the address of P!N).
+  // Slots that are NEVER addressed AND lie in the "stable" range
+  // [3..fn_save) are promotable: they live in $tN as wasm locals
+  // and skip the memory store/load round trip entirely.
+  slot_addr_taken := p; p := p + 256; slot_addr_max := 256
 
   FOR i = 0 TO maxlabs-1   DO labmap!i := -1
   FOR i = 0 TO maxlabs*2-1 DO stat_labmap!i := -1
@@ -268,6 +276,18 @@ AND emit_p_addr(n) BE
 // every call_indirect that may have changed $P.
 AND emit_pb_refresh() BE
   writef("    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))*n")
+
+// is_promotable(n) — TRUE iff BCPL slot N can live entirely in the
+// wasm local $tN, with no memory backing. Two conditions:
+//   (a) N is in the "stable" range [3..fn_save). Slots in this range
+//       are never reused as FNAP arg-staging targets (FNAP picks
+//       k >= cssp >= fn_save).
+//   (b) The OCODE never emits s_llp N — i.e. no @-of-P!N is taken.
+//       If the address were taken, indirect stores could write
+//       through it and our wasm-local copy would go stale.
+AND is_promotable(n) = n >= 3 & n < fn_save &
+                       n < slot_addr_max &
+                       slot_addr_taken!n = 0
 
 // Emit WAT byte address of G!n into current output context
 AND emit_g_addr(n) BE
@@ -492,9 +512,13 @@ AND push_const(n) BE
 }
 
 AND push_load_p(n) BE
-{ writef("    (local.set $t%n (i32.load ", cssp)
-  emit_p_addr(n)
-  writef("))*n")
+{ TEST is_promotable(n)
+  THEN writef("    (local.set $t%n (local.get $t%n)) ;; LP promoted P!%n*n",
+              cssp, n, n)
+  ELSE { writef("    (local.set $t%n (i32.load ", cssp)
+         emit_p_addr(n)
+         writef("))*n")
+       }
   cssp := cssp + 1
 }
 
@@ -607,14 +631,21 @@ AND cmp_op(wasm_cmp) BE
 
 AND store_p(n) BE
 { cssp := cssp - 1
-  writef("    (i32.store ")
-  emit_p_addr(n)
-  writef(" (local.get $t%n))*n", cssp)
-  // Mirror into $t{n} so a later STORE that re-flushes the ssp=n
-  // slot writes the updated value rather than a stale original.
-  // Only meaningful when n refers to an in-function local slot.
-  IF n >= 3 & n < fn_peak & n ~= cssp DO
-    writef("    (local.set $t%n (local.get $t%n))*n", n, cssp)
+  TEST is_promotable(n)
+  THEN { // Promoted slot — live entirely in $tN, no memory store.
+         IF n ~= cssp DO
+           writef("    (local.set $t%n (local.get $t%n)) ;; SP promoted P!%n*n",
+                  n, cssp, n)
+       }
+  ELSE { writef("    (i32.store ")
+         emit_p_addr(n)
+         writef(" (local.get $t%n))*n", cssp)
+         // Mirror into $t{n} so a later STORE that re-flushes the
+         // ssp=n slot writes the updated value rather than a stale
+         // original. Only meaningful when n is an in-function local.
+         IF n >= 3 & n < fn_peak & n ~= cssp DO
+           writef("    (local.set $t%n (local.get $t%n))*n", n, cssp)
+       }
   IF cssp_sync > cssp DO cssp_sync := cssp
 }
 
@@ -994,6 +1025,8 @@ AND scan_emit() BE
           LET depth = 1
           LET sim_cssp = 3
           FOR i = 0 TO nlabmap-1 DO labmap!i := -1
+          // Reset slot_addr_taken so any s_llp seen this fn fresh.
+          FOR i = 0 TO slot_addr_max-1 DO slot_addr_taken!i := 0
           cur_nlab    := 0
           fn_save     := 3
           fn_peak     := 3
@@ -1034,10 +1067,22 @@ AND scan_emit() BE
                 rdn()
                 IF depth = 1 DO sim_cssp := sim_cssp + 1
                 ENDCASE
-              CASE s_lf: CASE s_ll: CASE s_llp: CASE s_llg: CASE s_lll:
+              CASE s_lf: CASE s_ll: CASE s_llg: CASE s_lll:
                 rdl()
                 IF depth = 1 DO sim_cssp := sim_cssp + 1
                 ENDCASE
+              CASE s_llp:
+              { LET sn = rdl()
+                // Slot N had its address taken — disqualify from
+                // wasm-local promotion. Indirect stores could write
+                // through the pointer and we wouldn't see them.
+                IF depth = 1 DO
+                { IF sn >= 0 & sn < slot_addr_max DO
+                    slot_addr_taken!sn := 1
+                  sim_cssp := sim_cssp + 1
+                }
+                ENDCASE
+              }
               CASE s_true: CASE s_false: CASE s_query:
                 IF depth = 1 DO sim_cssp := sim_cssp + 1
                 ENDCASE
@@ -1188,32 +1233,55 @@ prescan_done:
         // Prime $Pb once at function entry. Re-primed after every
         // (call_indirect ...) since callees restore $P via RTRN/FNRN.
         emit_pb_refresh()
-        // Dispatch shape (br_table; cur_nlab labels were counted by the
-        // prescan, so we know how many blocks to nest):
+        // Promoted-slot init: for every BCPL slot N in the stable
+        // range [3..fn_save) that isn't address-taken (no s_llp N),
+        // copy its incoming memory value (placed there by the caller's
+        // FNAP) into the corresponding wasm local $tN. Subsequent
+        // reads of P!N skip the i32.load; subsequent writes skip the
+        // i32.store. Slots ARE addressable (s_llp seen) fall through
+        // to the original memory-backed emit path.
+        FOR i = 3 TO fn_save - 1 DO
+          IF is_promotable(i) DO
+            writef("    (local.set $t%n (i32.load (i32.add (local.get $Pb) (i32.const %n)))) ;; init promoted P!%n*n",
+                   i, i*4, i)
+        // Two dispatch shapes:
         //
-        //   (loop $__dispatch
-        //     (block $__default
-        //       (block $__case_N
-        //         ...
-        //         (block $__case_0
-        //           (br_table $__case_0 ... $__case_N $__default $__lab))
-        //         ;; entry body
-        //       ;; case 1 body
-        //     ;; case N body
-        //     (unreachable))
+        //  (a) Functions with no internal labels (cur_nlab == 0) emit
+        //      the entry body directly — no loop, no blocks, no
+        //      br_table. Saves ~5 lines of wasm per fn + the dispatch
+        //      runtime cost. Common for small helpers (sieve's hits
+        //      counter, primitive accessors, etc.). Detection is free
+        //      because the prescan already counts labels.
         //
-        // Each label body falls through its block's close paren and
-        // ends with either an explicit (br $__dispatch) (set $__lab
-        // then loop back) or a (return ...). The br_table replaces the
-        // earlier if-chain — O(1) dispatch regardless of label count.
-        writef("    (loop $__dispatch*n")
-        writef("      (block $__default*n")
-        FOR i = cur_nlab TO 0 BY -1 DO
-          writef("      (block $__case_%n*n", i)
-        writef("        (br_table")
-        FOR i = 0 TO cur_nlab DO writef(" $__case_%n", i)
-        writef(" $__default (local.get $__lab))*n")
-        writef("      ) ;; close $__case_0 — entry-block body follows*n")
+        //  (b) Otherwise the full br_table shape:
+        //
+        //        (loop $__dispatch
+        //          (block $__default
+        //            (block $__case_N
+        //              ...
+        //              (block $__case_0
+        //                (br_table $__case_0 ... $__case_N $__default $__lab))
+        //              ;; entry body
+        //            ;; case 1 body
+        //          ;; case N body
+        //          (unreachable))
+        //
+        //      Each label body falls through its block's close paren
+        //      and ends with either (br $__dispatch) (set $__lab then
+        //      loop back) or (return ...). br_table replaces the
+        //      original if-chain — O(1) dispatch regardless of N.
+        TEST cur_nlab = 0
+        THEN { /* flat — body emits directly */ }
+        ELSE
+        { writef("    (loop $__dispatch*n")
+          writef("      (block $__default*n")
+          FOR i = cur_nlab TO 0 BY -1 DO
+            writef("      (block $__case_%n*n", i)
+          writef("        (br_table")
+          FOR i = 0 TO cur_nlab DO writef(" $__case_%n", i)
+          writef(" $__default (local.get $__lab))*n")
+          writef("      ) ;; close $__case_0 — entry-block body follows*n")
+        }
         selectoutput(sysprint)
 
           cssp       := fn_save
@@ -1235,11 +1303,15 @@ prescan_done:
         { writef("      ;; endproc fallthrough*n")
           writef("      (return (i32.const 0))*n")
         }
-        // Close the outermost $__default block, emit unreachable
-        // for the default path, then close the dispatch loop + fn.
-        writef("      ) ;; close $__default*n")
-        writef("      (unreachable)*n")
-        writef("    ) ;; end $__dispatch*n")
+        // Flat fn — no dispatch wrapper to unwind. Just close the
+        // function with the unreachable-return sentinel and bail.
+        UNLESS cur_nlab = 0 DO
+        { // Close the outermost $__default block, emit unreachable
+          // for the default path, then close the dispatch loop.
+          writef("      ) ;; close $__default*n")
+          writef("      (unreachable)*n")
+          writef("    ) ;; end $__dispatch*n")
+        }
         writef("    (i32.const 0) ;; unreachable return*n")
         writef("  ) ;; end func $fn_L%n*n*n", fn_entrylab)
         selectoutput(sysprint)
