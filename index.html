@@ -4,6 +4,37 @@
   <meta charset="utf-8">
   <title>BCPL &rarr; WebAssembly playground</title>
   <style>
+    /* Bundled monospace font: Intel One Mono, SIL OFL 1.1.
+       Self-hosted under site/fonts/intel-one-mono/. Falls back to the
+       OS default mono if the woff2 fails to load (offline, etc.). */
+    @font-face {
+      font-family: "Intel One Mono";
+      src: url("fonts/intel-one-mono/IntelOneMono-Regular.woff2") format("woff2");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "Intel One Mono";
+      src: url("fonts/intel-one-mono/IntelOneMono-Italic.woff2") format("woff2");
+      font-weight: 400;
+      font-style: italic;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "Intel One Mono";
+      src: url("fonts/intel-one-mono/IntelOneMono-Bold.woff2") format("woff2");
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "Intel One Mono";
+      src: url("fonts/intel-one-mono/IntelOneMono-BoldItalic.woff2") format("woff2");
+      font-weight: 700;
+      font-style: italic;
+      font-display: swap;
+    }
     :root {
       color-scheme: dark;
       --bg:       #0b0f15;
@@ -429,7 +460,7 @@
       list-style: none;
       padding: 0;
       margin: 0;
-      font-family: ui-monospace, monospace;
+      font-family: "Intel One Mono", ui-monospace, monospace;
       font-size: 0.82rem;
       flex: 1;
       overflow: auto;
@@ -525,7 +556,7 @@
     }
     .api-list .api-item {
       padding-left: 1.4rem;
-      font-family: ui-monospace, monospace;
+      font-family: "Intel One Mono", ui-monospace, monospace;
     }
     .api-detail {
       border-top: 1px solid var(--border);
@@ -533,7 +564,7 @@
       font-size: 0.82rem;
     }
     .api-detail .sig {
-      font-family: ui-monospace, monospace;
+      font-family: "Intel One Mono", ui-monospace, monospace;
       color: var(--accent);
       margin-bottom: 0.3rem;
     }
@@ -611,7 +642,7 @@
       text-align: right;
       color: var(--fg-dim);
       background: var(--bg);
-      font-family: ui-monospace, monospace;
+      font-family: "Intel One Mono", ui-monospace, monospace;
       font-size: 0.8rem;
       line-height: 1.5;
       white-space: pre;
@@ -629,7 +660,7 @@
       inset: 0;
       margin: 0;
       padding: 0.6rem;
-      font-family: ui-monospace, monospace;
+      font-family: "Intel One Mono", ui-monospace, monospace;
       font-size: 0.8rem;
       line-height: 1.5;
       white-space: pre;
@@ -722,7 +753,7 @@
       padding: 0.6rem;
       background: var(--bg-2);
       color: var(--fg);
-      font-family: ui-monospace, monospace;
+      font-family: "Intel One Mono", ui-monospace, monospace;
       font-size: 0.8rem;
       resize: none;
       outline: none;
@@ -859,7 +890,7 @@
       padding: 0.5rem 0.6rem;
       background: var(--bg-2);
       color: var(--fg);
-      font-family: ui-monospace, monospace;
+      font-family: "Intel One Mono", ui-monospace, monospace;
       font-size: 0.8rem;
       overflow: auto;
       border: 0;
@@ -963,7 +994,7 @@
       flex: 1;
       overflow: auto;
       padding: 0.5rem 0.6rem;
-      font-family: ui-monospace, monospace;
+      font-family: "Intel One Mono", ui-monospace, monospace;
       font-size: 0.78rem;
       white-space: pre;
       background: var(--bg-2);
@@ -1007,7 +1038,7 @@
       color: #fff;
       border: 1px solid rgba(255,255,255,0.3);
       border-radius: 3px;
-      font: 11px ui-monospace, monospace;
+      font: 11px "Intel One Mono", ui-monospace, monospace;
       cursor: pointer;
       z-index: 1;
     }
@@ -1017,7 +1048,7 @@
       background: rgba(128,128,128,0.15);
       padding: 0 0.25rem;
       border-radius: 3px;
-      font-family: ui-monospace, monospace;
+      font-family: "Intel One Mono", ui-monospace, monospace;
     }
   </style>
 </head>
@@ -1030,7 +1061,7 @@
       &nbsp;
       <a href="https://github.com/keyboardspecialist/bcplwasm" target="_blank" rel="noopener noreferrer">source on GitHub</a>
       &nbsp;
-      <span id="buildTag" style="font-family: ui-monospace, monospace;"></span>
+      <span id="buildTag" style="font-family: "Intel One Mono", ui-monospace, monospace;"></span>
     </span>
     <span class="ws-bar" id="wsBar" style="margin-left:auto;display:flex;align-items:center;gap:0.35rem;">
       <label class="sub" style="font-size:0.75rem;color:var(--fg-dim);">workspace:</label>
