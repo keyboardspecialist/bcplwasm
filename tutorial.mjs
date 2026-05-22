@@ -936,6 +936,20 @@ export const TRACK = [
     prereqs: ["60-doom-wadmus"],
   },
   {
+    slug: "65-bench",
+    title: "Cintcode vs wasm — microbenchmarks",
+    level: 9,
+    topic: "advanced",
+    summary: "Four workloads (recursive fib, sieve of Eratosthenes, dense matmul, integer accumulation loop) timed via datstamp deltas. Result columns must match across the two backends; elapsed columns show the speedup of compiled wasm over the cintcode interpreter.",
+    goals: [
+      "Use datstamp() to bracket each phase with ms-of-day timestamps",
+      "Identical BCPL source compiles via bcpl (cintcode) and bcplwasm (wat → wasm)",
+      "Workloads stress call/return, vector scans, nested loops, and tight integer math",
+      "Expect ~2–4× speedup on wasm for these kernels; biggest wins on nfib + matmul",
+    ],
+    prereqs: ["32-coroutines"],
+  },
+  {
     slug: "62-doom-engine",
     title: "Doom Engine as a Library",
     level: 9,

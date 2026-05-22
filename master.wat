@@ -103,6 +103,10 @@
   ;; tracker. Read by the host on crash/pause to surface "you are here"
   ;; in the editor. Written by every program module via env import.
   (global $__line (export "__line") (mut i32) (i32.const 0))
+  ;; Debug: host sets this to 1 when any breakpoint is armed. Codegen
+  ;; gates the per-statement (call $__break) on it so a no-bp run pays
+  ;; only a global.get + branch per statement instead of a JS call.
+  (global $__bp_armed (export "__bp_armed") (mut i32) (i32.const 0))
 
   (elem (table $ftable) (i32.const 0) func
     $imp_stop  $imp_rdch  $imp_wrch  $imp_newline

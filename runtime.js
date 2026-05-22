@@ -3748,7 +3748,7 @@ export class BcplRuntime {
     if (this._stepOverLine === line) return;
     const inBp = haveBps && this._breakpoints.has(line);
     if (!this._stepMode && !inBp) return;
-    if (this._stepMode) this._stepMode = false;
+    if (this._stepMode) { this._stepMode = false; this._syncBpArmed(); }
 
     const exp = this._coroutineExports();
     if (!exp) return;                  // not a debug build — give up
@@ -3793,6 +3793,7 @@ export class BcplRuntime {
     if (!this._pauseResolve) return false;
     this._stepMode = true;
     this._stepOverLine = this._pausedLine;
+    this._syncBpArmed();
     const r = this._pauseResolve;
     this._pauseResolve = null;
     this._pausePromise = null;
@@ -3804,10 +3805,22 @@ export class BcplRuntime {
 
   // Update the set of source lines that should trigger imp_break.
   // Pass an iterable of line numbers (numbers, not strings).
+  // Side-effect: flips the master's $__bp_armed global so the
+  // codegen-emitted (if armed (call __break)) gate trips. With no
+  // bps armed, wasm never crosses the JS boundary for the per-
+  // statement hook — ~20× speedup on tight loops vs the unconditional
+  // call form.
   setBreakpoints(lines) {
     this._breakpoints = new Set();
     for (const n of lines) this._breakpoints.add(n | 0);
     this._stepOverLine = 0;
+    this._syncBpArmed();
+  }
+  _syncBpArmed() {
+    const g = this.master?.exports?.__bp_armed;
+    if (!g) return;
+    const armed = (this._breakpoints && this._breakpoints.size > 0) || this._stepMode;
+    g.value = armed ? 1 : 0;
   }
 
   isPaused() { return this._pausePromise !== null && this._pausePromise !== undefined; }
@@ -4016,7 +4029,7 @@ export class BcplRuntime {
     const m = this.master.exports;
     return {
       mem: m.mem, ftable: m.ftable, P: m.P, G: m.G,
-      __line: m.__line,
+      __line: m.__line, __bp_armed: m.__bp_armed,
       static_base: sbGlobal, table_base: tbGlobal,
       ...this.imports().env,
     };

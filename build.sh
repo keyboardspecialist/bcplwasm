@@ -39,5 +39,12 @@ for src in site/examples/*.b; do
       --pass-arg=asyncify-imports@"$ASYNC_IMPORTS" \
       "${base}.wasm" -o "${base}.wasm"
   fi
+  # Post-pass optimizer: binaryen -O2 inlines, peephole-folds, dead-
+  # code-eliminates, sinks loads. Cheap ~10–35% speed win on top of
+  # the playground's straight-line emit. Skip if WASM_OPT missing.
+  if command -v "$WASM_OPT" >/dev/null 2>&1; then
+    "$WASM_OPT" -O2 --enable-bulk-memory --enable-reference-types \
+      "${base}.wasm" -o "${base}.wasm"
+  fi
 done
 echo "built: $(ls site/examples/*.wasm | wc -l) modules"

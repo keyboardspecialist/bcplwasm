@@ -66,6 +66,7 @@ const RUN_SKIP = new Set([
   "61-doom-sf2",        // same — WAD + canvas + game loop + SF2
   "62-doom-engine",     // same — depends on doomengine lib
   "doomengine",         // pure library — no start()
+  "65-bench",           // long-running benchmark — skipped in CI
   "stdlib",             // pure library — no start()
 ]);
 
