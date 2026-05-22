@@ -16,26 +16,28 @@
   (func $fn_L34 (export "fn_L34") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
     (local $t3 i32)
     (local $t4 i32)
     (local $t5 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
-    (local.set $t4 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t4 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t5 (i32.const 65))
     (if (i32.lt_s (local.get $t4) (local.get $t5)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     ))
-    (local.set $t4 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t4 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t5 (i32.const 90))
     (if (i32.gt_s (local.get $t4) (local.get $t5)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     ))
     (local.set $t4 (i32.const 32))
-    (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t5 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t4 (i32.add (local.get $t4) (local.get $t5)))
     ;; FNRN
     (local.set $__res (local.get $t4))
@@ -43,7 +45,7 @@
     (return (local.get $__res))
     )) ;; end block / LAB L35 = idx 1
     (if (i32.eq (local.get $__lab) (i32.const 1)) (then ;; L35
-    (local.set $t4 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t4 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     ;; FNRN
     (local.set $__res (local.get $t4))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
@@ -62,6 +64,7 @@
   (func $fn_L36 (export "fn_L36") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -76,22 +79,23 @@
     (local $t11 i32)
     (local $t12 i32)
     (local $t13 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     ;; line 0:133
     (global.set $__line (i32.const 133))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
-    (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t7 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
+    (local.set $t8 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t7 (i32.sub (local.get $t7) (local.get $t8)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
     ;; line 0:134
     (global.set $__line (i32.const 134))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
+    (local.set $t8 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
     (local.set $t10 (i32.const 0))
     (i32.store8 (i32.add (i32.shl (local.get $t9) (i32.const 2)) (local.get $t10)) (local.get $t8))
     ;; line 0:135
@@ -99,11 +103,11 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t8 (i32.const 0))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
     (local.set $t10 (i32.const 1))
     (local.set $t9 (i32.sub (local.get $t9) (local.get $t10)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9)) ;; STORE slot 9
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (local.get $t9)) ;; STORE slot 9
       (local.set $__lab (i32.const 2)) (br $__dispatch) ;; JUMP L38
     )) ;; end block / LAB L37 = idx 1
     (if (i32.eq (local.get $__lab) (i32.const 1)) (then ;; L37
@@ -111,26 +115,26 @@
     (global.set $__line (i32.const 136))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
-    (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
+    (local.set $t12 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t11 (i32.add (local.get $t11) (local.get $t12)))
     (local.set $t10 (i32.load8_u (i32.add (i32.shl (local.get $t10) (i32.const 2)) (local.get $t11))))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
     (local.set $t12 (i32.const 1))
-    (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
+    (local.set $t13 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
     (local.set $t12 (i32.add (local.get $t12) (local.get $t13)))
     (i32.store8 (i32.add (i32.shl (local.get $t11) (i32.const 2)) (local.get $t12)) (local.get $t10))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
     (local.set $t11 (i32.const 1))
     (local.set $t10 (i32.add (local.get $t10) (local.get $t11)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t10))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t10))
     (local.set $t8 (local.get $t10))
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     )) ;; end block / LAB L38 = idx 2
     (if (i32.eq (local.get $__lab) (i32.const 2)) (then ;; L38
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 36))))
     (if (i32.le_s (local.get $t10) (local.get $t11)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     ))
@@ -149,6 +153,7 @@
   (func $fn_L39 (export "fn_L39") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -163,21 +168,22 @@
     (local $t11 i32)
     (local $t12 i32)
     (local $t13 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     ;; line 0:139
     (global.set $__line (i32.const 139))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
-    (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t6 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
+    (local.set $t7 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t6 (i32.sub (local.get $t6) (local.get $t7)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
     ;; line 0:140
     (global.set $__line (i32.const 140))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
+    (local.set $t7 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
     (local.set $t8 (i32.const 4))
     (if (i32.ge_s (local.get $t7) (local.get $t8)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
@@ -193,66 +199,70 @@
     (return (local.get $__res))
     )) ;; end block / LAB L40 = idx 1
     (if (i32.eq (local.get $__lab) (i32.const 1)) (then ;; L40
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t12 (i32.const 4))
     (local.set $t11 (i32.sub (local.get $t11) (local.get $t12)))
     (local.set $t10 (i32.load8_u (i32.add (i32.shl (local.get $t10) (i32.const 2)) (local.get $t11))))
     (local.set $t11 (i32.add (global.get $TB) (i32.const 0))) ;; LF L34
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t11)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t10))
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (local.get $t11)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 7)))
     (local.set $t7 (call_indirect $ftable (type $bcpl_fn) (local.get $t11)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t7)) ;; flush FNAP result
     (local.set $t8 (i32.const 46))
     (local.set $t7 (i32.sub (i32.const 0) (i32.eq (local.get $t7) (local.get $t8))))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
-    (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t12 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t13 (i32.const 3))
     (local.set $t12 (i32.sub (local.get $t12) (local.get $t13)))
     (local.set $t11 (i32.load8_u (i32.add (i32.shl (local.get $t11) (i32.const 2)) (local.get $t12))))
     (local.set $t12 (i32.add (global.get $TB) (i32.const 0))) ;; LF L34
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t12)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (local.get $t11))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t12)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 8)))
     (local.set $t8 (call_indirect $ftable (type $bcpl_fn) (local.get $t12)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t8)) ;; flush FNAP result
     (local.set $t9 (i32.const 119))
     (local.set $t8 (i32.sub (i32.const 0) (i32.eq (local.get $t8) (local.get $t9))))
     (local.set $t7 (i32.and (local.get $t7) (local.get $t8)))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
-    (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t12 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t13 (i32.const 2))
     (local.set $t12 (i32.sub (local.get $t12) (local.get $t13)))
     (local.set $t11 (i32.load8_u (i32.add (i32.shl (local.get $t11) (i32.const 2)) (local.get $t12))))
     (local.set $t12 (i32.add (global.get $TB) (i32.const 0))) ;; LF L34
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t12)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (local.get $t11))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t12)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 8)))
     (local.set $t8 (call_indirect $ftable (type $bcpl_fn) (local.get $t12)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t8)) ;; flush FNAP result
     (local.set $t9 (i32.const 97))
     (local.set $t8 (i32.sub (i32.const 0) (i32.eq (local.get $t8) (local.get $t9))))
     (local.set $t7 (i32.and (local.get $t7) (local.get $t8)))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
-    (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t12 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t13 (i32.const 1))
     (local.set $t12 (i32.sub (local.get $t12) (local.get $t13)))
     (local.set $t11 (i32.load8_u (i32.add (i32.shl (local.get $t11) (i32.const 2)) (local.get $t12))))
     (local.set $t12 (i32.add (global.get $TB) (i32.const 0))) ;; LF L34
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t12)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (local.get $t11))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t12)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 8)))
     (local.set $t8 (call_indirect $ftable (type $bcpl_fn) (local.get $t12)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t8)) ;; flush FNAP result
     (local.set $t9 (i32.const 100))
     (local.set $t8 (i32.sub (i32.const 0) (i32.eq (local.get $t8) (local.get $t9))))
     (local.set $t7 (i32.and (local.get $t7) (local.get $t8)))
@@ -274,6 +284,7 @@
   (func $fn_L41 (export "fn_L41") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -389,6 +400,7 @@
     (local $t112 i32)
     (local $t113 i32)
     (local $t114 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     ;; line 0:148
@@ -396,13 +408,13 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t4 (i32.add (global.get $P) (i32.const 5)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (local.get $t4)) ;; flush t4 (pre-stack-up)
+    (i32.store (i32.add (local.get $Pb) (i32.const 16)) (local.get $t4)) ;; flush t4 (pre-stack-up)
     ;; line 0:149
     (global.set $__line (i32.const 149))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t70 (i32.add (global.get $P) (i32.const 71)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 280)) (local.get $t70)) ;; flush t70 (pre-stack-up)
+    (i32.store (i32.add (local.get $Pb) (i32.const 280)) (local.get $t70)) ;; flush t70 (pre-stack-up)
     ;; line 0:150
     (global.set $__line (i32.const 150))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -410,48 +422,49 @@
     (local.set $t104 (i32.const 0))
     (local.set $t105 (i32.const 0))
     (local.set $t106 (i32.const 0))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 416)) (local.get $t104)) ;; STORE slot 104
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 420)) (local.get $t105)) ;; STORE slot 105
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 424)) (local.get $t106)) ;; STORE slot 106
+    (i32.store (i32.add (local.get $Pb) (i32.const 416)) (local.get $t104)) ;; STORE slot 104
+    (i32.store (i32.add (local.get $Pb) (i32.const 420)) (local.get $t105)) ;; STORE slot 105
+    (i32.store (i32.add (local.get $Pb) (i32.const 424)) (local.get $t106)) ;; STORE slot 106
     ;; line 0:151
     (global.set $__line (i32.const 151))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t110 (i32.const 81))
-    (local.set $t111 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t111 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t112 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 12))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 440)) (local.get $t110))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 444)) (local.get $t111))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 428)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 432)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 436)) (local.get $t112)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 440)) (local.get $t110))
+    (i32.store (i32.add (local.get $Pb) (i32.const 444)) (local.get $t111))
+    (i32.store (i32.add (local.get $Pb) (i32.const 428)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 432)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 436)) (local.get $t112)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 107)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t112)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     ;; line 0:152
     (global.set $__line (i32.const 152))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t107 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t107 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t108 (i32.const 0))
     (local.set $t107 (i32.load8_u (i32.add (i32.shl (local.get $t107) (i32.const 2)) (local.get $t108))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 416)) (local.get $t107))
+    (i32.store (i32.add (local.get $Pb) (i32.const 416)) (local.get $t107))
     (local.set $t104 (local.get $t107))
     ;; line 0:153
     (global.set $__line (i32.const 153))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t107 (i32.const 1))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 420)) (local.get $t107))
+    (i32.store (i32.add (local.get $Pb) (i32.const 420)) (local.get $t107))
     (local.set $t105 (local.get $t107))
     ;; line 0:154
     (global.set $__line (i32.const 154))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t107 (i32.const 1))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 424)) (local.get $t107))
+    (i32.store (i32.add (local.get $Pb) (i32.const 424)) (local.get $t107))
     (local.set $t106 (local.get $t107))
-    (local.set $t107 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 424))))
-    (local.set $t108 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 416))))
+    (local.set $t107 (i32.load (i32.add (local.get $Pb) (i32.const 424))))
+    (local.set $t108 (i32.load (i32.add (local.get $Pb) (i32.const 416))))
     (if (i32.gt_s (local.get $t107) (local.get $t108)) (then
       (local.set $__lab (i32.const 9)) (br $__dispatch)
     ))
@@ -462,20 +475,20 @@
     )) ;; end block / LAB L44 = idx 2
     (if (i32.eq (local.get $__lab) (i32.const 2)) (then ;; L44
     (local.set $t107 (i32.const 1))
-    (local.set $t108 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 424))))
+    (local.set $t108 (i32.load (i32.add (local.get $Pb) (i32.const 424))))
     (local.set $t107 (i32.add (local.get $t107) (local.get $t108)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 424)) (local.get $t107))
+    (i32.store (i32.add (local.get $Pb) (i32.const 424)) (local.get $t107))
     (local.set $t106 (local.get $t107))
       (local.set $__lab (i32.const 3)) (br $__dispatch)
     )) ;; end block / LAB L45 = idx 3
     (if (i32.eq (local.get $__lab) (i32.const 3)) (then ;; L45
-    (local.set $t107 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 424))))
-    (local.set $t108 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 416))))
+    (local.set $t107 (i32.load (i32.add (local.get $Pb) (i32.const 424))))
+    (local.set $t108 (i32.load (i32.add (local.get $Pb) (i32.const 416))))
     (if (i32.gt_s (local.get $t107) (local.get $t108)) (then
       (local.set $__lab (i32.const 4)) (br $__dispatch)
     ))
-    (local.set $t107 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
-    (local.set $t108 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 424))))
+    (local.set $t107 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
+    (local.set $t108 (i32.load (i32.add (local.get $Pb) (i32.const 424))))
     (local.set $t107 (i32.load8_u (i32.add (i32.shl (local.get $t107) (i32.const 2)) (local.get $t108))))
     (local.set $t108 (i32.const 44))
     (if (i32.ne  (local.get $t107) (local.get $t108)) (then
@@ -488,19 +501,20 @@
     (global.set $__line (i32.const 156))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t110 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
-    (local.set $t111 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 420))))
-    (local.set $t112 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 424))))
+    (local.set $t110 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
+    (local.set $t111 (i32.load (i32.add (local.get $Pb) (i32.const 420))))
+    (local.set $t112 (i32.load (i32.add (local.get $Pb) (i32.const 424))))
     (local.set $t113 (i32.add (global.get $TB) (i32.const 2))) ;; LF L39
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 440)) (local.get $t110))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 444)) (local.get $t111))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 448)) (local.get $t112))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 428)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 432)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 436)) (local.get $t113)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 440)) (local.get $t110))
+    (i32.store (i32.add (local.get $Pb) (i32.const 444)) (local.get $t111))
+    (i32.store (i32.add (local.get $Pb) (i32.const 448)) (local.get $t112))
+    (i32.store (i32.add (local.get $Pb) (i32.const 428)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 432)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 436)) (local.get $t113)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 107)))
     (local.set $t107 (call_indirect $ftable (type $bcpl_fn) (local.get $t113)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 428)) (local.get $t107)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 428)) (local.get $t107)) ;; flush FNAP result
     (if (i32.eqz (local.get $t107)) (then
       (local.set $__lab (i32.const 8)) (br $__dispatch)
     ))
@@ -508,37 +522,39 @@
     (global.set $__line (i32.const 157))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t110 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
-    (local.set $t111 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 420))))
-    (local.set $t112 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 424))))
-    (local.set $t113 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 280))))
+    (local.set $t110 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
+    (local.set $t111 (i32.load (i32.add (local.get $Pb) (i32.const 420))))
+    (local.set $t112 (i32.load (i32.add (local.get $Pb) (i32.const 424))))
+    (local.set $t113 (i32.load (i32.add (local.get $Pb) (i32.const 280))))
     (local.set $t114 (i32.add (global.get $TB) (i32.const 1))) ;; LF L36
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 440)) (local.get $t110))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 444)) (local.get $t111))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 448)) (local.get $t112))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 452)) (local.get $t113))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 428)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 432)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 436)) (local.get $t114)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 440)) (local.get $t110))
+    (i32.store (i32.add (local.get $Pb) (i32.const 444)) (local.get $t111))
+    (i32.store (i32.add (local.get $Pb) (i32.const 448)) (local.get $t112))
+    (i32.store (i32.add (local.get $Pb) (i32.const 452)) (local.get $t113))
+    (i32.store (i32.add (local.get $Pb) (i32.const 428)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 432)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 436)) (local.get $t114)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 107)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t114)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     ;; line 0:158
     (global.set $__line (i32.const 158))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t110 (i32.const 80))
-    (local.set $t111 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 280))))
-    (local.set $t112 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t111 (i32.load (i32.add (local.get $Pb) (i32.const 280))))
+    (local.set $t112 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t113 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 12))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 440)) (local.get $t110))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 444)) (local.get $t111))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 448)) (local.get $t112))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 428)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 432)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 436)) (local.get $t113)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 440)) (local.get $t110))
+    (i32.store (i32.add (local.get $Pb) (i32.const 444)) (local.get $t111))
+    (i32.store (i32.add (local.get $Pb) (i32.const 448)) (local.get $t112))
+    (i32.store (i32.add (local.get $Pb) (i32.const 428)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 432)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 436)) (local.get $t113)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 107)))
     (local.set $t107 (call_indirect $ftable (type $bcpl_fn) (local.get $t113)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 428)) (local.get $t107)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 428)) (local.get $t107)) ;; flush FNAP result
     (if (i32.eqz (local.get $t107)) (then
       (local.set $__lab (i32.const 7)) (br $__dispatch)
     ))
@@ -548,22 +564,23 @@
         (then (call $__break)))
     (local.set $t110 (i32.add (global.get $SB) (i32.const 24))) ;; LSTR
     (local.set $t111 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 440)) (local.get $t110))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 428)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 432)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 436)) (local.get $t111)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 440)) (local.get $t110))
+    (i32.store (i32.add (local.get $Pb) (i32.const 428)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 432)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 436)) (local.get $t111)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 107)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t111)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     ;; line 0:160
     (global.set $__line (i32.const 160))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t107 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 420))))
-    (local.set $t108 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 424))))
+    (local.set $t107 (i32.load (i32.add (local.get $Pb) (i32.const 420))))
+    (local.set $t108 (i32.load (i32.add (local.get $Pb) (i32.const 424))))
     (local.set $t109 (i32.const 1))
     (local.set $t108 (i32.sub (local.get $t108) (local.get $t109)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 428)) (local.get $t107)) ;; STORE slot 107
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 432)) (local.get $t108)) ;; STORE slot 108
+    (i32.store (i32.add (local.get $Pb) (i32.const 428)) (local.get $t107)) ;; STORE slot 107
+    (i32.store (i32.add (local.get $Pb) (i32.const 432)) (local.get $t108)) ;; STORE slot 108
       (local.set $__lab (i32.const 6)) (br $__dispatch) ;; JUMP L50
     )) ;; end block / LAB L49 = idx 5
     (if (i32.eq (local.get $__lab) (i32.const 5)) (then ;; L49
@@ -571,35 +588,37 @@
     (global.set $__line (i32.const 161))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t112 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
-    (local.set $t113 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 428))))
+    (local.set $t112 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
+    (local.set $t113 (i32.load (i32.add (local.get $Pb) (i32.const 428))))
     (local.set $t112 (i32.load8_u (i32.add (i32.shl (local.get $t112) (i32.const 2)) (local.get $t113))))
     (local.set $t113 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 164))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 448)) (local.get $t112))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 436)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 440)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 444)) (local.get $t113)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 448)) (local.get $t112))
+    (i32.store (i32.add (local.get $Pb) (i32.const 436)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 440)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 444)) (local.get $t113)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 109)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t113)))
-    (local.set $t109 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 428))))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (local.set $t109 (i32.load (i32.add (local.get $Pb) (i32.const 428))))
     (local.set $t110 (i32.const 1))
     (local.set $t109 (i32.add (local.get $t109) (local.get $t110)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 428)) (local.get $t109))
+    (i32.store (i32.add (local.get $Pb) (i32.const 428)) (local.get $t109))
     (local.set $t107 (local.get $t109))
       (local.set $__lab (i32.const 6)) (br $__dispatch)
     )) ;; end block / LAB L50 = idx 6
     (if (i32.eq (local.get $__lab) (i32.const 6)) (then ;; L50
-    (local.set $t109 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 428))))
-    (local.set $t110 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 432))))
+    (local.set $t109 (i32.load (i32.add (local.get $Pb) (i32.const 428))))
+    (local.set $t110 (i32.load (i32.add (local.get $Pb) (i32.const 432))))
     (if (i32.le_s (local.get $t109) (local.get $t110)) (then
       (local.set $__lab (i32.const 5)) (br $__dispatch)
     ))
     (local.set $t110 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 336))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 428)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 432)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 436)) (local.get $t110)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 428)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 432)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 436)) (local.get $t110)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 107)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t110)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     ;; line 0:162
     (global.set $__line (i32.const 162))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -619,19 +638,19 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t107 (i32.const 1))
-    (local.set $t108 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 424))))
+    (local.set $t108 (i32.load (i32.add (local.get $Pb) (i32.const 424))))
     (local.set $t107 (i32.add (local.get $t107) (local.get $t108)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 424)) (local.get $t107))
+    (i32.store (i32.add (local.get $Pb) (i32.const 424)) (local.get $t107))
     (local.set $t106 (local.get $t107))
     ;; line 0:166
     (global.set $__line (i32.const 166))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t107 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 424))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 420)) (local.get $t107))
+    (local.set $t107 (i32.load (i32.add (local.get $Pb) (i32.const 424))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 420)) (local.get $t107))
     (local.set $t105 (local.get $t107))
-    (local.set $t107 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 424))))
-    (local.set $t108 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 416))))
+    (local.set $t107 (i32.load (i32.add (local.get $Pb) (i32.const 424))))
+    (local.set $t108 (i32.load (i32.add (local.get $Pb) (i32.const 416))))
     (if (i32.le_s (local.get $t107) (local.get $t108)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     ))
@@ -661,6 +680,7 @@
   (func $fn_L51 (export "fn_L51") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -673,62 +693,63 @@
     (local $t9 i32)
     (local $t10 i32)
     (local $t11 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     ;; line 0:171
     (global.set $__line (i32.const 171))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t5 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t6 (i32.const 0))
-    (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t7 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t6 (i32.add (local.get $t6) (local.get $t7)))
     (local.set $t5 (i32.load8_u (i32.add (i32.shl (local.get $t5) (i32.const 2)) (local.get $t6))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t5)) ;; STORE slot 5
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (local.get $t5)) ;; STORE slot 5
     ;; line 0:172
     (global.set $__line (i32.const 172))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t6 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t7 (i32.const 1))
-    (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t8 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t7 (i32.add (local.get $t7) (local.get $t8)))
     (local.set $t6 (i32.load8_u (i32.add (i32.shl (local.get $t6) (i32.const 2)) (local.get $t7))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
     ;; line 0:173
     (global.set $__line (i32.const 173))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t7 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t8 (i32.const 2))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t8 (i32.add (local.get $t8) (local.get $t9)))
     (local.set $t7 (i32.load8_u (i32.add (i32.shl (local.get $t7) (i32.const 2)) (local.get $t8))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
     ;; line 0:174
     (global.set $__line (i32.const 174))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t8 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t9 (i32.const 3))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t9 (i32.add (local.get $t9) (local.get $t10)))
     (local.set $t8 (i32.load8_u (i32.add (i32.shl (local.get $t8) (i32.const 2)) (local.get $t9))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
     ;; line 0:175
     (global.set $__line (i32.const 175))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
     (local.set $t10 (i32.const 8))
     (local.set $t9 (i32.shl (local.get $t9) (local.get $t10)))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t9 (i32.or (local.get $t9) (local.get $t10)))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
     (local.set $t11 (i32.const 16))
     (local.set $t10 (i32.shl (local.get $t10) (local.get $t11)))
     (local.set $t9 (i32.or (local.get $t9) (local.get $t10)))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
     (local.set $t11 (i32.const 24))
     (local.set $t10 (i32.shl (local.get $t10) (local.get $t11)))
     (local.set $t9 (i32.or (local.get $t9) (local.get $t10)))
@@ -750,6 +771,7 @@
   (func $fn_L52 (export "fn_L52") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -759,14 +781,15 @@
     (local $t6 i32)
     (local $t7 i32)
     (local $t8 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
-    (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
-    (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t5 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t6 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t5 (i32.load8_u (i32.add (i32.shl (local.get $t5) (i32.const 2)) (local.get $t6))))
-    (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t6 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t7 (i32.const 1))
-    (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t8 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t7 (i32.add (local.get $t7) (local.get $t8)))
     (local.set $t6 (i32.load8_u (i32.add (i32.shl (local.get $t6) (i32.const 2)) (local.get $t7))))
     (local.set $t7 (i32.const 8))
@@ -790,6 +813,7 @@
   (func $fn_L53 (export "fn_L53") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -801,28 +825,30 @@
     (local $t8 i32)
     (local $t9 i32)
     (local $t10 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     ;; line 0:181
     (global.set $__line (i32.const 181))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t8 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t10 (i32.add (global.get $TB) (i32.const 5))) ;; LF L52
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t10)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t8))
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (local.get $t9))
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t10)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 5)))
     (local.set $t5 (call_indirect $ftable (type $bcpl_fn) (local.get $t10)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t5)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (local.get $t5)) ;; flush FNAP result
     ;; line 0:182
     (global.set $__line (i32.const 182))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t6 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t7 (i32.const 32768))
     (if (i32.lt_s (local.get $t6) (local.get $t7)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
@@ -831,15 +857,15 @@
     (global.set $__line (i32.const 183))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t6 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t7 (i32.const 65536))
     (local.set $t6 (i32.sub (local.get $t6) (local.get $t7)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t6))
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (local.get $t6))
     (local.set $t5 (local.get $t6))
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     )) ;; end block / LAB L54 = idx 1
     (if (i32.eq (local.get $__lab) (i32.const 1)) (then ;; L54
-    (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t6 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     ;; FNRN
     (local.set $__res (local.get $t6))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
@@ -858,6 +884,7 @@
   (func $fn_L55 (export "fn_L55") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -871,21 +898,22 @@
     (local $t10 i32)
     (local $t11 i32)
     (local $t12 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     ;; line 0:187
     (global.set $__line (i32.const 187))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t6 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t7 (i32.const 0))
     (local.set $t6 (i32.load8_u (i32.add (i32.shl (local.get $t6) (i32.const 2)) (local.get $t7))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
     ;; line 0:188
     (global.set $__line (i32.const 188))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
+    (local.set $t7 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
     (local.set $t8 (i32.const 8))
     (if (i32.le_s (local.get $t7) (local.get $t8)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
@@ -902,11 +930,11 @@
     )) ;; end block / LAB L56 = idx 1
     (if (i32.eq (local.get $__lab) (i32.const 1)) (then ;; L56
     (local.set $t7 (i32.const 0))
-    (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
+    (local.set $t8 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
     (local.set $t9 (i32.const 1))
     (local.set $t8 (i32.sub (local.get $t8) (local.get $t9)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
       (local.set $__lab (i32.const 4)) (br $__dispatch) ;; JUMP L58
     )) ;; end block / LAB L57 = idx 2
     (if (i32.eq (local.get $__lab) (i32.const 2)) (then ;; L57
@@ -914,16 +942,16 @@
     (global.set $__line (i32.const 190))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t10 (i32.const 8))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t10 (i32.add (local.get $t10) (local.get $t11)))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
     (local.set $t10 (i32.add (local.get $t10) (local.get $t11)))
     (local.set $t9 (i32.load8_u (i32.add (i32.shl (local.get $t9) (i32.const 2)) (local.get $t10))))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t11 (i32.const 1))
-    (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
+    (local.set $t12 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
     (local.set $t11 (i32.add (local.get $t11) (local.get $t12)))
     (local.set $t10 (i32.load8_u (i32.add (i32.shl (local.get $t10) (i32.const 2)) (local.get $t11))))
     (if (i32.eq  (local.get $t9) (local.get $t10)) (then
@@ -940,25 +968,25 @@
     (return (local.get $__res))
     )) ;; end block / LAB L59 = idx 3
     (if (i32.eq (local.get $__lab) (i32.const 3)) (then ;; L59
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
     (local.set $t10 (i32.const 1))
     (local.set $t9 (i32.add (local.get $t9) (local.get $t10)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t9))
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t9))
     (local.set $t7 (local.get $t9))
       (local.set $__lab (i32.const 4)) (br $__dispatch)
     )) ;; end block / LAB L58 = idx 4
     (if (i32.eq (local.get $__lab) (i32.const 4)) (then ;; L58
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
     (if (i32.le_s (local.get $t9) (local.get $t10)) (then
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     ))
-    (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
+    (local.set $t7 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
     (local.set $t8 (i32.const 7))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
     (if (i32.gt_s (local.get $t9) (local.get $t10)) (then
       (local.set $__lab (i32.const 7)) (br $__dispatch)
     ))
@@ -969,11 +997,11 @@
     (global.set $__line (i32.const 192))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t10 (i32.const 8))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t10 (i32.add (local.get $t10) (local.get $t11)))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
     (local.set $t10 (i32.add (local.get $t10) (local.get $t11)))
     (local.set $t9 (i32.load8_u (i32.add (i32.shl (local.get $t9) (i32.const 2)) (local.get $t10))))
     (local.set $t10 (i32.const 0))
@@ -991,13 +1019,13 @@
     (return (local.get $__res))
     )) ;; end block / LAB L62 = idx 6
     (if (i32.eq (local.get $__lab) (i32.const 6)) (then ;; L62
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
     (local.set $t10 (i32.const 1))
     (local.set $t9 (i32.add (local.get $t9) (local.get $t10)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t9))
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t9))
     (local.set $t7 (local.get $t9))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
     (if (i32.le_s (local.get $t9) (local.get $t10)) (then
       (local.set $__lab (i32.const 5)) (br $__dispatch)
     ))
@@ -1023,6 +1051,7 @@
   (func $fn_L63 (export "fn_L63") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -1036,6 +1065,7 @@
     (local $t10 i32)
     (local $t11 i32)
     (local $t12 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     ;; line 0:197
@@ -1043,95 +1073,95 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t5 (i32.const 8))
-    (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t6 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t5 (i32.add (local.get $t5) (local.get $t6)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t5)) ;; STORE slot 5
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (local.get $t5)) ;; STORE slot 5
     ;; line 0:198
     (global.set $__line (i32.const 198))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t6 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t7 (i32.const 0))
-    (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t8 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t7 (i32.add (local.get $t7) (local.get $t8)))
     (local.set $t6 (i32.load8_u (i32.add (i32.shl (local.get $t6) (i32.const 2)) (local.get $t7))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
     ;; line 0:199
     (global.set $__line (i32.const 199))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t7 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t8 (i32.const 1))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t8 (i32.add (local.get $t8) (local.get $t9)))
     (local.set $t7 (i32.load8_u (i32.add (i32.shl (local.get $t7) (i32.const 2)) (local.get $t8))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
     ;; line 0:200
     (global.set $__line (i32.const 200))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t8 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t9 (i32.const 2))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t9 (i32.add (local.get $t9) (local.get $t10)))
     (local.set $t8 (i32.load8_u (i32.add (i32.shl (local.get $t8) (i32.const 2)) (local.get $t9))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
     ;; line 0:201
     (global.set $__line (i32.const 201))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t10 (i32.const 3))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t10 (i32.add (local.get $t10) (local.get $t11)))
     (local.set $t9 (i32.load8_u (i32.add (i32.shl (local.get $t9) (i32.const 2)) (local.get $t10))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9)) ;; STORE slot 9
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (local.get $t9)) ;; STORE slot 9
     ;; line 0:202
     (global.set $__line (i32.const 202))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t11 (i32.const 4))
-    (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t12 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t11 (i32.add (local.get $t11) (local.get $t12)))
     (local.set $t10 (i32.load8_u (i32.add (i32.shl (local.get $t10) (i32.const 2)) (local.get $t11))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10)) ;; STORE slot 10
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t10)) ;; STORE slot 10
     ;; line 0:203
     (global.set $__line (i32.const 203))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t11 (i32.const 69))
-    (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
+    (local.set $t12 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
     (if (i32.ne  (local.get $t11) (local.get $t12)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     ))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
     (local.set $t12 (i32.const 48))
     (if (i32.lt_s (local.get $t11) (local.get $t12)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     ))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
     (local.set $t12 (i32.const 57))
     (if (i32.gt_s (local.get $t11) (local.get $t12)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     ))
     (local.set $t11 (i32.const 77))
-    (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
+    (local.set $t12 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
     (if (i32.ne  (local.get $t11) (local.get $t12)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     ))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 36))))
     (local.set $t12 (i32.const 48))
     (if (i32.lt_s (local.get $t11) (local.get $t12)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     ))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 36))))
     (local.set $t12 (i32.const 57))
     (if (i32.gt_s (local.get $t11) (local.get $t12)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     ))
     (local.set $t11 (i32.const 0))
-    (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40))))
+    (local.set $t12 (i32.load (i32.add (local.get $Pb) (i32.const 40))))
     (if (i32.ne  (local.get $t11) (local.get $t12)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     ))
@@ -1151,36 +1181,36 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t11 (i32.const 77))
-    (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
+    (local.set $t12 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
     (if (i32.ne  (local.get $t11) (local.get $t12)) (then
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     ))
     (local.set $t11 (i32.const 65))
-    (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
+    (local.set $t12 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
     (if (i32.ne  (local.get $t11) (local.get $t12)) (then
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     ))
     (local.set $t11 (i32.const 80))
-    (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
+    (local.set $t12 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
     (if (i32.ne  (local.get $t11) (local.get $t12)) (then
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     ))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 36))))
     (local.set $t12 (i32.const 48))
     (if (i32.lt_s (local.get $t11) (local.get $t12)) (then
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     ))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 36))))
     (local.set $t12 (i32.const 57))
     (if (i32.gt_s (local.get $t11) (local.get $t12)) (then
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     ))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 40))))
     (local.set $t12 (i32.const 48))
     (if (i32.lt_s (local.get $t11) (local.get $t12)) (then
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     ))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 40))))
     (local.set $t12 (i32.const 57))
     (if (i32.gt_s (local.get $t11) (local.get $t12)) (then
       (local.set $__lab (i32.const 2)) (br $__dispatch)
@@ -1219,6 +1249,7 @@
   (func $fn_L66 (export "fn_L66") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -1232,6 +1263,7 @@
     (local $t10 i32)
     (local $t11 i32)
     (local $t12 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     ;; line 0:211
@@ -1240,8 +1272,8 @@
         (then (call $__break)))
     (local.set $t5 (i32.const 0))
     (local.set $t6 (i32.const 7))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t5)) ;; STORE slot 5
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (local.get $t5)) ;; STORE slot 5
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
       (local.set $__lab (i32.const 2)) (br $__dispatch) ;; JUMP L68
     )) ;; end block / LAB L67 = idx 1
     (if (i32.eq (local.get $__lab) (i32.const 1)) (then ;; L67
@@ -1249,20 +1281,20 @@
     (global.set $__line (i32.const 212))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t7 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t8 (i32.const 8))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t8 (i32.add (local.get $t8) (local.get $t9)))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t8 (i32.add (local.get $t8) (local.get $t9)))
     (local.set $t7 (i32.load8_u (i32.add (i32.shl (local.get $t7) (i32.const 2)) (local.get $t8))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
     ;; line 0:213
     (global.set $__line (i32.const 213))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t8 (i32.const 0))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
     (if (i32.eq  (local.get $t8) (local.get $t9)) (then
       (local.set $__lab (i32.const 3)) (br $__dispatch)
     ))
@@ -1270,24 +1302,25 @@
     (global.set $__line (i32.const 214))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 164))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t12)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (local.get $t11))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t12)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 8)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t12)))
-    (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (local.set $t7 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t8 (i32.const 1))
     (local.set $t7 (i32.add (local.get $t7) (local.get $t8)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t7))
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (local.get $t7))
     (local.set $t5 (local.get $t7))
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     )) ;; end block / LAB L68 = idx 2
     (if (i32.eq (local.get $__lab) (i32.const 2)) (then ;; L68
-    (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
-    (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
+    (local.set $t7 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
+    (local.set $t8 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
     (if (i32.le_s (local.get $t7) (local.get $t8)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     ))
@@ -1309,6 +1342,7 @@
   (func $fn_L70 (export "fn_L70") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -1324,6 +1358,7 @@
     (local $t12 i32)
     (local $t13 i32)
     (local $t14 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     ;; line 0:218
@@ -1331,11 +1366,11 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t6 (i32.const 0))
-    (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t7 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t8 (i32.const 1))
     (local.set $t7 (i32.sub (local.get $t7) (local.get $t8)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
       (local.set $__lab (i32.const 3)) (br $__dispatch) ;; JUMP L72
     )) ;; end block / LAB L71 = idx 1
     (if (i32.eq (local.get $__lab) (i32.const 1)) (then ;; L71
@@ -1344,26 +1379,27 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t8 (i32.const 16))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
     (local.set $t8 (i32.mul (local.get $t8) (local.get $t9)))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t8 (i32.add (local.get $t8) (local.get $t9)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
     ;; line 0:220
     (global.set $__line (i32.const 220))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
-    (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
+    (local.set $t12 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t13 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
     (local.set $t14 (i32.add (global.get $TB) (i32.const 8))) ;; LF L63
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t12))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)) (local.get $t13))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t14)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t12))
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (local.get $t13))
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (local.get $t14)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 9)))
     (local.set $t9 (call_indirect $ftable (type $bcpl_fn) (local.get $t14)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (local.get $t9)) ;; flush FNAP result
     (if (i32.eqz (local.get $t9)) (then
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     ))
@@ -1371,23 +1407,23 @@
     (global.set $__line (i32.const 221))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
     ;; FNRN
     (local.set $__res (local.get $t9))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
     (return (local.get $__res))
     )) ;; end block / LAB L73 = idx 2
     (if (i32.eq (local.get $__lab) (i32.const 2)) (then ;; L73
-    (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
+    (local.set $t8 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
     (local.set $t9 (i32.const 1))
     (local.set $t8 (i32.add (local.get $t8) (local.get $t9)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t8))
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (local.get $t8))
     (local.set $t6 (local.get $t8))
       (local.set $__lab (i32.const 3)) (br $__dispatch)
     )) ;; end block / LAB L72 = idx 3
     (if (i32.eq (local.get $__lab) (i32.const 3)) (then ;; L72
-    (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
+    (local.set $t8 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
     (if (i32.le_s (local.get $t8) (local.get $t9)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     ))
@@ -1410,6 +1446,7 @@
   (func $fn_L74 (export "fn_L74") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -1429,6 +1466,7 @@
     (local $t16 i32)
     (local $t17 i32)
     (local $t18 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     ;; line 0:226
@@ -1436,15 +1474,15 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t8 (i32.const 12))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t8 (i32.add (local.get $t8) (local.get $t9)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
     ;; line 0:227
     (global.set $__line (i32.const 227))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
     (if (i32.le_s (local.get $t9) (local.get $t10)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     ))
@@ -1452,20 +1490,20 @@
     (global.set $__line (i32.const 228))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t9))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t9))
     (local.set $t8 (local.get $t9))
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     )) ;; end block / LAB L75 = idx 1
     (if (i32.eq (local.get $__lab) (i32.const 1)) (then ;; L75
     (local.set $t9 (i32.const 1))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t9 (i32.add (local.get $t9) (local.get $t10)))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
     (local.set $t11 (i32.const 1))
     (local.set $t10 (i32.sub (local.get $t10) (local.get $t11)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9)) ;; STORE slot 9
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10)) ;; STORE slot 10
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (local.get $t9)) ;; STORE slot 9
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t10)) ;; STORE slot 10
       (local.set $__lab (i32.const 4)) (br $__dispatch) ;; JUMP L77
     )) ;; end block / LAB L76 = idx 2
     (if (i32.eq (local.get $__lab) (i32.const 2)) (then ;; L76
@@ -1474,28 +1512,29 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t11 (i32.const 16))
-    (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
+    (local.set $t12 (i32.load (i32.add (local.get $Pb) (i32.const 36))))
     (local.set $t11 (i32.mul (local.get $t11) (local.get $t12)))
-    (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t12 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t11 (i32.add (local.get $t11) (local.get $t12)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11)) ;; STORE slot 11
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (local.get $t11)) ;; STORE slot 11
     ;; line 0:230
     (global.set $__line (i32.const 230))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t15 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
-    (local.set $t16 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44))))
-    (local.set $t17 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
+    (local.set $t15 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t16 (i32.load (i32.add (local.get $Pb) (i32.const 44))))
+    (local.set $t17 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
     (local.set $t18 (i32.add (global.get $TB) (i32.const 7))) ;; LF L55
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60)) (local.get $t15))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 64)) (local.get $t16))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 68)) (local.get $t17))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t18)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t15))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16))
+    (i32.store (i32.add (local.get $Pb) (i32.const 68)) (local.get $t17))
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (local.get $t18)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 12)))
     (local.set $t12 (call_indirect $ftable (type $bcpl_fn) (local.get $t18)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t12)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t12)) ;; flush FNAP result
     (if (i32.eqz (local.get $t12)) (then
       (local.set $__lab (i32.const 3)) (br $__dispatch)
     ))
@@ -1503,23 +1542,23 @@
     (global.set $__line (i32.const 231))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
+    (local.set $t12 (i32.load (i32.add (local.get $Pb) (i32.const 36))))
     ;; FNRN
     (local.set $__res (local.get $t12))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
     (return (local.get $__res))
     )) ;; end block / LAB L78 = idx 3
     (if (i32.eq (local.get $__lab) (i32.const 3)) (then ;; L78
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 36))))
     (local.set $t12 (i32.const 1))
     (local.set $t11 (i32.add (local.get $t11) (local.get $t12)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t11))
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (local.get $t11))
     (local.set $t9 (local.get $t11))
       (local.set $__lab (i32.const 4)) (br $__dispatch)
     )) ;; end block / LAB L77 = idx 4
     (if (i32.eq (local.get $__lab) (i32.const 4)) (then ;; L77
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
-    (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 36))))
+    (local.set $t12 (i32.load (i32.add (local.get $Pb) (i32.const 40))))
     (if (i32.le_s (local.get $t11) (local.get $t12)) (then
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     ))
@@ -1542,6 +1581,7 @@
   (func $fn_L79 (export "fn_L79") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -1554,6 +1594,7 @@
     (local $t9 i32)
     (local $t10 i32)
     (local $t11 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     ;; line 0:238
@@ -1565,26 +1606,26 @@
     (local.set $t6 (i32.const 0))
     (local.set $t7 (i32.const 0))
     (local.set $t8 (i32.const 0))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (local.get $t4)) ;; STORE slot 4
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t5)) ;; STORE slot 5
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
+    (i32.store (i32.add (local.get $Pb) (i32.const 16)) (local.get $t4)) ;; STORE slot 4
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (local.get $t5)) ;; STORE slot 5
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
     ;; line 0:239
     (global.set $__line (i32.const 239))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t9 (i32.const 1078530007))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (local.get $t9))
+    (i32.store (i32.add (local.get $Pb) (i32.const 16)) (local.get $t9))
     (local.set $t4 (local.get $t9))
     ;; line 0:240
     (global.set $__line (i32.const 240))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t10 (i32.const 1073741824))
     (local.set $t9 (i32.reinterpret_f32 (f32.mul (f32.reinterpret_i32 (local.get $t9)) (f32.reinterpret_i32 (local.get $t10)))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t9))
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (local.get $t9))
     (local.set $t5 (local.get $t9))
     ;; line 0:241
     (global.set $__line (i32.const 241))
@@ -1593,16 +1634,16 @@
       (local.set $__lab (i32.const 2)) (br $__dispatch) ;; JUMP L81
     )) ;; end block / LAB L80 = idx 1
     (if (i32.eq (local.get $__lab) (i32.const 1)) (then ;; L80
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t9 (i32.reinterpret_f32 (f32.sub (f32.reinterpret_i32 (local.get $t9)) (f32.reinterpret_i32 (local.get $t10)))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)) (local.get $t9))
+    (i32.store (i32.add (local.get $Pb) (i32.const 12)) (local.get $t9))
     (local.set $t3 (local.get $t9))
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     )) ;; end block / LAB L81 = idx 2
     (if (i32.eq (local.get $__lab) (i32.const 2)) (then ;; L81
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t9 (i32.sub (i32.const 0) (f32.gt (f32.reinterpret_i32 (local.get $t9)) (f32.reinterpret_i32 (local.get $t10)))))
     (if (local.get $t9) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
@@ -1614,17 +1655,17 @@
       (local.set $__lab (i32.const 4)) (br $__dispatch) ;; JUMP L83
     )) ;; end block / LAB L82 = idx 3
     (if (i32.eq (local.get $__lab) (i32.const 3)) (then ;; L82
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t9 (i32.reinterpret_f32 (f32.add (f32.reinterpret_i32 (local.get $t9)) (f32.reinterpret_i32 (local.get $t10)))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)) (local.get $t9))
+    (i32.store (i32.add (local.get $Pb) (i32.const 12)) (local.get $t9))
     (local.set $t3 (local.get $t9))
       (local.set $__lab (i32.const 4)) (br $__dispatch)
     )) ;; end block / LAB L83 = idx 4
     (if (i32.eq (local.get $__lab) (i32.const 4)) (then ;; L83
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t10 (i32.const 0))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t10 (i32.reinterpret_f32 (f32.sub (f32.reinterpret_i32 (local.get $t10)) (f32.reinterpret_i32 (local.get $t11)))))
     (local.set $t9 (i32.sub (i32.const 0) (f32.lt (f32.reinterpret_i32 (local.get $t9)) (f32.reinterpret_i32 (local.get $t10)))))
     (if (local.get $t9) (then
@@ -1634,98 +1675,98 @@
     (global.set $__line (i32.const 243))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t9 (i32.reinterpret_f32 (f32.mul (f32.reinterpret_i32 (local.get $t9)) (f32.reinterpret_i32 (local.get $t10)))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t9))
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (local.get $t9))
     (local.set $t6 (local.get $t9))
     ;; line 0:244
     (global.set $__line (i32.const 244))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t9))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t9))
     (local.set $t7 (local.get $t9))
     ;; line 0:245
     (global.set $__line (i32.const 245))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t9))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t9))
     (local.set $t8 (local.get $t9))
     (local.set $t9 (i32.const 0))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
     (local.set $t10 (i32.reinterpret_f32 (f32.mul (f32.reinterpret_i32 (local.get $t10)) (f32.reinterpret_i32 (local.get $t11)))))
     (local.set $t11 (i32.const 1086324736))
     (local.set $t10 (i32.reinterpret_f32 (f32.div (f32.reinterpret_i32 (local.get $t10)) (f32.reinterpret_i32 (local.get $t11)))))
     (local.set $t9 (i32.reinterpret_f32 (f32.sub (f32.reinterpret_i32 (local.get $t9)) (f32.reinterpret_i32 (local.get $t10)))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t9))
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t9))
     (local.set $t7 (local.get $t9))
     ;; line 0:246
     (global.set $__line (i32.const 246))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
     (local.set $t9 (i32.reinterpret_f32 (f32.add (f32.reinterpret_i32 (local.get $t9)) (f32.reinterpret_i32 (local.get $t10)))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t9))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t9))
     (local.set $t8 (local.get $t9))
     (local.set $t9 (i32.const 0))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
     (local.set $t10 (i32.reinterpret_f32 (f32.mul (f32.reinterpret_i32 (local.get $t10)) (f32.reinterpret_i32 (local.get $t11)))))
     (local.set $t11 (i32.const 1101004800))
     (local.set $t10 (i32.reinterpret_f32 (f32.div (f32.reinterpret_i32 (local.get $t10)) (f32.reinterpret_i32 (local.get $t11)))))
     (local.set $t9 (i32.reinterpret_f32 (f32.sub (f32.reinterpret_i32 (local.get $t9)) (f32.reinterpret_i32 (local.get $t10)))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t9))
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t9))
     (local.set $t7 (local.get $t9))
     ;; line 0:247
     (global.set $__line (i32.const 247))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
     (local.set $t9 (i32.reinterpret_f32 (f32.add (f32.reinterpret_i32 (local.get $t9)) (f32.reinterpret_i32 (local.get $t10)))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t9))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t9))
     (local.set $t8 (local.get $t9))
     (local.set $t9 (i32.const 0))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
     (local.set $t10 (i32.reinterpret_f32 (f32.mul (f32.reinterpret_i32 (local.get $t10)) (f32.reinterpret_i32 (local.get $t11)))))
     (local.set $t11 (i32.const 1109917696))
     (local.set $t10 (i32.reinterpret_f32 (f32.div (f32.reinterpret_i32 (local.get $t10)) (f32.reinterpret_i32 (local.get $t11)))))
     (local.set $t9 (i32.reinterpret_f32 (f32.sub (f32.reinterpret_i32 (local.get $t9)) (f32.reinterpret_i32 (local.get $t10)))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t9))
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t9))
     (local.set $t7 (local.get $t9))
     ;; line 0:248
     (global.set $__line (i32.const 248))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
     (local.set $t9 (i32.reinterpret_f32 (f32.add (f32.reinterpret_i32 (local.get $t9)) (f32.reinterpret_i32 (local.get $t10)))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t9))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t9))
     (local.set $t8 (local.get $t9))
     (local.set $t9 (i32.const 0))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
     (local.set $t10 (i32.reinterpret_f32 (f32.mul (f32.reinterpret_i32 (local.get $t10)) (f32.reinterpret_i32 (local.get $t11)))))
     (local.set $t11 (i32.const 1116733440))
     (local.set $t10 (i32.reinterpret_f32 (f32.div (f32.reinterpret_i32 (local.get $t10)) (f32.reinterpret_i32 (local.get $t11)))))
     (local.set $t9 (i32.reinterpret_f32 (f32.sub (f32.reinterpret_i32 (local.get $t9)) (f32.reinterpret_i32 (local.get $t10)))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t9))
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t9))
     (local.set $t7 (local.get $t9))
     ;; line 0:249
     (global.set $__line (i32.const 249))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
     (local.set $t9 (i32.reinterpret_f32 (f32.add (f32.reinterpret_i32 (local.get $t9)) (f32.reinterpret_i32 (local.get $t10)))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t9))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t9))
     (local.set $t8 (local.get $t9))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
     ;; FNRN
     (local.set $__res (local.get $t9))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
@@ -1744,6 +1785,7 @@
   (func $fn_L84 (export "fn_L84") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -1753,19 +1795,21 @@
     (local $t6 i32)
     (local $t7 i32)
     (local $t8 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     (local.set $t7 (i32.const 1070141402))
-    (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t8 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t7 (i32.reinterpret_f32 (f32.add (f32.reinterpret_i32 (local.get $t7)) (f32.reinterpret_i32 (local.get $t8)))))
     (local.set $t8 (i32.add (global.get $TB) (i32.const 12))) ;; LF L79
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t8)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t7))
+    (i32.store (i32.add (local.get $Pb) (i32.const 16)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (local.get $t8)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 4)))
     (local.set $t4 (call_indirect $ftable (type $bcpl_fn) (local.get $t8)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (local.get $t4)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 16)) (local.get $t4)) ;; flush FNAP result
     ;; FNRN
     (local.set $__res (local.get $t4))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
@@ -1784,6 +1828,7 @@
   (func $fn_L85 (export "fn_L85") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -1799,6 +1844,7 @@
     (local $t12 i32)
     (local $t13 i32)
     (local $t14 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     ;; line 0:255
@@ -1809,38 +1855,38 @@
     (local.set $t4 (i32.const 0))
     (local.set $t5 (i32.const 0))
     (local.set $t6 (i32.const 0))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)) (local.get $t3)) ;; STORE slot 3
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (local.get $t4)) ;; STORE slot 4
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t5)) ;; STORE slot 5
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
+    (i32.store (i32.add (local.get $Pb) (i32.const 12)) (local.get $t3)) ;; STORE slot 3
+    (i32.store (i32.add (local.get $Pb) (i32.const 16)) (local.get $t4)) ;; STORE slot 4
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (local.get $t5)) ;; STORE slot 5
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
     ;; line 0:256
     (global.set $__line (i32.const 256))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t7 (i32.const 0))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
     ;; line 0:257
     (global.set $__line (i32.const 257))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t8 (i32.const 1174405120))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t8))
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t8))
     (local.set $t7 (local.get $t8))
     ;; line 0:258
     (global.set $__line (i32.const 258))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t8 (i32.const 0))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)) (local.get $t8))
+    (i32.store (i32.add (local.get $Pb) (i32.const 12)) (local.get $t8))
     (local.set $t3 (local.get $t8))
     ;; line 0:259
     (global.set $__line (i32.const 259))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t8 (i32.const 1086918615))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
     (local.set $t8 (i32.reinterpret_f32 (f32.div (f32.reinterpret_i32 (local.get $t8)) (f32.reinterpret_i32 (local.get $t9)))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (local.get $t8))
+    (i32.store (i32.add (local.get $Pb) (i32.const 16)) (local.get $t8))
     (local.set $t4 (local.get $t8))
     ;; line 0:260
     (global.set $__line (i32.const 260))
@@ -1848,8 +1894,8 @@
         (then (call $__break)))
     (local.set $t8 (i32.const 0))
     (local.set $t9 (i32.const 8191))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9)) ;; STORE slot 9
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (local.get $t9)) ;; STORE slot 9
       (local.set $__lab (i32.const 2)) (br $__dispatch) ;; JUMP L87
     )) ;; end block / LAB L86 = idx 1
     (if (i32.eq (local.get $__lab) (i32.const 1)) (then ;; L86
@@ -1857,43 +1903,45 @@
     (global.set $__line (i32.const 261))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t13 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t14 (i32.add (global.get $TB) (i32.const 12))) ;; LF L79
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)) (local.get $t13))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t14)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (local.get $t13))
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t14)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 10)))
     (local.set $t10 (call_indirect $ftable (type $bcpl_fn) (local.get $t14)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t10)) ;; flush FNAP result
     (local.set $t11 (i32.const 1149239296))
     (local.set $t10 (i32.reinterpret_f32 (f32.mul (f32.reinterpret_i32 (local.get $t10)) (f32.reinterpret_i32 (local.get $t11)))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t10))
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (local.get $t10))
     (local.set $t5 (local.get $t10))
     ;; line 0:262
     (global.set $__line (i32.const 262))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t13 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t14 (i32.add (global.get $TB) (i32.const 13))) ;; LF L84
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)) (local.get $t13))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t14)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (local.get $t13))
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t14)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 10)))
     (local.set $t10 (call_indirect $ftable (type $bcpl_fn) (local.get $t14)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t10)) ;; flush FNAP result
     (local.set $t11 (i32.const 1149239296))
     (local.set $t10 (i32.reinterpret_f32 (f32.mul (f32.reinterpret_i32 (local.get $t10)) (f32.reinterpret_i32 (local.get $t11)))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t10))
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (local.get $t10))
     (local.set $t6 (local.get $t10))
     ;; line 0:263
     (global.set $__line (i32.const 263))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t10 (i32.trunc_f32_s (f32.reinterpret_i32 (local.get $t10))))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
     (local.set $t12 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 3)) (i32.const 2)))) ;; LL L13
     (local.set $t11 (i32.add (local.get $t11) (local.get $t12)))
     (i32.store (i32.shl (local.get $t11) (i32.const 2)) (local.get $t10))
@@ -1901,9 +1949,9 @@
     (global.set $__line (i32.const 264))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
     (local.set $t10 (i32.trunc_f32_s (f32.reinterpret_i32 (local.get $t10))))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
     (local.set $t12 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 4)) (i32.const 2)))) ;; LL L14
     (local.set $t11 (i32.add (local.get $t11) (local.get $t12)))
     (i32.store (i32.shl (local.get $t11) (i32.const 2)) (local.get $t10))
@@ -1911,21 +1959,21 @@
     (global.set $__line (i32.const 265))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t10 (i32.reinterpret_f32 (f32.add (f32.reinterpret_i32 (local.get $t10)) (f32.reinterpret_i32 (local.get $t11)))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)) (local.get $t10))
+    (i32.store (i32.add (local.get $Pb) (i32.const 12)) (local.get $t10))
     (local.set $t3 (local.get $t10))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
     (local.set $t11 (i32.const 1))
     (local.set $t10 (i32.add (local.get $t10) (local.get $t11)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t10))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t10))
     (local.set $t8 (local.get $t10))
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     )) ;; end block / LAB L87 = idx 2
     (if (i32.eq (local.get $__lab) (i32.const 2)) (then ;; L87
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 36))))
     (if (i32.le_s (local.get $t10) (local.get $t11)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     ))
@@ -1944,6 +1992,7 @@
   (func $fn_L88 (export "fn_L88") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -1954,25 +2003,27 @@
     (local $t7 i32)
     (local $t8 i32)
     (local $t9 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     (local.set $t7 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t8 (i32.const 30))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t8 (i32.mul (local.get $t8) (local.get $t9)))
     (local.set $t9 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 8)) (i32.const 2)))) ;; LL L18
     (local.set $t8 (i32.add (local.get $t8) (local.get $t9)))
     (local.set $t9 (i32.const 28))
     (local.set $t8 (i32.add (local.get $t8) (local.get $t9)))
     (local.set $t9 (i32.add (global.get $TB) (i32.const 6))) ;; LF L53
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t9)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t7))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t8))
+    (i32.store (i32.add (local.get $Pb) (i32.const 16)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (local.get $t9)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 4)))
     (local.set $t4 (call_indirect $ftable (type $bcpl_fn) (local.get $t9)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (local.get $t4)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 16)) (local.get $t4)) ;; flush FNAP result
     ;; FNRN
     (local.set $__res (local.get $t4))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
@@ -1991,6 +2042,7 @@
   (func $fn_L89 (export "fn_L89") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -2001,25 +2053,27 @@
     (local $t7 i32)
     (local $t8 i32)
     (local $t9 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     (local.set $t7 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t8 (i32.const 26))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t8 (i32.mul (local.get $t8) (local.get $t9)))
     (local.set $t9 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 9)) (i32.const 2)))) ;; LL L19
     (local.set $t8 (i32.add (local.get $t8) (local.get $t9)))
     (local.set $t9 (i32.const 0))
     (local.set $t8 (i32.add (local.get $t8) (local.get $t9)))
     (local.set $t9 (i32.add (global.get $TB) (i32.const 6))) ;; LF L53
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t9)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t7))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t8))
+    (i32.store (i32.add (local.get $Pb) (i32.const 16)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (local.get $t9)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 4)))
     (local.set $t4 (call_indirect $ftable (type $bcpl_fn) (local.get $t9)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (local.get $t4)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 16)) (local.get $t4)) ;; flush FNAP result
     ;; FNRN
     (local.set $__res (local.get $t4))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
@@ -2038,6 +2092,7 @@
   (func $fn_L90 (export "fn_L90") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -2048,25 +2103,27 @@
     (local $t7 i32)
     (local $t8 i32)
     (local $t9 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     (local.set $t7 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t8 (i32.const 26))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t8 (i32.mul (local.get $t8) (local.get $t9)))
     (local.set $t9 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 9)) (i32.const 2)))) ;; LL L19
     (local.set $t8 (i32.add (local.get $t8) (local.get $t9)))
     (local.set $t9 (i32.const 2))
     (local.set $t8 (i32.add (local.get $t8) (local.get $t9)))
     (local.set $t9 (i32.add (global.get $TB) (i32.const 6))) ;; LF L53
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t9)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t7))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t8))
+    (i32.store (i32.add (local.get $Pb) (i32.const 16)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (local.get $t9)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 4)))
     (local.set $t4 (call_indirect $ftable (type $bcpl_fn) (local.get $t9)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (local.get $t4)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 16)) (local.get $t4)) ;; flush FNAP result
     ;; FNRN
     (local.set $__res (local.get $t4))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
@@ -2085,6 +2142,7 @@
   (func $fn_L91 (export "fn_L91") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -2095,25 +2153,27 @@
     (local $t7 i32)
     (local $t8 i32)
     (local $t9 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     (local.set $t7 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t8 (i32.const 26))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t8 (i32.mul (local.get $t8) (local.get $t9)))
     (local.set $t9 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 9)) (i32.const 2)))) ;; LL L19
     (local.set $t8 (i32.add (local.get $t8) (local.get $t9)))
     (local.set $t9 (i32.const 20))
     (local.set $t8 (i32.add (local.get $t8) (local.get $t9)))
     (local.set $t9 (i32.add (global.get $TB) (i32.const 6))) ;; LF L53
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t9)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t7))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t8))
+    (i32.store (i32.add (local.get $Pb) (i32.const 16)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (local.get $t9)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 4)))
     (local.set $t4 (call_indirect $ftable (type $bcpl_fn) (local.get $t9)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (local.get $t4)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 16)) (local.get $t4)) ;; flush FNAP result
     ;; FNRN
     (local.set $__res (local.get $t4))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
@@ -2132,6 +2192,7 @@
   (func $fn_L92 (export "fn_L92") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -2147,6 +2208,7 @@
     (local $t12 i32)
     (local $t13 i32)
     (local $t14 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     ;; line 0:286
@@ -2155,93 +2217,97 @@
         (then (call $__break)))
     (local.set $t9 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t10 (i32.const 0))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t10 (i32.add (local.get $t10) (local.get $t11)))
     (local.set $t11 (i32.add (global.get $TB) (i32.const 6))) ;; LF L53
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t11)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (local.get $t9))
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t10))
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t11)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 6)))
     (local.set $t6 (call_indirect $ftable (type $bcpl_fn) (local.get $t11)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (local.get $t6)) ;; flush FNAP result
     ;; line 0:287
     (global.set $__line (i32.const 287))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t10 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t11 (i32.const 2))
-    (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t12 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t11 (i32.add (local.get $t11) (local.get $t12)))
     (local.set $t12 (i32.add (global.get $TB) (i32.const 6))) ;; LF L53
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t12)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t10))
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (local.get $t11))
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (local.get $t12)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 7)))
     (local.set $t7 (call_indirect $ftable (type $bcpl_fn) (local.get $t12)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t7)) ;; flush FNAP result
     ;; line 0:288
     (global.set $__line (i32.const 288))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t11 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t12 (i32.const 4))
-    (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t13 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t12 (i32.add (local.get $t12) (local.get $t13)))
     (local.set $t13 (i32.add (global.get $TB) (i32.const 6))) ;; LF L53
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t12))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t13)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (local.get $t11))
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t12))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t13)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 8)))
     (local.set $t8 (call_indirect $ftable (type $bcpl_fn) (local.get $t13)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t8)) ;; flush FNAP result
     ;; line 0:289
     (global.set $__line (i32.const 289))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t12 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t13 (i32.const 6))
-    (local.set $t14 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t14 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t13 (i32.add (local.get $t13) (local.get $t14)))
     (local.set $t14 (i32.add (global.get $TB) (i32.const 6))) ;; LF L53
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t12))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)) (local.get $t13))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t14)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t12))
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (local.get $t13))
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (local.get $t14)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 9)))
     (local.set $t9 (call_indirect $ftable (type $bcpl_fn) (local.get $t14)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (local.get $t9)) ;; flush FNAP result
     ;; line 0:290
     (global.set $__line (i32.const 290))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
     (local.set $t10 (i32.sub (local.get $t10) (local.get $t11)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10)) ;; STORE slot 10
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t10)) ;; STORE slot 10
     ;; line 0:291
     (global.set $__line (i32.const 291))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
-    (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
+    (local.set $t12 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
     (local.set $t11 (i32.sub (local.get $t11) (local.get $t12)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11)) ;; STORE slot 11
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (local.get $t11)) ;; STORE slot 11
     ;; line 0:292
     (global.set $__line (i32.const 292))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
-    (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44))))
+    (local.set $t12 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
+    (local.set $t13 (i32.load (i32.add (local.get $Pb) (i32.const 44))))
     (local.set $t12 (i32.mul (local.get $t12) (local.get $t13)))
-    (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40))))
-    (local.set $t14 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
+    (local.set $t13 (i32.load (i32.add (local.get $Pb) (i32.const 40))))
+    (local.set $t14 (i32.load (i32.add (local.get $Pb) (i32.const 36))))
     (local.set $t13 (i32.mul (local.get $t13) (local.get $t14)))
     (if (i32.ge_s (local.get $t12) (local.get $t13)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
@@ -2276,6 +2342,7 @@
   (func $fn_L94 (export "fn_L94") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -2290,6 +2357,7 @@
     (local $t11 i32)
     (local $t12 i32)
     (local $t13 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     ;; line 0:300
@@ -2297,7 +2365,7 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t5 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 14)) (i32.const 2)))) ;; LL L24
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t5)) ;; STORE slot 5
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (local.get $t5)) ;; STORE slot 5
     ;; line 0:301
     (global.set $__line (i32.const 301))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -2306,34 +2374,35 @@
     )) ;; end block / LAB L95 = idx 1
     (if (i32.eq (local.get $__lab) (i32.const 1)) (then ;; L95
     (local.set $t6 (i32.const 28))
-    (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t7 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t6 (i32.mul (local.get $t6) (local.get $t7)))
     (local.set $t7 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 10)) (i32.const 2)))) ;; LL L20
     (local.set $t6 (i32.add (local.get $t6) (local.get $t7)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
     ;; line 0:303
     (global.set $__line (i32.const 303))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
-    (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
+    (local.set $t12 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
     (local.set $t13 (i32.add (global.get $TB) (i32.const 19))) ;; LF L92
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t12))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t13)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t10))
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (local.get $t11))
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t12))
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (local.get $t13)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 7)))
     (local.set $t7 (call_indirect $ftable (type $bcpl_fn) (local.get $t13)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t7)) ;; flush FNAP result
     ;; line 0:304
     (global.set $__line (i32.const 304))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t8 (i32.const 0))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
     (if (i32.ne  (local.get $t8) (local.get $t9)) (then
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     ))
@@ -2343,18 +2412,19 @@
         (then (call $__break)))
     (local.set $t11 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t12 (i32.const 24))
-    (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
+    (local.set $t13 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
     (local.set $t12 (i32.add (local.get $t12) (local.get $t13)))
     (local.set $t13 (i32.add (global.get $TB) (i32.const 5))) ;; LF L52
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t12))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t13)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (local.get $t11))
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t12))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t13)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 8)))
     (local.set $t8 (call_indirect $ftable (type $bcpl_fn) (local.get $t13)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t8))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t8)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (local.get $t8))
     (local.set $t5 (local.get $t8))
       (local.set $__lab (i32.const 3)) (br $__dispatch) ;; JUMP L99
     )) ;; end block / LAB L97 = idx 2
@@ -2365,18 +2435,19 @@
         (then (call $__break)))
     (local.set $t11 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t12 (i32.const 26))
-    (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
+    (local.set $t13 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
     (local.set $t12 (i32.add (local.get $t12) (local.get $t13)))
     (local.set $t13 (i32.add (global.get $TB) (i32.const 5))) ;; LF L52
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t12))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t13)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (local.get $t11))
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t12))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t13)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 8)))
     (local.set $t8 (call_indirect $ftable (type $bcpl_fn) (local.get $t13)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t8))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t8)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (local.get $t8))
     (local.set $t5 (local.get $t8))
       (local.set $__lab (i32.const 3)) (br $__dispatch)
     )) ;; end block / LAB L99 = idx 3
@@ -2385,7 +2456,7 @@
     )) ;; end block / LAB L96 = idx 4
     (if (i32.eq (local.get $__lab) (i32.const 4)) (then ;; L96
     (local.set $t6 (i32.const 32768))
-    (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t7 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t6 (i32.and (local.get $t6) (local.get $t7)))
     (local.set $t7 (i32.const 0))
     (if (i32.eq  (local.get $t6) (local.get $t7)) (then
@@ -2396,7 +2467,7 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t6 (i32.const -32769))
-    (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t7 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t6 (i32.and (local.get $t6) (local.get $t7)))
     ;; FNRN
     (local.set $__res (local.get $t6))
@@ -2416,6 +2487,7 @@
   (func $fn_L100 (export "fn_L100") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -2437,126 +2509,132 @@
     (local $t18 i32)
     (local $t19 i32)
     (local $t20 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     ;; line 0:314
     (global.set $__line (i32.const 314))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t8 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t10 (i32.add (global.get $TB) (i32.const 20))) ;; LF L94
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t10)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t8))
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (local.get $t9))
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t10)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 5)))
     (local.set $t5 (call_indirect $ftable (type $bcpl_fn) (local.get $t10)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t5)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (local.get $t5)) ;; flush FNAP result
     ;; line 0:315
     (global.set $__line (i32.const 315))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t6 (i32.const 4))
-    (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t7 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t6 (i32.mul (local.get $t6) (local.get $t7)))
     (local.set $t7 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 11)) (i32.const 2)))) ;; LL L21
     (local.set $t6 (i32.add (local.get $t6) (local.get $t7)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
     ;; line 0:316
     (global.set $__line (i32.const 316))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t10 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t11 (i32.const 2))
-    (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
+    (local.set $t12 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
     (local.set $t11 (i32.add (local.get $t11) (local.get $t12)))
     (local.set $t12 (i32.add (global.get $TB) (i32.const 5))) ;; LF L52
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t12)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t10))
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (local.get $t11))
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (local.get $t12)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 7)))
     (local.set $t7 (call_indirect $ftable (type $bcpl_fn) (local.get $t12)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t7)) ;; flush FNAP result
     ;; line 0:317
     (global.set $__line (i32.const 317))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t8 (i32.const 12))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
     (local.set $t8 (i32.mul (local.get $t8) (local.get $t9)))
     (local.set $t9 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 12)) (i32.const 2)))) ;; LL L22
     (local.set $t8 (i32.add (local.get $t8) (local.get $t9)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
     ;; line 0:318
     (global.set $__line (i32.const 318))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t12 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t13 (i32.const 6))
-    (local.set $t14 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
+    (local.set $t14 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
     (local.set $t13 (i32.add (local.get $t13) (local.get $t14)))
     (local.set $t14 (i32.add (global.get $TB) (i32.const 5))) ;; LF L52
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t12))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)) (local.get $t13))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t14)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t12))
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (local.get $t13))
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (local.get $t14)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 9)))
     (local.set $t9 (call_indirect $ftable (type $bcpl_fn) (local.get $t14)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (local.get $t9)) ;; flush FNAP result
     ;; line 0:319
     (global.set $__line (i32.const 319))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t13 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t14 (i32.const 8))
-    (local.set $t15 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
+    (local.set $t15 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
     (local.set $t14 (i32.add (local.get $t14) (local.get $t15)))
     (local.set $t15 (i32.add (global.get $TB) (i32.const 5))) ;; LF L52
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)) (local.get $t13))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t15)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (local.get $t13))
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (local.get $t14))
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t15)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 10)))
     (local.set $t10 (call_indirect $ftable (type $bcpl_fn) (local.get $t15)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t10)) ;; flush FNAP result
     ;; line 0:320
     (global.set $__line (i32.const 320))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t11 (i32.const 14))
-    (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
+    (local.set $t12 (i32.load (i32.add (local.get $Pb) (i32.const 36))))
     (local.set $t11 (i32.mul (local.get $t11) (local.get $t12)))
     (local.set $t12 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 7)) (i32.const 2)))) ;; LL L17
     (local.set $t11 (i32.add (local.get $t11) (local.get $t12)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11)) ;; STORE slot 11
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (local.get $t11)) ;; STORE slot 11
     ;; line 0:321
     (global.set $__line (i32.const 321))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t12 (i32.const 0))
-    (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40))))
+    (local.set $t13 (i32.load (i32.add (local.get $Pb) (i32.const 40))))
     (if (i32.ne  (local.get $t12) (local.get $t13)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     ))
     (local.set $t15 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t16 (i32.const 10))
-    (local.set $t17 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44))))
+    (local.set $t17 (i32.load (i32.add (local.get $Pb) (i32.const 44))))
     (local.set $t16 (i32.add (local.get $t16) (local.get $t17)))
     (local.set $t17 (i32.add (global.get $TB) (i32.const 6))) ;; LF L53
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60)) (local.get $t15))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 64)) (local.get $t16))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t17)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t15))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16))
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (local.get $t17)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 12)))
     (local.set $t12 (call_indirect $ftable (type $bcpl_fn) (local.get $t17)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t12)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t12)) ;; flush FNAP result
     ;; RES L101: save result, jump to RSTACK
     (local.set $__res (local.get $t12))
       (local.set $__lab (i32.const 2)) (br $__dispatch)
@@ -2565,17 +2643,18 @@
     (if (i32.eq (local.get $__lab) (i32.const 1)) (then ;; L102
     (local.set $t15 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t16 (i32.const 12))
-    (local.set $t17 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44))))
+    (local.set $t17 (i32.load (i32.add (local.get $Pb) (i32.const 44))))
     (local.set $t16 (i32.add (local.get $t16) (local.get $t17)))
     (local.set $t17 (i32.add (global.get $TB) (i32.const 6))) ;; LF L53
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60)) (local.get $t15))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 64)) (local.get $t16))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t17)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t15))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16))
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (local.get $t17)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 12)))
     (local.set $t12 (call_indirect $ftable (type $bcpl_fn) (local.get $t17)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t12)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t12)) ;; flush FNAP result
     ;; RES L101: save result, jump to RSTACK
     (local.set $__res (local.get $t12))
       (local.set $__lab (i32.const 2)) (br $__dispatch)
@@ -2583,12 +2662,12 @@
     (if (i32.eq (local.get $__lab) (i32.const 2)) (then ;; L101
     ;; RSTACK 12
     (local.set $t12 (local.get $__res)) ;; restore RES result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t12)) ;; STORE slot 12
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t12)) ;; STORE slot 12
     ;; line 0:322
     (global.set $__line (i32.const 322))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48))))
+    (local.set $t13 (i32.load (i32.add (local.get $Pb) (i32.const 48))))
     (local.set $t14 (i32.const 0))
     (if (i32.ge_s (local.get $t13) (local.get $t14)) (then
       (local.set $__lab (i32.const 3)) (br $__dispatch)
@@ -2604,23 +2683,25 @@
     (return (local.get $__res))
     )) ;; end block / LAB L103 = idx 3
     (if (i32.eq (local.get $__lab) (i32.const 3)) (then ;; L103
-    (local.set $t19 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48))))
+    (local.set $t19 (i32.load (i32.add (local.get $Pb) (i32.const 48))))
     (local.set $t20 (i32.add (global.get $TB) (i32.const 15))) ;; LF L88
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 76)) (local.get $t19))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 64)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 68)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 72)) (local.get $t20)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 76)) (local.get $t19))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 68)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 72)) (local.get $t20)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 16)))
     (local.set $t16 (call_indirect $ftable (type $bcpl_fn) (local.get $t20)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 64)) (local.get $t16)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16)) ;; flush FNAP result
     (local.set $t17 (i32.add (global.get $TB) (i32.const 16))) ;; LF L89
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 64)) (local.get $t16))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60)) (local.get $t17)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16))
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t17)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 13)))
     (local.set $t13 (call_indirect $ftable (type $bcpl_fn) (local.get $t17)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)) (local.get $t13)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (local.get $t13)) ;; flush FNAP result
     ;; FNRN
     (local.set $__res (local.get $t13))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
@@ -2639,6 +2720,7 @@
   (func $fn_L104 (export "fn_L104") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -2657,26 +2739,27 @@
     (local $t15 i32)
     (local $t16 i32)
     (local $t17 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     ;; line 0:330
     (global.set $__line (i32.const 330))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t6 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t7 (i32.const 10))
     (local.set $t6 (i32.div_s (local.get $t6) (local.get $t7)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
     ;; line 0:331
     (global.set $__line (i32.const 331))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t7 (i32.const 0))
-    (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
+    (local.set $t8 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
     (local.set $t9 (i32.const 1))
     (local.set $t8 (i32.sub (local.get $t8) (local.get $t9)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
       (local.set $__lab (i32.const 3)) (br $__dispatch) ;; JUMP L106
     )) ;; end block / LAB L105 = idx 1
     (if (i32.eq (local.get $__lab) (i32.const 1)) (then ;; L105
@@ -2685,34 +2768,35 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t9 (i32.const 10))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
     (local.set $t9 (i32.mul (local.get $t9) (local.get $t10)))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t9 (i32.add (local.get $t9) (local.get $t10)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9)) ;; STORE slot 9
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (local.get $t9)) ;; STORE slot 9
     ;; line 0:333
     (global.set $__line (i32.const 333))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t13 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t14 (i32.const 6))
-    (local.set $t15 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
+    (local.set $t15 (i32.load (i32.add (local.get $Pb) (i32.const 36))))
     (local.set $t14 (i32.add (local.get $t14) (local.get $t15)))
     (local.set $t15 (i32.add (global.get $TB) (i32.const 5))) ;; LF L52
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)) (local.get $t13))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t15)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (local.get $t13))
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (local.get $t14))
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t15)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 10)))
     (local.set $t10 (call_indirect $ftable (type $bcpl_fn) (local.get $t15)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t10)) ;; flush FNAP result
     ;; line 0:334
     (global.set $__line (i32.const 334))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t11 (i32.const 1))
-    (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40))))
+    (local.set $t12 (i32.load (i32.add (local.get $Pb) (i32.const 40))))
     (if (i32.ne  (local.get $t11) (local.get $t12)) (then
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     ))
@@ -2720,36 +2804,38 @@
     (global.set $__line (i32.const 335))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t14 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t14 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t15 (i32.const 4))
-    (local.set $t16 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
+    (local.set $t16 (i32.load (i32.add (local.get $Pb) (i32.const 36))))
     (local.set $t15 (i32.add (local.get $t15) (local.get $t16)))
     (local.set $t16 (i32.add (global.get $TB) (i32.const 5))) ;; LF L52
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60)) (local.get $t15))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)) (local.get $t16)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (local.get $t14))
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t15))
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (local.get $t16)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 11)))
     (local.set $t11 (call_indirect $ftable (type $bcpl_fn) (local.get $t16)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (local.get $t11)) ;; flush FNAP result
     ;; line 0:336
     (global.set $__line (i32.const 336))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t15 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t15 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t16 (i32.const 0))
-    (local.set $t17 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
+    (local.set $t17 (i32.load (i32.add (local.get $Pb) (i32.const 36))))
     (local.set $t16 (i32.add (local.get $t16) (local.get $t17)))
     (local.set $t17 (i32.add (global.get $TB) (i32.const 6))) ;; LF L53
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60)) (local.get $t15))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 64)) (local.get $t16))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t17)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t15))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16))
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (local.get $t17)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 12)))
     (local.set $t12 (call_indirect $ftable (type $bcpl_fn) (local.get $t17)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t12)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t12)) ;; flush FNAP result
     (i32.store
       (i32.shl (i32.add (global.get $SB) (i32.const 20)) (i32.const 2))
       (local.get $t12))
@@ -2757,19 +2843,20 @@
     (global.set $__line (i32.const 337))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t15 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t15 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t16 (i32.const 2))
-    (local.set $t17 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
+    (local.set $t17 (i32.load (i32.add (local.get $Pb) (i32.const 36))))
     (local.set $t16 (i32.add (local.get $t16) (local.get $t17)))
     (local.set $t17 (i32.add (global.get $TB) (i32.const 6))) ;; LF L53
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60)) (local.get $t15))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 64)) (local.get $t16))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t17)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t15))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16))
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (local.get $t17)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 12)))
     (local.set $t12 (call_indirect $ftable (type $bcpl_fn) (local.get $t17)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t12)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t12)) ;; flush FNAP result
     (i32.store
       (i32.shl (i32.add (global.get $SB) (i32.const 21)) (i32.const 2))
       (local.get $t12))
@@ -2778,7 +2865,7 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t12 (i32.const 8192))
-    (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44))))
+    (local.set $t13 (i32.load (i32.add (local.get $Pb) (i32.const 44))))
     (local.set $t12 (i32.mul (local.get $t12) (local.get $t13)))
     (local.set $t13 (i32.const 360))
     (local.set $t12 (i32.div_s (local.get $t12) (local.get $t13)))
@@ -2799,16 +2886,16 @@
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     )) ;; end block / LAB L107 = idx 2
     (if (i32.eq (local.get $__lab) (i32.const 2)) (then ;; L107
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
     (local.set $t10 (i32.const 1))
     (local.set $t9 (i32.add (local.get $t9) (local.get $t10)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t9))
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t9))
     (local.set $t7 (local.get $t9))
       (local.set $__lab (i32.const 3)) (br $__dispatch)
     )) ;; end block / LAB L106 = idx 3
     (if (i32.eq (local.get $__lab) (i32.const 3)) (then ;; L106
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
     (if (i32.le_s (local.get $t9) (local.get $t10)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     ))
@@ -2835,6 +2922,7 @@
   (func $fn_L108 (export "fn_L108") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -2854,6 +2942,7 @@
     (local $t16 i32)
     (local $t17 i32)
     (local $t18 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     ;; line 0:346
@@ -2861,7 +2950,7 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t3 (i32.add (global.get $P) (i32.const 4)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)) (local.get $t3)) ;; flush t3 (pre-stack-up)
+    (i32.store (i32.add (local.get $Pb) (i32.const 12)) (local.get $t3)) ;; flush t3 (pre-stack-up)
     ;; line 0:347
     (global.set $__line (i32.const 347))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -2870,25 +2959,25 @@
     )) ;; end block / LAB L109 = idx 1
     (if (i32.eq (local.get $__lab) (i32.const 1)) (then ;; L109
     (local.set $t12 (i32.const 0))
-    (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t13 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t12 (i32.add (local.get $t12) (local.get $t13)))
     (local.set $t12 (i32.load (i32.shl (local.get $t12) (i32.const 2))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t12)) ;; STORE slot 12
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t12)) ;; STORE slot 12
     ;; line 0:349
     (global.set $__line (i32.const 349))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t13 (i32.const 2))
-    (local.set $t14 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t14 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t13 (i32.add (local.get $t13) (local.get $t14)))
     (local.set $t13 (i32.load (i32.shl (local.get $t13) (i32.const 2))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)) (local.get $t13)) ;; STORE slot 13
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (local.get $t13)) ;; STORE slot 13
     ;; line 0:350
     (global.set $__line (i32.const 350))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t14 (i32.const 2))
-    (local.set $t15 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48))))
+    (local.set $t15 (i32.load (i32.add (local.get $Pb) (i32.const 48))))
     (if (i32.ne  (local.get $t14) (local.get $t15)) (then
       (local.set $__lab (i32.const 4)) (br $__dispatch)
     ))
@@ -2896,12 +2985,12 @@
     (global.set $__line (i32.const 351))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t14 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52))))
+    (local.set $t14 (i32.load (i32.add (local.get $Pb) (i32.const 52))))
     (local.set $t15 (i32.const 0))
     (if (i32.lt_s (local.get $t14) (local.get $t15)) (then
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     ))
-    (local.set $t14 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52))))
+    (local.set $t14 (i32.load (i32.add (local.get $Pb) (i32.const 52))))
     (local.set $t15 (i32.const 512))
     (if (i32.ge_s (local.get $t14) (local.get $t15)) (then
       (local.set $__lab (i32.const 2)) (br $__dispatch)
@@ -2911,7 +3000,7 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t14 (i32.const 1))
-    (local.set $t15 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52))))
+    (local.set $t15 (i32.load (i32.add (local.get $Pb) (i32.const 52))))
     (local.set $t16 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 1)) (i32.const 2)))) ;; LL L11
     (local.set $t15 (i32.add (local.get $t15) (local.get $t16)))
     (i32.store (i32.shl (local.get $t15) (i32.const 2)) (local.get $t14))
@@ -2919,7 +3008,7 @@
     )) ;; end block / LAB L114 = idx 2
     (if (i32.eq (local.get $__lab) (i32.const 2)) (then ;; L114
     (local.set $t14 (i32.const 27))
-    (local.set $t15 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52))))
+    (local.set $t15 (i32.load (i32.add (local.get $Pb) (i32.const 52))))
     (if (i32.ne  (local.get $t14) (local.get $t15)) (then
       (local.set $__lab (i32.const 3)) (br $__dispatch)
     ))
@@ -2938,7 +3027,7 @@
     )) ;; end block / LAB L111 = idx 4
     (if (i32.eq (local.get $__lab) (i32.const 4)) (then ;; L111
     (local.set $t14 (i32.const 3))
-    (local.set $t15 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48))))
+    (local.set $t15 (i32.load (i32.add (local.get $Pb) (i32.const 48))))
     (if (i32.ne  (local.get $t14) (local.get $t15)) (then
       (local.set $__lab (i32.const 6)) (br $__dispatch)
     ))
@@ -2946,12 +3035,12 @@
     (global.set $__line (i32.const 355))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t14 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52))))
+    (local.set $t14 (i32.load (i32.add (local.get $Pb) (i32.const 52))))
     (local.set $t15 (i32.const 0))
     (if (i32.lt_s (local.get $t14) (local.get $t15)) (then
       (local.set $__lab (i32.const 5)) (br $__dispatch)
     ))
-    (local.set $t14 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52))))
+    (local.set $t14 (i32.load (i32.add (local.get $Pb) (i32.const 52))))
     (local.set $t15 (i32.const 512))
     (if (i32.ge_s (local.get $t14) (local.get $t15)) (then
       (local.set $__lab (i32.const 5)) (br $__dispatch)
@@ -2961,7 +3050,7 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t14 (i32.const 0))
-    (local.set $t15 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52))))
+    (local.set $t15 (i32.load (i32.add (local.get $Pb) (i32.const 52))))
     (local.set $t16 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 1)) (i32.const 2)))) ;; LL L11
     (local.set $t15 (i32.add (local.get $t15) (local.get $t16)))
     (i32.store (i32.shl (local.get $t15) (i32.const 2)) (local.get $t14))
@@ -2975,7 +3064,7 @@
     )) ;; end block / LAB L113 = idx 7
     (if (i32.eq (local.get $__lab) (i32.const 7)) (then ;; L113
     (local.set $t14 (i32.const 12))
-    (local.set $t15 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48))))
+    (local.set $t15 (i32.load (i32.add (local.get $Pb) (i32.const 48))))
     (if (i32.ne  (local.get $t14) (local.get $t15)) (then
       (local.set $__lab (i32.const 8)) (br $__dispatch)
     ))
@@ -2995,17 +3084,18 @@
     (if (i32.eq (local.get $__lab) (i32.const 9)) (then ;; L110
     (local.set $t15 (i32.const 66))
     (local.set $t16 (i32.const 20))
-    (local.set $t17 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t17 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t18 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 12))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60)) (local.get $t15))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 64)) (local.get $t16))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 68)) (local.get $t17))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t18)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t15))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16))
+    (i32.store (i32.add (local.get $Pb) (i32.const 68)) (local.get $t17))
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (local.get $t18)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 12)))
     (local.set $t12 (call_indirect $ftable (type $bcpl_fn) (local.get $t18)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t12)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t12)) ;; flush FNAP result
     (if (local.get $t12) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     ))
@@ -3024,25 +3114,27 @@
   (func $fn_L119 (export "fn_L119") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
     (local $t3 i32)
     (local $t4 i32)
     (local $t5 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
-    (local.set $t4 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t4 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t5 (i32.const 0))
     (if (i32.lt_s (local.get $t4) (local.get $t5)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     ))
-    (local.set $t4 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t4 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t5 (i32.const 512))
     (if (i32.ge_s (local.get $t4) (local.get $t5)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     ))
-    (local.set $t4 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t4 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t5 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 1)) (i32.const 2)))) ;; LL L11
     (local.set $t4 (i32.add (local.get $t4) (local.get $t5)))
     (local.set $t4 (i32.load (i32.shl (local.get $t4) (i32.const 2))))
@@ -3071,6 +3163,7 @@
   (func $fn_L121 (export "fn_L121") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -3081,24 +3174,25 @@
     (local $t7 i32)
     (local $t8 i32)
     (local $t9 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     ;; line 0:365
     (global.set $__line (i32.const 365))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t5 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t6 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 20)) (i32.const 2)))) ;; LL L30
     (local.set $t5 (i32.sub (local.get $t5) (local.get $t6)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t5)) ;; STORE slot 5
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (local.get $t5)) ;; STORE slot 5
     ;; line 0:366
     (global.set $__line (i32.const 366))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t6 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t7 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 21)) (i32.const 2)))) ;; LL L31
     (local.set $t6 (i32.sub (local.get $t6) (local.get $t7)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
     ;; line 0:367
     (global.set $__line (i32.const 367))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -3109,7 +3203,7 @@
     (local.set $t8 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 3)) (i32.const 2)))) ;; LL L13
     (local.set $t7 (i32.add (local.get $t7) (local.get $t8)))
     (local.set $t7 (i32.load (i32.shl (local.get $t7) (i32.const 2))))
-    (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t8 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t7 (i32.mul (local.get $t7) (local.get $t8)))
     (local.set $t8 (i32.const 8191))
     (local.set $t9 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 22)) (i32.const 2)))) ;; LL L32
@@ -3117,7 +3211,7 @@
     (local.set $t9 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 4)) (i32.const 2)))) ;; LL L14
     (local.set $t8 (i32.add (local.get $t8) (local.get $t9)))
     (local.set $t8 (i32.load (i32.shl (local.get $t8) (i32.const 2))))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
     (local.set $t8 (i32.mul (local.get $t8) (local.get $t9)))
     (local.set $t7 (i32.sub (local.get $t7) (local.get $t8)))
     (local.set $t8 (i32.const 1024))
@@ -3140,6 +3234,7 @@
   (func $fn_L122 (export "fn_L122") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -3150,24 +3245,25 @@
     (local $t7 i32)
     (local $t8 i32)
     (local $t9 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     ;; line 0:371
     (global.set $__line (i32.const 371))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t5 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t6 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 20)) (i32.const 2)))) ;; LL L30
     (local.set $t5 (i32.sub (local.get $t5) (local.get $t6)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t5)) ;; STORE slot 5
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (local.get $t5)) ;; STORE slot 5
     ;; line 0:372
     (global.set $__line (i32.const 372))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t6 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t7 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 21)) (i32.const 2)))) ;; LL L31
     (local.set $t6 (i32.sub (local.get $t6) (local.get $t7)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
     ;; line 0:373
     (global.set $__line (i32.const 373))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -3178,7 +3274,7 @@
     (local.set $t8 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 4)) (i32.const 2)))) ;; LL L14
     (local.set $t7 (i32.add (local.get $t7) (local.get $t8)))
     (local.set $t7 (i32.load (i32.shl (local.get $t7) (i32.const 2))))
-    (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t8 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t7 (i32.mul (local.get $t7) (local.get $t8)))
     (local.set $t8 (i32.const 8191))
     (local.set $t9 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 22)) (i32.const 2)))) ;; LL L32
@@ -3186,7 +3282,7 @@
     (local.set $t9 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 3)) (i32.const 2)))) ;; LL L13
     (local.set $t8 (i32.add (local.get $t8) (local.get $t9)))
     (local.set $t8 (i32.load (i32.shl (local.get $t8) (i32.const 2))))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
     (local.set $t8 (i32.mul (local.get $t8) (local.get $t9)))
     (local.set $t7 (i32.add (local.get $t7) (local.get $t8)))
     (local.set $t8 (i32.const 1024))
@@ -3209,6 +3305,7 @@
   (func $fn_L123 (export "fn_L123") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -3221,37 +3318,38 @@
     (local $t9 i32)
     (local $t10 i32)
     (local $t11 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     ;; line 0:377
     (global.set $__line (i32.const 377))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
-    (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t7 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
+    (local.set $t8 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t7 (i32.sub (local.get $t7) (local.get $t8)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
     ;; line 0:378
     (global.set $__line (i32.const 378))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t8 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t8 (i32.sub (local.get $t8) (local.get $t9)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
     ;; line 0:379
     (global.set $__line (i32.const 379))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t9 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 20)) (i32.const 2)))) ;; LL L30
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t9 (i32.sub (local.get $t9) (local.get $t10)))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
     (local.set $t9 (i32.mul (local.get $t9) (local.get $t10)))
     (local.set $t10 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 21)) (i32.const 2)))) ;; LL L31
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t10 (i32.sub (local.get $t10) (local.get $t11)))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
     (local.set $t10 (i32.mul (local.get $t10) (local.get $t11)))
     (local.set $t9 (i32.sub (local.get $t9) (local.get $t10)))
     (local.set $t10 (i32.const 0))
@@ -3274,6 +3372,7 @@
   (func $fn_L124 (export "fn_L124") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -3289,19 +3388,20 @@
     (local $t12 i32)
     (local $t13 i32)
     (local $t14 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     ;; line 0:383
     (global.set $__line (i32.const 383))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t4 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (local.get $t4)) ;; STORE slot 4
+    (local.set $t4 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 16)) (local.get $t4)) ;; STORE slot 4
     ;; line 0:384
     (global.set $__line (i32.const 384))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t5 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t6 (i32.const 40))
     (if (i32.ge_s (local.get $t5) (local.get $t6)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
@@ -3311,12 +3411,12 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t5 (i32.const 40))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (local.get $t5))
+    (i32.store (i32.add (local.get $Pb) (i32.const 16)) (local.get $t5))
     (local.set $t4 (local.get $t5))
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     )) ;; end block / LAB L125 = idx 1
     (if (i32.eq (local.get $__lab) (i32.const 1)) (then ;; L125
-    (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t5 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t6 (i32.const 255))
     (if (i32.le_s (local.get $t5) (local.get $t6)) (then
       (local.set $__lab (i32.const 2)) (br $__dispatch)
@@ -3326,7 +3426,7 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t5 (i32.const 255))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (local.get $t5))
+    (i32.store (i32.add (local.get $Pb) (i32.const 16)) (local.get $t5))
     (local.set $t4 (local.get $t5))
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     )) ;; end block / LAB L126 = idx 2
@@ -3334,22 +3434,23 @@
     (local.set $t8 (i32.const 66))
     (local.set $t9 (i32.const 26))
     (local.set $t10 (i32.const 0))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
-    (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
-    (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
+    (local.set $t12 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
+    (local.set $t13 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t14 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 12))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t12))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)) (local.get $t13))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t14)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t8))
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (local.get $t9))
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t10))
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (local.get $t11))
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t12))
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (local.get $t13))
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t14)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 5)))
     (local.set $t5 (call_indirect $ftable (type $bcpl_fn) (local.get $t14)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t5)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (local.get $t5)) ;; flush FNAP result
     ;; FNRN
     (local.set $__res (local.get $t5))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
@@ -3368,6 +3469,7 @@
   (func $fn_L127 (export "fn_L127") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -3376,6 +3478,7 @@
     (local $t5 i32)
     (local $t6 i32)
     (local $t7 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     ;; line 0:392
@@ -3384,10 +3487,10 @@
         (then (call $__break)))
     (local.set $t3 (i32.const 0))
     (local.set $t4 (i32.const 959))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)) (local.get $t3)) ;; STORE slot 3
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (local.get $t4)) ;; STORE slot 4
-    (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
-    (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 12)) (local.get $t3)) ;; STORE slot 3
+    (i32.store (i32.add (local.get $Pb) (i32.const 16)) (local.get $t4)) ;; STORE slot 4
+    (local.set $t5 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t6 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (if (i32.gt_s (local.get $t5) (local.get $t6)) (then
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     ))
@@ -3399,7 +3502,7 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t5 (i32.const 0))
-    (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t6 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t7 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 15)) (i32.const 2)))) ;; LL L25
     (local.set $t6 (i32.add (local.get $t6) (local.get $t7)))
     (i32.store (i32.shl (local.get $t6) (i32.const 2)) (local.get $t5))
@@ -3408,17 +3511,17 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t5 (i32.const 719))
-    (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t6 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t7 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 16)) (i32.const 2)))) ;; LL L26
     (local.set $t6 (i32.add (local.get $t6) (local.get $t7)))
     (i32.store (i32.shl (local.get $t6) (i32.const 2)) (local.get $t5))
-    (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t5 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t6 (i32.const 1))
     (local.set $t5 (i32.add (local.get $t5) (local.get $t6)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)) (local.get $t5))
+    (i32.store (i32.add (local.get $Pb) (i32.const 12)) (local.get $t5))
     (local.set $t3 (local.get $t5))
-    (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
-    (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t5 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t6 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (if (i32.le_s (local.get $t5) (local.get $t6)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     ))
@@ -3448,6 +3551,7 @@
   (func $fn_L130 (export "fn_L130") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -3468,32 +3572,33 @@
     (local $t17 i32)
     (local $t18 i32)
     (local $t19 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     ;; line 0:403
     (global.set $__line (i32.const 403))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t7 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t8 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 15)) (i32.const 2)))) ;; LL L25
     (local.set $t7 (i32.add (local.get $t7) (local.get $t8)))
     (local.set $t7 (i32.load (i32.shl (local.get $t7) (i32.const 2))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
     ;; line 0:404
     (global.set $__line (i32.const 404))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t8 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t9 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 16)) (i32.const 2)))) ;; LL L26
     (local.set $t8 (i32.add (local.get $t8) (local.get $t9)))
     (local.set $t8 (i32.load (i32.shl (local.get $t8) (i32.const 2))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
     ;; line 0:405
     (global.set $__line (i32.const 405))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (if (i32.le_s (local.get $t9) (local.get $t10)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     ))
@@ -3501,19 +3606,19 @@
     (global.set $__line (i32.const 406))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9)) ;; STORE slot 9
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (local.get $t10))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (local.get $t9)) ;; STORE slot 9
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 16)) (local.get $t10))
     (local.set $t4 (local.get $t10))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t10))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 36))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (local.get $t10))
     (local.set $t5 (local.get $t10))
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     )) ;; end block / LAB L131 = idx 1
     (if (i32.eq (local.get $__lab) (i32.const 1)) (then ;; L131
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
     (if (i32.ge_s (local.get $t9) (local.get $t10)) (then
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     ))
@@ -3521,14 +3626,14 @@
     (global.set $__line (i32.const 407))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (local.get $t9))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 16)) (local.get $t9))
     (local.set $t4 (local.get $t9))
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     )) ;; end block / LAB L132 = idx 2
     (if (i32.eq (local.get $__lab) (i32.const 2)) (then ;; L132
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
     (if (i32.le_s (local.get $t9) (local.get $t10)) (then
       (local.set $__lab (i32.const 3)) (br $__dispatch)
     ))
@@ -3536,14 +3641,14 @@
     (global.set $__line (i32.const 408))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t9))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (local.get $t9))
     (local.set $t5 (local.get $t9))
       (local.set $__lab (i32.const 3)) (br $__dispatch)
     )) ;; end block / LAB L133 = idx 3
     (if (i32.eq (local.get $__lab) (i32.const 3)) (then ;; L133
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (if (i32.gt_s (local.get $t9) (local.get $t10)) (then
       (local.set $__lab (i32.const 4)) (br $__dispatch)
     ))
@@ -3554,23 +3659,24 @@
     (local.set $t12 (i32.const 66))
     (local.set $t13 (i32.const 29))
     (local.set $t14 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 0)) (i32.const 2)))) ;; LL L10
-    (local.set $t15 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
-    (local.set $t16 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
-    (local.set $t17 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
-    (local.set $t18 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
+    (local.set $t15 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t16 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
+    (local.set $t17 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
+    (local.set $t18 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
     (local.set $t19 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 12))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t12))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)) (local.get $t13))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60)) (local.get $t15))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 64)) (local.get $t16))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 68)) (local.get $t17))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 72)) (local.get $t18))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t19)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t12))
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (local.get $t13))
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (local.get $t14))
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t15))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16))
+    (i32.store (i32.add (local.get $Pb) (i32.const 68)) (local.get $t17))
+    (i32.store (i32.add (local.get $Pb) (i32.const 72)) (local.get $t18))
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (local.get $t19)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 9)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t19)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     ;; RTRN
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
     (return (i32.const 0))
@@ -3591,6 +3697,7 @@
   (func $fn_L135 (export "fn_L135") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -3598,17 +3705,18 @@
     (local $t4 i32)
     (local $t5 i32)
     (local $t6 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     ;; line 0:413
     (global.set $__line (i32.const 413))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t4 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t4 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t5 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 15)) (i32.const 2)))) ;; LL L25
     (local.set $t4 (i32.add (local.get $t4) (local.get $t5)))
     (local.set $t4 (i32.load (i32.shl (local.get $t4) (i32.const 2))))
-    (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t5 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t6 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 16)) (i32.const 2)))) ;; LL L26
     (local.set $t5 (i32.add (local.get $t5) (local.get $t6)))
     (local.set $t5 (i32.load (i32.shl (local.get $t5) (i32.const 2))))
@@ -3629,7 +3737,7 @@
     )) ;; end block / LAB L136 = idx 1
     (if (i32.eq (local.get $__lab) (i32.const 1)) (then ;; L136
     (local.set $t4 (i32.const 720))
-    (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t5 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t6 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 15)) (i32.const 2)))) ;; LL L25
     (local.set $t5 (i32.add (local.get $t5) (local.get $t6)))
     (i32.store (i32.shl (local.get $t5) (i32.const 2)) (local.get $t4))
@@ -3638,7 +3746,7 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t4 (i32.const -1))
-    (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t5 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t6 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 16)) (i32.const 2)))) ;; LL L26
     (local.set $t5 (i32.add (local.get $t5) (local.get $t6)))
     (i32.store (i32.shl (local.get $t5) (i32.const 2)) (local.get $t4))
@@ -3657,6 +3765,7 @@
   (func $fn_L137 (export "fn_L137") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -3665,15 +3774,16 @@
     (local $t5 i32)
     (local $t6 i32)
     (local $t7 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     (local.set $t5 (i32.const 360))
-    (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t6 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t7 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 23)) (i32.const 2)))) ;; LL L33
     (local.set $t6 (i32.sub (local.get $t6) (local.get $t7)))
     (local.set $t7 (i32.const 480))
     (local.set $t6 (i32.mul (local.get $t6) (local.get $t7)))
-    (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t7 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t6 (i32.div_s (local.get $t6) (local.get $t7)))
     (local.set $t5 (i32.sub (local.get $t5) (local.get $t6)))
     ;; FNRN
@@ -3694,6 +3804,7 @@
   (func $fn_L138 (export "fn_L138") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -3754,6 +3865,7 @@
     (local $t57 i32)
     (local $t58 i32)
     (local $t59 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     ;; line 0:424
@@ -3762,16 +3874,16 @@
         (then (call $__break)))
     (local.set $t4 (i32.const 0))
     (local.set $t5 (i32.const 0))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (local.get $t4)) ;; STORE slot 4
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t5)) ;; STORE slot 5
+    (i32.store (i32.add (local.get $Pb) (i32.const 16)) (local.get $t4)) ;; STORE slot 4
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (local.get $t5)) ;; STORE slot 5
     ;; line 0:425
     (global.set $__line (i32.const 425))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t6 (i32.const 0))
     (local.set $t7 (i32.const 0))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
     ;; line 0:426
     (global.set $__line (i32.const 426))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -3779,17 +3891,17 @@
     (local.set $t8 (i32.const 0))
     (local.set $t9 (i32.const 0))
     (local.set $t10 (i32.const 0))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9)) ;; STORE slot 9
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10)) ;; STORE slot 10
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (local.get $t9)) ;; STORE slot 9
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t10)) ;; STORE slot 10
     ;; line 0:427
     (global.set $__line (i32.const 427))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t11 (i32.const 0))
     (local.set $t12 (i32.const 0))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11)) ;; STORE slot 11
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t12)) ;; STORE slot 12
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (local.get $t11)) ;; STORE slot 11
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t12)) ;; STORE slot 12
     ;; line 0:428
     (global.set $__line (i32.const 428))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -3798,10 +3910,10 @@
     (local.set $t14 (i32.const 0))
     (local.set $t15 (i32.const 0))
     (local.set $t16 (i32.const 0))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)) (local.get $t13)) ;; STORE slot 13
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14)) ;; STORE slot 14
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60)) (local.get $t15)) ;; STORE slot 15
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 64)) (local.get $t16)) ;; STORE slot 16
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (local.get $t13)) ;; STORE slot 13
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (local.get $t14)) ;; STORE slot 14
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t15)) ;; STORE slot 15
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16)) ;; STORE slot 16
     ;; line 0:429
     (global.set $__line (i32.const 429))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -3810,10 +3922,10 @@
     (local.set $t18 (i32.const 0))
     (local.set $t19 (i32.const 0))
     (local.set $t20 (i32.const 0))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 68)) (local.get $t17)) ;; STORE slot 17
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 72)) (local.get $t18)) ;; STORE slot 18
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 76)) (local.get $t19)) ;; STORE slot 19
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 80)) (local.get $t20)) ;; STORE slot 20
+    (i32.store (i32.add (local.get $Pb) (i32.const 68)) (local.get $t17)) ;; STORE slot 17
+    (i32.store (i32.add (local.get $Pb) (i32.const 72)) (local.get $t18)) ;; STORE slot 18
+    (i32.store (i32.add (local.get $Pb) (i32.const 76)) (local.get $t19)) ;; STORE slot 19
+    (i32.store (i32.add (local.get $Pb) (i32.const 80)) (local.get $t20)) ;; STORE slot 20
     ;; line 0:430
     (global.set $__line (i32.const 430))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -3823,17 +3935,17 @@
     (local.set $t23 (i32.const 0))
     (local.set $t24 (i32.const 0))
     (local.set $t25 (i32.const 0))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 84)) (local.get $t21)) ;; STORE slot 21
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 88)) (local.get $t22)) ;; STORE slot 22
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; STORE slot 23
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (local.get $t24)) ;; STORE slot 24
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t25)) ;; STORE slot 25
+    (i32.store (i32.add (local.get $Pb) (i32.const 84)) (local.get $t21)) ;; STORE slot 21
+    (i32.store (i32.add (local.get $Pb) (i32.const 88)) (local.get $t22)) ;; STORE slot 22
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; STORE slot 23
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (local.get $t24)) ;; STORE slot 24
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t25)) ;; STORE slot 25
     ;; line 0:431
     (global.set $__line (i32.const 431))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t26 (i32.const 0))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26)) ;; STORE slot 26
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26)) ;; STORE slot 26
     ;; line 0:432
     (global.set $__line (i32.const 432))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -3842,10 +3954,10 @@
     (local.set $t28 (i32.const 0))
     (local.set $t29 (i32.const 0))
     (local.set $t30 (i32.const 0))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t27)) ;; STORE slot 27
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 112)) (local.get $t28)) ;; STORE slot 28
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 116)) (local.get $t29)) ;; STORE slot 29
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 120)) (local.get $t30)) ;; STORE slot 30
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t27)) ;; STORE slot 27
+    (i32.store (i32.add (local.get $Pb) (i32.const 112)) (local.get $t28)) ;; STORE slot 28
+    (i32.store (i32.add (local.get $Pb) (i32.const 116)) (local.get $t29)) ;; STORE slot 29
+    (i32.store (i32.add (local.get $Pb) (i32.const 120)) (local.get $t30)) ;; STORE slot 30
     ;; line 0:433
     (global.set $__line (i32.const 433))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -3853,9 +3965,9 @@
     (local.set $t31 (i32.const 0))
     (local.set $t32 (i32.const 0))
     (local.set $t33 (i32.const 0))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 124)) (local.get $t31)) ;; STORE slot 31
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 128)) (local.get $t32)) ;; STORE slot 32
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 132)) (local.get $t33)) ;; STORE slot 33
+    (i32.store (i32.add (local.get $Pb) (i32.const 124)) (local.get $t31)) ;; STORE slot 31
+    (i32.store (i32.add (local.get $Pb) (i32.const 128)) (local.get $t32)) ;; STORE slot 32
+    (i32.store (i32.add (local.get $Pb) (i32.const 132)) (local.get $t33)) ;; STORE slot 33
     ;; line 0:434
     (global.set $__line (i32.const 434))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -3863,27 +3975,28 @@
     (local.set $t34 (i32.const 0))
     (local.set $t35 (i32.const 0))
     (local.set $t36 (i32.const 0))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 136)) (local.get $t34)) ;; STORE slot 34
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 140)) (local.get $t35)) ;; STORE slot 35
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 144)) (local.get $t36)) ;; STORE slot 36
+    (i32.store (i32.add (local.get $Pb) (i32.const 136)) (local.get $t34)) ;; STORE slot 34
+    (i32.store (i32.add (local.get $Pb) (i32.const 140)) (local.get $t35)) ;; STORE slot 35
+    (i32.store (i32.add (local.get $Pb) (i32.const 144)) (local.get $t36)) ;; STORE slot 36
     ;; line 0:435
     (global.set $__line (i32.const 435))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t40 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t41 (i32.const 0))
-    (local.set $t42 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t42 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t41 (i32.add (local.get $t41) (local.get $t42)))
     (local.set $t42 (i32.add (global.get $TB) (i32.const 5))) ;; LF L52
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 160)) (local.get $t40))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 164)) (local.get $t41))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156)) (local.get $t42)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 160)) (local.get $t40))
+    (i32.store (i32.add (local.get $Pb) (i32.const 164)) (local.get $t41))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 156)) (local.get $t42)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 37)))
     (local.set $t37 (call_indirect $ftable (type $bcpl_fn) (local.get $t42)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (local.get $t37))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 16)) (local.get $t37))
     (local.set $t4 (local.get $t37))
     ;; line 0:437
     (global.set $__line (i32.const 437))
@@ -3891,18 +4004,19 @@
         (then (call $__break)))
     (local.set $t40 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t41 (i32.const 2))
-    (local.set $t42 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t42 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t41 (i32.add (local.get $t41) (local.get $t42)))
     (local.set $t42 (i32.add (global.get $TB) (i32.const 5))) ;; LF L52
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 160)) (local.get $t40))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 164)) (local.get $t41))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156)) (local.get $t42)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 160)) (local.get $t40))
+    (i32.store (i32.add (local.get $Pb) (i32.const 164)) (local.get $t41))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 156)) (local.get $t42)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 37)))
     (local.set $t37 (call_indirect $ftable (type $bcpl_fn) (local.get $t42)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t37))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (local.get $t37))
     (local.set $t5 (local.get $t37))
     ;; line 0:438
     (global.set $__line (i32.const 438))
@@ -3910,18 +4024,19 @@
         (then (call $__break)))
     (local.set $t40 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t41 (i32.const 6))
-    (local.set $t42 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t42 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t41 (i32.add (local.get $t41) (local.get $t42)))
     (local.set $t42 (i32.add (global.get $TB) (i32.const 5))) ;; LF L52
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 160)) (local.get $t40))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 164)) (local.get $t41))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156)) (local.get $t42)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 160)) (local.get $t40))
+    (i32.store (i32.add (local.get $Pb) (i32.const 164)) (local.get $t41))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 156)) (local.get $t42)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 37)))
     (local.set $t37 (call_indirect $ftable (type $bcpl_fn) (local.get $t42)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t37))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (local.get $t37))
     (local.set $t6 (local.get $t37))
     ;; line 0:439
     (global.set $__line (i32.const 439))
@@ -3929,36 +4044,37 @@
         (then (call $__break)))
     (local.set $t40 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t41 (i32.const 8))
-    (local.set $t42 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t42 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t41 (i32.add (local.get $t41) (local.get $t42)))
     (local.set $t42 (i32.add (global.get $TB) (i32.const 5))) ;; LF L52
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 160)) (local.get $t40))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 164)) (local.get $t41))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156)) (local.get $t42)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 160)) (local.get $t40))
+    (i32.store (i32.add (local.get $Pb) (i32.const 164)) (local.get $t41))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 156)) (local.get $t42)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 37)))
     (local.set $t37 (call_indirect $ftable (type $bcpl_fn) (local.get $t42)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t37))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t37))
     (local.set $t7 (local.get $t37))
     ;; line 0:440
     (global.set $__line (i32.const 440))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t37 (i32.const 14))
-    (local.set $t38 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
+    (local.set $t38 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
     (local.set $t37 (i32.mul (local.get $t37) (local.get $t38)))
     (local.set $t38 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 7)) (i32.const 2)))) ;; LL L17
     (local.set $t37 (i32.add (local.get $t37) (local.get $t38)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t37))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t37))
     (local.set $t8 (local.get $t37))
     ;; line 0:441
     (global.set $__line (i32.const 441))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t37 (i32.const 0))
-    (local.set $t38 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
+    (local.set $t38 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
     (if (i32.ne  (local.get $t37) (local.get $t38)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     ))
@@ -3968,18 +4084,19 @@
         (then (call $__break)))
     (local.set $t40 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t41 (i32.const 10))
-    (local.set $t42 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
+    (local.set $t42 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
     (local.set $t41 (i32.add (local.get $t41) (local.get $t42)))
     (local.set $t42 (i32.add (global.get $TB) (i32.const 6))) ;; LF L53
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 160)) (local.get $t40))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 164)) (local.get $t41))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156)) (local.get $t42)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 160)) (local.get $t40))
+    (i32.store (i32.add (local.get $Pb) (i32.const 164)) (local.get $t41))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 156)) (local.get $t42)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 37)))
     (local.set $t37 (call_indirect $ftable (type $bcpl_fn) (local.get $t42)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t37))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (local.get $t37))
     (local.set $t9 (local.get $t37))
     ;; line 0:443
     (global.set $__line (i32.const 443))
@@ -3987,18 +4104,19 @@
         (then (call $__break)))
     (local.set $t40 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t41 (i32.const 12))
-    (local.set $t42 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
+    (local.set $t42 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
     (local.set $t41 (i32.add (local.get $t41) (local.get $t42)))
     (local.set $t42 (i32.add (global.get $TB) (i32.const 6))) ;; LF L53
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 160)) (local.get $t40))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 164)) (local.get $t41))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156)) (local.get $t42)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 160)) (local.get $t40))
+    (i32.store (i32.add (local.get $Pb) (i32.const 164)) (local.get $t41))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 156)) (local.get $t42)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 37)))
     (local.set $t37 (call_indirect $ftable (type $bcpl_fn) (local.get $t42)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t37))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t37))
     (local.set $t10 (local.get $t37))
       (local.set $__lab (i32.const 2)) (br $__dispatch) ;; JUMP L141
     )) ;; end block / LAB L139 = idx 1
@@ -4009,18 +4127,19 @@
         (then (call $__break)))
     (local.set $t40 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t41 (i32.const 12))
-    (local.set $t42 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
+    (local.set $t42 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
     (local.set $t41 (i32.add (local.get $t41) (local.get $t42)))
     (local.set $t42 (i32.add (global.get $TB) (i32.const 6))) ;; LF L53
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 160)) (local.get $t40))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 164)) (local.get $t41))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156)) (local.get $t42)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 160)) (local.get $t40))
+    (i32.store (i32.add (local.get $Pb) (i32.const 164)) (local.get $t41))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 156)) (local.get $t42)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 37)))
     (local.set $t37 (call_indirect $ftable (type $bcpl_fn) (local.get $t42)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t37))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (local.get $t37))
     (local.set $t9 (local.get $t37))
     ;; line 0:445
     (global.set $__line (i32.const 445))
@@ -4028,18 +4147,19 @@
         (then (call $__break)))
     (local.set $t40 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t41 (i32.const 10))
-    (local.set $t42 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
+    (local.set $t42 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
     (local.set $t41 (i32.add (local.get $t41) (local.get $t42)))
     (local.set $t42 (i32.add (global.get $TB) (i32.const 6))) ;; LF L53
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 160)) (local.get $t40))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 164)) (local.get $t41))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156)) (local.get $t42)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 160)) (local.get $t40))
+    (i32.store (i32.add (local.get $Pb) (i32.const 164)) (local.get $t41))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 156)) (local.get $t42)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 37)))
     (local.set $t37 (call_indirect $ftable (type $bcpl_fn) (local.get $t42)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t37))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t37))
     (local.set $t10 (local.get $t37))
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     )) ;; end block / LAB L141 = idx 2
@@ -4048,7 +4168,7 @@
     (global.set $__line (i32.const 446))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t37 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
+    (local.set $t37 (i32.load (i32.add (local.get $Pb) (i32.const 36))))
     (local.set $t38 (i32.const 0))
     (if (i32.ge_s (local.get $t37) (local.get $t38)) (then
       (local.set $__lab (i32.const 3)) (br $__dispatch)
@@ -4062,22 +4182,23 @@
     (global.set $__line (i32.const 447))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t40 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
+    (local.set $t40 (i32.load (i32.add (local.get $Pb) (i32.const 36))))
     (local.set $t41 (i32.add (global.get $TB) (i32.const 15))) ;; LF L88
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 160)) (local.get $t40))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156)) (local.get $t41)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 160)) (local.get $t40))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 156)) (local.get $t41)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 37)))
     (local.set $t37 (call_indirect $ftable (type $bcpl_fn) (local.get $t41)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t37))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (local.get $t37))
     (local.set $t11 (local.get $t37))
     ;; line 0:449
     (global.set $__line (i32.const 449))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t37 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44))))
+    (local.set $t37 (i32.load (i32.add (local.get $Pb) (i32.const 44))))
     (local.set $t38 (i32.const 0))
     (if (i32.ge_s (local.get $t37) (local.get $t38)) (then
       (local.set $__lab (i32.const 4)) (br $__dispatch)
@@ -4091,61 +4212,64 @@
     (global.set $__line (i32.const 450))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t40 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44))))
+    (local.set $t40 (i32.load (i32.add (local.get $Pb) (i32.const 44))))
     (local.set $t41 (i32.add (global.get $TB) (i32.const 16))) ;; LF L89
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 160)) (local.get $t40))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156)) (local.get $t41)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 160)) (local.get $t40))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 156)) (local.get $t41)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 37)))
     (local.set $t37 (call_indirect $ftable (type $bcpl_fn) (local.get $t41)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 84)) (local.get $t37))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 84)) (local.get $t37))
     (local.set $t21 (local.get $t37))
     ;; line 0:451
     (global.set $__line (i32.const 451))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t40 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44))))
+    (local.set $t40 (i32.load (i32.add (local.get $Pb) (i32.const 44))))
     (local.set $t41 (i32.add (global.get $TB) (i32.const 17))) ;; LF L90
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 160)) (local.get $t40))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156)) (local.get $t41)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 160)) (local.get $t40))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 156)) (local.get $t41)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 37)))
     (local.set $t37 (call_indirect $ftable (type $bcpl_fn) (local.get $t41)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 88)) (local.get $t37))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 88)) (local.get $t37))
     (local.set $t22 (local.get $t37))
     ;; line 0:452
     (global.set $__line (i32.const 452))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t40 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44))))
+    (local.set $t40 (i32.load (i32.add (local.get $Pb) (i32.const 44))))
     (local.set $t41 (i32.add (global.get $TB) (i32.const 18))) ;; LF L91
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 160)) (local.get $t40))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156)) (local.get $t41)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 160)) (local.get $t40))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 156)) (local.get $t41)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 37)))
     (local.set $t37 (call_indirect $ftable (type $bcpl_fn) (local.get $t41)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t37))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t37))
     (local.set $t23 (local.get $t37))
     ;; line 0:453
     (global.set $__line (i32.const 453))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t37 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40))))
+    (local.set $t37 (i32.load (i32.add (local.get $Pb) (i32.const 40))))
     (local.set $t38 (i32.const 0))
     (local.set $t37 (i32.sub (i32.const 0) (i32.ge_s (local.get $t37) (local.get $t38))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t37))
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t37))
     (local.set $t26 (local.get $t37))
     ;; line 0:455
     (global.set $__line (i32.const 455))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t37 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104))))
+    (local.set $t37 (i32.load (i32.add (local.get $Pb) (i32.const 104))))
     (if (i32.eqz (local.get $t37)) (then
       (local.set $__lab (i32.const 7)) (br $__dispatch)
     ))
@@ -4153,22 +4277,23 @@
     (global.set $__line (i32.const 456))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t40 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40))))
+    (local.set $t40 (i32.load (i32.add (local.get $Pb) (i32.const 40))))
     (local.set $t41 (i32.add (global.get $TB) (i32.const 15))) ;; LF L88
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 160)) (local.get $t40))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156)) (local.get $t41)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 160)) (local.get $t40))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 156)) (local.get $t41)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 37)))
     (local.set $t37 (call_indirect $ftable (type $bcpl_fn) (local.get $t41)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t37))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t37))
     (local.set $t12 (local.get $t37))
     ;; line 0:457
     (global.set $__line (i32.const 457))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t37 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48))))
+    (local.set $t37 (i32.load (i32.add (local.get $Pb) (i32.const 48))))
     (local.set $t38 (i32.const 0))
     (if (i32.ge_s (local.get $t37) (local.get $t38)) (then
       (local.set $__lab (i32.const 5)) (br $__dispatch)
@@ -4178,12 +4303,12 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t37 (i32.const 0))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t37))
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t37))
     (local.set $t26 (local.get $t37))
       (local.set $__lab (i32.const 5)) (br $__dispatch)
     )) ;; end block / LAB L145 = idx 5
     (if (i32.eq (local.get $__lab) (i32.const 5)) (then ;; L145
-    (local.set $t37 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104))))
+    (local.set $t37 (i32.load (i32.add (local.get $Pb) (i32.const 104))))
     (if (i32.eqz (local.get $t37)) (then
       (local.set $__lab (i32.const 6)) (br $__dispatch)
     ))
@@ -4191,31 +4316,33 @@
     (global.set $__line (i32.const 459))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t40 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48))))
+    (local.set $t40 (i32.load (i32.add (local.get $Pb) (i32.const 48))))
     (local.set $t41 (i32.add (global.get $TB) (i32.const 16))) ;; LF L89
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 160)) (local.get $t40))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156)) (local.get $t41)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 160)) (local.get $t40))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 156)) (local.get $t41)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 37)))
     (local.set $t37 (call_indirect $ftable (type $bcpl_fn) (local.get $t41)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (local.get $t37))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (local.get $t37))
     (local.set $t24 (local.get $t37))
     ;; line 0:460
     (global.set $__line (i32.const 460))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t40 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48))))
+    (local.set $t40 (i32.load (i32.add (local.get $Pb) (i32.const 48))))
     (local.set $t41 (i32.add (global.get $TB) (i32.const 17))) ;; LF L90
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 160)) (local.get $t40))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156)) (local.get $t41)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 160)) (local.get $t40))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 156)) (local.get $t41)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 37)))
     (local.set $t37 (call_indirect $ftable (type $bcpl_fn) (local.get $t41)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t37))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t37))
     (local.set $t25 (local.get $t37))
       (local.set $__lab (i32.const 6)) (br $__dispatch)
     )) ;; end block / LAB L146 = idx 6
@@ -4228,39 +4355,40 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t37 (i32.const 4))
-    (local.set $t38 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t38 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t37 (i32.mul (local.get $t37) (local.get $t38)))
     (local.set $t38 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 6)) (i32.const 2)))) ;; LL L16
     (local.set $t37 (i32.add (local.get $t37) (local.get $t38)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (local.get $t37)) ;; STORE slot 37
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (local.get $t37)) ;; STORE slot 37
     ;; line 0:465
     (global.set $__line (i32.const 465))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t38 (i32.const 4))
-    (local.set $t39 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t39 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t38 (i32.mul (local.get $t38) (local.get $t39)))
     (local.set $t39 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 6)) (i32.const 2)))) ;; LL L16
     (local.set $t38 (i32.add (local.get $t38) (local.get $t39)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 152)) (local.get $t38)) ;; STORE slot 38
+    (i32.store (i32.add (local.get $Pb) (i32.const 152)) (local.get $t38)) ;; STORE slot 38
     ;; line 0:466
     (global.set $__line (i32.const 466))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t42 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t43 (i32.const 0))
-    (local.set $t44 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
+    (local.set $t44 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
     (local.set $t43 (i32.add (local.get $t43) (local.get $t44)))
     (local.set $t44 (i32.add (global.get $TB) (i32.const 6))) ;; LF L53
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 168)) (local.get $t42))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 172)) (local.get $t43))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 160)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 164)) (local.get $t44)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 168)) (local.get $t42))
+    (i32.store (i32.add (local.get $Pb) (i32.const 172)) (local.get $t43))
+    (i32.store (i32.add (local.get $Pb) (i32.const 156)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 160)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 164)) (local.get $t44)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 39)))
     (local.set $t39 (call_indirect $ftable (type $bcpl_fn) (local.get $t44)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156)) (local.get $t39)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)) (local.get $t39))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 156)) (local.get $t39)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (local.get $t39))
     (local.set $t13 (local.get $t39))
     ;; line 0:467
     (global.set $__line (i32.const 467))
@@ -4268,18 +4396,19 @@
         (then (call $__break)))
     (local.set $t42 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t43 (i32.const 2))
-    (local.set $t44 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
+    (local.set $t44 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
     (local.set $t43 (i32.add (local.get $t43) (local.get $t44)))
     (local.set $t44 (i32.add (global.get $TB) (i32.const 6))) ;; LF L53
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 168)) (local.get $t42))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 172)) (local.get $t43))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 160)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 164)) (local.get $t44)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 168)) (local.get $t42))
+    (i32.store (i32.add (local.get $Pb) (i32.const 172)) (local.get $t43))
+    (i32.store (i32.add (local.get $Pb) (i32.const 156)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 160)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 164)) (local.get $t44)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 39)))
     (local.set $t39 (call_indirect $ftable (type $bcpl_fn) (local.get $t44)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156)) (local.get $t39)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t39))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 156)) (local.get $t39)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (local.get $t39))
     (local.set $t14 (local.get $t39))
     ;; line 0:468
     (global.set $__line (i32.const 468))
@@ -4287,18 +4416,19 @@
         (then (call $__break)))
     (local.set $t42 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t43 (i32.const 0))
-    (local.set $t44 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 152))))
+    (local.set $t44 (i32.load (i32.add (local.get $Pb) (i32.const 152))))
     (local.set $t43 (i32.add (local.get $t43) (local.get $t44)))
     (local.set $t44 (i32.add (global.get $TB) (i32.const 6))) ;; LF L53
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 168)) (local.get $t42))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 172)) (local.get $t43))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 160)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 164)) (local.get $t44)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 168)) (local.get $t42))
+    (i32.store (i32.add (local.get $Pb) (i32.const 172)) (local.get $t43))
+    (i32.store (i32.add (local.get $Pb) (i32.const 156)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 160)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 164)) (local.get $t44)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 39)))
     (local.set $t39 (call_indirect $ftable (type $bcpl_fn) (local.get $t44)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156)) (local.get $t39)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60)) (local.get $t39))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 156)) (local.get $t39)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t39))
     (local.set $t15 (local.get $t39))
     ;; line 0:469
     (global.set $__line (i32.const 469))
@@ -4306,24 +4436,25 @@
         (then (call $__break)))
     (local.set $t42 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t43 (i32.const 2))
-    (local.set $t44 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 152))))
+    (local.set $t44 (i32.load (i32.add (local.get $Pb) (i32.const 152))))
     (local.set $t43 (i32.add (local.get $t43) (local.get $t44)))
     (local.set $t44 (i32.add (global.get $TB) (i32.const 6))) ;; LF L53
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 168)) (local.get $t42))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 172)) (local.get $t43))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 160)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 164)) (local.get $t44)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 168)) (local.get $t42))
+    (i32.store (i32.add (local.get $Pb) (i32.const 172)) (local.get $t43))
+    (i32.store (i32.add (local.get $Pb) (i32.const 156)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 160)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 164)) (local.get $t44)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 39)))
     (local.set $t39 (call_indirect $ftable (type $bcpl_fn) (local.get $t44)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156)) (local.get $t39)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 64)) (local.get $t39))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 156)) (local.get $t39)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t39))
     (local.set $t16 (local.get $t39))
     ;; line 0:470
     (global.set $__line (i32.const 470))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t37 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104))))
+    (local.set $t37 (i32.load (i32.add (local.get $Pb) (i32.const 104))))
     (if (local.get $t37) (then
       (local.set $__lab (i32.const 9)) (br $__dispatch)
     ))
@@ -4331,21 +4462,22 @@
     (global.set $__line (i32.const 473))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t40 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52))))
-    (local.set $t41 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56))))
-    (local.set $t42 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60))))
-    (local.set $t43 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 64))))
+    (local.set $t40 (i32.load (i32.add (local.get $Pb) (i32.const 52))))
+    (local.set $t41 (i32.load (i32.add (local.get $Pb) (i32.const 56))))
+    (local.set $t42 (i32.load (i32.add (local.get $Pb) (i32.const 60))))
+    (local.set $t43 (i32.load (i32.add (local.get $Pb) (i32.const 64))))
     (local.set $t44 (i32.add (global.get $TB) (i32.const 27))) ;; LF L123
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 160)) (local.get $t40))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 164)) (local.get $t41))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 168)) (local.get $t42))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 172)) (local.get $t43))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156)) (local.get $t44)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 160)) (local.get $t40))
+    (i32.store (i32.add (local.get $Pb) (i32.const 164)) (local.get $t41))
+    (i32.store (i32.add (local.get $Pb) (i32.const 168)) (local.get $t42))
+    (i32.store (i32.add (local.get $Pb) (i32.const 172)) (local.get $t43))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 156)) (local.get $t44)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 37)))
     (local.set $t37 (call_indirect $ftable (type $bcpl_fn) (local.get $t44)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
     (if (local.get $t37) (then
       (local.set $__lab (i32.const 8)) (br $__dispatch)
     ))
@@ -4361,72 +4493,76 @@
     (global.set $__line (i32.const 474))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t40 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52))))
-    (local.set $t41 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56))))
+    (local.set $t40 (i32.load (i32.add (local.get $Pb) (i32.const 52))))
+    (local.set $t41 (i32.load (i32.add (local.get $Pb) (i32.const 56))))
     (local.set $t42 (i32.add (global.get $TB) (i32.const 25))) ;; LF L121
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 160)) (local.get $t40))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 164)) (local.get $t41))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156)) (local.get $t42)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 160)) (local.get $t40))
+    (i32.store (i32.add (local.get $Pb) (i32.const 164)) (local.get $t41))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 156)) (local.get $t42)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 37)))
     (local.set $t37 (call_indirect $ftable (type $bcpl_fn) (local.get $t42)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 68)) (local.get $t37))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 68)) (local.get $t37))
     (local.set $t17 (local.get $t37))
     ;; line 0:476
     (global.set $__line (i32.const 476))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t40 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52))))
-    (local.set $t41 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56))))
+    (local.set $t40 (i32.load (i32.add (local.get $Pb) (i32.const 52))))
+    (local.set $t41 (i32.load (i32.add (local.get $Pb) (i32.const 56))))
     (local.set $t42 (i32.add (global.get $TB) (i32.const 26))) ;; LF L122
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 160)) (local.get $t40))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 164)) (local.get $t41))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156)) (local.get $t42)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 160)) (local.get $t40))
+    (i32.store (i32.add (local.get $Pb) (i32.const 164)) (local.get $t41))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 156)) (local.get $t42)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 37)))
     (local.set $t37 (call_indirect $ftable (type $bcpl_fn) (local.get $t42)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 72)) (local.get $t37))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 72)) (local.get $t37))
     (local.set $t18 (local.get $t37))
-    (local.set $t40 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60))))
-    (local.set $t41 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 64))))
+    (local.set $t40 (i32.load (i32.add (local.get $Pb) (i32.const 60))))
+    (local.set $t41 (i32.load (i32.add (local.get $Pb) (i32.const 64))))
     (local.set $t42 (i32.add (global.get $TB) (i32.const 25))) ;; LF L121
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 160)) (local.get $t40))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 164)) (local.get $t41))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156)) (local.get $t42)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 160)) (local.get $t40))
+    (i32.store (i32.add (local.get $Pb) (i32.const 164)) (local.get $t41))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 156)) (local.get $t42)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 37)))
     (local.set $t37 (call_indirect $ftable (type $bcpl_fn) (local.get $t42)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 76)) (local.get $t37))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 76)) (local.get $t37))
     (local.set $t19 (local.get $t37))
     ;; line 0:477
     (global.set $__line (i32.const 477))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t40 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60))))
-    (local.set $t41 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 64))))
+    (local.set $t40 (i32.load (i32.add (local.get $Pb) (i32.const 60))))
+    (local.set $t41 (i32.load (i32.add (local.get $Pb) (i32.const 64))))
     (local.set $t42 (i32.add (global.get $TB) (i32.const 26))) ;; LF L122
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 160)) (local.get $t40))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 164)) (local.get $t41))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156)) (local.get $t42)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 160)) (local.get $t40))
+    (i32.store (i32.add (local.get $Pb) (i32.const 164)) (local.get $t41))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 156)) (local.get $t42)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 37)))
     (local.set $t37 (call_indirect $ftable (type $bcpl_fn) (local.get $t42)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 80)) (local.get $t37))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 80)) (local.get $t37))
     (local.set $t20 (local.get $t37))
-    (local.set $t37 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 72))))
+    (local.set $t37 (i32.load (i32.add (local.get $Pb) (i32.const 72))))
     (local.set $t38 (i32.const 4))
     (if (i32.ge_s (local.get $t37) (local.get $t38)) (then
       (local.set $__lab (i32.const 10)) (br $__dispatch)
     ))
-    (local.set $t37 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 80))))
+    (local.set $t37 (i32.load (i32.add (local.get $Pb) (i32.const 80))))
     (local.set $t38 (i32.const 4))
     (if (i32.ge_s (local.get $t37) (local.get $t38)) (then
       (local.set $__lab (i32.const 10)) (br $__dispatch)
@@ -4440,7 +4576,7 @@
     (global.set $__line (i32.const 478))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t37 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 72))))
+    (local.set $t37 (i32.load (i32.add (local.get $Pb) (i32.const 72))))
     (local.set $t38 (i32.const 4))
     (if (i32.ge_s (local.get $t37) (local.get $t38)) (then
       (local.set $__lab (i32.const 11)) (br $__dispatch)
@@ -4450,36 +4586,36 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t37 (i32.const 4))
-    (local.set $t38 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 72))))
+    (local.set $t38 (i32.load (i32.add (local.get $Pb) (i32.const 72))))
     (local.set $t37 (i32.sub (local.get $t37) (local.get $t38)))
     (local.set $t38 (i32.const 1024))
     (local.set $t37 (i32.mul (local.get $t37) (local.get $t38)))
-    (local.set $t38 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 80))))
-    (local.set $t39 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 72))))
+    (local.set $t38 (i32.load (i32.add (local.get $Pb) (i32.const 80))))
+    (local.set $t39 (i32.load (i32.add (local.get $Pb) (i32.const 72))))
     (local.set $t38 (i32.sub (local.get $t38) (local.get $t39)))
     (local.set $t37 (i32.div_s (local.get $t37) (local.get $t38)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (local.get $t37)) ;; STORE slot 37
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (local.get $t37)) ;; STORE slot 37
     ;; line 0:481
     (global.set $__line (i32.const 481))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t38 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 76))))
-    (local.set $t39 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 68))))
+    (local.set $t38 (i32.load (i32.add (local.get $Pb) (i32.const 76))))
+    (local.set $t39 (i32.load (i32.add (local.get $Pb) (i32.const 68))))
     (local.set $t38 (i32.sub (local.get $t38) (local.get $t39)))
-    (local.set $t39 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
+    (local.set $t39 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
     (local.set $t38 (i32.mul (local.get $t38) (local.get $t39)))
     (local.set $t39 (i32.const 1024))
     (local.set $t38 (i32.div_s (local.get $t38) (local.get $t39)))
-    (local.set $t39 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 68))))
+    (local.set $t39 (i32.load (i32.add (local.get $Pb) (i32.const 68))))
     (local.set $t38 (i32.add (local.get $t38) (local.get $t39)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 68)) (local.get $t38))
+    (i32.store (i32.add (local.get $Pb) (i32.const 68)) (local.get $t38))
     (local.set $t17 (local.get $t38))
     ;; line 0:482
     (global.set $__line (i32.const 482))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t38 (i32.const 4))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 72)) (local.get $t38))
+    (i32.store (i32.add (local.get $Pb) (i32.const 72)) (local.get $t38))
     (local.set $t18 (local.get $t38))
       (local.set $__lab (i32.const 11)) (br $__dispatch)
     )) ;; end block / LAB L150 = idx 11
@@ -4488,7 +4624,7 @@
     (global.set $__line (i32.const 483))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t37 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 80))))
+    (local.set $t37 (i32.load (i32.add (local.get $Pb) (i32.const 80))))
     (local.set $t38 (i32.const 4))
     (if (i32.ge_s (local.get $t37) (local.get $t38)) (then
       (local.set $__lab (i32.const 12)) (br $__dispatch)
@@ -4498,36 +4634,36 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t37 (i32.const 4))
-    (local.set $t38 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 80))))
+    (local.set $t38 (i32.load (i32.add (local.get $Pb) (i32.const 80))))
     (local.set $t37 (i32.sub (local.get $t37) (local.get $t38)))
     (local.set $t38 (i32.const 1024))
     (local.set $t37 (i32.mul (local.get $t37) (local.get $t38)))
-    (local.set $t38 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 72))))
-    (local.set $t39 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 80))))
+    (local.set $t38 (i32.load (i32.add (local.get $Pb) (i32.const 72))))
+    (local.set $t39 (i32.load (i32.add (local.get $Pb) (i32.const 80))))
     (local.set $t38 (i32.sub (local.get $t38) (local.get $t39)))
     (local.set $t37 (i32.div_s (local.get $t37) (local.get $t38)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (local.get $t37)) ;; STORE slot 37
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (local.get $t37)) ;; STORE slot 37
     ;; line 0:486
     (global.set $__line (i32.const 486))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t38 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 68))))
-    (local.set $t39 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 76))))
+    (local.set $t38 (i32.load (i32.add (local.get $Pb) (i32.const 68))))
+    (local.set $t39 (i32.load (i32.add (local.get $Pb) (i32.const 76))))
     (local.set $t38 (i32.sub (local.get $t38) (local.get $t39)))
-    (local.set $t39 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
+    (local.set $t39 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
     (local.set $t38 (i32.mul (local.get $t38) (local.get $t39)))
     (local.set $t39 (i32.const 1024))
     (local.set $t38 (i32.div_s (local.get $t38) (local.get $t39)))
-    (local.set $t39 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 76))))
+    (local.set $t39 (i32.load (i32.add (local.get $Pb) (i32.const 76))))
     (local.set $t38 (i32.add (local.get $t38) (local.get $t39)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 76)) (local.get $t38))
+    (i32.store (i32.add (local.get $Pb) (i32.const 76)) (local.get $t38))
     (local.set $t19 (local.get $t38))
     ;; line 0:487
     (global.set $__line (i32.const 487))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t38 (i32.const 4))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 80)) (local.get $t38))
+    (i32.store (i32.add (local.get $Pb) (i32.const 80)) (local.get $t38))
     (local.set $t20 (local.get $t38))
       (local.set $__lab (i32.const 12)) (br $__dispatch)
     )) ;; end block / LAB L151 = idx 12
@@ -4538,12 +4674,12 @@
         (then (call $__break)))
     (local.set $t37 (i32.const 480))
     (local.set $t38 (i32.const 480))
-    (local.set $t39 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 68))))
+    (local.set $t39 (i32.load (i32.add (local.get $Pb) (i32.const 68))))
     (local.set $t38 (i32.mul (local.get $t38) (local.get $t39)))
-    (local.set $t39 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 72))))
+    (local.set $t39 (i32.load (i32.add (local.get $Pb) (i32.const 72))))
     (local.set $t38 (i32.div_s (local.get $t38) (local.get $t39)))
     (local.set $t37 (i32.add (local.get $t37) (local.get $t38)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t37))
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t37))
     (local.set $t27 (local.get $t37))
     ;; line 0:491
     (global.set $__line (i32.const 491))
@@ -4551,19 +4687,19 @@
         (then (call $__break)))
     (local.set $t37 (i32.const 480))
     (local.set $t38 (i32.const 480))
-    (local.set $t39 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 76))))
+    (local.set $t39 (i32.load (i32.add (local.get $Pb) (i32.const 76))))
     (local.set $t38 (i32.mul (local.get $t38) (local.get $t39)))
-    (local.set $t39 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 80))))
+    (local.set $t39 (i32.load (i32.add (local.get $Pb) (i32.const 80))))
     (local.set $t38 (i32.div_s (local.get $t38) (local.get $t39)))
     (local.set $t37 (i32.add (local.get $t37) (local.get $t38)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 112)) (local.get $t37))
+    (i32.store (i32.add (local.get $Pb) (i32.const 112)) (local.get $t37))
     (local.set $t28 (local.get $t37))
     ;; line 0:492
     (global.set $__line (i32.const 492))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t37 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108))))
-    (local.set $t38 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 112))))
+    (local.set $t37 (i32.load (i32.add (local.get $Pb) (i32.const 108))))
+    (local.set $t38 (i32.load (i32.add (local.get $Pb) (i32.const 112))))
     (if (i32.le_s (local.get $t37) (local.get $t38)) (then
       (local.set $__lab (i32.const 13)) (br $__dispatch)
     ))
@@ -4571,49 +4707,49 @@
     (global.set $__line (i32.const 494))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t37 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (local.get $t37)) ;; STORE slot 37
+    (local.set $t37 (i32.load (i32.add (local.get $Pb) (i32.const 108))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (local.get $t37)) ;; STORE slot 37
     ;; line 0:495
     (global.set $__line (i32.const 495))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t38 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 112))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t38))
+    (local.set $t38 (i32.load (i32.add (local.get $Pb) (i32.const 112))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t38))
     (local.set $t27 (local.get $t38))
-    (local.set $t38 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 112)) (local.get $t38))
+    (local.set $t38 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 112)) (local.get $t38))
     (local.set $t28 (local.get $t38))
-    (local.set $t38 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 68))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (local.get $t38))
+    (local.set $t38 (i32.load (i32.add (local.get $Pb) (i32.const 68))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (local.get $t38))
     (local.set $t37 (local.get $t38))
     ;; line 0:496
     (global.set $__line (i32.const 496))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t38 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 76))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 68)) (local.get $t38))
+    (local.set $t38 (i32.load (i32.add (local.get $Pb) (i32.const 76))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 68)) (local.get $t38))
     (local.set $t17 (local.get $t38))
-    (local.set $t38 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 76)) (local.get $t38))
+    (local.set $t38 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 76)) (local.get $t38))
     (local.set $t19 (local.get $t38))
-    (local.set $t38 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 72))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (local.get $t38))
+    (local.set $t38 (i32.load (i32.add (local.get $Pb) (i32.const 72))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (local.get $t38))
     (local.set $t37 (local.get $t38))
     ;; line 0:497
     (global.set $__line (i32.const 497))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t38 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 80))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 72)) (local.get $t38))
+    (local.set $t38 (i32.load (i32.add (local.get $Pb) (i32.const 80))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 72)) (local.get $t38))
     (local.set $t18 (local.get $t38))
-    (local.set $t38 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 80)) (local.get $t38))
+    (local.set $t38 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 80)) (local.get $t38))
     (local.set $t20 (local.get $t38))
       (local.set $__lab (i32.const 13)) (br $__dispatch)
     )) ;; end block / LAB L152 = idx 13
     (if (i32.eq (local.get $__lab) (i32.const 13)) (then ;; L152
-    (local.set $t37 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 112))))
-    (local.set $t38 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108))))
+    (local.set $t37 (i32.load (i32.add (local.get $Pb) (i32.const 112))))
+    (local.set $t38 (i32.load (i32.add (local.get $Pb) (i32.const 108))))
     (if (i32.ne  (local.get $t37) (local.get $t38)) (then
       (local.set $__lab (i32.const 14)) (br $__dispatch)
     ))
@@ -4626,17 +4762,17 @@
     (global.set $__line (i32.const 499))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t37 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 116)) (local.get $t37))
+    (local.set $t37 (i32.load (i32.add (local.get $Pb) (i32.const 108))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 116)) (local.get $t37))
     (local.set $t29 (local.get $t37))
     ;; line 0:501
     (global.set $__line (i32.const 501))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t37 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 112))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 120)) (local.get $t37))
+    (local.set $t37 (i32.load (i32.add (local.get $Pb) (i32.const 112))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 120)) (local.get $t37))
     (local.set $t30 (local.get $t37))
-    (local.set $t37 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 116))))
+    (local.set $t37 (i32.load (i32.add (local.get $Pb) (i32.const 116))))
     (local.set $t38 (i32.const 0))
     (if (i32.ge_s (local.get $t37) (local.get $t38)) (then
       (local.set $__lab (i32.const 15)) (br $__dispatch)
@@ -4646,12 +4782,12 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t37 (i32.const 0))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 116)) (local.get $t37))
+    (i32.store (i32.add (local.get $Pb) (i32.const 116)) (local.get $t37))
     (local.set $t29 (local.get $t37))
       (local.set $__lab (i32.const 15)) (br $__dispatch)
     )) ;; end block / LAB L154 = idx 15
     (if (i32.eq (local.get $__lab) (i32.const 15)) (then ;; L154
-    (local.set $t37 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 120))))
+    (local.set $t37 (i32.load (i32.add (local.get $Pb) (i32.const 120))))
     (local.set $t38 (i32.const 960))
     (if (i32.lt_s (local.get $t37) (local.get $t38)) (then
       (local.set $__lab (i32.const 16)) (br $__dispatch)
@@ -4661,13 +4797,13 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t37 (i32.const 959))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 120)) (local.get $t37))
+    (i32.store (i32.add (local.get $Pb) (i32.const 120)) (local.get $t37))
     (local.set $t30 (local.get $t37))
       (local.set $__lab (i32.const 16)) (br $__dispatch)
     )) ;; end block / LAB L155 = idx 16
     (if (i32.eq (local.get $__lab) (i32.const 16)) (then ;; L155
-    (local.set $t37 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 116))))
-    (local.set $t38 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 120))))
+    (local.set $t37 (i32.load (i32.add (local.get $Pb) (i32.const 116))))
+    (local.set $t38 (i32.load (i32.add (local.get $Pb) (i32.const 120))))
     (if (i32.le_s (local.get $t37) (local.get $t38)) (then
       (local.set $__lab (i32.const 17)) (br $__dispatch)
     ))
@@ -4681,85 +4817,88 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t37 (i32.const 1048576))
-    (local.set $t38 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 72))))
+    (local.set $t38 (i32.load (i32.add (local.get $Pb) (i32.const 72))))
     (local.set $t37 (i32.div_s (local.get $t37) (local.get $t38)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 124)) (local.get $t37))
+    (i32.store (i32.add (local.get $Pb) (i32.const 124)) (local.get $t37))
     (local.set $t31 (local.get $t37))
     ;; line 0:506
     (global.set $__line (i32.const 506))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t37 (i32.const 1048576))
-    (local.set $t38 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 80))))
+    (local.set $t38 (i32.load (i32.add (local.get $Pb) (i32.const 80))))
     (local.set $t37 (i32.div_s (local.get $t37) (local.get $t38)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 128)) (local.get $t37))
+    (i32.store (i32.add (local.get $Pb) (i32.const 128)) (local.get $t37))
     (local.set $t32 (local.get $t37))
     ;; line 0:507
     (global.set $__line (i32.const 507))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t37 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 112))))
-    (local.set $t38 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108))))
+    (local.set $t37 (i32.load (i32.add (local.get $Pb) (i32.const 112))))
+    (local.set $t38 (i32.load (i32.add (local.get $Pb) (i32.const 108))))
     (local.set $t37 (i32.sub (local.get $t37) (local.get $t38)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 132)) (local.get $t37))
+    (i32.store (i32.add (local.get $Pb) (i32.const 132)) (local.get $t37))
     (local.set $t33 (local.get $t37))
     ;; line 0:508
     (global.set $__line (i32.const 508))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t40 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92))))
+    (local.set $t40 (i32.load (i32.add (local.get $Pb) (i32.const 92))))
     (local.set $t41 (i32.add (global.get $TB) (i32.const 28))) ;; LF L124
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 160)) (local.get $t40))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156)) (local.get $t41)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 160)) (local.get $t40))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 156)) (local.get $t41)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 37)))
     (local.set $t37 (call_indirect $ftable (type $bcpl_fn) (local.get $t41)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 136)) (local.get $t37))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 136)) (local.get $t37))
     (local.set $t34 (local.get $t37))
     ;; line 0:510
     (global.set $__line (i32.const 510))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t40 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92))))
+    (local.set $t40 (i32.load (i32.add (local.get $Pb) (i32.const 92))))
     (local.set $t41 (i32.const 16))
     (local.set $t40 (i32.sub (local.get $t40) (local.get $t41)))
     (local.set $t41 (i32.add (global.get $TB) (i32.const 28))) ;; LF L124
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 160)) (local.get $t40))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156)) (local.get $t41)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 160)) (local.get $t40))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 156)) (local.get $t41)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 37)))
     (local.set $t37 (call_indirect $ftable (type $bcpl_fn) (local.get $t41)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 140)) (local.get $t37))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 140)) (local.get $t37))
     (local.set $t35 (local.get $t37))
     ;; line 0:511
     (global.set $__line (i32.const 511))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t40 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92))))
+    (local.set $t40 (i32.load (i32.add (local.get $Pb) (i32.const 92))))
     (local.set $t41 (i32.const 32))
     (local.set $t40 (i32.sub (local.get $t40) (local.get $t41)))
     (local.set $t41 (i32.add (global.get $TB) (i32.const 28))) ;; LF L124
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 160)) (local.get $t40))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156)) (local.get $t41)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 160)) (local.get $t40))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 152)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 156)) (local.get $t41)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 37)))
     (local.set $t37 (call_indirect $ftable (type $bcpl_fn) (local.get $t41)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 144)) (local.get $t37))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (local.get $t37)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 144)) (local.get $t37))
     (local.set $t36 (local.get $t37))
     ;; line 0:512
     (global.set $__line (i32.const 512))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t37 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 116))))
-    (local.set $t38 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 120))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (local.get $t37)) ;; STORE slot 37
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 152)) (local.get $t38)) ;; STORE slot 38
+    (local.set $t37 (i32.load (i32.add (local.get $Pb) (i32.const 116))))
+    (local.set $t38 (i32.load (i32.add (local.get $Pb) (i32.const 120))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (local.get $t37)) ;; STORE slot 37
+    (i32.store (i32.add (local.get $Pb) (i32.const 152)) (local.get $t38)) ;; STORE slot 38
       (local.set $__lab (i32.const 35)) (br $__dispatch) ;; JUMP L158
     )) ;; end block / LAB L157 = idx 18
     (if (i32.eq (local.get $__lab) (i32.const 18)) (then ;; L157
@@ -4767,34 +4906,34 @@
     (global.set $__line (i32.const 514))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t39 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
-    (local.set $t40 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108))))
+    (local.set $t39 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
+    (local.set $t40 (i32.load (i32.add (local.get $Pb) (i32.const 108))))
     (local.set $t39 (i32.sub (local.get $t39) (local.get $t40)))
     (local.set $t40 (i32.const 1024))
     (local.set $t39 (i32.mul (local.get $t39) (local.get $t40)))
-    (local.set $t40 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 132))))
+    (local.set $t40 (i32.load (i32.add (local.get $Pb) (i32.const 132))))
     (local.set $t39 (i32.div_s (local.get $t39) (local.get $t40)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156)) (local.get $t39)) ;; STORE slot 39
+    (i32.store (i32.add (local.get $Pb) (i32.const 156)) (local.get $t39)) ;; STORE slot 39
     ;; line 0:515
     (global.set $__line (i32.const 515))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t40 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 128))))
-    (local.set $t41 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 124))))
+    (local.set $t40 (i32.load (i32.add (local.get $Pb) (i32.const 128))))
+    (local.set $t41 (i32.load (i32.add (local.get $Pb) (i32.const 124))))
     (local.set $t40 (i32.sub (local.get $t40) (local.get $t41)))
-    (local.set $t41 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 156))))
+    (local.set $t41 (i32.load (i32.add (local.get $Pb) (i32.const 156))))
     (local.set $t40 (i32.mul (local.get $t40) (local.get $t41)))
     (local.set $t41 (i32.const 1024))
     (local.set $t40 (i32.div_s (local.get $t40) (local.get $t41)))
-    (local.set $t41 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 124))))
+    (local.set $t41 (i32.load (i32.add (local.get $Pb) (i32.const 124))))
     (local.set $t40 (i32.add (local.get $t40) (local.get $t41)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 160)) (local.get $t40)) ;; STORE slot 40
+    (i32.store (i32.add (local.get $Pb) (i32.const 160)) (local.get $t40)) ;; STORE slot 40
     ;; line 0:516
     (global.set $__line (i32.const 516))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t41 (i32.const 0))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 164)) (local.get $t41)) ;; STORE slot 41
+    (i32.store (i32.add (local.get $Pb) (i32.const 164)) (local.get $t41)) ;; STORE slot 41
     ;; line 0:517
     (global.set $__line (i32.const 517))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -4803,15 +4942,15 @@
     (local.set $t43 (i32.const 0))
     (local.set $t44 (i32.const 0))
     (local.set $t45 (i32.const 0))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 168)) (local.get $t42)) ;; STORE slot 42
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 172)) (local.get $t43)) ;; STORE slot 43
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 176)) (local.get $t44)) ;; STORE slot 44
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 180)) (local.get $t45)) ;; STORE slot 45
+    (i32.store (i32.add (local.get $Pb) (i32.const 168)) (local.get $t42)) ;; STORE slot 42
+    (i32.store (i32.add (local.get $Pb) (i32.const 172)) (local.get $t43)) ;; STORE slot 43
+    (i32.store (i32.add (local.get $Pb) (i32.const 176)) (local.get $t44)) ;; STORE slot 44
+    (i32.store (i32.add (local.get $Pb) (i32.const 180)) (local.get $t45)) ;; STORE slot 45
     ;; line 0:518
     (global.set $__line (i32.const 518))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t46 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 160))))
+    (local.set $t46 (i32.load (i32.add (local.get $Pb) (i32.const 160))))
     (local.set $t47 (i32.const 0))
     (if (i32.le_s (local.get $t46) (local.get $t47)) (then
       (local.set $__lab (i32.const 34)) (br $__dispatch)
@@ -4821,68 +4960,70 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t46 (i32.const 1048576))
-    (local.set $t47 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 160))))
+    (local.set $t47 (i32.load (i32.add (local.get $Pb) (i32.const 160))))
     (local.set $t46 (i32.div_s (local.get $t46) (local.get $t47)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 164)) (local.get $t46))
+    (i32.store (i32.add (local.get $Pb) (i32.const 164)) (local.get $t46))
     (local.set $t41 (local.get $t46))
     ;; line 0:520
     (global.set $__line (i32.const 520))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t49 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 88))))
-    (local.set $t50 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 164))))
+    (local.set $t49 (i32.load (i32.add (local.get $Pb) (i32.const 88))))
+    (local.set $t50 (i32.load (i32.add (local.get $Pb) (i32.const 164))))
     (local.set $t51 (i32.add (global.get $TB) (i32.const 32))) ;; LF L137
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 196)) (local.get $t49))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 200)) (local.get $t50))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 184)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 188)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 192)) (local.get $t51)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 196)) (local.get $t49))
+    (i32.store (i32.add (local.get $Pb) (i32.const 200)) (local.get $t50))
+    (i32.store (i32.add (local.get $Pb) (i32.const 184)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 188)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 192)) (local.get $t51)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 46)))
     (local.set $t46 (call_indirect $ftable (type $bcpl_fn) (local.get $t51)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 184)) (local.get $t46)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 168)) (local.get $t46))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 184)) (local.get $t46)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 168)) (local.get $t46))
     (local.set $t42 (local.get $t46))
     ;; line 0:522
     (global.set $__line (i32.const 522))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t49 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 84))))
-    (local.set $t50 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 164))))
+    (local.set $t49 (i32.load (i32.add (local.get $Pb) (i32.const 84))))
+    (local.set $t50 (i32.load (i32.add (local.get $Pb) (i32.const 164))))
     (local.set $t51 (i32.add (global.get $TB) (i32.const 32))) ;; LF L137
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 196)) (local.get $t49))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 200)) (local.get $t50))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 184)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 188)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 192)) (local.get $t51)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 196)) (local.get $t49))
+    (i32.store (i32.add (local.get $Pb) (i32.const 200)) (local.get $t50))
+    (i32.store (i32.add (local.get $Pb) (i32.const 184)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 188)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 192)) (local.get $t51)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 46)))
     (local.set $t46 (call_indirect $ftable (type $bcpl_fn) (local.get $t51)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 184)) (local.get $t46)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 172)) (local.get $t46))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 184)) (local.get $t46)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 172)) (local.get $t46))
     (local.set $t43 (local.get $t46))
     ;; line 0:523
     (global.set $__line (i32.const 523))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t46 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
+    (local.set $t46 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
     (local.set $t47 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 15)) (i32.const 2)))) ;; LL L25
     (local.set $t46 (i32.add (local.get $t46) (local.get $t47)))
     (local.set $t46 (i32.load (i32.shl (local.get $t46) (i32.const 2))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 184)) (local.get $t46)) ;; STORE slot 46
+    (i32.store (i32.add (local.get $Pb) (i32.const 184)) (local.get $t46)) ;; STORE slot 46
     ;; line 0:529
     (global.set $__line (i32.const 529))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t47 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
+    (local.set $t47 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
     (local.set $t48 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 16)) (i32.const 2)))) ;; LL L26
     (local.set $t47 (i32.add (local.get $t47) (local.get $t48)))
     (local.set $t47 (i32.load (i32.shl (local.get $t47) (i32.const 2))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 188)) (local.get $t47)) ;; STORE slot 47
+    (i32.store (i32.add (local.get $Pb) (i32.const 188)) (local.get $t47)) ;; STORE slot 47
     ;; line 0:530
     (global.set $__line (i32.const 530))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t48 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 184))))
-    (local.set $t49 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 168))))
+    (local.set $t48 (i32.load (i32.add (local.get $Pb) (i32.const 184))))
+    (local.set $t49 (i32.load (i32.add (local.get $Pb) (i32.const 168))))
     (if (i32.ge_s (local.get $t48) (local.get $t49)) (then
       (local.set $__lab (i32.const 21)) (br $__dispatch)
     ))
@@ -4890,16 +5031,16 @@
     (global.set $__line (i32.const 531))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t48 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 168))))
+    (local.set $t48 (i32.load (i32.add (local.get $Pb) (i32.const 168))))
     (local.set $t49 (i32.const 1))
     (local.set $t48 (i32.sub (local.get $t48) (local.get $t49)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 192)) (local.get $t48)) ;; STORE slot 48
+    (i32.store (i32.add (local.get $Pb) (i32.const 192)) (local.get $t48)) ;; STORE slot 48
     ;; line 0:532
     (global.set $__line (i32.const 532))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t49 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 192))))
-    (local.set $t50 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 188))))
+    (local.set $t49 (i32.load (i32.add (local.get $Pb) (i32.const 192))))
+    (local.set $t50 (i32.load (i32.add (local.get $Pb) (i32.const 188))))
     (if (i32.le_s (local.get $t49) (local.get $t50)) (then
       (local.set $__lab (i32.const 19)) (br $__dispatch)
     ))
@@ -4907,14 +5048,14 @@
     (global.set $__line (i32.const 533))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t49 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 188))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 192)) (local.get $t49))
+    (local.set $t49 (i32.load (i32.add (local.get $Pb) (i32.const 188))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 192)) (local.get $t49))
     (local.set $t48 (local.get $t49))
       (local.set $__lab (i32.const 19)) (br $__dispatch)
     )) ;; end block / LAB L161 = idx 19
     (if (i32.eq (local.get $__lab) (i32.const 19)) (then ;; L161
-    (local.set $t49 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 184))))
-    (local.set $t50 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 192))))
+    (local.set $t49 (i32.load (i32.add (local.get $Pb) (i32.const 184))))
+    (local.set $t50 (i32.load (i32.add (local.get $Pb) (i32.const 192))))
     (if (i32.gt_s (local.get $t49) (local.get $t50)) (then
       (local.set $__lab (i32.const 20)) (br $__dispatch)
     ))
@@ -4925,23 +5066,24 @@
     (local.set $t52 (i32.const 66))
     (local.set $t53 (i32.const 29))
     (local.set $t54 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 0)) (i32.const 2)))) ;; LL L10
-    (local.set $t55 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
-    (local.set $t56 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 184))))
-    (local.set $t57 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 192))))
+    (local.set $t55 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
+    (local.set $t56 (i32.load (i32.add (local.get $Pb) (i32.const 184))))
+    (local.set $t57 (i32.load (i32.add (local.get $Pb) (i32.const 192))))
     (local.set $t58 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 18)) (i32.const 2)))) ;; LL L28
     (local.set $t59 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 12))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 208)) (local.get $t52))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 212)) (local.get $t53))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 216)) (local.get $t54))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 220)) (local.get $t55))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 224)) (local.get $t56))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 228)) (local.get $t57))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 232)) (local.get $t58))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 196)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 200)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 204)) (local.get $t59)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 208)) (local.get $t52))
+    (i32.store (i32.add (local.get $Pb) (i32.const 212)) (local.get $t53))
+    (i32.store (i32.add (local.get $Pb) (i32.const 216)) (local.get $t54))
+    (i32.store (i32.add (local.get $Pb) (i32.const 220)) (local.get $t55))
+    (i32.store (i32.add (local.get $Pb) (i32.const 224)) (local.get $t56))
+    (i32.store (i32.add (local.get $Pb) (i32.const 228)) (local.get $t57))
+    (i32.store (i32.add (local.get $Pb) (i32.const 232)) (local.get $t58))
+    (i32.store (i32.add (local.get $Pb) (i32.const 196)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 200)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 204)) (local.get $t59)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 49)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t59)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
       (local.set $__lab (i32.const 20)) (br $__dispatch)
     )) ;; end block / LAB L162 = idx 20
     (if (i32.eq (local.get $__lab) (i32.const 20)) (then ;; L162
@@ -4949,8 +5091,8 @@
     (global.set $__line (i32.const 535))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t49 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 168))))
-    (local.set $t50 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
+    (local.set $t49 (i32.load (i32.add (local.get $Pb) (i32.const 168))))
+    (local.set $t50 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
     (local.set $t51 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 15)) (i32.const 2)))) ;; LL L25
     (local.set $t50 (i32.add (local.get $t50) (local.get $t51)))
     (i32.store (i32.shl (local.get $t50) (i32.const 2)) (local.get $t49))
@@ -4961,26 +5103,26 @@
     (global.set $__line (i32.const 536))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t46 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
+    (local.set $t46 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
     (local.set $t47 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 15)) (i32.const 2)))) ;; LL L25
     (local.set $t46 (i32.add (local.get $t46) (local.get $t47)))
     (local.set $t46 (i32.load (i32.shl (local.get $t46) (i32.const 2))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 184)) (local.get $t46)) ;; STORE slot 46
+    (i32.store (i32.add (local.get $Pb) (i32.const 184)) (local.get $t46)) ;; STORE slot 46
     ;; line 0:540
     (global.set $__line (i32.const 540))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t47 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
+    (local.set $t47 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
     (local.set $t48 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 16)) (i32.const 2)))) ;; LL L26
     (local.set $t47 (i32.add (local.get $t47) (local.get $t48)))
     (local.set $t47 (i32.load (i32.shl (local.get $t47) (i32.const 2))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 188)) (local.get $t47)) ;; STORE slot 47
+    (i32.store (i32.add (local.get $Pb) (i32.const 188)) (local.get $t47)) ;; STORE slot 47
     ;; line 0:541
     (global.set $__line (i32.const 541))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t48 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 188))))
-    (local.set $t49 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 172))))
+    (local.set $t48 (i32.load (i32.add (local.get $Pb) (i32.const 188))))
+    (local.set $t49 (i32.load (i32.add (local.get $Pb) (i32.const 172))))
     (if (i32.le_s (local.get $t48) (local.get $t49)) (then
       (local.set $__lab (i32.const 24)) (br $__dispatch)
     ))
@@ -4989,15 +5131,15 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t48 (i32.const 1))
-    (local.set $t49 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 172))))
+    (local.set $t49 (i32.load (i32.add (local.get $Pb) (i32.const 172))))
     (local.set $t48 (i32.add (local.get $t48) (local.get $t49)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 192)) (local.get $t48)) ;; STORE slot 48
+    (i32.store (i32.add (local.get $Pb) (i32.const 192)) (local.get $t48)) ;; STORE slot 48
     ;; line 0:543
     (global.set $__line (i32.const 543))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t49 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 192))))
-    (local.set $t50 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 184))))
+    (local.set $t49 (i32.load (i32.add (local.get $Pb) (i32.const 192))))
+    (local.set $t50 (i32.load (i32.add (local.get $Pb) (i32.const 184))))
     (if (i32.ge_s (local.get $t49) (local.get $t50)) (then
       (local.set $__lab (i32.const 22)) (br $__dispatch)
     ))
@@ -5005,14 +5147,14 @@
     (global.set $__line (i32.const 544))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t49 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 184))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 192)) (local.get $t49))
+    (local.set $t49 (i32.load (i32.add (local.get $Pb) (i32.const 184))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 192)) (local.get $t49))
     (local.set $t48 (local.get $t49))
       (local.set $__lab (i32.const 22)) (br $__dispatch)
     )) ;; end block / LAB L164 = idx 22
     (if (i32.eq (local.get $__lab) (i32.const 22)) (then ;; L164
-    (local.set $t49 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 192))))
-    (local.set $t50 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 188))))
+    (local.set $t49 (i32.load (i32.add (local.get $Pb) (i32.const 192))))
+    (local.set $t50 (i32.load (i32.add (local.get $Pb) (i32.const 188))))
     (if (i32.gt_s (local.get $t49) (local.get $t50)) (then
       (local.set $__lab (i32.const 23)) (br $__dispatch)
     ))
@@ -5023,23 +5165,24 @@
     (local.set $t52 (i32.const 66))
     (local.set $t53 (i32.const 29))
     (local.set $t54 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 0)) (i32.const 2)))) ;; LL L10
-    (local.set $t55 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
-    (local.set $t56 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 192))))
-    (local.set $t57 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 188))))
+    (local.set $t55 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
+    (local.set $t56 (i32.load (i32.add (local.get $Pb) (i32.const 192))))
+    (local.set $t57 (i32.load (i32.add (local.get $Pb) (i32.const 188))))
     (local.set $t58 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 19)) (i32.const 2)))) ;; LL L29
     (local.set $t59 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 12))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 208)) (local.get $t52))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 212)) (local.get $t53))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 216)) (local.get $t54))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 220)) (local.get $t55))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 224)) (local.get $t56))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 228)) (local.get $t57))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 232)) (local.get $t58))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 196)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 200)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 204)) (local.get $t59)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 208)) (local.get $t52))
+    (i32.store (i32.add (local.get $Pb) (i32.const 212)) (local.get $t53))
+    (i32.store (i32.add (local.get $Pb) (i32.const 216)) (local.get $t54))
+    (i32.store (i32.add (local.get $Pb) (i32.const 220)) (local.get $t55))
+    (i32.store (i32.add (local.get $Pb) (i32.const 224)) (local.get $t56))
+    (i32.store (i32.add (local.get $Pb) (i32.const 228)) (local.get $t57))
+    (i32.store (i32.add (local.get $Pb) (i32.const 232)) (local.get $t58))
+    (i32.store (i32.add (local.get $Pb) (i32.const 196)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 200)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 204)) (local.get $t59)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 49)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t59)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
       (local.set $__lab (i32.const 23)) (br $__dispatch)
     )) ;; end block / LAB L165 = idx 23
     (if (i32.eq (local.get $__lab) (i32.const 23)) (then ;; L165
@@ -5047,8 +5190,8 @@
     (global.set $__line (i32.const 546))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t49 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 172))))
-    (local.set $t50 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
+    (local.set $t49 (i32.load (i32.add (local.get $Pb) (i32.const 172))))
+    (local.set $t50 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
     (local.set $t51 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 16)) (i32.const 2)))) ;; LL L26
     (local.set $t50 (i32.add (local.get $t50) (local.get $t51)))
     (i32.store (i32.shl (local.get $t50) (i32.const 2)) (local.get $t49))
@@ -5059,11 +5202,11 @@
     (global.set $__line (i32.const 547))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t46 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
+    (local.set $t46 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
     (local.set $t47 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 15)) (i32.const 2)))) ;; LL L25
     (local.set $t46 (i32.add (local.get $t46) (local.get $t47)))
     (local.set $t46 (i32.load (i32.shl (local.get $t46) (i32.const 2))))
-    (local.set $t47 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
+    (local.set $t47 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
     (local.set $t48 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 16)) (i32.const 2)))) ;; LL L26
     (local.set $t47 (i32.add (local.get $t47) (local.get $t48)))
     (local.set $t47 (i32.load (i32.shl (local.get $t47) (i32.const 2))))
@@ -5074,18 +5217,19 @@
     (global.set $__line (i32.const 550))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t49 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
+    (local.set $t49 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
     (local.set $t50 (i32.add (global.get $TB) (i32.const 31))) ;; LF L135
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 196)) (local.get $t49))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 184)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 188)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 192)) (local.get $t50)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 196)) (local.get $t49))
+    (i32.store (i32.add (local.get $Pb) (i32.const 184)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 188)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 192)) (local.get $t50)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 46)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t50)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
       (local.set $__lab (i32.const 34)) (br $__dispatch) ;; JUMP L159
     )) ;; end block / LAB L166 = idx 25
     (if (i32.eq (local.get $__lab) (i32.const 25)) (then ;; L166
-    (local.set $t46 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104))))
+    (local.set $t46 (i32.load (i32.add (local.get $Pb) (i32.const 104))))
     (if (i32.eqz (local.get $t46)) (then
       (local.set $__lab (i32.const 32)) (br $__dispatch)
     ))
@@ -5093,42 +5237,44 @@
     (global.set $__line (i32.const 552))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t49 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100))))
-    (local.set $t50 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 164))))
+    (local.set $t49 (i32.load (i32.add (local.get $Pb) (i32.const 100))))
+    (local.set $t50 (i32.load (i32.add (local.get $Pb) (i32.const 164))))
     (local.set $t51 (i32.add (global.get $TB) (i32.const 32))) ;; LF L137
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 196)) (local.get $t49))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 200)) (local.get $t50))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 184)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 188)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 192)) (local.get $t51)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 196)) (local.get $t49))
+    (i32.store (i32.add (local.get $Pb) (i32.const 200)) (local.get $t50))
+    (i32.store (i32.add (local.get $Pb) (i32.const 184)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 188)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 192)) (local.get $t51)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 46)))
     (local.set $t46 (call_indirect $ftable (type $bcpl_fn) (local.get $t51)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 184)) (local.get $t46)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 180)) (local.get $t46))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 184)) (local.get $t46)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 180)) (local.get $t46))
     (local.set $t45 (local.get $t46))
     ;; line 0:553
     (global.set $__line (i32.const 553))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t49 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96))))
-    (local.set $t50 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 164))))
+    (local.set $t49 (i32.load (i32.add (local.get $Pb) (i32.const 96))))
+    (local.set $t50 (i32.load (i32.add (local.get $Pb) (i32.const 164))))
     (local.set $t51 (i32.add (global.get $TB) (i32.const 32))) ;; LF L137
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 196)) (local.get $t49))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 200)) (local.get $t50))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 184)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 188)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 192)) (local.get $t51)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 196)) (local.get $t49))
+    (i32.store (i32.add (local.get $Pb) (i32.const 200)) (local.get $t50))
+    (i32.store (i32.add (local.get $Pb) (i32.const 184)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 188)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 192)) (local.get $t51)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 46)))
     (local.set $t46 (call_indirect $ftable (type $bcpl_fn) (local.get $t51)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 184)) (local.get $t46)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 176)) (local.get $t46))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 184)) (local.get $t46)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 176)) (local.get $t46))
     (local.set $t44 (local.get $t46))
     ;; line 0:554
     (global.set $__line (i32.const 554))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t46 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100))))
-    (local.set $t47 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 88))))
+    (local.set $t46 (i32.load (i32.add (local.get $Pb) (i32.const 100))))
+    (local.set $t47 (i32.load (i32.add (local.get $Pb) (i32.const 88))))
     (if (i32.ge_s (local.get $t46) (local.get $t47)) (then
       (local.set $__lab (i32.const 28)) (br $__dispatch)
     ))
@@ -5136,28 +5282,29 @@
     (global.set $__line (i32.const 555))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t49 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
-    (local.set $t50 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 168))))
-    (local.set $t51 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 180))))
-    (local.set $t52 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 144))))
+    (local.set $t49 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
+    (local.set $t50 (i32.load (i32.add (local.get $Pb) (i32.const 168))))
+    (local.set $t51 (i32.load (i32.add (local.get $Pb) (i32.const 180))))
+    (local.set $t52 (i32.load (i32.add (local.get $Pb) (i32.const 144))))
     (local.set $t53 (i32.add (global.get $TB) (i32.const 30))) ;; LF L130
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 196)) (local.get $t49))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 200)) (local.get $t50))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 204)) (local.get $t51))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 208)) (local.get $t52))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 184)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 188)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 192)) (local.get $t53)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 196)) (local.get $t49))
+    (i32.store (i32.add (local.get $Pb) (i32.const 200)) (local.get $t50))
+    (i32.store (i32.add (local.get $Pb) (i32.const 204)) (local.get $t51))
+    (i32.store (i32.add (local.get $Pb) (i32.const 208)) (local.get $t52))
+    (i32.store (i32.add (local.get $Pb) (i32.const 184)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 188)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 192)) (local.get $t53)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 46)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t53)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     ;; line 0:556
     (global.set $__line (i32.const 556))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t46 (i32.const 1))
-    (local.set $t47 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 180))))
+    (local.set $t47 (i32.load (i32.add (local.get $Pb) (i32.const 180))))
     (local.set $t46 (i32.add (local.get $t46) (local.get $t47)))
-    (local.set $t47 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
+    (local.set $t47 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
     (local.set $t48 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 15)) (i32.const 2)))) ;; LL L25
     (local.set $t47 (i32.add (local.get $t47) (local.get $t48)))
     (local.set $t47 (i32.load (i32.shl (local.get $t47) (i32.const 2))))
@@ -5169,20 +5316,20 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t46 (i32.const 1))
-    (local.set $t47 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 180))))
+    (local.set $t47 (i32.load (i32.add (local.get $Pb) (i32.const 180))))
     (local.set $t46 (i32.add (local.get $t46) (local.get $t47)))
-    (local.set $t47 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
+    (local.set $t47 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
     (local.set $t48 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 15)) (i32.const 2)))) ;; LL L25
     (local.set $t47 (i32.add (local.get $t47) (local.get $t48)))
     (i32.store (i32.shl (local.get $t47) (i32.const 2)) (local.get $t46))
       (local.set $__lab (i32.const 26)) (br $__dispatch)
     )) ;; end block / LAB L171 = idx 26
     (if (i32.eq (local.get $__lab) (i32.const 26)) (then ;; L171
-    (local.set $t46 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
+    (local.set $t46 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
     (local.set $t47 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 15)) (i32.const 2)))) ;; LL L25
     (local.set $t46 (i32.add (local.get $t46) (local.get $t47)))
     (local.set $t46 (i32.load (i32.shl (local.get $t46) (i32.const 2))))
-    (local.set $t47 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
+    (local.set $t47 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
     (local.set $t48 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 16)) (i32.const 2)))) ;; LL L26
     (local.set $t47 (i32.add (local.get $t47) (local.get $t48)))
     (local.set $t47 (i32.load (i32.shl (local.get $t47) (i32.const 2))))
@@ -5193,22 +5340,23 @@
     (global.set $__line (i32.const 558))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t49 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
+    (local.set $t49 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
     (local.set $t50 (i32.add (global.get $TB) (i32.const 31))) ;; LF L135
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 196)) (local.get $t49))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 184)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 188)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 192)) (local.get $t50)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 196)) (local.get $t49))
+    (i32.store (i32.add (local.get $Pb) (i32.const 184)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 188)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 192)) (local.get $t50)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 46)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t50)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
       (local.set $__lab (i32.const 27)) (br $__dispatch)
     )) ;; end block / LAB L172 = idx 27
     (if (i32.eq (local.get $__lab) (i32.const 27)) (then ;; L172
       (local.set $__lab (i32.const 28)) (br $__dispatch)
     )) ;; end block / LAB L170 = idx 28
     (if (i32.eq (local.get $__lab) (i32.const 28)) (then ;; L170
-    (local.set $t46 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96))))
-    (local.set $t47 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 84))))
+    (local.set $t46 (i32.load (i32.add (local.get $Pb) (i32.const 96))))
+    (local.set $t47 (i32.load (i32.add (local.get $Pb) (i32.const 84))))
     (if (i32.le_s (local.get $t46) (local.get $t47)) (then
       (local.set $__lab (i32.const 31)) (br $__dispatch)
     ))
@@ -5216,28 +5364,29 @@
     (global.set $__line (i32.const 560))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t49 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
-    (local.set $t50 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 176))))
-    (local.set $t51 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 172))))
-    (local.set $t52 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 140))))
+    (local.set $t49 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
+    (local.set $t50 (i32.load (i32.add (local.get $Pb) (i32.const 176))))
+    (local.set $t51 (i32.load (i32.add (local.get $Pb) (i32.const 172))))
+    (local.set $t52 (i32.load (i32.add (local.get $Pb) (i32.const 140))))
     (local.set $t53 (i32.add (global.get $TB) (i32.const 30))) ;; LF L130
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 196)) (local.get $t49))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 200)) (local.get $t50))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 204)) (local.get $t51))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 208)) (local.get $t52))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 184)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 188)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 192)) (local.get $t53)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 196)) (local.get $t49))
+    (i32.store (i32.add (local.get $Pb) (i32.const 200)) (local.get $t50))
+    (i32.store (i32.add (local.get $Pb) (i32.const 204)) (local.get $t51))
+    (i32.store (i32.add (local.get $Pb) (i32.const 208)) (local.get $t52))
+    (i32.store (i32.add (local.get $Pb) (i32.const 184)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 188)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 192)) (local.get $t53)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 46)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t53)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     ;; line 0:561
     (global.set $__line (i32.const 561))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t46 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 176))))
+    (local.set $t46 (i32.load (i32.add (local.get $Pb) (i32.const 176))))
     (local.set $t47 (i32.const 1))
     (local.set $t46 (i32.sub (local.get $t46) (local.get $t47)))
-    (local.set $t47 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
+    (local.set $t47 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
     (local.set $t48 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 16)) (i32.const 2)))) ;; LL L26
     (local.set $t47 (i32.add (local.get $t47) (local.get $t48)))
     (local.set $t47 (i32.load (i32.shl (local.get $t47) (i32.const 2))))
@@ -5248,21 +5397,21 @@
     (global.set $__line (i32.const 562))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t46 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 176))))
+    (local.set $t46 (i32.load (i32.add (local.get $Pb) (i32.const 176))))
     (local.set $t47 (i32.const 1))
     (local.set $t46 (i32.sub (local.get $t46) (local.get $t47)))
-    (local.set $t47 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
+    (local.set $t47 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
     (local.set $t48 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 16)) (i32.const 2)))) ;; LL L26
     (local.set $t47 (i32.add (local.get $t47) (local.get $t48)))
     (i32.store (i32.shl (local.get $t47) (i32.const 2)) (local.get $t46))
       (local.set $__lab (i32.const 29)) (br $__dispatch)
     )) ;; end block / LAB L174 = idx 29
     (if (i32.eq (local.get $__lab) (i32.const 29)) (then ;; L174
-    (local.set $t46 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
+    (local.set $t46 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
     (local.set $t47 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 15)) (i32.const 2)))) ;; LL L25
     (local.set $t46 (i32.add (local.get $t46) (local.get $t47)))
     (local.set $t46 (i32.load (i32.shl (local.get $t46) (i32.const 2))))
-    (local.set $t47 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
+    (local.set $t47 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
     (local.set $t48 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 16)) (i32.const 2)))) ;; LL L26
     (local.set $t47 (i32.add (local.get $t47) (local.get $t48)))
     (local.set $t47 (i32.load (i32.shl (local.get $t47) (i32.const 2))))
@@ -5273,14 +5422,15 @@
     (global.set $__line (i32.const 563))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t49 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
+    (local.set $t49 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
     (local.set $t50 (i32.add (global.get $TB) (i32.const 31))) ;; LF L135
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 196)) (local.get $t49))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 184)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 188)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 192)) (local.get $t50)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 196)) (local.get $t49))
+    (i32.store (i32.add (local.get $Pb) (i32.const 184)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 188)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 192)) (local.get $t50)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 46)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t50)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
       (local.set $__lab (i32.const 33)) (br $__dispatch) ;; JUMP L169
     )) ;; end block / LAB L175 = idx 30
     (if (i32.eq (local.get $__lab) (i32.const 30)) (then ;; L175
@@ -5290,48 +5440,50 @@
       (local.set $__lab (i32.const 33)) (br $__dispatch) ;; JUMP L169
     )) ;; end block / LAB L167 = idx 32
     (if (i32.eq (local.get $__lab) (i32.const 32)) (then ;; L167
-    (local.set $t49 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
-    (local.set $t50 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 168))))
-    (local.set $t51 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 172))))
-    (local.set $t52 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 136))))
+    (local.set $t49 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
+    (local.set $t50 (i32.load (i32.add (local.get $Pb) (i32.const 168))))
+    (local.set $t51 (i32.load (i32.add (local.get $Pb) (i32.const 172))))
+    (local.set $t52 (i32.load (i32.add (local.get $Pb) (i32.const 136))))
     (local.set $t53 (i32.add (global.get $TB) (i32.const 30))) ;; LF L130
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 196)) (local.get $t49))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 200)) (local.get $t50))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 204)) (local.get $t51))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 208)) (local.get $t52))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 184)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 188)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 192)) (local.get $t53)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 196)) (local.get $t49))
+    (i32.store (i32.add (local.get $Pb) (i32.const 200)) (local.get $t50))
+    (i32.store (i32.add (local.get $Pb) (i32.const 204)) (local.get $t51))
+    (i32.store (i32.add (local.get $Pb) (i32.const 208)) (local.get $t52))
+    (i32.store (i32.add (local.get $Pb) (i32.const 184)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 188)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 192)) (local.get $t53)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 46)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t53)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     ;; line 0:566
     (global.set $__line (i32.const 566))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t49 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
+    (local.set $t49 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
     (local.set $t50 (i32.add (global.get $TB) (i32.const 31))) ;; LF L135
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 196)) (local.get $t49))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 184)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 188)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 192)) (local.get $t50)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 196)) (local.get $t49))
+    (i32.store (i32.add (local.get $Pb) (i32.const 184)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 188)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 192)) (local.get $t50)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 46)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t50)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
       (local.set $__lab (i32.const 33)) (br $__dispatch)
     )) ;; end block / LAB L169 = idx 33
     (if (i32.eq (local.get $__lab) (i32.const 33)) (then ;; L169
       (local.set $__lab (i32.const 34)) (br $__dispatch)
     )) ;; end block / LAB L159 = idx 34
     (if (i32.eq (local.get $__lab) (i32.const 34)) (then ;; L159
-    (local.set $t39 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
+    (local.set $t39 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
     (local.set $t40 (i32.const 1))
     (local.set $t39 (i32.add (local.get $t39) (local.get $t40)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148)) (local.get $t39))
+    (i32.store (i32.add (local.get $Pb) (i32.const 148)) (local.get $t39))
     (local.set $t37 (local.get $t39))
       (local.set $__lab (i32.const 35)) (br $__dispatch)
     )) ;; end block / LAB L158 = idx 35
     (if (i32.eq (local.get $__lab) (i32.const 35)) (then ;; L158
-    (local.set $t39 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 148))))
-    (local.set $t40 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 152))))
+    (local.set $t39 (i32.load (i32.add (local.get $Pb) (i32.const 148))))
+    (local.set $t40 (i32.load (i32.add (local.get $Pb) (i32.const 152))))
     (if (i32.le_s (local.get $t39) (local.get $t40)) (then
       (local.set $__lab (i32.const 18)) (br $__dispatch)
     ))
@@ -5350,6 +5502,7 @@
   (func $fn_L176 (export "fn_L176") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -5364,6 +5517,7 @@
     (local $t11 i32)
     (local $t12 i32)
     (local $t13 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     ;; line 0:574
@@ -5371,55 +5525,57 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t4 (i32.const 4))
-    (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t5 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t4 (i32.mul (local.get $t4) (local.get $t5)))
     (local.set $t5 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 11)) (i32.const 2)))) ;; LL L21
     (local.set $t4 (i32.add (local.get $t4) (local.get $t5)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (local.get $t4)) ;; STORE slot 4
+    (i32.store (i32.add (local.get $Pb) (i32.const 16)) (local.get $t4)) ;; STORE slot 4
     ;; line 0:575
     (global.set $__line (i32.const 575))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t8 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t9 (i32.const 0))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t9 (i32.add (local.get $t9) (local.get $t10)))
     (local.set $t10 (i32.add (global.get $TB) (i32.const 5))) ;; LF L52
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t10)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t8))
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (local.get $t9))
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t10)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 5)))
     (local.set $t5 (call_indirect $ftable (type $bcpl_fn) (local.get $t10)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t5)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (local.get $t5)) ;; flush FNAP result
     ;; line 0:576
     (global.set $__line (i32.const 576))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t9 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t10 (i32.const 2))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t10 (i32.add (local.get $t10) (local.get $t11)))
     (local.set $t11 (i32.add (global.get $TB) (i32.const 5))) ;; LF L52
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t11)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (local.get $t9))
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t10))
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t11)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 6)))
     (local.set $t6 (call_indirect $ftable (type $bcpl_fn) (local.get $t11)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (local.get $t6)) ;; flush FNAP result
     ;; line 0:577
     (global.set $__line (i32.const 577))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t7 (i32.const 0))
-    (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t8 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t9 (i32.const 1))
     (local.set $t8 (i32.sub (local.get $t8) (local.get $t9)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
       (local.set $__lab (i32.const 3)) (br $__dispatch) ;; JUMP L178
     )) ;; end block / LAB L177 = idx 1
     (if (i32.eq (local.get $__lab) (i32.const 1)) (then ;; L177
@@ -5441,30 +5597,31 @@
     (global.set $__line (i32.const 579))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
-    (local.set $t13 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
+    (local.set $t12 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
+    (local.set $t13 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
     (local.set $t12 (i32.add (local.get $t12) (local.get $t13)))
     (local.set $t13 (i32.const 12))
     (local.set $t12 (i32.mul (local.get $t12) (local.get $t13)))
     (local.set $t13 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 12)) (i32.const 2)))) ;; LL L22
     (local.set $t12 (i32.add (local.get $t12) (local.get $t13)))
     (local.set $t13 (i32.add (global.get $TB) (i32.const 33))) ;; LF L138
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t12))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t13)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t12))
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (local.get $t13)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 9)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t13)))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
     (local.set $t10 (i32.const 1))
     (local.set $t9 (i32.add (local.get $t9) (local.get $t10)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t9))
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t9))
     (local.set $t7 (local.get $t9))
       (local.set $__lab (i32.const 3)) (br $__dispatch)
     )) ;; end block / LAB L178 = idx 3
     (if (i32.eq (local.get $__lab) (i32.const 3)) (then ;; L178
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
     (if (i32.le_s (local.get $t9) (local.get $t10)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     ))
@@ -5483,6 +5640,7 @@
   (func $fn_L180 (export "fn_L180") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -5496,6 +5654,7 @@
     (local $t10 i32)
     (local $t11 i32)
     (local $t12 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     ;; line 0:584
@@ -5517,7 +5676,7 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t4 (i32.const 32768))
-    (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t5 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t4 (i32.and (local.get $t4) (local.get $t5)))
     (local.set $t5 (i32.const 0))
     (if (i32.eq  (local.get $t4) (local.get $t5)) (then
@@ -5528,15 +5687,16 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t7 (i32.const -32769))
-    (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t8 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t7 (i32.and (local.get $t7) (local.get $t8)))
     (local.set $t8 (i32.add (global.get $TB) (i32.const 34))) ;; LF L176
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t8)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t7))
+    (i32.store (i32.add (local.get $Pb) (i32.const 16)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (local.get $t8)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 4)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t8)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     ;; line 0:594
     (global.set $__line (i32.const 594))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -5551,68 +5711,71 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t4 (i32.const 28))
-    (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t5 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t4 (i32.mul (local.get $t4) (local.get $t5)))
     (local.set $t5 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 10)) (i32.const 2)))) ;; LL L20
     (local.set $t4 (i32.add (local.get $t4) (local.get $t5)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (local.get $t4)) ;; STORE slot 4
+    (i32.store (i32.add (local.get $Pb) (i32.const 16)) (local.get $t4)) ;; STORE slot 4
     ;; line 0:597
     (global.set $__line (i32.const 597))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t8 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 20)) (i32.const 2)))) ;; LL L30
     (local.set $t9 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 21)) (i32.const 2)))) ;; LL L31
-    (local.set $t10 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t11 (i32.add (global.get $TB) (i32.const 19))) ;; LF L92
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t11)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t8))
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (local.get $t9))
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t10))
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t11)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 5)))
     (local.set $t5 (call_indirect $ftable (type $bcpl_fn) (local.get $t11)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t5)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (local.get $t5)) ;; flush FNAP result
     ;; line 0:598
     (global.set $__line (i32.const 598))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t9 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t10 (i32.const 24))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t10 (i32.add (local.get $t10) (local.get $t11)))
     (local.set $t11 (i32.add (global.get $TB) (i32.const 5))) ;; LF L52
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t11)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (local.get $t9))
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t10))
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t11)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 6)))
     (local.set $t6 (call_indirect $ftable (type $bcpl_fn) (local.get $t11)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (local.get $t6)) ;; flush FNAP result
     ;; line 0:599
     (global.set $__line (i32.const 599))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t10 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t11 (i32.const 26))
-    (local.set $t12 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t12 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (local.set $t11 (i32.add (local.get $t11) (local.get $t12)))
     (local.set $t12 (i32.add (global.get $TB) (i32.const 5))) ;; LF L52
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t12)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t10))
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (local.get $t11))
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (local.get $t12)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 7)))
     (local.set $t7 (call_indirect $ftable (type $bcpl_fn) (local.get $t12)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t7)) ;; flush FNAP result
     ;; line 0:600
     (global.set $__line (i32.const 600))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t8 (i32.const 0))
-    (local.set $t9 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (if (i32.ne  (local.get $t8) (local.get $t9)) (then
       (local.set $__lab (i32.const 3)) (br $__dispatch)
     ))
@@ -5620,51 +5783,55 @@
     (global.set $__line (i32.const 601))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
     (local.set $t12 (i32.add (global.get $TB) (i32.const 35))) ;; LF L180
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t12)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (local.get $t11))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t12)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 8)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t12)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     ;; line 0:602
     (global.set $__line (i32.const 602))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
     (local.set $t12 (i32.add (global.get $TB) (i32.const 35))) ;; LF L180
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t12)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (local.get $t11))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t12)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 8)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t12)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     ;; RTRN
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
     (return (i32.const 0))
     )) ;; end block / LAB L183 = idx 3
     (if (i32.eq (local.get $__lab) (i32.const 3)) (then ;; L183
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
     (local.set $t12 (i32.add (global.get $TB) (i32.const 35))) ;; LF L180
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t12)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (local.get $t11))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t12)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 8)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t12)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     ;; line 0:603
     (global.set $__line (i32.const 603))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t11 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
+    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
     (local.set $t12 (i32.add (global.get $TB) (i32.const 35))) ;; LF L180
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t12)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (local.get $t11))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t12)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 8)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t12)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     ;; RTRN
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
     (return (i32.const 0))
@@ -5680,6 +5847,7 @@
   (func $fn_L184 (export "fn_L184") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -5699,6 +5867,7 @@
     (local $t16 i32)
     (local $t17 i32)
     (local $t18 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     ;; line 0:609
@@ -5707,8 +5876,8 @@
         (then (call $__break)))
     (local.set $t3 (i32.const 0))
     (local.set $t4 (i32.const 959))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)) (local.get $t3)) ;; STORE slot 3
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (local.get $t4)) ;; STORE slot 4
+    (i32.store (i32.add (local.get $Pb) (i32.const 12)) (local.get $t3)) ;; STORE slot 3
+    (i32.store (i32.add (local.get $Pb) (i32.const 16)) (local.get $t4)) ;; STORE slot 4
       (local.set $__lab (i32.const 7)) (br $__dispatch) ;; JUMP L186
     )) ;; end block / LAB L185 = idx 1
     (if (i32.eq (local.get $__lab) (i32.const 1)) (then ;; L185
@@ -5716,26 +5885,26 @@
     (global.set $__line (i32.const 612))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t5 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t6 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 15)) (i32.const 2)))) ;; LL L25
     (local.set $t5 (i32.add (local.get $t5) (local.get $t6)))
     (local.set $t5 (i32.load (i32.shl (local.get $t5) (i32.const 2))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t5)) ;; STORE slot 5
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (local.get $t5)) ;; STORE slot 5
     ;; line 0:613
     (global.set $__line (i32.const 613))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t6 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t7 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 16)) (i32.const 2)))) ;; LL L26
     (local.set $t6 (i32.add (local.get $t6) (local.get $t7)))
     (local.set $t6 (i32.load (i32.shl (local.get $t6) (i32.const 2))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (local.get $t6)) ;; STORE slot 6
     ;; line 0:614
     (global.set $__line (i32.const 614))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
-    (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
+    (local.set $t7 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
+    (local.set $t8 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
     (if (i32.gt_s (local.get $t7) (local.get $t8)) (then
       (local.set $__lab (i32.const 6)) (br $__dispatch)
     ))
@@ -5743,7 +5912,7 @@
     (global.set $__line (i32.const 615))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
+    (local.set $t7 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
     (local.set $t8 (i32.const 360))
     (if (i32.ge_s (local.get $t7) (local.get $t8)) (then
       (local.set $__lab (i32.const 3)) (br $__dispatch)
@@ -5752,13 +5921,13 @@
     (global.set $__line (i32.const 616))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
+    (local.set $t7 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
     ;; line 0:617
     (global.set $__line (i32.const 617))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
+    (local.set $t8 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
     (local.set $t9 (i32.const 360))
     (if (i32.lt_s (local.get $t8) (local.get $t9)) (then
       (local.set $__lab (i32.const 2)) (br $__dispatch)
@@ -5768,7 +5937,7 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t8 (i32.const 359))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t8))
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t8))
     (local.set $t7 (local.get $t8))
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     )) ;; end block / LAB L189 = idx 2
@@ -5776,23 +5945,24 @@
     (local.set $t11 (i32.const 66))
     (local.set $t12 (i32.const 29))
     (local.set $t13 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 0)) (i32.const 2)))) ;; LL L10
-    (local.set $t14 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
-    (local.set $t15 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
-    (local.set $t16 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
+    (local.set $t14 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t15 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
+    (local.set $t16 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
     (local.set $t17 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 18)) (i32.const 2)))) ;; LL L28
     (local.set $t18 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 12))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t12))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)) (local.get $t13))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60)) (local.get $t15))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 64)) (local.get $t16))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 68)) (local.get $t17))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t18)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (local.get $t11))
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t12))
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (local.get $t13))
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (local.get $t14))
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t15))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16))
+    (i32.store (i32.add (local.get $Pb) (i32.const 68)) (local.get $t17))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t18)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 8)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t18)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
       (local.set $__lab (i32.const 3)) (br $__dispatch)
     )) ;; end block / LAB L188 = idx 3
     (if (i32.eq (local.get $__lab) (i32.const 3)) (then ;; L188
@@ -5800,7 +5970,7 @@
     (global.set $__line (i32.const 619))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
+    (local.set $t7 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
     (local.set $t8 (i32.const 360))
     (if (i32.lt_s (local.get $t7) (local.get $t8)) (then
       (local.set $__lab (i32.const 5)) (br $__dispatch)
@@ -5809,13 +5979,13 @@
     (global.set $__line (i32.const 621))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t7 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
+    (local.set $t7 (i32.load (i32.add (local.get $Pb) (i32.const 20))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t7)) ;; STORE slot 7
     ;; line 0:622
     (global.set $__line (i32.const 622))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t8 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
+    (local.set $t8 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
     (local.set $t9 (i32.const 360))
     (if (i32.ge_s (local.get $t8) (local.get $t9)) (then
       (local.set $__lab (i32.const 4)) (br $__dispatch)
@@ -5825,7 +5995,7 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t8 (i32.const 360))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t8))
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t8))
     (local.set $t7 (local.get $t8))
       (local.set $__lab (i32.const 4)) (br $__dispatch)
     )) ;; end block / LAB L191 = idx 4
@@ -5833,39 +6003,40 @@
     (local.set $t11 (i32.const 66))
     (local.set $t12 (i32.const 29))
     (local.set $t13 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 0)) (i32.const 2)))) ;; LL L10
-    (local.set $t14 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
-    (local.set $t15 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28))))
-    (local.set $t16 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24))))
+    (local.set $t14 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t15 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
+    (local.set $t16 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
     (local.set $t17 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 19)) (i32.const 2)))) ;; LL L29
     (local.set $t18 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 12))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t12))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)) (local.get $t13))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60)) (local.get $t15))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 64)) (local.get $t16))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 68)) (local.get $t17))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t18)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (local.get $t11))
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t12))
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (local.get $t13))
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (local.get $t14))
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t15))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16))
+    (i32.store (i32.add (local.get $Pb) (i32.const 68)) (local.get $t17))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t18)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 8)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t18)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
       (local.set $__lab (i32.const 5)) (br $__dispatch)
     )) ;; end block / LAB L190 = idx 5
     (if (i32.eq (local.get $__lab) (i32.const 5)) (then ;; L190
       (local.set $__lab (i32.const 6)) (br $__dispatch)
     )) ;; end block / LAB L187 = idx 6
     (if (i32.eq (local.get $__lab) (i32.const 6)) (then ;; L187
-    (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t5 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t6 (i32.const 1))
     (local.set $t5 (i32.add (local.get $t5) (local.get $t6)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)) (local.get $t5))
+    (i32.store (i32.add (local.get $Pb) (i32.const 12)) (local.get $t5))
     (local.set $t3 (local.get $t5))
       (local.set $__lab (i32.const 7)) (br $__dispatch)
     )) ;; end block / LAB L186 = idx 7
     (if (i32.eq (local.get $__lab) (i32.const 7)) (then ;; L186
-    (local.set $t5 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
-    (local.set $t6 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16))))
+    (local.set $t5 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t6 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
     (if (i32.le_s (local.get $t5) (local.get $t6)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     ))
@@ -5884,6 +6055,7 @@
   (func $fn_L192 (export "fn_L192") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -5894,6 +6066,7 @@
     (local $t7 i32)
     (local $t8 i32)
     (local $t9 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     ;; line 0:629
@@ -5901,11 +6074,12 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t6 (i32.add (global.get $TB) (i32.const 29))) ;; LF L127
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t6)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 12)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 16)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (local.get $t6)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 3)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t6)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     ;; line 0:630
     (global.set $__line (i32.const 630))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -5913,14 +6087,15 @@
     (local.set $t6 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 20)) (i32.const 2)))) ;; LL L30
     (local.set $t7 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 21)) (i32.const 2)))) ;; LL L31
     (local.set $t8 (i32.add (global.get $TB) (i32.const 21))) ;; LF L100
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t8)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (local.get $t6))
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t7))
+    (i32.store (i32.add (local.get $Pb) (i32.const 12)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 16)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (local.get $t8)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 3)))
     (local.set $t3 (call_indirect $ftable (type $bcpl_fn) (local.get $t8)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)) (local.get $t3)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 12)) (local.get $t3)) ;; flush FNAP result
     (local.set $t4 (i32.const 41))
     (local.set $t3 (i32.add (local.get $t3) (local.get $t4)))
     (i32.store
@@ -5932,22 +6107,24 @@
         (then (call $__break)))
     (local.set $t6 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 14)) (i32.const 2)))) ;; LL L24
     (local.set $t7 (i32.add (global.get $TB) (i32.const 35))) ;; LF L180
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t7)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (local.get $t6))
+    (i32.store (i32.add (local.get $Pb) (i32.const 12)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 16)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (local.get $t7)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 3)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t7)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     ;; line 0:632
     (global.set $__line (i32.const 632))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t6 (i32.add (global.get $TB) (i32.const 36))) ;; LF L184
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t6)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 12)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 16)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (local.get $t6)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 3)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t6)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     ;; line 0:633
     (global.set $__line (i32.const 633))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -5956,14 +6133,15 @@
     (local.set $t7 (i32.const 17))
     (local.set $t8 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 0)) (i32.const 2)))) ;; LL L10
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 12))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 24)) (local.get $t6))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 28)) (local.get $t7))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 16)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 20)) (local.get $t9)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 24)) (local.get $t6))
+    (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t7))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t8))
+    (i32.store (i32.add (local.get $Pb) (i32.const 12)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 16)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 20)) (local.get $t9)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 3)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t9)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     ;; RTRN
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
     (return (i32.const 0))
@@ -5979,6 +6157,7 @@
   (func $fn_L193 (export "fn_L193") (type $bcpl_fn)
     (local $__lab i32)
     (local $__res i32)
+    (local $Pb i32)
     (local $t0 i32)
     (local $t1 i32)
     (local $t2 i32)
@@ -6012,6 +6191,7 @@
     (local $t30 i32)
     (local $t31 i32)
     (local $t32 i32)
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
     (if (i32.eqz (local.get $__lab)) (then ;; entry block
     ;; line 0:639
@@ -6019,27 +6199,27 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t3 (i32.add (global.get $P) (i32.const 4)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12)) (local.get $t3)) ;; flush t3 (pre-stack-up)
+    (i32.store (i32.add (local.get $Pb) (i32.const 12)) (local.get $t3)) ;; flush t3 (pre-stack-up)
     ;; line 0:640
     (global.set $__line (i32.const 640))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t8 (i32.const 0))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t8)) ;; STORE slot 8
     ;; line 0:641
     (global.set $__line (i32.const 641))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t9 (i32.const 0))
     (local.set $t10 (i32.const 0))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t9)) ;; STORE slot 9
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t10)) ;; STORE slot 10
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (local.get $t9)) ;; STORE slot 9
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t10)) ;; STORE slot 10
     ;; line 0:642
     (global.set $__line (i32.const 642))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t11 (i32.const 0))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t11)) ;; STORE slot 11
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (local.get $t11)) ;; STORE slot 11
     ;; line 0:643
     (global.set $__line (i32.const 643))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -6048,10 +6228,10 @@
     (local.set $t13 (i32.const 0))
     (local.set $t14 (i32.const 0))
     (local.set $t15 (i32.const 0))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t12)) ;; STORE slot 12
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)) (local.get $t13)) ;; STORE slot 13
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t14)) ;; STORE slot 14
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60)) (local.get $t15)) ;; STORE slot 15
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t12)) ;; STORE slot 12
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (local.get $t13)) ;; STORE slot 13
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (local.get $t14)) ;; STORE slot 14
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t15)) ;; STORE slot 15
     ;; line 0:644
     (global.set $__line (i32.const 644))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -6060,10 +6240,10 @@
     (local.set $t17 (i32.const 0))
     (local.set $t18 (i32.const 0))
     (local.set $t19 (i32.const 0))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 64)) (local.get $t16)) ;; STORE slot 16
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 68)) (local.get $t17)) ;; STORE slot 17
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 72)) (local.get $t18)) ;; STORE slot 18
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 76)) (local.get $t19)) ;; STORE slot 19
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16)) ;; STORE slot 16
+    (i32.store (i32.add (local.get $Pb) (i32.const 68)) (local.get $t17)) ;; STORE slot 17
+    (i32.store (i32.add (local.get $Pb) (i32.const 72)) (local.get $t18)) ;; STORE slot 18
+    (i32.store (i32.add (local.get $Pb) (i32.const 76)) (local.get $t19)) ;; STORE slot 19
     ;; line 0:645
     (global.set $__line (i32.const 645))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -6071,22 +6251,23 @@
     (local.set $t20 (i32.const 0))
     (local.set $t21 (i32.const 0))
     (local.set $t22 (i32.const 0))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 80)) (local.get $t20)) ;; STORE slot 20
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 84)) (local.get $t21)) ;; STORE slot 21
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 88)) (local.get $t22)) ;; STORE slot 22
+    (i32.store (i32.add (local.get $Pb) (i32.const 80)) (local.get $t20)) ;; STORE slot 20
+    (i32.store (i32.add (local.get $Pb) (i32.const 84)) (local.get $t21)) ;; STORE slot 21
+    (i32.store (i32.add (local.get $Pb) (i32.const 88)) (local.get $t22)) ;; STORE slot 22
     ;; line 0:646
     (global.set $__line (i32.const 646))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t26 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t26 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t27 (i32.add (global.get $TB) (i32.const 3))) ;; LF L41
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (local.set $t23 (call_indirect $ftable (type $bcpl_fn) (local.get $t27)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
     (if (local.get $t23) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     ))
@@ -6096,12 +6277,13 @@
         (then (call $__break)))
     (local.set $t26 (i32.add (global.get $SB) (i32.const 28))) ;; LSTR
     (local.set $t27 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t27)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     ;; line 0:649
     (global.set $__line (i32.const 649))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -6118,17 +6300,17 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t23 (i32.const 0))
-    (local.set $t24 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t24 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t23 (i32.add (local.get $t23) (local.get $t24)))
     (local.set $t23 (i32.load (i32.shl (local.get $t23) (i32.const 2))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32)) (local.get $t23))
+    (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t23))
     (local.set $t8 (local.get $t23))
     ;; line 0:652
     (global.set $__line (i32.const 652))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t23 (i32.const 1))
-    (local.set $t24 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t24 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t23 (i32.add (local.get $t23) (local.get $t24)))
     (local.set $t23 (i32.load (i32.shl (local.get $t23) (i32.const 2))))
     (local.set $t24 (i32.const 0))
@@ -6141,12 +6323,13 @@
         (then (call $__break)))
     (local.set $t26 (i32.add (global.get $SB) (i32.const 41))) ;; LSTR
     (local.set $t27 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t27)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (local.set $t23 (i32.const 1))
     ;; FNRN
     (local.set $__res (local.get $t23))
@@ -6155,7 +6338,7 @@
     )) ;; end block / LAB L195 = idx 2
     (if (i32.eq (local.get $__lab) (i32.const 2)) (then ;; L195
     (local.set $t23 (i32.const 2))
-    (local.set $t24 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 12))))
+    (local.set $t24 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t23 (i32.add (local.get $t23) (local.get $t24)))
     (local.set $t23 (i32.load (i32.shl (local.get $t23) (i32.const 2))))
     (i32.store
@@ -6165,7 +6348,7 @@
     (global.set $__line (i32.const 654))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t23 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 32))))
+    (local.set $t23 (i32.load (i32.add (local.get $Pb) (i32.const 32))))
     (local.set $t24 (i32.const 12))
     (if (i32.ge_s (local.get $t23) (local.get $t24)) (then
       (local.set $__lab (i32.const 3)) (br $__dispatch)
@@ -6176,12 +6359,13 @@
         (then (call $__break)))
     (local.set $t26 (i32.add (global.get $SB) (i32.const 49))) ;; LSTR
     (local.set $t27 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t27)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (local.set $t23 (i32.const 1))
     ;; FNRN
     (local.set $__res (local.get $t23))
@@ -6192,15 +6376,16 @@
     (local.set $t26 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t27 (i32.const 4))
     (local.set $t28 (i32.add (global.get $TB) (i32.const 4))) ;; LF L51
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t27))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t28)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t27))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t28)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (local.set $t23 (call_indirect $ftable (type $bcpl_fn) (local.get $t28)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36)) (local.get $t23))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 36)) (local.get $t23))
     (local.set $t9 (local.get $t23))
     ;; line 0:657
     (global.set $__line (i32.const 657))
@@ -6209,40 +6394,42 @@
     (local.set $t26 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t27 (i32.const 8))
     (local.set $t28 (i32.add (global.get $TB) (i32.const 4))) ;; LF L51
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t27))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t28)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t27))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t28)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (local.set $t23 (call_indirect $ftable (type $bcpl_fn) (local.get $t28)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40)) (local.get $t23))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t23))
     (local.set $t10 (local.get $t23))
     ;; line 0:658
     (global.set $__line (i32.const 658))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t26 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
-    (local.set $t27 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40))))
-    (local.set $t28 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
+    (local.set $t27 (i32.load (i32.add (local.get $Pb) (i32.const 40))))
+    (local.set $t28 (i32.load (i32.add (local.get $Pb) (i32.const 36))))
     (local.set $t29 (i32.add (global.get $TB) (i32.const 10))) ;; LF L70
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t27))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 112)) (local.get $t28))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t29)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t27))
+    (i32.store (i32.add (local.get $Pb) (i32.const 112)) (local.get $t28))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t29)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (local.set $t23 (call_indirect $ftable (type $bcpl_fn) (local.get $t29)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44)) (local.get $t23))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (local.get $t23))
     (local.set $t11 (local.get $t23))
     ;; line 0:660
     (global.set $__line (i32.const 660))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t23 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44))))
+    (local.set $t23 (i32.load (i32.add (local.get $Pb) (i32.const 44))))
     (local.set $t24 (i32.const 0))
     (if (i32.ge_s (local.get $t23) (local.get $t24)) (then
       (local.set $__lab (i32.const 4)) (br $__dispatch)
@@ -6253,12 +6440,13 @@
         (then (call $__break)))
     (local.set $t26 (i32.add (global.get $SB) (i32.const 53))) ;; LSTR
     (local.set $t27 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t27)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (local.set $t23 (i32.const 1))
     ;; FNRN
     (local.set $__res (local.get $t23))
@@ -6268,256 +6456,267 @@
     (if (i32.eq (local.get $__lab) (i32.const 4)) (then ;; L197
     (local.set $t26 (i32.add (global.get $SB) (i32.const 57))) ;; LSTR
     (local.set $t27 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t27)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     ;; line 0:662
     (global.set $__line (i32.const 662))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t26 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t27 (i32.const 16))
-    (local.set $t28 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44))))
+    (local.set $t28 (i32.load (i32.add (local.get $Pb) (i32.const 44))))
     (local.set $t27 (i32.mul (local.get $t27) (local.get $t28)))
-    (local.set $t28 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40))))
+    (local.set $t28 (i32.load (i32.add (local.get $Pb) (i32.const 40))))
     (local.set $t27 (i32.add (local.get $t27) (local.get $t28)))
     (local.set $t28 (i32.add (global.get $TB) (i32.const 9))) ;; LF L66
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t27))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t28)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t27))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t28)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t28)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (local.set $t26 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 336))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t26)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t26)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t26)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (local.set $t26 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
-    (local.set $t27 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40))))
-    (local.set $t28 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44))))
-    (local.set $t29 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
+    (local.set $t27 (i32.load (i32.add (local.get $Pb) (i32.const 40))))
+    (local.set $t28 (i32.load (i32.add (local.get $Pb) (i32.const 44))))
+    (local.set $t29 (i32.load (i32.add (local.get $Pb) (i32.const 36))))
     (local.set $t30 (i32.add (global.get $SB) (i32.const 59))) ;; LSTR
     (local.set $t31 (i32.add (global.get $TB) (i32.const 11))) ;; LF L74
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t27))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 112)) (local.get $t28))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 116)) (local.get $t29))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 120)) (local.get $t30))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t31)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t27))
+    (i32.store (i32.add (local.get $Pb) (i32.const 112)) (local.get $t28))
+    (i32.store (i32.add (local.get $Pb) (i32.const 116)) (local.get $t29))
+    (i32.store (i32.add (local.get $Pb) (i32.const 120)) (local.get $t30))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t31)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (local.set $t23 (call_indirect $ftable (type $bcpl_fn) (local.get $t31)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48)) (local.get $t23))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t23))
     (local.set $t12 (local.get $t23))
     ;; line 0:664
     (global.set $__line (i32.const 664))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t26 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
-    (local.set $t27 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40))))
-    (local.set $t28 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44))))
-    (local.set $t29 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
+    (local.set $t27 (i32.load (i32.add (local.get $Pb) (i32.const 40))))
+    (local.set $t28 (i32.load (i32.add (local.get $Pb) (i32.const 44))))
+    (local.set $t29 (i32.load (i32.add (local.get $Pb) (i32.const 36))))
     (local.set $t30 (i32.add (global.get $SB) (i32.const 62))) ;; LSTR
     (local.set $t31 (i32.add (global.get $TB) (i32.const 11))) ;; LF L74
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t27))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 112)) (local.get $t28))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 116)) (local.get $t29))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 120)) (local.get $t30))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t31)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t27))
+    (i32.store (i32.add (local.get $Pb) (i32.const 112)) (local.get $t28))
+    (i32.store (i32.add (local.get $Pb) (i32.const 116)) (local.get $t29))
+    (i32.store (i32.add (local.get $Pb) (i32.const 120)) (local.get $t30))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t31)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (local.set $t23 (call_indirect $ftable (type $bcpl_fn) (local.get $t31)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52)) (local.get $t23))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (local.get $t23))
     (local.set $t13 (local.get $t23))
     ;; line 0:665
     (global.set $__line (i32.const 665))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t26 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
-    (local.set $t27 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40))))
-    (local.set $t28 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44))))
-    (local.set $t29 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
+    (local.set $t27 (i32.load (i32.add (local.get $Pb) (i32.const 40))))
+    (local.set $t28 (i32.load (i32.add (local.get $Pb) (i32.const 44))))
+    (local.set $t29 (i32.load (i32.add (local.get $Pb) (i32.const 36))))
     (local.set $t30 (i32.add (global.get $SB) (i32.const 65))) ;; LSTR
     (local.set $t31 (i32.add (global.get $TB) (i32.const 11))) ;; LF L74
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t27))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 112)) (local.get $t28))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 116)) (local.get $t29))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 120)) (local.get $t30))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t31)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t27))
+    (i32.store (i32.add (local.get $Pb) (i32.const 112)) (local.get $t28))
+    (i32.store (i32.add (local.get $Pb) (i32.const 116)) (local.get $t29))
+    (i32.store (i32.add (local.get $Pb) (i32.const 120)) (local.get $t30))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t31)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (local.set $t23 (call_indirect $ftable (type $bcpl_fn) (local.get $t31)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56)) (local.get $t23))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (local.get $t23))
     (local.set $t14 (local.get $t23))
     ;; line 0:666
     (global.set $__line (i32.const 666))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t26 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
-    (local.set $t27 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40))))
-    (local.set $t28 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44))))
-    (local.set $t29 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
+    (local.set $t27 (i32.load (i32.add (local.get $Pb) (i32.const 40))))
+    (local.set $t28 (i32.load (i32.add (local.get $Pb) (i32.const 44))))
+    (local.set $t29 (i32.load (i32.add (local.get $Pb) (i32.const 36))))
     (local.set $t30 (i32.add (global.get $SB) (i32.const 68))) ;; LSTR
     (local.set $t31 (i32.add (global.get $TB) (i32.const 11))) ;; LF L74
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t27))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 112)) (local.get $t28))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 116)) (local.get $t29))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 120)) (local.get $t30))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t31)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t27))
+    (i32.store (i32.add (local.get $Pb) (i32.const 112)) (local.get $t28))
+    (i32.store (i32.add (local.get $Pb) (i32.const 116)) (local.get $t29))
+    (i32.store (i32.add (local.get $Pb) (i32.const 120)) (local.get $t30))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t31)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (local.set $t23 (call_indirect $ftable (type $bcpl_fn) (local.get $t31)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60)) (local.get $t23))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t23))
     (local.set $t15 (local.get $t23))
     ;; line 0:667
     (global.set $__line (i32.const 667))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t26 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
-    (local.set $t27 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40))))
-    (local.set $t28 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44))))
-    (local.set $t29 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
+    (local.set $t27 (i32.load (i32.add (local.get $Pb) (i32.const 40))))
+    (local.set $t28 (i32.load (i32.add (local.get $Pb) (i32.const 44))))
+    (local.set $t29 (i32.load (i32.add (local.get $Pb) (i32.const 36))))
     (local.set $t30 (i32.add (global.get $SB) (i32.const 70))) ;; LSTR
     (local.set $t31 (i32.add (global.get $TB) (i32.const 11))) ;; LF L74
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t27))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 112)) (local.get $t28))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 116)) (local.get $t29))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 120)) (local.get $t30))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t31)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t27))
+    (i32.store (i32.add (local.get $Pb) (i32.const 112)) (local.get $t28))
+    (i32.store (i32.add (local.get $Pb) (i32.const 116)) (local.get $t29))
+    (i32.store (i32.add (local.get $Pb) (i32.const 120)) (local.get $t30))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t31)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (local.set $t23 (call_indirect $ftable (type $bcpl_fn) (local.get $t31)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 64)) (local.get $t23))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t23))
     (local.set $t16 (local.get $t23))
     ;; line 0:668
     (global.set $__line (i32.const 668))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t26 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
-    (local.set $t27 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40))))
-    (local.set $t28 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44))))
-    (local.set $t29 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
+    (local.set $t27 (i32.load (i32.add (local.get $Pb) (i32.const 40))))
+    (local.set $t28 (i32.load (i32.add (local.get $Pb) (i32.const 44))))
+    (local.set $t29 (i32.load (i32.add (local.get $Pb) (i32.const 36))))
     (local.set $t30 (i32.add (global.get $SB) (i32.const 72))) ;; LSTR
     (local.set $t31 (i32.add (global.get $TB) (i32.const 11))) ;; LF L74
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t27))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 112)) (local.get $t28))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 116)) (local.get $t29))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 120)) (local.get $t30))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t31)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t27))
+    (i32.store (i32.add (local.get $Pb) (i32.const 112)) (local.get $t28))
+    (i32.store (i32.add (local.get $Pb) (i32.const 116)) (local.get $t29))
+    (i32.store (i32.add (local.get $Pb) (i32.const 120)) (local.get $t30))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t31)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (local.set $t23 (call_indirect $ftable (type $bcpl_fn) (local.get $t31)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 68)) (local.get $t23))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 68)) (local.get $t23))
     (local.set $t17 (local.get $t23))
     ;; line 0:669
     (global.set $__line (i32.const 669))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t26 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
-    (local.set $t27 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40))))
-    (local.set $t28 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44))))
-    (local.set $t29 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
+    (local.set $t27 (i32.load (i32.add (local.get $Pb) (i32.const 40))))
+    (local.set $t28 (i32.load (i32.add (local.get $Pb) (i32.const 44))))
+    (local.set $t29 (i32.load (i32.add (local.get $Pb) (i32.const 36))))
     (local.set $t30 (i32.add (global.get $SB) (i32.const 75))) ;; LSTR
     (local.set $t31 (i32.add (global.get $TB) (i32.const 11))) ;; LF L74
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t27))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 112)) (local.get $t28))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 116)) (local.get $t29))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 120)) (local.get $t30))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t31)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t27))
+    (i32.store (i32.add (local.get $Pb) (i32.const 112)) (local.get $t28))
+    (i32.store (i32.add (local.get $Pb) (i32.const 116)) (local.get $t29))
+    (i32.store (i32.add (local.get $Pb) (i32.const 120)) (local.get $t30))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t31)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (local.set $t23 (call_indirect $ftable (type $bcpl_fn) (local.get $t31)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 72)) (local.get $t23))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 72)) (local.get $t23))
     (local.set $t18 (local.get $t23))
     ;; line 0:670
     (global.set $__line (i32.const 670))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t26 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
-    (local.set $t27 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40))))
-    (local.set $t28 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 44))))
-    (local.set $t29 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 36))))
+    (local.set $t27 (i32.load (i32.add (local.get $Pb) (i32.const 40))))
+    (local.set $t28 (i32.load (i32.add (local.get $Pb) (i32.const 44))))
+    (local.set $t29 (i32.load (i32.add (local.get $Pb) (i32.const 36))))
     (local.set $t30 (i32.add (global.get $SB) (i32.const 77))) ;; LSTR
     (local.set $t31 (i32.add (global.get $TB) (i32.const 11))) ;; LF L74
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t27))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 112)) (local.get $t28))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 116)) (local.get $t29))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 120)) (local.get $t30))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t31)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t27))
+    (i32.store (i32.add (local.get $Pb) (i32.const 112)) (local.get $t28))
+    (i32.store (i32.add (local.get $Pb) (i32.const 116)) (local.get $t29))
+    (i32.store (i32.add (local.get $Pb) (i32.const 120)) (local.get $t30))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t31)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (local.set $t23 (call_indirect $ftable (type $bcpl_fn) (local.get $t31)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 76)) (local.get $t23))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 76)) (local.get $t23))
     (local.set $t19 (local.get $t23))
     ;; line 0:671
     (global.set $__line (i32.const 671))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t23 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48))))
+    (local.set $t23 (i32.load (i32.add (local.get $Pb) (i32.const 48))))
     (local.set $t24 (i32.const 0))
     (if (i32.lt_s (local.get $t23) (local.get $t24)) (then
       (local.set $__lab (i32.const 5)) (br $__dispatch)
     ))
-    (local.set $t23 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52))))
+    (local.set $t23 (i32.load (i32.add (local.get $Pb) (i32.const 52))))
     (local.set $t24 (i32.const 0))
     (if (i32.lt_s (local.get $t23) (local.get $t24)) (then
       (local.set $__lab (i32.const 5)) (br $__dispatch)
     ))
-    (local.set $t23 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56))))
+    (local.set $t23 (i32.load (i32.add (local.get $Pb) (i32.const 56))))
     (local.set $t24 (i32.const 0))
     (if (i32.lt_s (local.get $t23) (local.get $t24)) (then
       (local.set $__lab (i32.const 5)) (br $__dispatch)
     ))
-    (local.set $t23 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60))))
+    (local.set $t23 (i32.load (i32.add (local.get $Pb) (i32.const 60))))
     (local.set $t24 (i32.const 0))
     (if (i32.lt_s (local.get $t23) (local.get $t24)) (then
       (local.set $__lab (i32.const 5)) (br $__dispatch)
     ))
-    (local.set $t23 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 64))))
+    (local.set $t23 (i32.load (i32.add (local.get $Pb) (i32.const 64))))
     (local.set $t24 (i32.const 0))
     (if (i32.lt_s (local.get $t23) (local.get $t24)) (then
       (local.set $__lab (i32.const 5)) (br $__dispatch)
     ))
-    (local.set $t23 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 68))))
+    (local.set $t23 (i32.load (i32.add (local.get $Pb) (i32.const 68))))
     (local.set $t24 (i32.const 0))
     (if (i32.lt_s (local.get $t23) (local.get $t24)) (then
       (local.set $__lab (i32.const 5)) (br $__dispatch)
     ))
-    (local.set $t23 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 72))))
+    (local.set $t23 (i32.load (i32.add (local.get $Pb) (i32.const 72))))
     (local.set $t24 (i32.const 0))
     (if (i32.lt_s (local.get $t23) (local.get $t24)) (then
       (local.set $__lab (i32.const 5)) (br $__dispatch)
     ))
-    (local.set $t23 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 76))))
+    (local.set $t23 (i32.load (i32.add (local.get $Pb) (i32.const 76))))
     (local.set $t24 (i32.const 0))
     (if (i32.ge_s (local.get $t23) (local.get $t24)) (then
       (local.set $__lab (i32.const 6)) (br $__dispatch)
@@ -6531,12 +6730,13 @@
         (then (call $__break)))
     (local.set $t26 (i32.add (global.get $SB) (i32.const 79))) ;; LSTR
     (local.set $t27 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t27)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     ;; line 0:674
     (global.set $__line (i32.const 674))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -6550,21 +6750,22 @@
     (if (i32.eq (local.get $__lab) (i32.const 6)) (then ;; L198
     (local.set $t26 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t27 (i32.const 16))
-    (local.set $t28 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 48))))
+    (local.set $t28 (i32.load (i32.add (local.get $Pb) (i32.const 48))))
     (local.set $t27 (i32.mul (local.get $t27) (local.get $t28)))
-    (local.set $t28 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40))))
+    (local.set $t28 (i32.load (i32.add (local.get $Pb) (i32.const 40))))
     (local.set $t27 (i32.add (local.get $t27) (local.get $t28)))
     (local.set $t28 (i32.const 0))
     (local.set $t27 (i32.add (local.get $t27) (local.get $t28)))
     (local.set $t28 (i32.add (global.get $TB) (i32.const 4))) ;; LF L51
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t27))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t28)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t27))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t28)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (local.set $t23 (call_indirect $ftable (type $bcpl_fn) (local.get $t28)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
     (i32.store
       (i32.shl (i32.add (global.get $SB) (i32.const 6)) (i32.const 2))
       (local.get $t23))
@@ -6574,21 +6775,22 @@
         (then (call $__break)))
     (local.set $t26 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t27 (i32.const 16))
-    (local.set $t28 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 52))))
+    (local.set $t28 (i32.load (i32.add (local.get $Pb) (i32.const 52))))
     (local.set $t27 (i32.mul (local.get $t27) (local.get $t28)))
-    (local.set $t28 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40))))
+    (local.set $t28 (i32.load (i32.add (local.get $Pb) (i32.const 40))))
     (local.set $t27 (i32.add (local.get $t27) (local.get $t28)))
     (local.set $t28 (i32.const 0))
     (local.set $t27 (i32.add (local.get $t27) (local.get $t28)))
     (local.set $t28 (i32.add (global.get $TB) (i32.const 4))) ;; LF L51
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t27))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t28)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t27))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t28)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (local.set $t23 (call_indirect $ftable (type $bcpl_fn) (local.get $t28)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
     (i32.store
       (i32.shl (i32.add (global.get $SB) (i32.const 7)) (i32.const 2))
       (local.get $t23))
@@ -6598,21 +6800,22 @@
         (then (call $__break)))
     (local.set $t26 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t27 (i32.const 16))
-    (local.set $t28 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 56))))
+    (local.set $t28 (i32.load (i32.add (local.get $Pb) (i32.const 56))))
     (local.set $t27 (i32.mul (local.get $t27) (local.get $t28)))
-    (local.set $t28 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40))))
+    (local.set $t28 (i32.load (i32.add (local.get $Pb) (i32.const 40))))
     (local.set $t27 (i32.add (local.get $t27) (local.get $t28)))
     (local.set $t28 (i32.const 0))
     (local.set $t27 (i32.add (local.get $t27) (local.get $t28)))
     (local.set $t28 (i32.add (global.get $TB) (i32.const 4))) ;; LF L51
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t27))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t28)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t27))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t28)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (local.set $t23 (call_indirect $ftable (type $bcpl_fn) (local.get $t28)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
     (i32.store
       (i32.shl (i32.add (global.get $SB) (i32.const 8)) (i32.const 2))
       (local.get $t23))
@@ -6622,21 +6825,22 @@
         (then (call $__break)))
     (local.set $t26 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t27 (i32.const 16))
-    (local.set $t28 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 60))))
+    (local.set $t28 (i32.load (i32.add (local.get $Pb) (i32.const 60))))
     (local.set $t27 (i32.mul (local.get $t27) (local.get $t28)))
-    (local.set $t28 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40))))
+    (local.set $t28 (i32.load (i32.add (local.get $Pb) (i32.const 40))))
     (local.set $t27 (i32.add (local.get $t27) (local.get $t28)))
     (local.set $t28 (i32.const 0))
     (local.set $t27 (i32.add (local.get $t27) (local.get $t28)))
     (local.set $t28 (i32.add (global.get $TB) (i32.const 4))) ;; LF L51
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t27))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t28)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t27))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t28)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (local.set $t23 (call_indirect $ftable (type $bcpl_fn) (local.get $t28)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
     (i32.store
       (i32.shl (i32.add (global.get $SB) (i32.const 9)) (i32.const 2))
       (local.get $t23))
@@ -6646,21 +6850,22 @@
         (then (call $__break)))
     (local.set $t26 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t27 (i32.const 16))
-    (local.set $t28 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 64))))
+    (local.set $t28 (i32.load (i32.add (local.get $Pb) (i32.const 64))))
     (local.set $t27 (i32.mul (local.get $t27) (local.get $t28)))
-    (local.set $t28 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40))))
+    (local.set $t28 (i32.load (i32.add (local.get $Pb) (i32.const 40))))
     (local.set $t27 (i32.add (local.get $t27) (local.get $t28)))
     (local.set $t28 (i32.const 0))
     (local.set $t27 (i32.add (local.get $t27) (local.get $t28)))
     (local.set $t28 (i32.add (global.get $TB) (i32.const 4))) ;; LF L51
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t27))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t28)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t27))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t28)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (local.set $t23 (call_indirect $ftable (type $bcpl_fn) (local.get $t28)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
     (i32.store
       (i32.shl (i32.add (global.get $SB) (i32.const 10)) (i32.const 2))
       (local.get $t23))
@@ -6670,22 +6875,23 @@
         (then (call $__break)))
     (local.set $t26 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t27 (i32.const 16))
-    (local.set $t28 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 64))))
+    (local.set $t28 (i32.load (i32.add (local.get $Pb) (i32.const 64))))
     (local.set $t27 (i32.mul (local.get $t27) (local.get $t28)))
-    (local.set $t28 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40))))
+    (local.set $t28 (i32.load (i32.add (local.get $Pb) (i32.const 40))))
     (local.set $t27 (i32.add (local.get $t27) (local.get $t28)))
     (local.set $t28 (i32.const 4))
     (local.set $t27 (i32.add (local.get $t27) (local.get $t28)))
     (local.set $t28 (i32.add (global.get $TB) (i32.const 4))) ;; LF L51
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t27))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t28)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t27))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t28)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (local.set $t23 (call_indirect $ftable (type $bcpl_fn) (local.get $t28)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 88)) (local.get $t23))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 88)) (local.get $t23))
     (local.set $t22 (local.get $t23))
     ;; line 0:681
     (global.set $__line (i32.const 681))
@@ -6693,21 +6899,22 @@
         (then (call $__break)))
     (local.set $t26 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t27 (i32.const 16))
-    (local.set $t28 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 68))))
+    (local.set $t28 (i32.load (i32.add (local.get $Pb) (i32.const 68))))
     (local.set $t27 (i32.mul (local.get $t27) (local.get $t28)))
-    (local.set $t28 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40))))
+    (local.set $t28 (i32.load (i32.add (local.get $Pb) (i32.const 40))))
     (local.set $t27 (i32.add (local.get $t27) (local.get $t28)))
     (local.set $t28 (i32.const 0))
     (local.set $t27 (i32.add (local.get $t27) (local.get $t28)))
     (local.set $t28 (i32.add (global.get $TB) (i32.const 4))) ;; LF L51
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t27))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t28)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t27))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t28)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (local.set $t23 (call_indirect $ftable (type $bcpl_fn) (local.get $t28)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
     (i32.store
       (i32.shl (i32.add (global.get $SB) (i32.const 11)) (i32.const 2))
       (local.get $t23))
@@ -6717,21 +6924,22 @@
         (then (call $__break)))
     (local.set $t26 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t27 (i32.const 16))
-    (local.set $t28 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 72))))
+    (local.set $t28 (i32.load (i32.add (local.get $Pb) (i32.const 72))))
     (local.set $t27 (i32.mul (local.get $t27) (local.get $t28)))
-    (local.set $t28 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40))))
+    (local.set $t28 (i32.load (i32.add (local.get $Pb) (i32.const 40))))
     (local.set $t27 (i32.add (local.get $t27) (local.get $t28)))
     (local.set $t28 (i32.const 0))
     (local.set $t27 (i32.add (local.get $t27) (local.get $t28)))
     (local.set $t28 (i32.add (global.get $TB) (i32.const 4))) ;; LF L51
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t27))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t28)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t27))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t28)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (local.set $t23 (call_indirect $ftable (type $bcpl_fn) (local.get $t28)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
     (i32.store
       (i32.shl (i32.add (global.get $SB) (i32.const 12)) (i32.const 2))
       (local.get $t23))
@@ -6741,22 +6949,23 @@
         (then (call $__break)))
     (local.set $t26 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t27 (i32.const 16))
-    (local.set $t28 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 76))))
+    (local.set $t28 (i32.load (i32.add (local.get $Pb) (i32.const 76))))
     (local.set $t27 (i32.mul (local.get $t27) (local.get $t28)))
-    (local.set $t28 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40))))
+    (local.set $t28 (i32.load (i32.add (local.get $Pb) (i32.const 40))))
     (local.set $t27 (i32.add (local.get $t27) (local.get $t28)))
     (local.set $t28 (i32.const 0))
     (local.set $t27 (i32.add (local.get $t27) (local.get $t28)))
     (local.set $t28 (i32.add (global.get $TB) (i32.const 4))) ;; LF L51
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t27))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t28)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t27))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t28)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (local.set $t23 (call_indirect $ftable (type $bcpl_fn) (local.get $t28)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 80)) (local.get $t23))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 80)) (local.get $t23))
     (local.set $t20 (local.get $t23))
     ;; line 0:684
     (global.set $__line (i32.const 684))
@@ -6764,28 +6973,29 @@
         (then (call $__break)))
     (local.set $t26 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
     (local.set $t27 (i32.const 16))
-    (local.set $t28 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 76))))
+    (local.set $t28 (i32.load (i32.add (local.get $Pb) (i32.const 76))))
     (local.set $t27 (i32.mul (local.get $t27) (local.get $t28)))
-    (local.set $t28 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 40))))
+    (local.set $t28 (i32.load (i32.add (local.get $Pb) (i32.const 40))))
     (local.set $t27 (i32.add (local.get $t27) (local.get $t28)))
     (local.set $t28 (i32.const 4))
     (local.set $t27 (i32.add (local.get $t27) (local.get $t28)))
     (local.set $t28 (i32.add (global.get $TB) (i32.const 4))) ;; LF L51
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t27))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t28)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t27))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t28)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (local.set $t23 (call_indirect $ftable (type $bcpl_fn) (local.get $t28)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 84)) (local.get $t23))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
+    (i32.store (i32.add (local.get $Pb) (i32.const 84)) (local.get $t23))
     (local.set $t21 (local.get $t23))
     ;; line 0:685
     (global.set $__line (i32.const 685))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t23 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 88))))
+    (local.set $t23 (i32.load (i32.add (local.get $Pb) (i32.const 88))))
     (local.set $t24 (i32.const 28))
     (local.set $t23 (i32.div_s (local.get $t23) (local.get $t24)))
     (i32.store
@@ -6809,27 +7019,29 @@
     (local.set $t27 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 13)) (i32.const 2)))) ;; LL L23
     (local.set $t28 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 14)) (i32.const 2)))) ;; LL L24
     (local.set $t29 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t27))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 112)) (local.get $t28))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t29)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t27))
+    (i32.store (i32.add (local.get $Pb) (i32.const 112)) (local.get $t28))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t29)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t29)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     ;; line 0:689
     (global.set $__line (i32.const 689))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t26 (i32.const 8192))
     (local.set $t27 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 100))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (local.set $t23 (call_indirect $ftable (type $bcpl_fn) (local.get $t27)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
     (i32.store
       (i32.shl (i32.add (global.get $SB) (i32.const 3)) (i32.const 2))
       (local.get $t23))
@@ -6839,13 +7051,14 @@
         (then (call $__break)))
     (local.set $t26 (i32.const 8192))
     (local.set $t27 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 100))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (local.set $t23 (call_indirect $ftable (type $bcpl_fn) (local.get $t27)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
     (i32.store
       (i32.shl (i32.add (global.get $SB) (i32.const 4)) (i32.const 2))
       (local.get $t23))
@@ -6854,24 +7067,26 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t26 (i32.add (global.get $TB) (i32.const 14))) ;; LF L85
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t26)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t26)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t26)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     ;; line 0:693
     (global.set $__line (i32.const 693))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t26 (i32.const 960))
     (local.set $t27 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 100))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (local.set $t23 (call_indirect $ftable (type $bcpl_fn) (local.get $t27)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
     (i32.store
       (i32.shl (i32.add (global.get $SB) (i32.const 15)) (i32.const 2))
       (local.get $t23))
@@ -6881,13 +7096,14 @@
         (then (call $__break)))
     (local.set $t26 (i32.const 960))
     (local.set $t27 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 100))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (local.set $t23 (call_indirect $ftable (type $bcpl_fn) (local.get $t27)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
     (i32.store
       (i32.shl (i32.add (global.get $SB) (i32.const 16)) (i32.const 2))
       (local.get $t23))
@@ -6896,18 +7112,19 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t26 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 5)) (i32.const 2)))) ;; LL L15
-    (local.set $t27 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 80))))
-    (local.set $t28 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 84))))
+    (local.set $t27 (i32.load (i32.add (local.get $Pb) (i32.const 80))))
+    (local.set $t28 (i32.load (i32.add (local.get $Pb) (i32.const 84))))
     (local.set $t29 (i32.add (global.get $TB) (i32.const 22))) ;; LF L104
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t27))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 112)) (local.get $t28))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t29)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t27))
+    (i32.store (i32.add (local.get $Pb) (i32.const 112)) (local.get $t28))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t29)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (local.set $t23 (call_indirect $ftable (type $bcpl_fn) (local.get $t29)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
     (if (local.get $t23) (then
       (local.set $__lab (i32.const 7)) (br $__dispatch)
     ))
@@ -6917,12 +7134,13 @@
         (then (call $__break)))
     (local.set $t26 (i32.add (global.get $SB) (i32.const 89))) ;; LSTR
     (local.set $t27 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t27)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     ;; line 0:699
     (global.set $__line (i32.const 699))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -6951,15 +7169,16 @@
     (local.set $t28 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 21)) (i32.const 2)))) ;; LL L31
     (local.set $t29 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 22)) (i32.const 2)))) ;; LL L32
     (local.set $t30 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t27))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 112)) (local.get $t28))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 116)) (local.get $t29))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t30)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t27))
+    (i32.store (i32.add (local.get $Pb) (i32.const 112)) (local.get $t28))
+    (i32.store (i32.add (local.get $Pb) (i32.const 116)) (local.get $t29))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t30)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t30)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     ;; line 0:702
     (global.set $__line (i32.const 702))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -6967,13 +7186,14 @@
     (local.set $t26 (i32.const 66))
     (local.set $t27 (i32.const 1))
     (local.set $t28 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 12))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t27))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t28)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t27))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t28)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t28)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     ;; line 0:704
     (global.set $__line (i32.const 704))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -6985,18 +7205,19 @@
     (local.set $t30 (i32.const 0))
     (local.set $t31 (i32.const 0))
     (local.set $t32 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 12))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t27))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 112)) (local.get $t28))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 116)) (local.get $t29))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 120)) (local.get $t30))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 124)) (local.get $t31))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t32)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t27))
+    (i32.store (i32.add (local.get $Pb) (i32.const 112)) (local.get $t28))
+    (i32.store (i32.add (local.get $Pb) (i32.const 116)) (local.get $t29))
+    (i32.store (i32.add (local.get $Pb) (i32.const 120)) (local.get $t30))
+    (i32.store (i32.add (local.get $Pb) (i32.const 124)) (local.get $t31))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t32)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (local.set $t23 (call_indirect $ftable (type $bcpl_fn) (local.get $t32)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
     (i32.store
       (i32.shl (i32.add (global.get $SB) (i32.const 0)) (i32.const 2))
       (local.get $t23))
@@ -7011,18 +7232,19 @@
     (local.set $t30 (i32.const 110))
     (local.set $t31 (i32.const 180))
     (local.set $t32 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 12))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t27))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 112)) (local.get $t28))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 116)) (local.get $t29))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 120)) (local.get $t30))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 124)) (local.get $t31))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t32)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t27))
+    (i32.store (i32.add (local.get $Pb) (i32.const 112)) (local.get $t28))
+    (i32.store (i32.add (local.get $Pb) (i32.const 116)) (local.get $t29))
+    (i32.store (i32.add (local.get $Pb) (i32.const 120)) (local.get $t30))
+    (i32.store (i32.add (local.get $Pb) (i32.const 124)) (local.get $t31))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t32)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (local.set $t23 (call_indirect $ftable (type $bcpl_fn) (local.get $t32)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
     (i32.store
       (i32.shl (i32.add (global.get $SB) (i32.const 18)) (i32.const 2))
       (local.get $t23))
@@ -7037,18 +7259,19 @@
     (local.set $t30 (i32.const 40))
     (local.set $t31 (i32.const 40))
     (local.set $t32 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 12))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t27))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 112)) (local.get $t28))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 116)) (local.get $t29))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 120)) (local.get $t30))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 124)) (local.get $t31))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t32)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t27))
+    (i32.store (i32.add (local.get $Pb) (i32.const 112)) (local.get $t28))
+    (i32.store (i32.add (local.get $Pb) (i32.const 116)) (local.get $t29))
+    (i32.store (i32.add (local.get $Pb) (i32.const 120)) (local.get $t30))
+    (i32.store (i32.add (local.get $Pb) (i32.const 124)) (local.get $t31))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t32)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (local.set $t23 (call_indirect $ftable (type $bcpl_fn) (local.get $t32)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
     (i32.store
       (i32.shl (i32.add (global.get $SB) (i32.const 19)) (i32.const 2))
       (local.get $t23))
@@ -7058,13 +7281,14 @@
         (then (call $__break)))
     (local.set $t26 (i32.const 512))
     (local.set $t27 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 100))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (local.set $t23 (call_indirect $ftable (type $bcpl_fn) (local.get $t27)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; flush FNAP result
     (i32.store
       (i32.shl (i32.add (global.get $SB) (i32.const 1)) (i32.const 2))
       (local.get $t23))
@@ -7074,10 +7298,10 @@
         (then (call $__break)))
     (local.set $t23 (i32.const 0))
     (local.set $t24 (i32.const 512))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; STORE slot 23
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (local.get $t24)) ;; STORE slot 24
-    (local.set $t25 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92))))
-    (local.set $t26 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; STORE slot 23
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (local.get $t24)) ;; STORE slot 24
+    (local.set $t25 (i32.load (i32.add (local.get $Pb) (i32.const 92))))
+    (local.set $t26 (i32.load (i32.add (local.get $Pb) (i32.const 96))))
     (if (i32.gt_s (local.get $t25) (local.get $t26)) (then
       (local.set $__lab (i32.const 9)) (br $__dispatch)
     ))
@@ -7089,17 +7313,17 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t25 (i32.const 0))
-    (local.set $t26 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92))))
+    (local.set $t26 (i32.load (i32.add (local.get $Pb) (i32.const 92))))
     (local.set $t27 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 1)) (i32.const 2)))) ;; LL L11
     (local.set $t26 (i32.add (local.get $t26) (local.get $t27)))
     (i32.store (i32.shl (local.get $t26) (i32.const 2)) (local.get $t25))
-    (local.set $t25 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92))))
+    (local.set $t25 (i32.load (i32.add (local.get $Pb) (i32.const 92))))
     (local.set $t26 (i32.const 1))
     (local.set $t25 (i32.add (local.get $t25) (local.get $t26)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t25))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t25))
     (local.set $t23 (local.get $t25))
-    (local.set $t25 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92))))
-    (local.set $t26 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96))))
+    (local.set $t25 (i32.load (i32.add (local.get $Pb) (i32.const 92))))
+    (local.set $t26 (i32.load (i32.add (local.get $Pb) (i32.const 96))))
     (if (i32.le_s (local.get $t25) (local.get $t26)) (then
       (local.set $__lab (i32.const 8)) (br $__dispatch)
     ))
@@ -7114,48 +7338,51 @@
     )) ;; end block / LAB L203 = idx 10
     (if (i32.eq (local.get $__lab) (i32.const 10)) (then ;; L203
     (local.set $t23 (i32.const 0))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t23)) ;; STORE slot 23
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t23)) ;; STORE slot 23
     ;; line 0:714
     (global.set $__line (i32.const 714))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t24 (i32.const 0))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (local.get $t24)) ;; STORE slot 24
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (local.get $t24)) ;; STORE slot 24
     ;; line 0:715
     (global.set $__line (i32.const 715))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t28 (i32.add (global.get $TB) (i32.const 23))) ;; LF L108
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t28)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t28)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 25)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t28)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     ;; line 0:716
     (global.set $__line (i32.const 716))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t28 (i32.const 87))
     (local.set $t29 (i32.add (global.get $TB) (i32.const 24))) ;; LF L119
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 112)) (local.get $t28))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t29)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 112)) (local.get $t28))
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t29)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 25)))
     (local.set $t25 (call_indirect $ftable (type $bcpl_fn) (local.get $t29)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t25)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t25)) ;; flush FNAP result
     (if (local.get $t25) (then
       (local.set $__lab (i32.const 11)) (br $__dispatch)
     ))
     (local.set $t28 (i32.const 38))
     (local.set $t29 (i32.add (global.get $TB) (i32.const 24))) ;; LF L119
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 112)) (local.get $t28))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t29)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 112)) (local.get $t28))
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t29)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 25)))
     (local.set $t25 (call_indirect $ftable (type $bcpl_fn) (local.get $t29)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t25)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t25)) ;; flush FNAP result
     (if (i32.eqz (local.get $t25)) (then
       (local.set $__lab (i32.const 12)) (br $__dispatch)
     ))
@@ -7167,34 +7394,36 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t25 (i32.const 1))
-    (local.set $t26 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92))))
+    (local.set $t26 (i32.load (i32.add (local.get $Pb) (i32.const 92))))
     (local.set $t25 (i32.add (local.get $t25) (local.get $t26)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t25))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t25))
     (local.set $t23 (local.get $t25))
       (local.set $__lab (i32.const 12)) (br $__dispatch)
     )) ;; end block / LAB L205 = idx 12
     (if (i32.eq (local.get $__lab) (i32.const 12)) (then ;; L205
     (local.set $t28 (i32.const 83))
     (local.set $t29 (i32.add (global.get $TB) (i32.const 24))) ;; LF L119
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 112)) (local.get $t28))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t29)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 112)) (local.get $t28))
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t29)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 25)))
     (local.set $t25 (call_indirect $ftable (type $bcpl_fn) (local.get $t29)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t25)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t25)) ;; flush FNAP result
     (if (local.get $t25) (then
       (local.set $__lab (i32.const 13)) (br $__dispatch)
     ))
     (local.set $t28 (i32.const 40))
     (local.set $t29 (i32.add (global.get $TB) (i32.const 24))) ;; LF L119
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 112)) (local.get $t28))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t29)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 112)) (local.get $t28))
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t29)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 25)))
     (local.set $t25 (call_indirect $ftable (type $bcpl_fn) (local.get $t29)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t25)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t25)) ;; flush FNAP result
     (if (i32.eqz (local.get $t25)) (then
       (local.set $__lab (i32.const 14)) (br $__dispatch)
     ))
@@ -7205,35 +7434,37 @@
     (global.set $__line (i32.const 718))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t25 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92))))
+    (local.set $t25 (i32.load (i32.add (local.get $Pb) (i32.const 92))))
     (local.set $t26 (i32.const 1))
     (local.set $t25 (i32.sub (local.get $t25) (local.get $t26)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (local.get $t25))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (local.get $t25))
     (local.set $t23 (local.get $t25))
       (local.set $__lab (i32.const 14)) (br $__dispatch)
     )) ;; end block / LAB L207 = idx 14
     (if (i32.eq (local.get $__lab) (i32.const 14)) (then ;; L207
     (local.set $t28 (i32.const 65))
     (local.set $t29 (i32.add (global.get $TB) (i32.const 24))) ;; LF L119
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 112)) (local.get $t28))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t29)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 112)) (local.get $t28))
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t29)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 25)))
     (local.set $t25 (call_indirect $ftable (type $bcpl_fn) (local.get $t29)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t25)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t25)) ;; flush FNAP result
     (if (local.get $t25) (then
       (local.set $__lab (i32.const 15)) (br $__dispatch)
     ))
     (local.set $t28 (i32.const 37))
     (local.set $t29 (i32.add (global.get $TB) (i32.const 24))) ;; LF L119
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 112)) (local.get $t28))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t29)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 112)) (local.get $t28))
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t29)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 25)))
     (local.set $t25 (call_indirect $ftable (type $bcpl_fn) (local.get $t29)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t25)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t25)) ;; flush FNAP result
     (if (i32.eqz (local.get $t25)) (then
       (local.set $__lab (i32.const 16)) (br $__dispatch)
     ))
@@ -7244,35 +7475,37 @@
     (global.set $__line (i32.const 719))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t25 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96))))
+    (local.set $t25 (i32.load (i32.add (local.get $Pb) (i32.const 96))))
     (local.set $t26 (i32.const 64))
     (local.set $t25 (i32.sub (local.get $t25) (local.get $t26)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (local.get $t25))
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (local.get $t25))
     (local.set $t24 (local.get $t25))
       (local.set $__lab (i32.const 16)) (br $__dispatch)
     )) ;; end block / LAB L209 = idx 16
     (if (i32.eq (local.get $__lab) (i32.const 16)) (then ;; L209
     (local.set $t28 (i32.const 68))
     (local.set $t29 (i32.add (global.get $TB) (i32.const 24))) ;; LF L119
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 112)) (local.get $t28))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t29)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 112)) (local.get $t28))
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t29)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 25)))
     (local.set $t25 (call_indirect $ftable (type $bcpl_fn) (local.get $t29)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t25)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t25)) ;; flush FNAP result
     (if (local.get $t25) (then
       (local.set $__lab (i32.const 17)) (br $__dispatch)
     ))
     (local.set $t28 (i32.const 39))
     (local.set $t29 (i32.add (global.get $TB) (i32.const 24))) ;; LF L119
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 112)) (local.get $t28))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t29)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 112)) (local.get $t28))
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t29)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 25)))
     (local.set $t25 (call_indirect $ftable (type $bcpl_fn) (local.get $t29)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t25)) ;; flush FNAP result
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t25)) ;; flush FNAP result
     (if (i32.eqz (local.get $t25)) (then
       (local.set $__lab (i32.const 18)) (br $__dispatch)
     ))
@@ -7284,15 +7517,15 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t25 (i32.const 64))
-    (local.set $t26 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96))))
+    (local.set $t26 (i32.load (i32.add (local.get $Pb) (i32.const 96))))
     (local.set $t25 (i32.add (local.get $t25) (local.get $t26)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (local.get $t25))
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (local.get $t25))
     (local.set $t24 (local.get $t25))
       (local.set $__lab (i32.const 18)) (br $__dispatch)
     )) ;; end block / LAB L211 = idx 18
     (if (i32.eq (local.get $__lab) (i32.const 18)) (then ;; L211
     (local.set $t25 (i32.const 0))
-    (local.set $t26 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92))))
+    (local.set $t26 (i32.load (i32.add (local.get $Pb) (i32.const 92))))
     (if (i32.eq  (local.get $t25) (local.get $t26)) (then
       (local.set $__lab (i32.const 19)) (br $__dispatch)
     ))
@@ -7308,11 +7541,11 @@
     (local.set $t25 (i32.load (i32.shl (local.get $t25) (i32.const 2))))
     (local.set $t26 (i32.const 16))
     (local.set $t25 (i32.mul (local.get $t25) (local.get $t26)))
-    (local.set $t26 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92))))
+    (local.set $t26 (i32.load (i32.add (local.get $Pb) (i32.const 92))))
     (local.set $t25 (i32.mul (local.get $t25) (local.get $t26)))
     (local.set $t26 (i32.const 1024))
     (local.set $t25 (i32.div_s (local.get $t25) (local.get $t26)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t25)) ;; STORE slot 25
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t25)) ;; STORE slot 25
     ;; line 0:723
     (global.set $__line (i32.const 723))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -7325,16 +7558,16 @@
     (local.set $t26 (i32.load (i32.shl (local.get $t26) (i32.const 2))))
     (local.set $t27 (i32.const 16))
     (local.set $t26 (i32.mul (local.get $t26) (local.get $t27)))
-    (local.set $t27 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92))))
+    (local.set $t27 (i32.load (i32.add (local.get $Pb) (i32.const 92))))
     (local.set $t26 (i32.mul (local.get $t26) (local.get $t27)))
     (local.set $t27 (i32.const 1024))
     (local.set $t26 (i32.div_s (local.get $t26) (local.get $t27)))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26)) ;; STORE slot 26
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26)) ;; STORE slot 26
     ;; line 0:724
     (global.set $__line (i32.const 724))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t27 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100))))
+    (local.set $t27 (i32.load (i32.add (local.get $Pb) (i32.const 100))))
     (local.set $t28 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 20)) (i32.const 2)))) ;; LL L30
     (local.set $t27 (i32.add (local.get $t27) (local.get $t28)))
     (i32.store
@@ -7344,7 +7577,7 @@
     (global.set $__line (i32.const 725))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t27 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104))))
+    (local.set $t27 (i32.load (i32.add (local.get $Pb) (i32.const 104))))
     (local.set $t28 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 21)) (i32.const 2)))) ;; LL L31
     (local.set $t27 (i32.add (local.get $t27) (local.get $t28)))
     (i32.store
@@ -7358,7 +7591,7 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t25 (i32.const 0))
-    (local.set $t26 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96))))
+    (local.set $t26 (i32.load (i32.add (local.get $Pb) (i32.const 96))))
     (if (i32.eq  (local.get $t25) (local.get $t26)) (then
       (local.set $__lab (i32.const 20)) (br $__dispatch)
     ))
@@ -7366,7 +7599,7 @@
     (global.set $__line (i32.const 728))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t25 (i32.load (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96))))
+    (local.set $t25 (i32.load (i32.add (local.get $Pb) (i32.const 96))))
     (local.set $t26 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 22)) (i32.const 2)))) ;; LL L32
     (local.set $t25 (i32.add (local.get $t25) (local.get $t26)))
     (local.set $t26 (i32.const 8191))
@@ -7378,23 +7611,25 @@
     )) ;; end block / LAB L214 = idx 20
     (if (i32.eq (local.get $__lab) (i32.const 20)) (then ;; L214
     (local.set $t28 (i32.add (global.get $TB) (i32.const 37))) ;; LF L192
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t28)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t28)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 25)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t28)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     ;; line 0:730
     (global.set $__line (i32.const 730))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t28 (i32.const 16))
     (local.set $t29 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 512))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 112)) (local.get $t28))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 108)) (local.get $t29)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 112)) (local.get $t28))
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 108)) (local.get $t29)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 25)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t29)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (local.set $t23 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 2)) (i32.const 2)))) ;; LL L12
     (if (local.get $t23) (then
       (local.set $__lab (i32.const 10)) (br $__dispatch)
@@ -7408,60 +7643,66 @@
         (then (call $__break)))
     (local.set $t26 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 3)) (i32.const 2)))) ;; LL L13
     (local.set $t27 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 108))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t27)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     ;; line 0:734
     (global.set $__line (i32.const 734))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t26 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 4)) (i32.const 2)))) ;; LL L14
     (local.set $t27 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 108))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t27)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (local.set $t26 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 1)) (i32.const 2)))) ;; LL L11
     (local.set $t27 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 108))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t27)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (local.set $t26 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 15)) (i32.const 2)))) ;; LL L25
     (local.set $t27 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 108))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t27)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     ;; line 0:735
     (global.set $__line (i32.const 735))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t26 (i32.load (i32.shl (i32.add (global.get $SB) (i32.const 16)) (i32.const 2)))) ;; LL L26
     (local.set $t27 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 108))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t27)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (local.set $t26 (i32.add (global.get $SB) (i32.const 108))) ;; LSTR
     (local.set $t27 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 104)) (local.get $t26))
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 92)) (global.get $P)) ;; save P
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (i32.shl (global.get $P) (i32.const 2)) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
+    (i32.store (i32.add (local.get $Pb) (i32.const 104)) (local.get $t26))
+    (i32.store (i32.add (local.get $Pb) (i32.const 92)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 96)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 100)) (local.get $t27)) ;; entry fn_idx
     (global.set $P (i32.add (global.get $P) (i32.const 23)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t27)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     ;; line 0:736
     (global.set $__line (i32.const 736))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
