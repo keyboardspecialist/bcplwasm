@@ -159,11 +159,6 @@
     (local $t4 i32)
     (local $t5 i32)
     (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
-    (loop $__dispatch
-      (block $__default
-      (block $__case_0
-        (br_table $__case_0 $__default (local.get $__lab))
-      ) ;; close $__case_0 — entry-block body follows
     (local.set $t4 (i32.const 1))
     (local.set $t5 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
     (local.set $t4 (i32.add (local.get $t4) (local.get $t5)))
@@ -176,9 +171,6 @@
     (local.set $__res (local.get $t4))
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
     (return (local.get $__res))
-      ) ;; close $__default
-      (unreachable)
-    ) ;; end $__dispatch
     (i32.const 0) ;; unreachable return
   ) ;; end func $fn_L13
 
