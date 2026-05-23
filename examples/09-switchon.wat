@@ -23,6 +23,7 @@
     (local $t3 i32)
     (local $t4 i32)
     (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (local.set $t3 (i32.load (i32.add (local.get $Pb) (i32.const 12)))) ;; init promoted P!3
     (loop $__dispatch
       (block $__default
       (block $__case_17
@@ -49,7 +50,7 @@
     (global.set $__line (i32.const 13))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t4 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t4 (local.get $t3)) ;; LP promoted P!3
     ;; RES L11: save result, jump to RSTACK
     (local.set $__res (local.get $t4))
       (local.set $__lab (i32.const 17)) (br $__dispatch)

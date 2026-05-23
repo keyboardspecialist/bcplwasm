@@ -26,11 +26,13 @@
     (local $t6 i32)
     (local $t7 i32)
     (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
-    (local.set $t5 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
-    (local.set $t6 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t3 (i32.load (i32.add (local.get $Pb) (i32.const 12)))) ;; init promoted P!3
+    (local.set $t4 (i32.load (i32.add (local.get $Pb) (i32.const 16)))) ;; init promoted P!4
+    (local.set $t5 (local.get $t3)) ;; LP promoted P!3
+    (local.set $t6 (local.get $t3)) ;; LP promoted P!3
     (local.set $t5 (i32.reinterpret_f32 (f32.mul (f32.reinterpret_i32 (local.get $t5)) (f32.reinterpret_i32 (local.get $t6)))))
-    (local.set $t6 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
-    (local.set $t7 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
+    (local.set $t6 (local.get $t4)) ;; LP promoted P!4
+    (local.set $t7 (local.get $t4)) ;; LP promoted P!4
     (local.set $t6 (i32.reinterpret_f32 (f32.mul (f32.reinterpret_i32 (local.get $t6)) (f32.reinterpret_i32 (local.get $t7)))))
     (local.set $t5 (i32.reinterpret_f32 (f32.add (f32.reinterpret_i32 (local.get $t5)) (f32.reinterpret_i32 (local.get $t6)))))
     ;; FNRN
