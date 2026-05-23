@@ -33,6 +33,8 @@ MANIFEST {
   GAP_INIT = 220
   GAP_MIN  = 100                // narrows over time
   GAP_SHRINK_EVERY = 1200       // frames per shrink tick
+  SMOKE_CAP   = 48              // ring buffer of trail particles
+  SMOKE_LIFE  = 36              // frames before puff retires
   KEYCAP = 256
   K_SPACE = 32
   K_ESC   = 27
@@ -63,6 +65,15 @@ STATIC {
   alive   = 1
   blade_phase = 0
 
+  // Smoke trail — three parallel ring buffers (x, y, age). Spawn
+  // one puff per frame at the tail, age every puff each frame, draw
+  // any whose age < SMOKE_LIFE. World-space x: shifted left with
+  // scroll each frame so puffs stay anchored to terrain.
+  smoke_x = 0
+  smoke_y = 0
+  smoke_age = 0
+  smoke_head = 0
+
   // Scoring + RNG.
   score = 0
   hi_score = 0
@@ -72,6 +83,8 @@ STATIC {
   bg_col = 0
   cave_col = 0
   cave_edge_col = 0
+  smoke_col = 0
+  smoke_col2 = 0
   heli_col = 0
   blade_col = 0
   text_col = 0
@@ -136,13 +149,12 @@ LET write_column(gx) BE
   slope := (bot_t * 10 - cur_f10) / 8
   cur_f10 := cur_f10 + slope
 
-  // Per-column hash jitter: deterministic, varies wildly between
-  // adjacent columns -> jagged silhouette. Tune the &mask + scaling
-  // to taste; current values give ±18 px ceiling, ±14 px floor.
+  // Per-column hash jitter: deterministic, varies between adjacent
+  // columns -> textured silhouette without going saw-tooth. ±4 px.
   { LET h1 = (gx * 2654435761) >> 16
     LET h2 = (gx * 1597334677) >> 16
-    LET ceil_px = (cur_c10 / 10) + ((h1 & 63) - 31) / 2
-    LET fl_px   = (cur_f10 / 10) + ((h2 & 63) - 31) / 2
+    LET ceil_px = (cur_c10 / 10) + ((h1 & 15) - 7) / 2
+    LET fl_px   = (cur_f10 / 10) + ((h2 & 15) - 7) / 2
     IF ceil_px < 4       DO ceil_px := 4
     IF fl_px   > H - 4   DO fl_px   := H - 4
     IF fl_px - ceil_px < 60 DO fl_px := ceil_px + 60
@@ -280,6 +292,10 @@ LET draw_digit(d, x, y, s, col) BE
   }
 }
 
+// Digit slot = 5*s body + 2*s gap, so adjacent digits don't touch
+// even when their outer columns are lit (e.g. "11", "10").
+LET digit_slot(s) = 7 * s
+
 LET draw_number(n, x, y, s, col) BE
 { LET buf = VEC 12
   LET len = 0
@@ -291,9 +307,12 @@ LET draw_number(n, x, y, s, col) BE
     v := v / 10
     len := len + 1
   }
-  // buf has digits in reverse — draw from rightmost slot back.
+  // 1-px dark shadow underneath so digits stay readable against
+  // the busy cave terrain.
   FOR i = 0 TO len - 1 DO
-    draw_digit(buf!(len - 1 - i), x + i*(5*s + s), y, s, col)
+    draw_digit(buf!(len - 1 - i), x + i*digit_slot(s) + 2, y + 2, s, bg_col)
+  FOR i = 0 TO len - 1 DO
+    draw_digit(buf!(len - 1 - i), x + i*digit_slot(s), y, s, col)
 }
 
 // ---------- main loop ------------------------------------------------
@@ -302,6 +321,8 @@ LET init_colours() BE
 { bg_col        := sys(Sys_sdl, sdl_maprgb, 0,  20,  24,  40)
   cave_col      := sys(Sys_sdl, sdl_maprgb, 0,  80, 120,  90)
   cave_edge_col := sys(Sys_sdl, sdl_maprgb, 0, 140, 200, 150)
+  smoke_col     := sys(Sys_sdl, sdl_maprgb, 0, 180, 180, 190)
+  smoke_col2    := sys(Sys_sdl, sdl_maprgb, 0, 100, 100, 115)
   heli_col      := sys(Sys_sdl, sdl_maprgb, 0, 220, 220,  70)
   blade_col     := sys(Sys_sdl, sdl_maprgb, 0, 200, 200, 200)
   text_col      := sys(Sys_sdl, sdl_maprgb, 0, 240, 240, 240)
@@ -324,25 +345,64 @@ LET draw_world() BE
     sys(Sys_sdl, sdl_drawfillrect, surf, x, fy, x+1, fy + 2, cave_edge_col)
   }
 
-  // Helicopter body.
-  sys(Sys_sdl, sdl_drawfillrect, surf,
-      HELI_X, hy, HELI_X + HELI_W, hy + HELI_H, heli_col)
-  // Tail boom.
-  sys(Sys_sdl, sdl_drawfillrect, surf,
-      HELI_X - 12, hy + HELI_H/2 - 2,
-      HELI_X, hy + HELI_H/2 + 2, heli_col)
-  // Tail rotor.
-  sys(Sys_sdl, sdl_drawfillrect, surf,
-      HELI_X - 14, hy + HELI_H/2 - 5,
-      HELI_X - 11, hy + HELI_H/2 + 5, blade_col)
-  // Main rotor (animated thick line above body).
-  { LET rx0 = HELI_X - 6
-    LET rx1 = HELI_X + HELI_W + 6
-    LET ry  = hy - 5
-    TEST blade_phase < 2
-    THEN sys(Sys_sdl, sdl_drawfillrect, surf, rx0, ry-1, rx1, ry+1, blade_col)
-    ELSE sys(Sys_sdl, sdl_drawfillrect, surf,
-             (rx0+rx1)/2 - 2, ry - 4, (rx0+rx1)/2 + 2, ry + 4, blade_col)
+  // Smoke trail — older puffs grow + dim. Two-tone: outer ring then
+  // inner highlight gives a soft volumetric look at zero cost.
+  FOR i = 0 TO SMOKE_CAP - 1 DO
+  { LET age = smoke_age!i
+    IF age < SMOKE_LIFE DO
+    { LET sx = smoke_x!i
+      LET sy = smoke_y!i
+      LET r  = 2 + age / 5         // grow from 2 to ~9
+      LET col = (age < SMOKE_LIFE / 2) -> smoke_col, smoke_col2
+      IF sx > -20 & sx < W + 20 DO
+        sys(Sys_sdl, sdl_drawfillrect, surf,
+            sx - r, sy - r, sx + r, sy + r, col)
+    }
+  }
+
+  // Helicopter — pitched ~10° nose-down via column-by-column shear.
+  // pitch_off(cx) = (cx - pivot_x) * DROP / SPAN, in pixels. Pivot
+  // at HELI_X (tail-end of cabin), span over HELI_W so nose drops
+  // PITCH_DROP px and tail-boom tip lifts a couple pixels.
+  { LET DROP = 7         // total tilt across HELI_W ≈ tan(11°)*36
+    // Cabin body: 1-px-wide vertical strips, y offset per column.
+    FOR cx = 0 TO HELI_W - 1 DO
+    { LET dy = (cx * DROP) / HELI_W
+      sys(Sys_sdl, sdl_drawfillrect, surf,
+          HELI_X + cx, hy + dy,
+          HELI_X + cx + 1, hy + dy + HELI_H, heli_col)
+    }
+    // Tail boom (negative cx, lifts behind pivot).
+    FOR cx = -12 TO -1 DO
+    { LET dy = (cx * DROP) / HELI_W
+      sys(Sys_sdl, sdl_drawfillrect, surf,
+          HELI_X + cx, hy + dy + HELI_H/2 - 2,
+          HELI_X + cx + 1, hy + dy + HELI_H/2 + 2, heli_col)
+    }
+    // Tail rotor — thin vertical bar at the very end of the boom.
+    { LET cx = -13
+      LET dy = (cx * DROP) / HELI_W
+      sys(Sys_sdl, sdl_drawfillrect, surf,
+          HELI_X - 14, hy + dy + HELI_H/2 - 5,
+          HELI_X - 11, hy + dy + HELI_H/2 + 5, blade_col)
+    }
+    // Main rotor — animated thick bar above the cabin, also pitched.
+    { LET rx0 = -6
+      LET rx1 = HELI_W + 6
+      TEST blade_phase < 2
+      THEN FOR cx = rx0 TO rx1 - 1 DO
+           { LET dy = (cx * DROP) / HELI_W
+             sys(Sys_sdl, sdl_drawfillrect, surf,
+                 HELI_X + cx, hy + dy - 6,
+                 HELI_X + cx + 1, hy + dy - 4, blade_col)
+           }
+      ELSE { LET mid = (rx0 + rx1) / 2
+             LET dy  = (mid * DROP) / HELI_W
+             sys(Sys_sdl, sdl_drawfillrect, surf,
+                 HELI_X + mid - 2, hy + dy - 9,
+                 HELI_X + mid + 2, hy + dy - 1, blade_col)
+           }
+    }
   }
 
   // Flames if dead.
@@ -355,19 +415,23 @@ LET draw_world() BE
           hy - 2,
           flame_col)
 
-  // Score (top-left). Scale-2 digits ~ 10×14 each.
-  draw_number(score, 12, 12, 2, text_col)
+  // Score (top-left). Scale-3 digits ≈ 15×21 each, 6-px gap.
+  draw_number(score, 14, 12, 3, text_col)
 
-  // High-score (top-right).
-  draw_number(hi_score, W - 100, 12, 2, blade_col)
+  // High-score (top-right). Reserve ~7 digits worth of width.
+  draw_number(hi_score, W - 7 * digit_slot(3), 12, 3, blade_col)
 
   sys(Sys_sdl, sdl_flip, surf)
 }
 
 LET start() = VALOF
-{ ceil_v  := getvec(CAVE_LEN)
-  floor_v := getvec(CAVE_LEN)
-  keys    := getvec(KEYCAP)
+{ ceil_v    := getvec(CAVE_LEN)
+  floor_v   := getvec(CAVE_LEN)
+  keys      := getvec(KEYCAP)
+  smoke_x   := getvec(SMOKE_CAP)
+  smoke_y   := getvec(SMOKE_CAP)
+  smoke_age := getvec(SMOKE_CAP)
+  FOR i = 0 TO SMOKE_CAP - 1 DO smoke_age!i := SMOKE_LIFE
   FOR i = 0 TO KEYCAP - 1 DO keys!i := 0
   digit_table_init()
 
@@ -391,10 +455,27 @@ LET start() = VALOF
            IF heli_vy < -VY_CAP DO heli_vy := -VY_CAP
            heli_y := heli_y + heli_vy
 
-           // Scroll cave one column to the left and refresh the
-           // newly-revealed rightmost column.
-           scroll_off := scroll_off + 1
+           // Scroll cave two columns left and refresh the two newly-
+           // revealed rightmost columns. Faster scroll relative to
+           // altitude change makes piloting feel right.
+           scroll_off := scroll_off + 2
+           write_column(scroll_off + W - 2)
            write_column(scroll_off + W - 1)
+
+           // Smoke: age all puffs, slide them left to match scroll,
+           // spawn fresh one at heli's tail with small random offset.
+           FOR i = 0 TO SMOKE_CAP - 1 DO
+           { IF smoke_age!i < SMOKE_LIFE DO
+             { smoke_age!i := smoke_age!i + 1
+               smoke_x!i   := smoke_x!i - 2
+             }
+           }
+           { LET hy = heli_y / 10
+             smoke_x!smoke_head   := HELI_X - 14
+             smoke_y!smoke_head   := hy + HELI_H/2 + (rand_in(-2, 2))
+             smoke_age!smoke_head := 0
+             smoke_head := (smoke_head + 1) REM SMOKE_CAP
+           }
 
            // Difficulty: shrink the cave gap every N frames.
            IF (score REM GAP_SHRINK_EVERY) = 0 & gap_size > GAP_MIN DO
@@ -425,5 +506,6 @@ LET start() = VALOF
   }
 
   freevec(ceil_v); freevec(floor_v); freevec(keys); freevec(digit_pat)
+  freevec(smoke_x); freevec(smoke_y); freevec(smoke_age)
   RESULTIS 0
 }
