@@ -950,6 +950,21 @@ export const TRACK = [
     prereqs: ["32-coroutines"],
   },
   {
+    slug: "66-arena",
+    title: "Arena (bump) allocation",
+    level: 6,
+    topic: "advanced",
+    summary: "Build a tiny arena allocator on top of getvec/freevec. One big upfront alloc, O(1) bump-pointer handouts, bulk free by reset or freevec. Shows the header-and-storage layout, indexed pointer returns via @, exhaustion handling, and a linked-list use case where reset replaces per-node freeing entirely.",
+    goals: [
+      "Header + storage layout in a single getvec block",
+      "arena_alloc returns @(a!(HDR+off)) — a real word pointer",
+      "BCPL gotcha: multiple LETs must lead a block (use nested blocks)",
+      "arena_reset is O(1) and invalidates every handout simultaneously",
+      "Trade: no per-allocation free; all handouts share the arena's lifetime",
+    ],
+    prereqs: ["15-vectors"],
+  },
+  {
     slug: "62-doom-engine",
     title: "Doom Engine as a Library",
     level: 9,
