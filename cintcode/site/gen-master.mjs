@@ -17,7 +17,7 @@ import { slots, aliases, overrides, nonLibhdrNames }
 const LIBHDR = process.argv[2] ??
   "/Users/jsobotka/code/BCPLwasm/cintcode/g/libhdr.h";
 
-const nameToGnum = parseLibhdr(LIBHDR);
+const nameToGnum = await parseLibhdr(LIBHDR);
 
 function gnumOf(name) {
   if (!nameToGnum.has(name)) {
