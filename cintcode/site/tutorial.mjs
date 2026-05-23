@@ -514,6 +514,21 @@ export const TRACK = [
     ],
     prereqs: ["10-functions"],
   },
+  {
+    slug: "67-actors",
+    title: "Coroutine Actors",
+    level: 8,
+    topic: "coroutines",
+    summary: "Build a tiny actor system on top of BCPL coroutines: each actor owns a mailbox queue, the scheduler delivers messages by callco, and actors send by appending to peer mailboxes (no direct cross-actor callco). Demonstrates pump-style scheduling, packed (kind, value) message ints, and natural shutdown via a sentinel message.",
+    goals: [
+      "Mailbox = ring buffer + send/recv primitives",
+      "Each actor body: cowait(0) → process → cowait(0) → ...",
+      "Scheduler pumps non-empty mailboxes round-robin until quiescent",
+      "Actors communicate only via mailbox; the call stack stays flat",
+      "Watch the message KIND (not the cowait return) to know when an actor has stopped",
+    ],
+    prereqs: ["32-coroutines"],
+  },
 
   // ---- Level 9 — Graphics --------------------------------------
   {
@@ -946,21 +961,6 @@ export const TRACK = [
       "Identical BCPL source compiles via bcpl (cintcode) and bcplwasm (wat → wasm)",
       "Workloads stress call/return, vector scans, nested loops, and tight integer math",
       "Expect ~2–4× speedup on wasm for these kernels; biggest wins on nfib + matmul",
-    ],
-    prereqs: ["32-coroutines"],
-  },
-  {
-    slug: "67-actors",
-    title: "Coroutine Actors",
-    level: 6,
-    topic: "advanced",
-    summary: "Build a tiny actor system on top of BCPL coroutines: each actor owns a mailbox queue, the scheduler delivers messages by callco, and actors send by appending to peer mailboxes (no direct cross-actor callco). Demonstrates pump-style scheduling, packed (kind, value) message ints, and natural shutdown via a sentinel message.",
-    goals: [
-      "Mailbox = ring buffer + send/recv primitives",
-      "Each actor body: cowait(0) → process → cowait(0) → ...",
-      "Scheduler pumps non-empty mailboxes round-robin until quiescent",
-      "Actors communicate only via mailbox; the call stack stays flat",
-      "Watch the message KIND (not the cowait return) to know when an actor has stopped",
     ],
     prereqs: ["32-coroutines"],
   },
