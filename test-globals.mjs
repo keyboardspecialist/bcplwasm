@@ -35,7 +35,7 @@ const fail = (msg) => { console.error("FAIL:", msg); failures++; };
 }
 
 // --- 2. Every manifest name exists in libhdr.h -----------------------
-const nameToGnum = parseLibhdr(LIBHDR);
+const nameToGnum = await parseLibhdr(LIBHDR);
 for (const s of slots) {
   if (nonLibhdrNames.has(s.name)) continue;
   if (!nameToGnum.has(s.name)) fail(`slot ${s.tidx} name "${s.name}" not in libhdr.h`);

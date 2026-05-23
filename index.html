@@ -1,8 +1,20 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="utf-8">
   <title>BCPL &rarr; WebAssembly playground</title>
+  <!-- Apply stored theme preference BEFORE any CSS or content paints
+       so users don't see a flash of dark mode while the main module
+       script loads (it runs at end of body). Defaults to "light"; only
+       switches if the user previously toggled to dark and the choice
+       was persisted to localStorage. -->
+  <script>
+    try {
+      const t = localStorage.getItem("bcpl-playground-theme") || "light";
+      if (t === "dark") document.documentElement.removeAttribute("data-theme");
+      else document.documentElement.setAttribute("data-theme", "light");
+    } catch (e) { /* SSR / private mode — leave the markup default (light) */ }
+  </script>
   <style>
     /* Bundled monospace font: Intel One Mono, SIL OFL 1.1.
        Self-hosted under site/fonts/intel-one-mono/. Falls back to the
@@ -1003,6 +1015,8 @@
     #memDump .mem-marker { color: var(--accent); font-weight: 600; }
     #memDump .mem-addr { color: var(--fg-dim); }
     #memDump .mem-zero { color: var(--fg-dim); }
+    #memDump .mem-gname { color: var(--accent); font-style: italic; }
+    [data-theme="light"] #memDump .mem-gname { color: var(--vc6-sel); }
     .canvas-cell {
       display: none;
       grid-row: 1 / span 2;
@@ -1198,6 +1212,10 @@
             <label>start <input id="memStart" type="number" value="1" min="0" style="width:6rem"></label>
             <label>words <input id="memCount" type="number" value="64" min="1" max="2048" style="width:5rem"></label>
             <button id="memRefresh">Refresh</button>
+            <input id="memGlobFilter" type="text"
+                   placeholder="filter globals…"
+                   style="width:9rem"
+                   title="case-insensitive: matches G!N or libhdr name (substring)">
             <span id="memInfo" class="mem-info"></span>
           </div>
           <pre id="memDump"></pre>
@@ -1230,6 +1248,32 @@
     const { BcplRuntime, storageBackend } = await import(`./runtime.js?v=${V}`);
     const { slots, aliases } = await import(`./stdlib-manifest.mjs?v=${V}`);
     const { API_DOCS } = await import(`./api-docs.mjs?v=${V}`);
+    const { parseLibhdrText } = await import(`./parse-libhdr.mjs?v=${V}`);
+
+    // Build gnum → name map from libhdr.h so the Memory tab can
+    // annotate each global slot with its BCPL name. Loaded lazily
+    // (one fetch) and cached forever.
+    let gnumToNamePromise = null;
+    function getGnumToName() {
+      if (!gnumToNamePromise) {
+        gnumToNamePromise = (async () => {
+          const txt = await (await fetch(`headers/libhdr.h?v=${V}`)).text();
+          const nameToGnum = parseLibhdrText(txt);
+          const inv = new Map();
+          for (const [name, gn] of nameToGnum) {
+            // Multiple names can share a gnum (aliases like
+            // unhold/release: 159). Concat with /.
+            const prev = inv.get(gn);
+            inv.set(gn, prev ? `${prev}/${name}` : name);
+          }
+          return inv;
+        })();
+      }
+      return gnumToNamePromise;
+    }
+    // Warm the cache early so renderMemDump is sync-fast.
+    let gnumToName = new Map();
+    getGnumToName().then(m => { gnumToName = m; });
     const { TRACK, LEVELS, BY_SLUG, nextSlug, prevSlug } =
       await import(`./tutorial.mjs?v=${V}`);
 
@@ -1263,6 +1307,7 @@
     const memStartEl    = document.getElementById("memStart");
     const memCountEl    = document.getElementById("memCount");
     const memRefreshEl  = document.getElementById("memRefresh");
+    const memGlobFilterEl = document.getElementById("memGlobFilter");
     const memInfoEl     = document.getElementById("memInfo");
     const diagTabBtnEl  = document.getElementById("diagTabBtn");
     const crashTabBtnEl = document.getElementById("crashTabBtn");
@@ -1486,6 +1531,35 @@ LET start() = VALOF
       }
       renderSourceTabs(); showActive();
     }
+    // Silent promote: convert the active preview tab into a real
+    // file in the workspace. Returns the new file index, or -1 if the
+    // active tab isn't a preview. Name-collision policy: if the file
+    // already exists, drop the preview and switch to the existing
+    // tab (don't clobber the user's edited copy). Used by the edit
+    // handler and the compile path so previews opened via the
+    // Examples list survive a refresh once the user interacts.
+    function promoteActivePreviewIfAny() {
+      const t = sourceTabs[activeTab];
+      if (!t || t.kind !== "preview") return -1;
+      const fileName = `${t.name}.b`;
+      let idx = files.findIndex(f => f.name === fileName);
+      if (idx < 0) {
+        // New file. Make it the entry if none already chosen.
+        const haveEntry = files.some(f => f.entry);
+        files.push({
+          name: fileName, entry: !haveEntry, content: t.content,
+        });
+        idx = files.length - 1;
+      }
+      // Drop the preview tab and open the file tab in its place.
+      sourceTabs.splice(activeTab, 1);
+      openFileTab(idx);
+      renderFileList();
+      persistFiles();
+      invalidateLastBuilt();
+      return idx;
+    }
+
     function promotePreview() {
       const t = sourceTabs[activeTab];
       if (!t || t.kind !== "preview") return;
@@ -2426,6 +2500,12 @@ LET start() = VALOF
       liveWatEl.textContent = "(compiling…)";
       setStatus("compiling…");
       commitActiveEdit();
+      // If the user opened an example via the Examples list and hits
+      // Compile without saving first, promote that preview into the
+      // workspace so compileBcplFile can resolve it AND a refresh
+      // doesn't lose the file. Browsing previews without compiling
+      // stays harmless (no auto-add).
+      promoteActivePreviewIfAny();
       persistFiles();
       clearCompileErrors();
       clearCrash();
@@ -2731,8 +2811,13 @@ LET start() = VALOF
         }
       }
       syncEditor();
-      const i = activeFileIdx();
-      if (i < 0) return;  // readonly tab
+      let i = activeFileIdx();
+      if (i < 0) {
+        // Editing a preview tab — promote it to a real workspace
+        // file so the edit (and content) survive a refresh.
+        i = promoteActivePreviewIfAny();
+        if (i < 0) return;   // not a preview either — readonly tab
+      }
       files[i].content = userSrcEl.value;
       persistFiles();
       invalidateLastBuilt();
@@ -3104,6 +3189,17 @@ LET start() = VALOF
       const rows = [];
       const COLS = 4;
       const Pword = layout ? layout.P : -1;
+      // BCPL globals live at word slots 1..gLen. G is word 1 in the
+      // playground, so word-addr N corresponds to global slot N (zero
+      // is reserved). Annotate cells in that range with the libhdr.h
+      // name (or "G!N" if unknown). Outside the range we add no name.
+      const gBase = layout ? layout.G : 1;
+      const gLast = layout ? gBase + (layout.gLen ?? 1000) - 1 : 0;
+      const slotName = (a) => {
+        if (a < gBase || a > gLast) return null;
+        const slot = a - gBase + 1;
+        return gnumToName.get(slot) ?? null;
+      };
       for (let i = 0; i < words.length; i += COLS) {
         const addr = start + i;
         const ws = [];
@@ -3115,8 +3211,20 @@ LET start() = VALOF
         }).join(" ");
         const ascii = fmtAscii(ws);
         const pMark = (Pword >= addr && Pword < addr + COLS) ? " ← P" : "";
+        // Global-slot annotation. Skipped when no cell in the row
+        // sits in the globals range or has a known name. Format:
+        // "G!N=name ..." per known cell, joined with " · ".
+        const nameParts = [];
+        for (let j = 0; j < ws.length; j++) {
+          const a = addr + j;
+          const nm = slotName(a);
+          if (nm) nameParts.push(`G!${a - gBase + 1}=${nm}`);
+        }
+        const nameTail = nameParts.length
+          ? `  <span class="mem-gname">${escHtml(nameParts.join(" · "))}</span>`
+          : "";
         rows.push(
-          `<span class="mem-addr">[${String(addr).padStart(7)}]</span>  ${wHex}  ${escHtml(ascii)}${pMark}`
+          `<span class="mem-addr">[${String(addr).padStart(7)}]</span>  ${wHex}  ${escHtml(ascii)}${pMark}${nameTail}`
         );
       }
       return rows.join("\n");
@@ -3125,6 +3233,55 @@ LET start() = VALOF
     // Refresh re-reads current start/count from the inputs without
     // rewriting them. Region change is what seeds defaults — once seeded,
     // user can scroll the window by editing start/count freely.
+    // Globals render: one row per slot with name + hex + decimal.
+    // Drops the 4-cols hex grid in favor of a key/value table — much
+    // easier to scan for "what does G!N hold right now". Hides slots
+    // beyond the highest non-zero or named entry in the requested
+    // window so the bottom doesn't fill with empty G!413..G!1000.
+    function renderGlobalsList(start, words, layout) {
+      const gBase = layout ? layout.G : 1;
+      const rows = [];
+      // Trim trailing all-zero unnamed slots from the view.
+      let last = words.length - 1;
+      while (last > 0) {
+        const slot = (start + last) - gBase + 1;
+        const named = gnumToName.get(slot);
+        if (words[last] !== 0 || named) break;
+        last--;
+      }
+      // Filter: case-insensitive substring match against "G!N" or
+      // the libhdr name. Empty filter matches everything.
+      const q = (memGlobFilterEl.value || "").trim().toLowerCase();
+      let shown = 0;
+      for (let i = 0; i <= last; i++) {
+        const addr = start + i;
+        const slot = addr - gBase + 1;
+        const w = words[i];
+        const named = gnumToName.get(slot);
+        if (q) {
+          const slotKey = `g!${slot}`;
+          const nameKey = (named || "").toLowerCase();
+          if (!slotKey.includes(q) && !nameKey.includes(q)) continue;
+        }
+        const slotLabel = `G!${String(slot).padStart(4)}`;
+        const name = (named ? named : "—").padEnd(20).slice(0, 20);
+        const hex = fmtHex32(w);
+        const dec = w === 0 ? "" : `(${w | 0})`;
+        const nameCls = named ? "mem-gname" : "mem-zero";
+        const valCls  = w === 0 ? "mem-zero" : "";
+        rows.push(
+          `<span class="mem-addr">${slotLabel}</span>  ` +
+          `<span class="${nameCls}">${escHtml(name)}</span>  ` +
+          `<span class="${valCls}">${hex}</span> ${escHtml(dec)}`
+        );
+        shown++;
+      }
+      if (q && shown === 0) {
+        rows.push(`<span class="mem-zero">(no globals match "${escHtml(q)}")</span>`);
+      }
+      return rows.join("\n");
+    }
+
     function refreshMemory() {
       const rt = currentRt ?? lastMemRt;
       if (!rt) {
@@ -3138,7 +3295,14 @@ LET start() = VALOF
       const start = parseInt(memStartEl.value, 10) | 0;
       const count = Math.min(2048, Math.max(1, parseInt(memCountEl.value, 10) | 0));
       const words = rt.readWords(start, count);
-      memDumpEl.innerHTML = renderMemDump(start, words, layout);
+      // Globals region uses the key/value list. Stack / Heap / Static
+      // / Custom stay on the hex dump — raw bytes matter there.
+      const useGlobals = memRegionEl.value === "globals";
+      // Filter box is only meaningful for the globals view.
+      memGlobFilterEl.style.display = useGlobals ? "" : "none";
+      memDumpEl.innerHTML = useGlobals
+        ? renderGlobalsList(start, words, layout)
+        : renderMemDump(start, words, layout);
       memInfoEl.textContent =
         `P=${layout.P}  line=${layout.line}  heapTop=${layout.heapTop}  ` +
         `static=${layout.staticBase}..${layout.staticTop}  ` +
@@ -3160,6 +3324,7 @@ LET start() = VALOF
     memStartEl.addEventListener("change", refreshMemory);
     memCountEl.addEventListener("change", refreshMemory);
     memStartEl.addEventListener("input", refreshMemory);
+    memGlobFilterEl.addEventListener("input", refreshMemory);
     memCountEl.addEventListener("input", refreshMemory);
 
     function syncEditor() {

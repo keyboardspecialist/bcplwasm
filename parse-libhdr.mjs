@@ -8,16 +8,22 @@
 //   qux;  quux: 50   (qux = 50-1 = 49, quux = 50)  [rare]
 //   // comments
 //   /* block comments (naive, single-line) */
+//
+// NOTE: this file is imported by both node tooling (gen-master.mjs,
+// test-globals.mjs) AND the browser playground (index.html). A static
+// `import fs from "node:fs"` here would explode at parse time in the
+// browser. The node entry point uses a dynamic import inside the
+// function instead so browser callers can `import { parseLibhdrText }`
+// without hitting the fs import.
 
-import fs from "node:fs";
-
-export function parseLibhdr(path) {
-  const src = fs.readFileSync(path, "utf8");
+// Browser-safe variant: take raw source text, return Map<name, gnum>.
+// node parseLibhdr(path) just reads + delegates.
+export function parseLibhdrText(src) {
   const nameToGnum = new Map();
 
   // Extract the first GLOBAL { ... } block (libhdr.h has exactly one).
   const gStart = src.indexOf("GLOBAL {");
-  if (gStart < 0) throw new Error("no GLOBAL block in " + path);
+  if (gStart < 0) throw new Error("no GLOBAL block in source");
   let depth = 0;
   let gEnd = -1;
   for (let i = gStart + "GLOBAL ".length; i < src.length; i++) {
@@ -64,11 +70,30 @@ export function parseLibhdr(path) {
   return nameToGnum;
 }
 
-// When invoked directly: dump parsed map.
-if (import.meta.url === `file://${process.argv[1]}`) {
-  const path = process.argv[2] ??
+// Node-only convenience wrapper. Uses dynamic import so the static
+// module graph stays browser-safe (no top-level node:fs).
+export async function parseLibhdr(path) {
+  const fs = await import("node:fs");
+  return parseLibhdrText(fs.readFileSync(path, "utf8"));
+}
+
+// Backwards-compat sync form for callers that already required node
+// at startup. Only resolves if the caller awaits or uses a top-level
+// node context — gen-master.mjs and test-globals.mjs already use the
+// async form below or were updated to await this.
+export function parseLibhdrSync(path) {
+  // eslint-disable-next-line no-undef
+  const fs = require("node:fs");
+  return parseLibhdrText(fs.readFileSync(path, "utf8"));
+}
+
+// When invoked directly under node: dump parsed map. Guarded so
+// browser callers don't trip the `process` reference.
+if (typeof process !== "undefined" && typeof process.argv !== "undefined" &&
+    import.meta.url === `file://${process.argv[1]}`) {
+  const p = process.argv[2] ??
     "/Users/jsobotka/code/BCPLwasm/cintcode/g/libhdr.h";
-  const m = parseLibhdr(path);
+  const m = await parseLibhdr(p);
   const sorted = [...m.entries()].sort((a, b) => a[1] - b[1]);
   for (const [name, num] of sorted) console.log(`${num}\t${name}`);
   console.error(`\ntotal: ${m.size} globals`);
