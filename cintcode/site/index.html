@@ -787,6 +787,44 @@
       overflow: auto;
       margin: 0;
     }
+    #wasmView {
+      flex: 1;
+      overflow: auto;
+      padding: 0;
+      background: var(--bg);
+    }
+    #wasmView .wasm-header {
+      padding: 0.5rem 0.7rem;
+      font-family: "Intel One Mono", ui-monospace, monospace;
+      font-size: 0.78rem;
+      white-space: pre;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-2);
+      color: var(--fg);
+    }
+    #wasmView .wasm-header .k    { color: var(--fg-dim); }
+    #wasmView .wasm-header .v    { color: var(--accent); }
+    #wasmView .wasm-header .yes  { color: #79c879; }
+    #wasmView .wasm-header .no   { color: var(--err); font-weight: 600; }
+    #wasmView .wasm-disasm {
+      padding: 0.4rem 0.7rem;
+    }
+    #wasmView .wasm-disasm > summary {
+      cursor: pointer;
+      color: var(--accent);
+      padding: 0.25rem 0;
+    }
+    #wasmDisasm {
+      white-space: pre;
+      overflow: auto;
+      margin: 0;
+      max-height: 60vh;
+      font-family: "Intel One Mono", ui-monospace, monospace;
+      font-size: 0.78rem;
+    }
+    [data-theme="light"] #wasmView .wasm-header .v { color: var(--vc6-sel); }
+    [data-theme="light"] #wasmView .wasm-header .yes { color: #006400; }
+    [data-theme="light"] #wasmView .wasm-disasm > summary { color: var(--vc6-sel); }
     .preview-note {
       background: var(--bg-3);
       color: var(--fg-dim);
@@ -1182,6 +1220,13 @@
           </div>
         </div>
         <pre id="liveWat">(not yet compiled)</pre>
+        <div id="wasmView" style="display:none">
+          <div class="wasm-header" id="wasmHeader">(no wasm built yet)</div>
+          <details class="wasm-disasm" id="wasmDisasmWrap">
+            <summary>full disassembly</summary>
+            <pre id="wasmDisasm">(not yet compiled)</pre>
+          </details>
+        </div>
       </div>
     </main>
 
@@ -1293,6 +1338,9 @@
     const editorHlEl    = document.getElementById("editorHl");
     const themeToggleEl = document.getElementById("themeToggle");
     const liveWatEl     = document.getElementById("liveWat");
+    const wasmViewEl    = document.getElementById("wasmView");
+    const wasmHeaderEl  = document.getElementById("wasmHeader");
+    const wasmDisasmEl  = document.getElementById("wasmDisasm");
     const previewNoteEl = document.getElementById("previewNote");
     const previewMetaEl = document.getElementById("previewMeta");
     const prevLessonBtn = document.getElementById("prevLesson");
@@ -1423,6 +1471,9 @@ LET start() = VALOF
       if (!sourceTabs.some(t => t.kind === "wat")) {
         sourceTabs.push({ kind: "wat" });
       }
+      if (!sourceTabs.some(t => t.kind === "wasm")) {
+        sourceTabs.push({ kind: "wasm" });
+      }
       // Try to preserve active selection.
       if (preserve && prev) {
         const idx = sourceTabs.findIndex(t =>
@@ -1452,6 +1503,9 @@ LET start() = VALOF
           btn.classList.add("preview");
         } else if (t.kind === "wat") {
           label = "WAT";
+          btn.classList.add("wat-tab");
+        } else if (t.kind === "wasm") {
+          label = "Wasm";
           btn.classList.add("wat-tab");
         }
         const span = document.createElement("span");
@@ -1486,6 +1540,8 @@ LET start() = VALOF
         editorWrapEl.classList.remove("is-readonly");
         editorWrapEl.style.display = "flex";
         liveWatEl.style.display = "none";
+        wasmViewEl.style.display = "none";
+        liveWatEl.style.display = "none";
         previewNoteEl.classList.remove("visible");
       } else if (t.kind === "preview") {
         setEditorContent(t.content);
@@ -1493,12 +1549,20 @@ LET start() = VALOF
         editorWrapEl.classList.add("is-readonly");
         editorWrapEl.style.display = "flex";
         liveWatEl.style.display = "none";
+        wasmViewEl.style.display = "none";
         renderPreviewMeta(t.name);
         previewNoteEl.classList.add("visible");
       } else if (t.kind === "wat") {
         editorWrapEl.style.display = "none";
         liveWatEl.style.display = "block";
+        wasmViewEl.style.display = "none";
         previewNoteEl.classList.remove("visible");
+      } else if (t.kind === "wasm") {
+        editorWrapEl.style.display = "none";
+        liveWatEl.style.display = "none";
+        wasmViewEl.style.display = "block";
+        previewNoteEl.classList.remove("visible");
+        renderWasmView();
       }
       // Sync left Files list highlight.
       renderFileList();
@@ -2490,7 +2554,101 @@ LET start() = VALOF
 
     function invalidateLastBuilt() {
       lastBuilt = null;
+      wasmDisasmCache = null;
       if (runOnlyBtn) runOnlyBtn.disabled = true;
+      // Reset wasm tab text so a stale build can't be mistaken for fresh.
+      if (wasmHeaderEl) wasmHeaderEl.textContent = "(no wasm built yet)";
+      if (wasmDisasmEl) wasmDisasmEl.textContent = "(not yet compiled)";
+    }
+
+    // Memoised disassembly so opening the Wasm tab repeatedly is cheap.
+    // Keyed by the entry chunk byte-length as a quick stable proxy.
+    let wasmDisasmCache = null;
+
+    // Render the Wasm tab from the cached lastBuilt entry chunks.
+    // Summary stats are computed by walking the binaryen module API.
+    // The disassembly is folded behind <details> so the initial paint
+    // is cheap; clicking expand triggers the heavier emitText.
+    async function renderWasmView() {
+      if (!lastBuilt) {
+        wasmHeaderEl.textContent = "(no wasm built yet — Compile first)";
+        wasmDisasmEl.textContent = "";
+        return;
+      }
+      const bytes = lastBuilt.entryBufs[0] ?? null;
+      if (!bytes) {
+        wasmHeaderEl.textContent = "(entry has no wasm chunks)";
+        wasmDisasmEl.textContent = "";
+        return;
+      }
+      if (wasmDisasmCache && wasmDisasmCache.byteLength === bytes.byteLength) {
+        wasmHeaderEl.innerHTML = wasmDisasmCache.headerHTML;
+        wasmDisasmEl.textContent = wasmDisasmCache.disasm;
+        return;
+      }
+      wasmHeaderEl.textContent = "loading binaryen…";
+      wasmDisasmEl.textContent = "";
+      try {
+        const mod_ns = await getBinaryen();
+        const binaryen = mod_ns.default ?? mod_ns;
+        const mod = binaryen.readBinary(new Uint8Array(bytes));
+        if (typeof mod.setFeatures === "function" && binaryen.Features) {
+          mod.setFeatures(binaryen.Features.All);
+        }
+        const text = mod.emitText();
+        // Summary stats — straight off the text since binaryen.js
+        // doesn't expose all section sizes as numbers, and counting
+        // lines is plenty for "is this thing wired correctly".
+        const imports = [...text.matchAll(/^\s*\(import\s+"([^"]+)"\s+"([^"]+)"/gm)]
+          .map(m => `${m[1]}.${m[2]}`);
+        const importCount = imports.length;
+        const funcLines = text.match(/^\s*\(func\s+\$/gm) ?? [];
+        const exportLines = text.match(/^\s*\(export\s+/gm) ?? [];
+        const globalLines = text.match(/^\s*\(global\s+\$/gm) ?? [];
+        const elemLines  = text.match(/^\s*\(elem\b/gm)  ?? [];
+        const dataLines  = text.match(/^\s*\(data\b/gm)  ?? [];
+        const hasAsyncify = text.includes("$asyncify_state") ||
+                            text.includes("asyncify_start_unwind") ||
+                            imports.some(s => s.startsWith("env.asyncify"));
+        const hasBpImport = imports.includes("env.bcpl_break");
+        const hasBpArmedImport = imports.includes("env.__bp_armed");
+        const bpCallCount = (text.match(/\(call\s+\$__break\b/g) ?? []).length;
+        // Top-10 largest functions by line count.
+        const fnRe = /^\s*\(func\s+(\$[\w$]+)([\s\S]*?)(?=^\s*\(func\s+\$|^\s*\)\s*;; end module|\Z)/gm;
+        const fnSizes = [];
+        let m;
+        while ((m = fnRe.exec(text)) !== null) {
+          const lines = (m[2].match(/\n/g) ?? []).length + 1;
+          fnSizes.push({ name: m[1], lines });
+        }
+        fnSizes.sort((a, b) => b.lines - a.lines);
+        const top = fnSizes.slice(0, 10);
+        const yn = (b, ok = true) => b
+          ? `<span class="yes">yes</span>`
+          : `<span class="${ok ? "no" : "v"}">no</span>`;
+        const headerHTML =
+          `<span class="k">module size  :</span> <span class="v">${bytes.byteLength.toLocaleString()} bytes</span>\n` +
+          `<span class="k">imports      :</span> <span class="v">${importCount}</span>` +
+          `   <span class="k">exports:</span> <span class="v">${exportLines.length}</span>` +
+          `   <span class="k">functions:</span> <span class="v">${funcLines.length}</span>` +
+          `   <span class="k">globals:</span> <span class="v">${globalLines.length}</span>` +
+          `   <span class="k">elems:</span> <span class="v">${elemLines.length}</span>` +
+          `   <span class="k">data:</span> <span class="v">${dataLines.length}</span>\n` +
+          `<span class="k">asyncify     :</span> ${yn(hasAsyncify)}` +
+          `   <span class="k">bcpl_break import:</span> ${yn(hasBpImport)}` +
+          `   <span class="k">__bp_armed import:</span> ${yn(hasBpArmedImport)}` +
+          `   <span class="k">break call sites:</span> <span class="v">${bpCallCount}</span>\n` +
+          `<span class="k">top fns      :</span>\n` +
+          top.map(f => `  <span class="v">${escHtml(f.name)}</span>  <span class="k">${f.lines} lines</span>`).join("\n");
+        mod.dispose();
+        wasmDisasmCache = { byteLength: bytes.byteLength, headerHTML, disasm: text };
+        wasmHeaderEl.innerHTML = headerHTML;
+        wasmDisasmEl.textContent = text;
+      } catch (e) {
+        wasmHeaderEl.textContent = `wasm view error: ${e.message ?? e}`;
+        wasmDisasmEl.textContent = "";
+        console.error(e);
+      }
     }
 
     // Compile current workspace into wasm bytes. Returns the build
