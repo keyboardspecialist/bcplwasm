@@ -67,6 +67,7 @@ const RUN_SKIP = new Set([
   "62-doom-engine",     // same — depends on doomengine lib
   "doomengine",         // pure library — no start()
   "65-bench",           // long-running benchmark — skipped in CI
+  "70-heli",            // SDL game loop — only ends on Esc
   "stdlib",             // pure library — no start()
 ]);
 

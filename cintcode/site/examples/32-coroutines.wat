@@ -28,11 +28,12 @@
     (local $t8 i32)
     (local $t9 i32)
     (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (local.set $t3 (i32.load (i32.add (local.get $Pb) (i32.const 12)))) ;; init promoted P!3
     ;; line 0:16
     (global.set $__line (i32.const 16))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t4 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t4 (local.get $t3)) ;; LP promoted P!3
     (i32.store (i32.add (local.get $Pb) (i32.const 16)) (local.get $t4)) ;; STORE slot 4
     ;; line 0:17
     (global.set $__line (i32.const 17))

@@ -3171,6 +3171,7 @@ export class BcplRuntime {
         return 0;
       }
       case 40: {                                      // fillsurf (surf, col)
+        if (this._fb) { this._fbRect(0, 0, this._fbW, this._fbH, b); return 0; }
         this._sdlSetFill(b);
         ctx.fillRect(0, 0, can.width, can.height);
         return 0;

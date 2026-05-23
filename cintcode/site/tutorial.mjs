@@ -18,6 +18,7 @@ export const LEVELS = [
   { n: 7, name: "Objects"           },
   { n: 8, name: "Coroutines"        },
   { n: 9, name: "Graphics"          },
+  { n: 10, name: "Games"            },
 ];
 
 export const TRACK = [
@@ -953,7 +954,7 @@ export const TRACK = [
   {
     slug: "65-bench",
     title: "Cintcode vs wasm — microbenchmarks",
-    level: 9,
+    level: 6,
     topic: "advanced",
     summary: "Four workloads (recursive fib, sieve of Eratosthenes, dense matmul, integer accumulation loop) timed via datstamp deltas. Result columns must match across the two backends; elapsed columns show the speedup of compiled wasm over the cintcode interpreter.",
     goals: [
@@ -993,6 +994,22 @@ export const TRACK = [
       "Consumer-owned edge detection + main loop pacing",
     ],
     prereqs: ["61-doom-sf2"],
+  },
+  {
+    slug: "70-heli",
+    title: "Helicopter (Flash-style side-scroller)",
+    level: 10,
+    topic: "games",
+    summary: "One-button side-scroller: hold SPACE to climb, release to fall, dodge the cave + obstacles. Demonstrates a ring-buffered procedural terrain, fixed-step physics, AABB collision, and an on-canvas 5x7 digit renderer — no fonts, no audio, just SDL primitives.",
+    goals: [
+      "Ring buffer of (ceiling, floor) per column = O(1) infinite scroll",
+      "Drift-target generator: lerp toward a fresh random opening every N frames for smooth caves",
+      "Fixed-step physics: gravity vs thrust, vy clamp, integer pixel positions",
+      "Per-column AABB collision against ceiling/floor + obstacle rect",
+      "5x7 pixel-font digit renderer for on-canvas score (no text API needed)",
+      "Restart-on-crash via SPACE edge, score persists to hi-score",
+    ],
+    prereqs: ["35-raycaster"],
   },
 ];
 

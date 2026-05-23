@@ -126,6 +126,7 @@
     (local $t7 i32)
     (local $t8 i32)
     (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (local.set $t3 (i32.load (i32.add (local.get $Pb) (i32.const 12)))) ;; init promoted P!3
     (loop $__dispatch
       (block $__default
       (block $__case_1
@@ -133,7 +134,7 @@
         (br_table $__case_0 $__case_1 $__default (local.get $__lab))
       ) ;; close $__case_0 — entry-block body follows
     (local.set $t4 (i32.const 0))
-    (local.set $t5 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t5 (local.get $t3)) ;; LP promoted P!3
     (if (i32.ne  (local.get $t4) (local.get $t5)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     ))
@@ -143,7 +144,7 @@
     (global.set $P (i32.load (i32.shl (global.get $P) (i32.const 2))))
     (return (local.get $__res))
       ) ;; close $__case_1 — LAB L14
-    (local.set $t7 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t7 (local.get $t3)) ;; LP promoted P!3
     (local.set $t8 (i32.const 1))
     (local.set $t7 (i32.sub (local.get $t7) (local.get $t8)))
     (local.set $t8 (i32.add (global.get $TB) (i32.const 1))) ;; LF L11
@@ -155,7 +156,7 @@
     (local.set $t4 (call_indirect $ftable (type $bcpl_fn) (local.get $t8)))
     (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (i32.store (i32.add (local.get $Pb) (i32.const 16)) (local.get $t4)) ;; flush FNAP result
-    (local.set $t5 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t5 (local.get $t3)) ;; LP promoted P!3
     (local.set $t4 (i32.mul (local.get $t4) (local.get $t5)))
     ;; FNRN
     (local.set $__res (local.get $t4))

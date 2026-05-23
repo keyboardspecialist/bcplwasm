@@ -84,7 +84,7 @@
       --vc6-hi:   #ffffff;   /* bevel highlight (top/left) */
       --vc6-lo:   #404040;   /* bevel deep shadow (bottom/right outer) */
       --vc6-sh:   #808080;   /* bevel mid shadow */
-      --vc6-sel:  #0a246a;   /* selected row background */
+      --vc6-sel:  #000080;   /* selected row background — Win9x COLOR_HIGHLIGHT */
       --tok-kw:   #0000ff;   /* classic VC6 keyword blue */
       --tok-str:  #a31515;   /* maroon for string literals */
       --tok-num:  #000000;   /* numbers stay black like in VC6 */
@@ -512,6 +512,20 @@
     }
     .file-list li .name { flex: 1; }
     .file-list li .name.entry { color: var(--entry); font-weight: 700; }
+    .example-add {
+      background: transparent;
+      border: 1px solid var(--bg-3);
+      color: var(--fg-dim);
+      padding: 0 0.35rem;
+      border-radius: 3px;
+      cursor: pointer;
+      font: inherit;
+      line-height: 1;
+      opacity: 0;
+      transition: opacity 0.1s;
+    }
+    .example-list li:hover .example-add { opacity: 1; }
+    .example-add:hover { color: var(--accent); border-color: var(--accent); }
     /* Click-to-set-entry star, leading every .b file row. Filled
        for the current entry, hollow otherwise. Hover gives a subtle
        cue that it's interactive. */
@@ -1492,7 +1506,11 @@ LET start() = VALOF
 `,
       },
     ];
-    let files = loadFiles();
+    // Initial value set here is a placeholder; the real load happens
+    // after WS_FILES_KEY / wsActive are declared further down (the
+    // workspace block is defined later in the script). See the
+    // `files = loadFiles()` reassignment below the wsMigrateLegacy call.
+    let files = structuredClone(DEFAULT_FILES);
 
     // ------------------ Source-tab bar state ------------------
     // Each entry in sourceTabs describes one tab on the right pane:
@@ -1666,7 +1684,7 @@ LET start() = VALOF
       return idx;
     }
 
-    function promotePreview() {
+    async function promotePreview() {
       const t = sourceTabs[activeTab];
       if (!t || t.kind !== "preview") return;
       const fileName = `${t.name}.b`;
@@ -1677,14 +1695,18 @@ LET start() = VALOF
       if (existing >= 0) {
         files[existing].content = t.content;
       } else {
-        files.push({ name: fileName, entry: false, content: t.content });
+        // First .b file in an empty workspace claims entry automatically.
+        const haveEntry = files.some(f => f.entry);
+        files.push({ name: fileName, entry: !haveEntry, content: t.content });
       }
-      persistFiles();
       // Close the preview, focus the resulting file tab.
       sourceTabs.splice(activeTab, 1);
       rebuildSourceTabs(false);
       const newFileIdx = files.findIndex(f => f.name === fileName);
       openFileTab(newFileIdx);
+      renderFileList();
+      await saveCurrentWorkspace();
+      invalidateLastBuilt();
     }
 
     // ---------- Workspaces (named, switchable) ----------
@@ -1737,6 +1759,13 @@ LET start() = VALOF
       wsSetActive("default");
     }
     wsMigrateLegacy();
+    // Now that WS_FILES_KEY / wsActive are bound, do the real workspace
+    // load. The placeholder DEFAULT_FILES set up top is replaced here.
+    // Before this fix the initial load at the top of the script hit a
+    // TDZ ReferenceError on WS_FILES_KEY, got swallowed by loadFiles'
+    // try/catch, and silently returned DEFAULT — so workspace state
+    // never survived a reload.
+    files = loadFiles();
 
     function loadFiles() {
       try {
@@ -1980,7 +2009,7 @@ LET start() = VALOF
           : `<span class="entry-badge-key">no .b file</span>`;
       }
     }
-    function addFile() {
+    async function addFile() {
       commitActiveEdit();
       const name = prompt("New file name (.b or .h):", "mylib.b");
       if (!name) return;
@@ -1993,9 +2022,9 @@ LET start() = VALOF
           ? `SECTION "${name.replace(/\.b$/, "")}"\n\nGET "libhdr"\n\n`
           : "// BCPL header — declare globals here\n\nGLOBAL {\n}\n",
       });
-      persistFiles();
       rebuildSourceTabs(false);
       openFileTab(files.length - 1);
+      await saveCurrentWorkspace();
     }
     function deleteFile(i) {
       commitActiveEdit();
@@ -2143,6 +2172,32 @@ LET start() = VALOF
       if (src) openPreviewTab(slug, src);
     }
 
+    // Add an example as a real workspace file (skip the preview step).
+    // If the file already exists, prompt before overwriting.
+    async function addExampleAsFile(slug) {
+      commitActiveEdit();
+      const src = await fetchText(`examples/${slug}.b?v=${Date.now()}`, "");
+      if (!src) return;
+      const fileName = `${slug}.b`;
+      const existing = files.findIndex(f => f.name === fileName);
+      if (existing >= 0) {
+        if (!confirm(`"${fileName}" already exists — overwrite?`)) return;
+        files[existing].content = src;
+      } else {
+        const haveEntry = files.some(f => f.entry);
+        files.push({ name: fileName, entry: !haveEntry, content: src });
+      }
+      // Drop any matching preview tab so we don't end up with both.
+      sourceTabs = sourceTabs.filter(
+        t => !(t.kind === "preview" && t.name === slug));
+      rebuildSourceTabs(false);
+      const idx = files.findIndex(f => f.name === fileName);
+      openFileTab(idx);
+      renderFileList();
+      await saveCurrentWorkspace();
+      invalidateLastBuilt();
+    }
+
     // Fill the preview note bar for a given preview slug. If the slug
     // is in the tutorial TRACK, show title/level/summary/goals and
     // enable prev/next navigation. Otherwise fall back to a minimal line.
@@ -2212,12 +2267,7 @@ LET start() = VALOF
         hdr.textContent = `Level ${lv.n} — ${lv.name}`;
         exampleListEl.appendChild(hdr);
         for (const e of lessons) {
-          const li = document.createElement("li");
-          li.textContent = e.title;
-          li.title = e.summary;
-          if (e.slug === selectedExample) li.classList.add("active");
-          li.onclick = () => openExamplePreview(e.slug);
-          exampleListEl.appendChild(li);
+          exampleListEl.appendChild(makeExampleLi(e.slug, e.title, e.summary));
         }
       }
 
@@ -2233,13 +2283,28 @@ LET start() = VALOF
         hdr.textContent = "Extras";
         exampleListEl.appendChild(hdr);
         for (const name of EXTRAS) {
-          const li = document.createElement("li");
-          li.textContent = name;
-          if (name === selectedExample) li.classList.add("active");
-          li.onclick = () => openExamplePreview(name);
-          exampleListEl.appendChild(li);
+          exampleListEl.appendChild(makeExampleLi(name, name, ""));
         }
       }
+    }
+
+    function makeExampleLi(slug, title, summary) {
+      const li = document.createElement("li");
+      const name = document.createElement("span");
+      name.className = "name";
+      name.textContent = title;
+      if (summary) name.title = summary;
+      name.style.flex = "1";
+      li.appendChild(name);
+      const add = document.createElement("button");
+      add.textContent = "+";
+      add.title = "add to workspace";
+      add.className = "example-add";
+      add.onclick = (ev) => { ev.stopPropagation(); addExampleAsFile(slug); };
+      li.appendChild(add);
+      if (slug === selectedExample) li.classList.add("active");
+      li.onclick = () => openExamplePreview(slug);
+      return li;
     }
 
     // ------------------ API tab ------------------
