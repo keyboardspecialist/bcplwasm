@@ -190,7 +190,25 @@
       background: var(--border);
       margin: 0 0.3rem;
     }
-    .cmd-strip .compile-status { margin-left: auto; }
+    .cmd-strip .compile-status { margin-left: 0.6rem; }
+    .cmd-strip .entry-badge {
+      margin-left: auto;
+      font-size: 0.78rem;
+      padding: 0.15rem 0.5rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      color: var(--fg-dim);
+    }
+    .cmd-strip .entry-badge .entry-badge-key { color: var(--fg-dim); }
+    .cmd-strip .entry-badge .entry-badge-name { color: var(--entry); font-weight: 600; }
+    .cmd-strip .entry-badge .entry-badge-implicit { font-style: italic; opacity: 0.85; }
+    .file-hint {
+      padding: 0.35rem 0.5rem 0.2rem;
+      font-size: 0.7rem;
+      color: var(--fg-dim);
+      line-height: 1.35;
+    }
     /* Sticky toggle button — looks like a regular cmd-strip button,
        but stays "pressed" when .on is set. Click flips state. */
     .cmd-strip .toggle-btn.on {
@@ -493,9 +511,28 @@
       color: var(--fg);
     }
     .file-list li .name { flex: 1; }
-    .file-list li .name.entry::after {
-      content: "  *";
-      color: var(--entry);
+    .file-list li .name.entry { color: var(--entry); font-weight: 700; }
+    /* Click-to-set-entry star, leading every .b file row. Filled
+       for the current entry, hollow otherwise. Hover gives a subtle
+       cue that it's interactive. */
+    .file-list li .entry-star {
+      flex: 0 0 auto;
+      width: 1.1rem;
+      text-align: center;
+      padding: 0 0.15rem;
+      margin-right: 0.2rem;
+      background: transparent;
+      color: var(--fg-dim);
+      border: 0;
+      cursor: pointer;
+      font: inherit;
+      line-height: 1;
+    }
+    .file-list li .entry-star.on  { color: var(--entry); }
+    .file-list li .entry-star:hover { color: var(--entry); }
+    .file-list li .entry-star.placeholder {
+      visibility: hidden;
+      cursor: default;
     }
     .file-list li button {
       padding: 0 0.3rem;
@@ -1145,6 +1182,8 @@
             title="toggle debug mode — breakpoints + post-mortem pause (slower, forces asyncify on every module)">
       Debug mode
     </button>
+    <span id="entryBadge" class="entry-badge"
+          title="compile entry — click the ☆ next to a .b file in the Files pane to change"></span>
     <span id="compileStatus" class="compile-status"></span>
   </nav>
 
@@ -1163,7 +1202,9 @@
         <div class="file-actions">
           <button id="addFile">+ file</button>
           <button id="renameFile">rename</button>
-          <button id="setEntryBtn">set entry</button>
+        </div>
+        <div class="file-hint">
+          Click the ☆ next to a .b file to mark it as the compile entry.
         </div>
       </div>
 
@@ -1395,6 +1436,7 @@
     };
     let   currentRt     = null;   // BcplRuntime of the active program, if any
     const statusEl      = document.getElementById("compileStatus");
+    const entryBadgeEl  = document.getElementById("entryBadge");
 
     // ------------------ Left-pane tab switching ------------------
     function bindLeftTabs() {
@@ -1885,6 +1927,24 @@ LET start() = VALOF
       files.forEach((f, i) => {
         const li = document.createElement("li");
         if (i === activeFile) li.classList.add("active");
+        // Leading star — click to make this file the compile entry.
+        // Only .b files can be entry; .h rows get a placeholder
+        // (hidden, but reserves the column so names line up).
+        const star = document.createElement("button");
+        const isSrc = f.name.endsWith(".b");
+        if (isSrc) {
+          star.className = "entry-star" + (f.entry ? " on" : "");
+          star.textContent = f.entry ? "★" : "☆";
+          star.title = f.entry
+            ? `${f.name} is the compile entry`
+            : `make ${f.name} the compile entry`;
+          star.onclick = (e) => { e.stopPropagation(); setEntryByIdx(i); };
+        } else {
+          star.className = "entry-star placeholder";
+          star.textContent = "·";
+          star.tabIndex = -1;
+        }
+        li.appendChild(star);
         const name = document.createElement("span");
         name.className = "name" + (f.entry ? " entry" : "");
         name.textContent = f.name;
@@ -1897,6 +1957,28 @@ LET start() = VALOF
         li.appendChild(del);
         fileListEl.appendChild(li);
       });
+      renderEntryBadge();
+    }
+
+    // Tiny indicator in the cmd-strip status area: shows "entry: <file>"
+    // whenever there's a chosen entry, "(no entry — first .b will be
+    // used)" otherwise. Keeps the compile context visible without
+    // hunting through the file pane.
+    function renderEntryBadge() {
+      if (!entryBadgeEl) return;
+      const entry = files.find(f => f.entry);
+      if (entry) {
+        entryBadgeEl.innerHTML =
+          `<span class="entry-badge-key">entry:</span> ` +
+          `<span class="entry-badge-name">${escapeHtml(entry.name)}</span>`;
+      } else {
+        const firstB = files.find(f => f.name.endsWith(".b"));
+        entryBadgeEl.innerHTML = firstB
+          ? `<span class="entry-badge-key">entry:</span> ` +
+            `<span class="entry-badge-name entry-badge-implicit">` +
+            `${escapeHtml(firstB.name)} (default)</span>`
+          : `<span class="entry-badge-key">no .b file</span>`;
+      }
     }
     function addFile() {
       commitActiveEdit();
@@ -1949,14 +2031,18 @@ LET start() = VALOF
       renderSourceTabs();
       renderFileList();
     }
-    function setEntry() {
-      const i = activeFileIdx();
-      if (i < 0) { alert("select a .b file tab first"); return; }
-      commitActiveEdit();
+    // Click-to-promote: star button in the file list calls this.
+    // Idempotent — clicking the current entry is a no-op. Filtered
+    // for .b files (the star is a placeholder on .h rows anyway).
+    function setEntryByIdx(i) {
+      if (i < 0 || i >= files.length) return;
       const cur = files[i];
-      if (!cur.name.endsWith(".b")) { alert("entry must be a .b file"); return; }
+      if (!cur.name.endsWith(".b")) return;
+      if (cur.entry) return;
+      commitActiveEdit();
       for (const f of files) f.entry = (f === cur);
       persistFiles();
+      invalidateLastBuilt();
       renderSourceTabs();
       renderFileList();
     }
@@ -2830,6 +2916,10 @@ LET start() = VALOF
         const built = await doCompile();
         if (built) {
           lastBuilt = built;
+          // Wasm tab disasm is keyed by entry-chunk byte length —
+          // a fresh build with a coincidentally-matching length
+          // would otherwise hit a stale cache entry. Drop it.
+          wasmDisasmCache = null;
           runOnlyBtn.disabled = false;
           await doRun(built);
         }
@@ -2847,6 +2937,10 @@ LET start() = VALOF
         const built = await doCompile();
         if (built) {
           lastBuilt = built;
+          // Wasm tab disasm is keyed by entry-chunk byte length —
+          // a fresh build with a coincidentally-matching length
+          // would otherwise hit a stale cache entry. Drop it.
+          wasmDisasmCache = null;
           runOnlyBtn.disabled = false;
         }
       } finally {
@@ -2927,7 +3021,6 @@ LET start() = VALOF
     runOnlyBtn.addEventListener("click", runOnly);
     document.getElementById("addFile").addEventListener("click", addFile);
     document.getElementById("renameFile").addEventListener("click", renameFile);
-    document.getElementById("setEntryBtn").addEventListener("click", setEntry);
     savePreviewBtn.addEventListener("click", promotePreview);
     prevLessonBtn.addEventListener("click", goPrevLesson);
     nextLessonBtn.addEventListener("click", goNextLesson);
