@@ -271,7 +271,10 @@ LET draw_digit(d, x, y, s, col) BE
   FOR row = 0 TO 6 DO
   { LET mask = digit_pat!(d*7 + row)
     FOR cx = 0 TO 4 DO
-      IF mask & (1 << (4 - cx)) ~= 0 DO
+      // BCPL `&` in IF is short-circuit logical AND, NOT bitwise —
+      // bare `mask & flag ~= 0` parses as `mask AND (flag~=0)`.
+      // Parenthesise the bitwise test so we actually probe one bit.
+      IF (mask & (1 << (4 - cx))) ~= 0 DO
         sys(Sys_sdl, sdl_drawfillrect, surf,
             x + cx*s, y + row*s, x + (cx+1)*s, y + (row+1)*s, col)
   }
