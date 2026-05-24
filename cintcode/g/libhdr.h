@@ -552,6 +552,10 @@ c_recv        = 116  // (fd, buf, len, flags)  recv(2)
 c_send        = 117  // (fd, buf, len, flags)  send(2)
 c_read        = 118  // (fd, buf, len)         read(2). len is BYTES
 c_write       = 119  // (fd, buf, len)         write(2). len is BYTES
+c_sha1        = 120  // (in_buf, in_nbytes, out_20bytes)  RFC 3174 SHA1
+c_base64_enc  = 121  // (in_buf, in_nbytes, out_chars)
+                     //   writes ceil(n/3)*4 base64 chars. Returns
+                     //   the number of chars written.
 
 // BCPL-Wasm playground extension. Cintsys ignores these (returns 0).
 // Sys_assetload: info!1 = 0 means a binary blob (info!0 = byte length,

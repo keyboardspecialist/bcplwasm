@@ -23,6 +23,7 @@ to res.
 #include <errno.h>
 
 #include <fcntl.h>
+#include <string.h>             // memcpy for sha1
 #include <sys/wait.h>
 //#include <sys/time.h>
 #include <sys/timeb.h>
@@ -57,6 +58,8 @@ to res.
 #define  c_send        117
 #define  c_read        118
 #define  c_write       119
+#define  c_sha1        120
+#define  c_base64_enc  121
 
 extern BCPLWORD *W;
 
@@ -149,6 +152,79 @@ int tcpaccept(int s) {
   int res = accept(s, (struct sockaddr *)&peer, &peerlen);
   result2 = ntohl(peer.sin_addr.s_addr);
   return res;
+}
+
+// ---- SHA1 (RFC 3174) -------------------------------------------------
+// One-shot. Writes 20 bytes of digest to `out`. Reference impl, no
+// streaming API needed — callers handle one message at a time.
+
+static unsigned int sha1_rotl(unsigned int x, int n) {
+  return (x << n) | (x >> (32 - n));
+}
+
+void sha1_bytes(const unsigned char *msg, int mlen, unsigned char *out) {
+  unsigned int h0 = 0x67452301, h1 = 0xEFCDAB89, h2 = 0x98BADCFE;
+  unsigned int h3 = 0x10325476, h4 = 0xC3D2E1F0;
+  // Pad: append 0x80, zero-fill, append 64-bit big-endian bit length.
+  // Buffer sized for any message up to 64 KiB — fine for WS handshakes.
+  int padded = ((mlen + 9 + 63) / 64) * 64;
+  unsigned char *buf = (unsigned char*)calloc(padded, 1);
+  unsigned long long nbits = (unsigned long long)mlen * 8ULL;
+  int i, t;
+  memcpy(buf, msg, mlen);
+  buf[mlen] = 0x80;
+  for (i = 0; i < 8; i++)
+    buf[padded - 1 - i] = (unsigned char)((nbits >> (8 * i)) & 0xFF);
+
+  for (int blk = 0; blk < padded; blk += 64) {
+    unsigned int w[80];
+    for (i = 0; i < 16; i++) {
+      const unsigned char *p = buf + blk + 4*i;
+      w[i] = (p[0]<<24) | (p[1]<<16) | (p[2]<<8) | p[3];
+    }
+    for (i = 16; i < 80; i++)
+      w[i] = sha1_rotl(w[i-3] ^ w[i-8] ^ w[i-14] ^ w[i-16], 1);
+    unsigned int a=h0, b=h1, c=h2, d=h3, e=h4, f, k, tmp;
+    for (t = 0; t < 80; t++) {
+      if (t < 20)      { f = (b & c) | ((~b) & d); k = 0x5A827999; }
+      else if (t < 40) { f = b ^ c ^ d;            k = 0x6ED9EBA1; }
+      else if (t < 60) { f = (b&c)|(b&d)|(c&d);    k = 0x8F1BBCDC; }
+      else             { f = b ^ c ^ d;            k = 0xCA62C1D6; }
+      tmp = sha1_rotl(a, 5) + f + e + k + w[t];
+      e = d; d = c; c = sha1_rotl(b, 30); b = a; a = tmp;
+    }
+    h0 += a; h1 += b; h2 += c; h3 += d; h4 += e;
+  }
+  free(buf);
+
+  unsigned int H[5] = {h0, h1, h2, h3, h4};
+  for (i = 0; i < 5; i++) {
+    out[4*i    ] = (H[i] >> 24) & 0xFF;
+    out[4*i + 1] = (H[i] >> 16) & 0xFF;
+    out[4*i + 2] = (H[i] >>  8) & 0xFF;
+    out[4*i + 3] =  H[i]        & 0xFF;
+  }
+}
+
+// ---- base64 encode --------------------------------------------------
+// Writes ceil(nin/3)*4 chars to out, padded with '='. Returns count.
+static const char b64tab[] =
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+int base64_encode(const unsigned char *in, int nin, char *out) {
+  int o = 0, i = 0;
+  while (i < nin) {
+    unsigned int a = in[i];
+    unsigned int b = (i + 1 < nin) ? in[i+1] : 0;
+    unsigned int c = (i + 2 < nin) ? in[i+2] : 0;
+    unsigned int triple = (a << 16) | (b << 8) | c;
+    out[o++] = b64tab[(triple >> 18) & 0x3F];
+    out[o++] = b64tab[(triple >> 12) & 0x3F];
+    out[o++] = (i + 1 < nin) ? b64tab[(triple >> 6) & 0x3F] : '=';
+    out[o++] = (i + 2 < nin) ? b64tab[ triple       & 0x3F] : '=';
+    i += 3;
+  }
+  return o;
 }
 
 
@@ -363,6 +439,21 @@ BCPLWORD callc(BCPLWORD *args, BCPLWORD *g) {
       if(rc==-1)perror("read returned error");
       //printf("cfuncs: read returned rc=%d\n", rc);
       return rc;
+    }
+
+  case c_sha1:    // sha1(in_buf, in_nbytes, out_20)
+    { const unsigned char *in  = (const unsigned char*)&W[args[1]];
+      int                  n   = (int)args[2];
+      unsigned char       *out = (unsigned char*)&W[args[3]];
+      sha1_bytes(in, n, out);
+      return 0;
+    }
+
+  case c_base64_enc: // base64_encode(in_buf, in_nbytes, out_chars) -> nchars
+    { const unsigned char *in  = (const unsigned char*)&W[args[1]];
+      int                  n   = (int)args[2];
+      char                *out = (char*)&W[args[3]];
+      return base64_encode(in, n, out);
     }
   }
 }
