@@ -36,6 +36,7 @@ to res.
 #include <netdb.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>          // inet_aton
 
 #define  c_name2ipaddr 101
 #define  c_name2port   102
@@ -59,10 +60,11 @@ to res.
 
 extern BCPLWORD *W;
 
-#ifdef XXX
-char namebuf[ 256];
-
-BCPLWORD result2  = 0;
+// Socket-shim helpers. Used to be guarded by #ifdef XXX (never set).
+// Re-enabled so Sys_callc actually reaches the BSD socket API.
+// result2 is owned by cintmain.c — declare extern, don't redefine.
+char namebuf[256];
+extern BCPLWORD result2;
 
 extern char *b2c_str(BCPLWORD bstr, char *cstr);
 
@@ -143,12 +145,11 @@ int tcplisten(int s, int n) {
 
 int tcpaccept(int s) {
   struct sockaddr_in peer;
-  int peerlen = sizeof(peer);
+  socklen_t peerlen = sizeof(peer);
   int res = accept(s, (struct sockaddr *)&peer, &peerlen);
   result2 = ntohl(peer.sin_addr.s_addr);
   return res;
 }
-#endif
 
 
 /*
@@ -214,13 +215,11 @@ int copydata(int s) {
 }
 */
 
-#ifndef XXX
-BCPLWORD callc(BCPLWORD *args, BCPLWORD *g) {
-  return 0;
-}
-#endif
-
-#ifdef XXX
+// Real callc — gated previously behind #ifdef XXX (a developer
+// "comment out" trick). Enabled here so Sys_callc actually dispatches
+// to the BSD socket shim instead of the no-op stub that used to live
+// at this spot. Without this, every socket op silently returns 0 and
+// servers hot-loop on accept() returning stdin's fd.
 BCPLWORD callc(BCPLWORD *args, BCPLWORD *g) {
   int rc = 0;
   BCPLWORD fno = args[0];
@@ -367,5 +366,3 @@ BCPLWORD callc(BCPLWORD *args, BCPLWORD *g) {
     }
   }
 }
-
-#endif

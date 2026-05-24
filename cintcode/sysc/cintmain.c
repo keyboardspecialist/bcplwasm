@@ -1191,10 +1191,13 @@ int main(int argc, char* argv[])
     int pagesize = sysconf(_SC_PAGE_SIZE);
     if(boottrace>0)
       printf("Allocating Cintcode memory using mmap, pagesize=%d\n", pagesize);
+    // Apple Silicon (and other strict W^X platforms) reject RWX
+    // mappings without entitlements: PROT_READ|WRITE|EXEC succeeds in
+    // mmap but the first write SIGSEGV's. Cintcode is interpreted —
+    // no JIT — so PROT_EXEC is unneeded. Drop it for portability.
     W = PT (mmap(NULL, membytes,
-                 PROT_READ|PROT_WRITE|PROT_EXEC,
+                 PROT_READ|PROT_WRITE,
                  MAP_PRIVATE|MAP_ANON, 0, 0));
-    //                 PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANON, 0, 0));
     if (boottrace>0)
       printf("Cintcode memory allocated using mmap\n");
 #else
