@@ -528,6 +528,31 @@ Sys_memmovebytes    =  74  // MR 14/06/23 (dest, src, n) dest and src are
 			   //    The dest and src regions may overlap.
 Sys_errwrch         = 75   // wrch to STDERR
 
+// Sys_callc dispatch codes (cintsys only — BSD socket shim in
+// sysc/cfuncs.c). Invoke with sys(Sys_callc, c_xxx, args...). All
+// take a BCPL word address for any buf argument; the shim
+// reinterprets it as a byte pointer. Return value follows the
+// underlying POSIX call: -1 on error, fd / byte count on success.
+c_name2ipaddr = 101  // (name_bstr)      → ipaddr in host byte order
+c_name2port   = 102  // (name_bstr)      → port in host byte order
+c_newsocket   = 103  // ()               → AF_INET SOCK_STREAM fd
+c_reuseaddr   = 104  // (fd, n)          → SO_REUSEADDR setsockopt
+c_setsndbufsz = 105  // (fd, sz)         → SO_SNDBUF setsockopt
+c_setrcvbufsz = 106  // (fd, sz)         → SO_RCVBUF setsockopt
+c_tcpbind     = 107  // (fd, ipaddr, port)  bind(2). #x7f000001 = loopback
+c_tcpconnect  = 108  // (fd, ipaddr, port)  connect(2)
+c_tcplisten   = 109  // (fd, backlog)       listen(2)
+c_tcpaccept   = 110  // (fd) → client_fd; peer ipaddr in result2
+c_tcpclose    = 111  // (fd)                close(2)
+c_fd_zero     = 112  // (set_wordaddr)      FD_ZERO
+c_fd_set      = 113  // (fd, set_wordaddr)  FD_SET
+c_fd_isset    = 114  // (fd, set_wordaddr)  FD_ISSET
+c_select      = 115  // (nfds, rd, wr, er, tv_wordaddr)  select(2)
+c_recv        = 116  // (fd, buf, len, flags)  recv(2)
+c_send        = 117  // (fd, buf, len, flags)  send(2)
+c_read        = 118  // (fd, buf, len)         read(2). len is BYTES
+c_write       = 119  // (fd, buf, len)         write(2). len is BYTES
+
 // BCPL-Wasm playground extension. Cintsys ignores these (returns 0).
 // Sys_assetload: info!1 = 0 means a binary blob (info!0 = byte length,
 // info!2 = word address of bytes — read via `base % i`).

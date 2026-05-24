@@ -14,13 +14,14 @@ GET "libhdr"
 // Node layout — getvec(3) gives a 4-word vector.
 MANIFEST {
   n_key   = 0
-  n_val   = 1
-  n_left  = 2
-  n_right = 3
+  n_val
+  n_left
+  n_right
+  n_upb
 }
 
 LET newnode(k, v) = VALOF
-{ LET p = getvec(3)
+{ LET p = getvec(n_upb)
   p!n_key   := k
   p!n_val   := v
   p!n_left  := 0
