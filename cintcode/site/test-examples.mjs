@@ -68,6 +68,7 @@ const RUN_SKIP = new Set([
   "doomengine",         // pure library — no start()
   "65-bench",           // long-running benchmark — skipped in CI
   "70-heli",            // SDL game loop — only ends on Esc
+  "71-websocket",       // needs browser WebSocket API + network
   "stdlib",             // pure library — no start()
 ]);
 
