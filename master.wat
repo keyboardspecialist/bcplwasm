@@ -94,6 +94,9 @@
   (import "env" "bcpl_recordnote"        (func $imp_recordnote (type $bcpl_fn)))
   (import "env" "bcpl_get_record"        (func $imp_get_record (type $bcpl_fn)))
   (import "env" "bcpl_put_record"        (func $imp_put_record (type $bcpl_fn)))
+  (import "env" "bcpl_assert"            (func $imp_assert (type $bcpl_fn)))
+  (import "env" "bcpl_getvec_or_abort"   (func $imp_getvec_or_abort (type $bcpl_fn)))
+  (import "env" "bcpl_vsafe_get"         (func $imp_vsafe_get (type $bcpl_fn)))
 
   (memory $mem    (export "mem")    64 1024)               ;; 4 MB initial, growable to 64 MB (large binary assets)
   (table  $ftable (export "ftable") 512 funcref)
@@ -131,7 +134,7 @@
     $imp_appendstream  $imp_deletefile  $imp_renamefile  $imp_datstamp
     $imp_delayuntil  $imp_writebin  $imp_note  $imp_point
     $imp_setrecordlength  $imp_recordpoint  $imp_recordnote  $imp_get_record
-    $imp_put_record)
+    $imp_put_record  $imp_assert  $imp_getvec_or_abort  $imp_vsafe_get)
 
   (func $init (export "init") (param $stack_base i32)
     (global.set $P (local.get $stack_base))
@@ -228,5 +231,8 @@
     (i32.store (i32.const  768) (i32.const 28)) ;; G!191 errwrch
     (i32.store (i32.const  772) (i32.const 56)) ;; G!192 errwritef
     (i32.store (i32.const  788) (i32.const 81)) ;; G!196 writebin
+    (i32.store (i32.const  792) (i32.const 89)) ;; G!197 assert
+    (i32.store (i32.const  796) (i32.const 90)) ;; G!198 getvec_or_abort
+    (i32.store (i32.const  800) (i32.const 91)) ;; G!199 vsafe_get
   )
 )
