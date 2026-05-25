@@ -1011,6 +1011,20 @@ export const TRACK = [
     ],
     prereqs: ["35-raycaster"],
   },
+  {
+    slug: "71-websocket",
+    title: "WebSocket echo client",
+    level: 5,
+    topic: "I/O & system",
+    summary: "Open a real browser WebSocket from BCPL via Sys_ws_*. Connects to wss://echo.websocket.org, sends three text messages, prints each reply, closes. Async events queue on the JS side; BCPL polls (non-blocking recv) since the playground has no callback bridge.",
+    goals: [
+      "Sys_ws_open / send / recv / status / close — integer handles, not streams",
+      "Recv polling pattern: 0 = empty, n = bytes, -1 = closed, -2 = buf too small",
+      "Pass byte buffers via BCPL word addresses (runtime reinterprets)",
+      "Wait-for-state loops with delay() — keeps the UI responsive via asyncify",
+    ],
+    prereqs: ["20-stdin-echo"],
+  },
 ];
 
 // Quick-lookup helpers used by the UI.

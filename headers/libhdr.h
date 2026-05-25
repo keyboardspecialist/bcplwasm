@@ -599,6 +599,22 @@ Sys_loadsf2         = 95   // (name_str) — load a binary asset (.sf2) as
                            //   Returns 1 on success, 0 if asset missing
                            //   or spessasynth fails to initialise.
 
+// WebSocket client (playground only — cintsys returns 0/-1). All
+// async on the JS side; recv polls. Handles are small positive ints.
+Sys_ws_open         = 96   // (url_bstr) → handle, or -1
+Sys_ws_send         = 97   // (h, buf_word, byte_len) → 0 ok, -1 fail
+                           //   buf is a BCPL word address; runtime
+                           //   ships byte_len raw bytes as one binary
+                           //   WebSocket frame.
+Sys_ws_recv         = 98   // (h, buf_word, max_bytes)
+                           //   →  n  bytes copied (one msg per call)
+                           //   →  0  queue empty (call again later)
+                           //   → -1  socket closed and queue drained
+                           //   → -2  caller buffer too small for msg
+Sys_ws_status       = 99   // (h) → 0=connecting, 1=open,
+                           //         2=closing,   3=closed, -1=bad h
+Sys_ws_close        = 100  // (h) → 0
+
 bootregs = 11 // Registers used to enter the function start in boot.b
 cliregs  = 21 // Registers used by BOOT to start the CLI
 klibregs = 21 // Registers used by BOOT to start KLIB

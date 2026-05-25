@@ -2072,6 +2072,82 @@ export class BcplRuntime {
         return 0;
       }
 
+      // ---- WebSocket client (browser only) -----------------------------
+      // BCPL pattern: open returns an integer handle; send/recv/close
+      // take that handle. recv is non-blocking — returns 0 when the
+      // queue is empty so user code can poll inside its game loop.
+      // Underlying transport is the browser WebSocket; async events
+      // pump bytes into a per-handle queue we drain on demand.
+
+      // sys(Sys_ws_open, url_bstr) → handle, or -1 on failure
+      case 96: {
+        if (typeof WebSocket === "undefined") return -1;
+        const url = this.readBcplString(a1);
+        if (!this._wsMap) { this._wsMap = new Map(); this._wsNext = 1; }
+        let ws;
+        try { ws = new WebSocket(url); }
+        catch { return -1; }
+        ws.binaryType = "arraybuffer";
+        const h = this._wsNext++;
+        const rec = { ws, queue: [], state: 0, closed: false };
+        ws.onopen    = () => { rec.state = 1; };
+        ws.onclose   = () => { rec.state = 3; rec.closed = true; };
+        ws.onerror   = () => { rec.state = 3; rec.closed = true; };
+        ws.onmessage = (ev) => {
+          if (typeof ev.data === "string") {
+            rec.queue.push(new TextEncoder().encode(ev.data));
+          } else if (ev.data instanceof ArrayBuffer) {
+            rec.queue.push(new Uint8Array(ev.data));
+          }
+        };
+        this._wsMap.set(h, rec);
+        return h;
+      }
+
+      // sys(Sys_ws_send, h, buf_word, byte_len) → 0 ok, -1 fail
+      case 97: {
+        const rec = this._wsMap?.get(a1);
+        if (!rec || rec.state !== 1) return -1;
+        // Read len bytes starting at the buffer's byte address.
+        const byteOff = (a2 | 0) * 4;
+        const bytes = new Uint8Array(this.mem.buffer, byteOff, a3 | 0).slice();
+        try { rec.ws.send(bytes); } catch { return -1; }
+        return 0;
+      }
+
+      // sys(Sys_ws_recv, h, buf_word, max_bytes)
+      //   → n bytes copied, 0 if queue empty, -1 if closed AND empty
+      case 98: {
+        const rec = this._wsMap?.get(a1);
+        if (!rec) return -1;
+        if (rec.queue.length === 0) return rec.closed ? -1 : 0;
+        const msg = rec.queue[0];
+        const max = a3 | 0;
+        if (msg.length > max) return -2;        // caller's buffer too small
+        const byteOff = (a2 | 0) * 4;
+        new Uint8Array(this.mem.buffer, byteOff, msg.length).set(msg);
+        rec.queue.shift();
+        return msg.length;
+      }
+
+      // sys(Sys_ws_status, h)
+      //   → 0=connecting, 1=open, 2=closing, 3=closed, -1=bad handle
+      case 99: {
+        const rec = this._wsMap?.get(a1);
+        if (!rec) return -1;
+        return rec.state;
+      }
+
+      // sys(Sys_ws_close, h) → 0
+      case 100: {
+        const rec = this._wsMap?.get(a1);
+        if (rec) {
+          try { rec.ws.close(); } catch {}
+          this._wsMap.delete(a1);
+        }
+        return 0;
+      }
+
       // sys(Sys_setlight, light_0_255) — cache light scale for the
       // subsequent drawwallcol / drawflatspan calls. Stored as 0..256
       // (256 = full bright, used as `(channel * scale) >> 8`).
