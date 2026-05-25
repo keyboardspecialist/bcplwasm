@@ -96,6 +96,9 @@ GLOBAL {
                  // s_store flushes only [cssp_sync..cssp-1]. Push ops
                  // leave cssp_sync unchanged.
   fn_peak        // peak cssp seen in current function (prescan output)
+  emit_max_cssp  // actual peak cssp observed during emit (diagnostic)
+  last_op_for_max  // OCODE op that caused emit_max_cssp to bump
+  prescan_trace  // set TRUE to dump per-op prescan trace (debug)
   terminated     // TRUE if current code block ended with terminal
   stat_words     // static data array (words)
   stat_n         // number of static words accumulated
@@ -1041,18 +1044,60 @@ AND scan_emit() BE
         // Pre-scan: collect labels, record SAVE size, and simulate
         // cssp drift so we know the peak expression-stack depth and
         // can emit only that many Wasm locals.
+        //
+        // Mirrors emit's pendingop deferral exactly: binary and unary
+        // ops set sim_pendingop without changing sim_cssp; any other
+        // op flushes prior pending first (binary = -1, unary = 0)
+        // then applies its own effect. Identical accounting to emit
+        // means fn_peak matches the actual high-water mark in the
+        // generated WAT, without margin-mask hacks.
         { LET sv_p = obufp; LET sv_op = op
           LET depth = 1
           LET sim_cssp = 3
+          LET sim_pendingop = s_none
           FOR i = 0 TO nlabmap-1 DO labmap!i := -1
           // Reset slot_addr_taken so any s_llp seen this fn fresh.
           FOR i = 0 TO slot_addr_max-1 DO slot_addr_taken!i := 0
           cur_nlab    := 0
           fn_save     := 3
           fn_peak     := 3
+          // Trace prescan ops to stdout (one line per OCODE op).
+          // Default OFF for production; flip to TRUE locally to chase
+          // fn_peak undercounts (paired with the emit-side WARN below).
+          prescan_trace := FALSE
           fn_entrylab := l
           op := rdn()
-          { SWITCHON op INTO
+          { // PENDINGOP FLUSH (mirrors emit's cgpendingop_wasm).
+            // Every non-deferred op flushes prior pending at entry.
+            // Deferred ops (binary/unary) ALSO flush prior pending
+            // first, then set sim_pendingop to themselves — emit does
+            // the same via cgpendingop_wasm() then pendingop := op.
+            //
+            // The single exception is s_jt/s_jf with a *comparison*
+            // pendingop: emit's emit_condjump consumes both operands
+            // in one shot (cssp -= 2) without a separate binop flush.
+            // We replicate that below by detecting compare pendingop
+            // INSIDE the s_jt case and applying -1 there.
+            //
+            // Flush effect: binary pendingop drops sim_cssp by 1;
+            // unary pendingop is 0 net (its emit flush writes
+            // $t{cssp-1} in-place).
+            IF depth = 1 & sim_pendingop ~= s_none DO
+            { LET pend = sim_pendingop
+              LET is_compare_jt = (op = s_jt | op = s_jf) &
+                                  (pend = s_eq | pend = s_ne |
+                                   pend = s_ls | pend = s_gr |
+                                   pend = s_le | pend = s_ge)
+              UNLESS is_compare_jt DO
+              { TEST pend = s_neg | pend = s_not | pend = s_abs |
+                     pend = s_float | pend = s_fix |
+                     pend = s_fneg | pend = s_fabs | pend = s_fpos
+                THEN { /* unary: 0 net */ }
+                ELSE sim_cssp := sim_cssp - 1
+                sim_pendingop := s_none
+              }
+            }
+            SWITCHON op INTO
             { DEFAULT: ENDCASE
               CASE s_save:
                 { LET ns = rdn()
@@ -1138,14 +1183,22 @@ AND scan_emit() BE
                 }
               CASE s_store:      ENDCASE  // no cssp change
 
-              // ---- unary: no cssp change ----
+              // ---- deferred unary ops: no cssp change, set pending ----
+              //
+              // s_rv is structurally different: emit calls cgpendingop
+              // FIRST then push_rv (in-place rewrite, 0 net). So s_rv
+              // acts like a non-deferred unary — it flushes prior, then
+              // does nothing further. Leave it as a no-op below since
+              // the flush at iter-top already handled it.
               CASE s_neg: CASE s_not: CASE s_abs:
               CASE s_float: CASE s_fix:
               CASE s_fneg: CASE s_fabs: CASE s_fpos:
+                IF depth = 1 DO sim_pendingop := op
+                ENDCASE
               CASE s_rv:
                 ENDCASE
 
-              // ---- binary: cssp -= 1 ----
+              // ---- deferred binary ops: set pending, defer the -1 ----
               CASE s_mul: CASE s_div: CASE s_mod:
               CASE s_add: CASE s_sub:
               CASE s_eq:  CASE s_ne:
@@ -1156,7 +1209,7 @@ AND scan_emit() BE
               CASE s_fadd: CASE s_fsub:
               CASE s_feq:  CASE s_fne:
               CASE s_fls:  CASE s_fgr: CASE s_fle: CASE s_fge:
-                IF depth = 1 DO sim_cssp := sim_cssp - 1
+                IF depth = 1 DO sim_pendingop := op
                 ENDCASE
 
               // ---- calls ----
@@ -1171,11 +1224,29 @@ AND scan_emit() BE
                   ENDCASE
                 }
 
-              // ---- returns/jumps: cssp -= 1 (stack consumed) ----
-              CASE s_fnrn: CASE s_rtrn:
-              CASE s_jt:   CASE s_jf:
-                IF op = s_jt | op = s_jf DO rdl()
+              // ---- returns/jumps ----
+              // s_fnrn: -1 (captures top-of-stack as return value).
+              // s_rtrn: 0  (returns a hard-coded zero; no stack pop).
+              //         Previously bundled with s_fnrn as -1, which
+              //         silently undercounted sim_cssp for the rest
+              //         of the function — the actual root cause of
+              //         the d_insert / $t11 bug.
+              CASE s_fnrn:
                 IF depth = 1 DO sim_cssp := sim_cssp - 1
+                ENDCASE
+              CASE s_rtrn:
+                ENDCASE
+              CASE s_jt: CASE s_jf:
+                rdl()
+                IF depth = 1 DO
+                { LET pend = sim_pendingop
+                  IF pend = s_eq | pend = s_ne | pend = s_ls |
+                     pend = s_gr | pend = s_le | pend = s_ge DO
+                  { sim_cssp := sim_cssp - 1
+                    sim_pendingop := s_none
+                  }
+                  sim_cssp := sim_cssp - 1
+                }
                 ENDCASE
               CASE s_res:
                 rdl()
@@ -1219,6 +1290,10 @@ AND scan_emit() BE
               CASE s_global: GOTO prescan_done
             }
             IF depth = 1 & sim_cssp > fn_peak DO fn_peak := sim_cssp
+            // Diagnostic: trace prescan per-op state.
+            IF prescan_trace DO
+              writef("    [pscan op=%n depth=%n sim_cssp=%n pending=%n fn_peak=%n]*n",
+                     op, depth, sim_cssp, sim_pendingop, fn_peak)
             op := rdn()
           } REPEAT
 prescan_done:
@@ -1249,8 +1324,31 @@ prescan_done:
         // engines elide unused ones) and miscounts no longer trap.
         // Real fix is a tighter prescan; the margin is defence in
         // depth, not a substitute.
-        IF fn_peak < FN_PEAK_MIN DO fn_peak := FN_PEAK_MIN
-        fn_peak := fn_peak + FN_PEAK_MARGIN
+        // Defensive margin. Prescan vs emit differ in two ways that
+        // are hard to reconcile statically:
+        //   (1) Prescan handles inner-function s_entry by skipping
+        //       cssp tracking via depth>1, while emit's outer pass
+        //       skips the inner BODY via skip_inner_body — meaning
+        //       prescan reads through inner ops the emit pass never
+        //       touches. The depth gate keeps fn_peak correct in
+        //       theory, but pendingop state can leak across the
+        //       depth transition in edge cases.
+        //   (2) Emit defers binary ops via pendingop, so its cssp
+        //       runs 1 higher than sim_cssp during a deferred
+        //       window. Most ops realign at flush time, but
+        //       structural ops (s_lab, s_jump) read but don't
+        //       restore the deferred -1 in a way prescan models.
+        // The historic repro is d_insert with `v!j := v!(j-1)`
+        // inside a WHILE body — emit reaches cssp=12 while prescan
+        // tops out at 11. Adding a few unused locals is essentially
+        // free on the wasm engine side, so over-declaring is the
+        // pragmatic fix until prescan and emit share one
+        // accounting routine.
+        // Prescan is now exactly accurate (see pendingop-aware
+        // SWITCHON above + the s_fnrn/s_rtrn split). No margin
+        // needed. FN_PEAK_MIN / FN_PEAK_MARGIN manifests are kept
+        // as escape hatch — uncomment if a future opcode addition
+        // re-introduces a divergence the WARN catches.
         selectoutput(tostream)
         // Debug-friendly comment: BCPL function name next to label.
         writef("  ;; BCPL fn %s (L%n)*n", nam, l)
@@ -1315,6 +1413,8 @@ prescan_done:
 
           cssp       := fn_save
           cssp_sync  := fn_save
+          emit_max_cssp := cssp
+          last_op_for_max := 0
           terminated := FALSE
         }
         ENDCASE
@@ -1340,6 +1440,23 @@ prescan_done:
           writef("      ) ;; close $__default*n")
           writef("      (unreachable)*n")
           writef("    ) ;; end $__dispatch*n")
+        }
+        // Prescan undercount alarm: if emit's actual peak STRICTLY
+        // exceeded the declared fn_peak, the locals area is short and
+        // wat2wasm will error on the corresponding (local.set $tN ...).
+        // (emit_max_cssp == fn_peak is fine — cssp=N means $t{N-1} is
+        // the highest used, and fn_peak=N declares $t0..$t{N-1}.)
+        IF emit_max_cssp > fn_peak DO
+        { writef("    ;; **PRESCAN UNDERCOUNT** declared $t0..$t%n,*n",
+                 fn_peak - 1)
+          writef("    ;;   but emit reached cssp=%n on OCODE op=%n*n",
+                 emit_max_cssp, last_op_for_max)
+          selectoutput(sysprint)
+          writef("WARN: prescan undercount in fn L%n: declared fn_peak=%n, ",
+                 fn_entrylab, fn_peak)
+          writef("emit reached %n (last op=%n)*n",
+                 emit_max_cssp, last_op_for_max)
+          selectoutput(tostream)
         }
         writef("    (i32.const 0) ;; unreachable return*n")
         writef("  ) ;; end func $fn_L%n*n*n", fn_entrylab)
@@ -1959,6 +2076,15 @@ prescan_done:
         ENDCASE
       }
     }
+    // Diagnostic: track the real high-water mark observed during emit
+    // and remember which OCODE pushed it. If this exceeds fn_peak at
+    // function end, the prescan undercounted.
+    IF cssp > emit_max_cssp DO
+    { emit_max_cssp := cssp
+      last_op_for_max := op
+    }
+    IF prescan_trace & fn_entrylab > 0 DO
+      writef("    [emit  op=%n cssp=%n pendingop=%n]*n", op, cssp, pendingop)
     op := rdn()
   } REPEAT
 }

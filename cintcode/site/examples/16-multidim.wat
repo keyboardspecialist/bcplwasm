@@ -34,14 +34,6 @@
     (local $t14 i32)
     (local $t15 i32)
     (local $t16 i32)
-    (local $t17 i32)
-    (local $t18 i32)
-    (local $t19 i32)
-    (local $t20 i32)
-    (local $t21 i32)
-    (local $t22 i32)
-    (local $t23 i32)
-    (local $t24 i32)
     (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
       (block $__default
