@@ -261,6 +261,12 @@ Named streams persist across page loads via `localStorage` (keys prefixed `bcpl:
 
 `site/index.html` + `site/runtime.js` run compiled `.wasm` in-browser with the stdlib. `site/build.sh` rebuilds all examples (`site/examples/*.b`). See `site/README.md`.
 
+### Gotcha: keep STATIC blocks consolidated
+
+Splitting STATIC declarations into multiple blocks within one section can cause silent slot aliasing — the later block's variables can read/write the same memory as earlier-block variables, producing impossible values like a "FALSE" boolean reading as 2000. Symptoms only show up when function-pointer dispatch (e.g. `qcheck(label, trial_fn, n)`) is in play, and minimal repros don't always trigger.
+
+Rule: **one STATIC block per section.** If you need to add a static after writing code, move the declaration up into the existing block rather than starting a second `STATIC {}`. Found via `com/bmssp.b` development — `trace_bmssp` declared in a second STATIC block read as 2000 instead of FALSE during qcheck-driven recursion; consolidating fixed it.
+
 ### Diagnostic helpers (BLIB)
 
 Three pure-BCPL safety nets added to `sysb/blib.b` + `site/runtime.js`. Same surface on cintsys and the playground:

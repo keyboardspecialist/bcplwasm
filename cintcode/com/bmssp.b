@@ -35,7 +35,7 @@ MANIFEST {
   M_MAX      = 3000
   INF        = #x7FFFFFFF
   K_PARAM    = 3
-  T_PARAM    = 8                // bumped so top_l=1 u_cap >> N
+  T_PARAM    = 4                // top_l = ceil(log2(N)/T) = 3 at N=500
   ARENA_WORDS = 65536
   TRIALS     = 8
 }
@@ -61,6 +61,8 @@ STATIC {
   // edges processed.
   bc_touched   = 0
   bc_touched_n = 0
+  dbg_depth    = 0
+  trace_bmssp  = 0
 }
 
 // ---------- arena allocator -----------------------------------------
@@ -271,7 +273,6 @@ LET trial_base_case(seed, trial_no) = VALOF
 { LET U   = arena_alloc(K_PARAM + 2)
   LET U_n = 0
   LET B_out = 0
-  trace_bmssp := FALSE   // re-init in case qcheck clobbered something
   rseed := seed
   build_graph()
   dijkstra(0)
@@ -471,74 +472,239 @@ LET trial_find_pivots(seed, trial_no) = VALOF
 }
 
 // ====================================================================
-// A.3  D-STRUCT  (Lemma 3.3 stand-in: sorted-array)
+// A.3  D-STRUCT  (Lemma 3.3: block-linked list)
 // ====================================================================
 //
-// 4-slot context: keys-ptr, count, capacity, upper-bound B.
-// Sorted by d_hat[key].  Recursion-safe: D is arena-allocated per
-// call, no STATIC sharing.
+// Two-sequence container:
+//   D0 — blocks fed by BatchPrepend (precondition: every key in the
+//        batch has d_hat < min(d_hat over current D)).
+//   D1 — blocks fed by Insert.
+//
+// Each block: (prev, next, count, key0..key_{M-1}). Blocks chained
+// via indices into a shared pool — no per-block getvec.
+//
+// Pull(M): scan all blocks, gather unique keys, partial-sort, take M
+// smallest, rebuild remaining as a single D1 chain. Not asymptotically
+// optimal vs. paper, but correct and matches the API the paper assumes.
+//
+// Block size is BLOCK_M; pool sized for worst-case (N/BLOCK_M)*depth.
 
 MANIFEST {
-  D_KEYS = 0; D_N = 1; D_CAP = 2; D_B = 3; D_SIZE = 4
+  BLOCK_M    = 64
+  POOL_SIZE  = 512
+  BLK_PREV   = 0
+  BLK_NEXT   = 1
+  BLK_N      = 2
+  BLK_KEYS   = 3
+  BLK_WORDS  = 3 + 64           // = 3 + BLOCK_M  (MANIFEST can't ref MANIFEST)
+
+  DD_D0_HEAD = 0
+  DD_D0_TAIL = 1
+  DD_D1_HEAD = 2
+  DD_D1_TAIL = 3
+  DD_N       = 4                // upper-bound on stored entries (counts dups)
+  DD_B       = 5
+  DD_SIZE    = 6
+}
+
+STATIC {
+  blk_pool     = 0
+  blk_free     = 0
+  blk_free_top = 0
+}
+
+LET blk_pool_init() BE
+{ blk_pool     := getvec_or_abort(POOL_SIZE * BLK_WORDS, "blk_pool")
+  blk_free     := getvec_or_abort(POOL_SIZE, "blk_free")
+  blk_free_top := 0
+  FOR i = POOL_SIZE - 1 TO 0 BY -1 DO
+  { blk_free!blk_free_top := i
+    blk_free_top := blk_free_top + 1
+  }
+}
+
+LET blk_pool_free() BE
+{ freevec(blk_pool); freevec(blk_free) }
+
+LET blk_at(idx) = blk_pool + idx * BLK_WORDS
+
+LET blk_alloc() = VALOF
+{ LET idx = 0
+  LET b   = 0
+  assert(blk_free_top > 0, "block pool exhausted")
+  blk_free_top := blk_free_top - 1
+  idx := blk_free!blk_free_top
+  b := blk_at(idx)
+  b!BLK_PREV := -1
+  b!BLK_NEXT := -1
+  b!BLK_N    := 0
+  RESULTIS idx
+}
+
+LET blk_free_one(idx) BE
+{ blk_free!blk_free_top := idx
+  blk_free_top := blk_free_top + 1
 }
 
 LET d_alloc(cap, B_in) = VALOF
-{ LET D = arena_alloc(D_SIZE)
-  D!D_KEYS := arena_alloc(cap)
-  D!D_N    := 0
-  D!D_CAP  := cap
-  D!D_B    := B_in
+{ LET D = arena_alloc(DD_SIZE)
+  D!DD_D0_HEAD := -1; D!DD_D0_TAIL := -1
+  D!DD_D1_HEAD := -1; D!DD_D1_TAIL := -1
+  D!DD_N       := 0
+  D!DD_B       := B_in
   RESULTIS D
 }
 
-LET d_empty(D) = D!D_N = 0
+LET d_empty(D) = D!DD_N = 0
 
-LET d_find(D, key) = VALOF
-{ LET keys = D!D_KEYS
-  FOR i = 0 TO D!D_N - 1 DO IF keys!i = key RESULTIS i
-  RESULTIS -1
-}
-
-LET d_remove_at(D, idx) BE
-{ LET keys = D!D_KEYS
-  LET j = idx
-  WHILE j < D!D_N - 1 DO { keys!j := keys!(j + 1); j := j + 1 }
-  D!D_N := D!D_N - 1
-}
-
-LET d_insert_pos(D, val) = VALOF
-{ LET keys = D!D_KEYS
-  FOR i = 0 TO D!D_N - 1 DO
-    IF d_hat!(keys!i) > val RESULTIS i
-  RESULTIS D!D_N
-}
-
+// Append key to D1's tail block. Allocate fresh block when full.
 LET d_insert(D, key) BE
-{ LET keys  = D!D_KEYS
-  LET val   = d_hat!key
-  LET found = d_find(D, key)
-  LET pos   = 0
-  LET j     = 0
-  IF found >= 0 DO
-  { IF d_hat!(keys!found) <= val RETURN
-    d_remove_at(D, found)
+{ LET tail = D!DD_D1_TAIL
+  LET tb   = 0
+  IF tail = -1 | (blk_at(tail))!BLK_N >= BLOCK_M DO
+  { LET nb  = blk_alloc()
+    LET nbb = blk_at(nb)
+    nbb!BLK_PREV := tail
+    nbb!BLK_NEXT := -1
+    TEST tail = -1
+    THEN D!DD_D1_HEAD := nb
+    ELSE (blk_at(tail))!BLK_NEXT := nb
+    D!DD_D1_TAIL := nb
+    tail := nb
   }
-  pos := d_insert_pos(D, val)
-  j := D!D_N
-  WHILE j > pos DO { keys!j := keys!(j - 1); j := j - 1 }
-  keys!pos := key
-  D!D_N := D!D_N + 1
+  tb := blk_at(tail)
+  tb!(BLK_KEYS + tb!BLK_N) := key
+  tb!BLK_N := tb!BLK_N + 1
+  D!DD_N   := D!DD_N + 1
 }
 
+// Prepend a batch onto D0's front. Caller's precondition: every key
+// in keys[0..len) satisfies d_hat[k] < min existing d_hat in D.
+LET d_batch_prepend(D, keys, len) BE
+{ LET pos = 0
+  WHILE pos < len DO
+  { LET take = len - pos
+    LET nb   = 0
+    LET nbb  = 0
+    LET old_head = 0
+    IF take > BLOCK_M DO take := BLOCK_M
+    nb  := blk_alloc()
+    nbb := blk_at(nb)
+    nbb!BLK_PREV := -1
+    nbb!BLK_NEXT := -1
+    nbb!BLK_N    := take
+    FOR i = 0 TO take - 1 DO nbb!(BLK_KEYS + i) := keys!(pos + i)
+    // Link onto front of D0.
+    old_head := D!DD_D0_HEAD
+    nbb!BLK_NEXT := old_head
+    UNLESS old_head = -1 DO (blk_at(old_head))!BLK_PREV := nb
+    D!DD_D0_HEAD := nb
+    IF D!DD_D0_TAIL = -1 DO D!DD_D0_TAIL := nb
+    D!DD_N := D!DD_N + take
+    pos    := pos + take
+  }
+}
+
+// Pull the M smallest keys (by d_hat). Returns count via n_ptr, new
+// boundary via x_ptr (= min d_hat of remaining, or D!DD_B if drained).
+//
+// Implementation: gather all unique keys, insertion-sort, take prefix,
+// free all blocks, re-insert tail. O(K + take) where K = current
+// unique count. Good enough for SSSP test scale.
 LET d_pull(D, M, out, n_ptr, x_ptr) BE
-{ LET keys = D!D_KEYS
-  LET take = M
-  IF take > D!D_N DO take := D!D_N
+{ LET mark    = arena_mark()
+  LET seen    = arena_alloc(N)
+  LET keys    = arena_alloc(D!DD_N + 1)
+  LET k       = 0
+  LET take    = 0
+
+  FOR i = 0 TO N - 1 DO seen!i := 0
+
+  // Gather D0 then D1.
+  { LET cur = D!DD_D0_HEAD
+    UNTIL cur = -1 DO
+    { LET b = blk_at(cur)
+      LET n = b!BLK_N
+      FOR i = 0 TO n - 1 DO
+      { LET v = b!(BLK_KEYS + i)
+        UNLESS seen!v DO
+        { seen!v := 1; keys!k := v; k := k + 1 }
+      }
+      cur := b!BLK_NEXT
+    }
+  }
+  { LET cur = D!DD_D1_HEAD
+    UNTIL cur = -1 DO
+    { LET b = blk_at(cur)
+      LET n = b!BLK_N
+      FOR i = 0 TO n - 1 DO
+      { LET v = b!(BLK_KEYS + i)
+        UNLESS seen!v DO
+        { seen!v := 1; keys!k := v; k := k + 1 }
+      }
+      cur := b!BLK_NEXT
+    }
+  }
+
+  // Insertion sort ascending by d_hat.
+  FOR i = 1 TO k - 1 DO
+  { LET kv  = keys!i
+    LET val = d_hat!kv
+    LET j   = i - 1
+    UNTIL j < 0 DO
+    { IF d_hat!(keys!j) <= val BREAK
+      keys!(j + 1) := keys!j
+      j := j - 1
+    }
+    keys!(j + 1) := kv
+  }
+
+  take := M
+  IF take > k DO take := k
   FOR i = 0 TO take - 1 DO out!i := keys!i
-  FOR i = 0 TO D!D_N - take - 1 DO keys!i := keys!(i + take)
-  D!D_N := D!D_N - take
   !n_ptr := take
-  !x_ptr := D!D_N > 0 -> d_hat!(keys!0), D!D_B
+  !x_ptr := k > take -> d_hat!(keys!take), D!DD_B
+
+  // Free all current blocks; re-insert remaining keys as fresh D1.
+  { LET cur = D!DD_D0_HEAD
+    UNTIL cur = -1 DO
+    { LET nx = (blk_at(cur))!BLK_NEXT
+      blk_free_one(cur); cur := nx
+    }
+  }
+  { LET cur = D!DD_D1_HEAD
+    UNTIL cur = -1 DO
+    { LET nx = (blk_at(cur))!BLK_NEXT
+      blk_free_one(cur); cur := nx
+    }
+  }
+  D!DD_D0_HEAD := -1; D!DD_D0_TAIL := -1
+  D!DD_D1_HEAD := -1; D!DD_D1_TAIL := -1
+  D!DD_N       := 0
+
+  FOR i = take TO k - 1 DO d_insert(D, keys!i)
+
+  arena_reset(mark)
+}
+
+// Free all blocks belonging to D (called when D goes out of scope —
+// in this code we rely on full-pull drain, so this is a safety net).
+LET d_destroy(D) BE
+{ { LET cur = D!DD_D0_HEAD
+    UNTIL cur = -1 DO
+    { LET nx = (blk_at(cur))!BLK_NEXT
+      blk_free_one(cur); cur := nx
+    }
+  }
+  { LET cur = D!DD_D1_HEAD
+    UNTIL cur = -1 DO
+    { LET nx = (blk_at(cur))!BLK_NEXT
+      blk_free_one(cur); cur := nx
+    }
+  }
+  D!DD_D0_HEAD := -1; D!DD_D0_TAIL := -1
+  D!DD_D1_HEAD := -1; D!DD_D1_TAIL := -1
+  D!DD_N       := 0
 }
 
 // ====================================================================
@@ -550,17 +716,38 @@ LET d_pull(D, M, out, n_ptr, x_ptr) BE
 // Returns: U_n via VALOF (vertices completed by this call),
 //          B' via @B_out_ptr.  U is written into out_U.
 
-STATIC { dbg_depth = 0; trace_bmssp = FALSE }
+// (dbg_depth + trace_bmssp moved into the main STATIC block above —
+//  having two STATIC blocks in one section apparently aliases slots,
+//  caused trace_bmssp to read arbitrary values like 2000 during
+//  qcheck-driven recursion.)
 
-LET bmssp(level, B_in, S, S_n, out_U, B_out_ptr) = VALOF
+// Multi-level signature: out_T accumulates every vertex whose d_hat
+// got updated anywhere down the recursion. Parent uses returned T (not
+// just ui) to drive its post-recursion relax — same trick bc_touched
+// uses at level=1, generalised to every level.
+LET bmssp(level, B_in, S, S_n, out_U, out_T, T_n_ptr, B_out_ptr) = VALOF
 { LET mark    = arena_mark()
+  LET in_T    = arena_alloc(N)
+  LET t_n     = 0
   LET u_n     = 0
   LET B_prime = B_in
   dbg_depth := dbg_depth + 1
+  FOR i = 0 TO N - 1 DO in_T!i := 0
 
   IF level = 0 DO
   { u_n := base_case(B_in, S!0, out_U, B_out_ptr)
+    // Copy bc_touched into out_T (dedup via in_T).
+    FOR i = 0 TO bc_touched_n - 1 DO
+    { LET v = bc_touched!i
+      UNLESS in_T!v DO
+      { in_T!v := 1
+        out_T!t_n := v
+        t_n := t_n + 1
+      }
+    }
+    !T_n_ptr := t_n
     arena_reset(mark)
+    dbg_depth := dbg_depth - 1
     RESULTIS u_n
   }
 
@@ -572,6 +759,8 @@ LET bmssp(level, B_in, S, S_n, out_U, B_out_ptr) = VALOF
     LET M     = 1
     LET ui    = arena_alloc(N + 1)
     LET ui_n  = 0
+    LET inner_T  = arena_alloc(N + 1)
+    LET inner_Tn = 0
     LET Si    = arena_alloc(N + 1)
     LET Si_n  = 0
     LET Bi    = 0
@@ -598,75 +787,89 @@ LET bmssp(level, B_in, S, S_n, out_U, B_out_ptr) = VALOF
     D := d_alloc(N + 1, B_in)
     FOR i = 0 TO P_n - 1 DO d_insert(D, P!i)
 
-    // Initial B' = min d_hat over P, or B_in if P empty (find_pivots
-    // already completed all of W's vertices, nothing more to bracket).
+    // Seed touched with W (find_pivots updated d_hat on every W vertex)
+    // and S (caller's already-complete set — propagate upward).
+    FOR i = 0 TO W_n - 1 DO
+    { LET v = W!i
+      UNLESS in_T!v DO
+      { in_T!v := 1; out_T!t_n := v; t_n := t_n + 1 }
+    }
+    FOR i = 0 TO S_n - 1 DO
+    { LET v = S!i
+      UNLESS in_T!v DO
+      { in_T!v := 1; out_T!t_n := v; t_n := t_n + 1 }
+    }
+
     TEST P_n > 0
     THEN { B_prime := d_hat!(P!0)
            FOR i = 1 TO P_n - 1 DO
              IF d_hat!(P!i) < B_prime DO B_prime := d_hat!(P!i)
          }
     ELSE { B_prime := B_in
-           success_done := TRUE          // nothing to do; success
+           success_done := TRUE
          }
 
     UNTIL u_n >= u_cap | d_empty(D) DO
     { loop_ran := TRUE
       d_pull(D, M, Si, @Si_n, @Bi)
-      ui_n := bmssp(level - 1, Bi, Si, Si_n, ui, @Bi_prime)
+      ui_n := bmssp(level - 1, Bi, Si, Si_n, ui,
+                    inner_T, @inner_Tn, @Bi_prime)
       // Accumulate U.
       FOR i = 0 TO ui_n - 1 DO
       { out_U!u_n := ui!i; u_n := u_n + 1 }
-      // Relax edges from completed vertices.
-      //
-      // At level == 1, the recursive call IS base_case, so we have a
-      // fresh bc_touched listing every vertex base_case updated
-      // (including those it pushed but didn't pop). Iterating that
-      // set instead of just ui ensures the marooned vertices (in the
-      // heap when base_case ran out of K+1 budget) get their
-      // outgoing edges relaxed too.
-      //
-      // At level > 1, the inner recursive call already drained its
-      // own D using its own bc_touched-driven relax — the ui it
-      // returned is the canonical completed set, so iterate ui.
-      { LET relax_v   = level = 1 -> bc_touched, ui
-        LET relax_v_n = level = 1 -> bc_touched_n, ui_n
-        FOR i = 0 TO relax_v_n - 1 DO
-        { LET u = relax_v!i
-          FOR e = adj_head!u TO adj_head!(u+1) - 1 DO
-          { LET v  = adj_to!e
-            LET nd = d_hat!u + adj_w!e
-            IF nd >= B_in LOOP
-            IF nd <= d_hat!v DO
-            { d_hat!v := nd
-              d_insert(D, v)
-            }
+      // Merge inner_T into our touched set.
+      FOR i = 0 TO inner_Tn - 1 DO
+      { LET v = inner_T!i
+        UNLESS in_T!v DO
+        { in_T!v := 1; out_T!t_n := v; t_n := t_n + 1 }
+      }
+      // Relax edges from every touched vertex the child surfaced
+      // (covers marooned vertices at every level, not just level=1).
+      FOR i = 0 TO inner_Tn - 1 DO
+      { LET u = inner_T!i
+        FOR e = adj_head!u TO adj_head!(u+1) - 1 DO
+        { LET v  = adj_to!e
+          LET nd = d_hat!u + adj_w!e
+          IF nd >= B_in LOOP
+          IF nd <= d_hat!v DO
+          { d_hat!v := nd
+            d_insert(D, v)
+            UNLESS in_T!v DO
+            { in_T!v := 1; out_T!t_n := v; t_n := t_n + 1 }
           }
         }
       }
       // Si entries whose d_hat fell into [Bi', Bi) get batch_prepended.
-      FOR i = 0 TO Si_n - 1 DO
-      { LET x = Si!i
-        IF d_hat!x >= Bi_prime & d_hat!x < Bi DO d_insert(D, x)
+      // Collect into a buffer, then prepend in one shot — guaranteed
+      // smaller than current D contents (their d_hat < Bi <= D's min).
+      { LET prep_buf = arena_alloc(Si_n + 1)
+        LET prep_n   = 0
+        FOR i = 0 TO Si_n - 1 DO
+        { LET x = Si!i
+          IF d_hat!x >= Bi_prime & d_hat!x < Bi DO
+          { prep_buf!prep_n := x; prep_n := prep_n + 1 }
+        }
+        IF prep_n > 0 DO d_batch_prepend(D, prep_buf, prep_n)
       }
       IF d_empty(D) DO
-      { B_prime := B_in                  // successful drain
+      { B_prime := B_in
         success_done := TRUE
       }
     }
 
-    // Partial exit (u_cap hit): take last sub-call's Bi' as our B'.
     UNLESS success_done DO
     { IF loop_ran DO B_prime := Bi_prime }
     IF B_prime > B_in DO B_prime := B_in
 
-    // Tack on W vertices already complete under the new B'.
     FOR i = 0 TO W_n - 1 DO
       IF d_hat!(W!i) < B_prime DO
       { out_U!u_n := W!i; u_n := u_n + 1 }
 
     !B_out_ptr := B_prime
+    d_destroy(D)                          // return blocks to pool
   }
 
+  !T_n_ptr := t_n
   arena_reset(mark)
   dbg_depth := dbg_depth - 1
   RESULTIS u_n
@@ -678,23 +881,23 @@ LET bmssp_sssp(src) BE
   LET log_n = 0
   LET tmp_S = VEC 2
   LET tmp_U = 0
+  LET tmp_T = 0
+  LET tmp_Tn = 0
   LET out_B = 0
   LET mark  = arena_mark()
   // log2(N) ceil.
   { LET v = N
     UNTIL v <= 1 DO { v := v / 2; log_n := log_n + 1 }
   }
-  // FORCE top_l = 1 — level=1 uses bc_touched correctly. Higher
-  // levels need a more careful touched-accumulation strategy that
-  // hasn't been implemented yet (a level >= 2 call doesn't propagate
-  // bc_touched from its inner base_cases up to its parent).
-  top_l := 1
+  top_l := (log_n + T_PARAM - 1) / T_PARAM
+  IF top_l < 1 DO top_l := 1
 
   FOR i = 0 TO N - 1 DO d_hat!i := INF
   d_hat!src := 0
   tmp_U := arena_alloc(N + 1)
+  tmp_T := arena_alloc(N + 1)
   tmp_S!0 := src
-  bmssp(top_l, INF, tmp_S, 1, tmp_U, @out_B)
+  bmssp(top_l, INF, tmp_S, 1, tmp_U, tmp_T, @tmp_Tn, @out_B)
   arena_reset(mark)
 }
 
@@ -732,11 +935,13 @@ LET start() = VALOF
   heap        := getvec_or_abort(M_MAX + N + 100, "heap")
   bc_touched  := getvec_or_abort(N + 1, "bc_touched")
   arena_init()
+  blk_pool_init()
 
   qcheck("A.1 base_case",   trial_base_case,   TRIALS)
   qcheck("A.2 find_pivots", trial_find_pivots, TRIALS)
   qcheck("A.3 bmssp recursive", trial_bmssp, TRIALS)
 
+  blk_pool_free()
   arena_free()
   freevec(adj_head); freevec(adj_to); freevec(adj_w)
   freevec(d_hat); freevec(d_dij); freevec(heap); freevec(bc_touched)
