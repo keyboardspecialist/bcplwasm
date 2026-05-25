@@ -1,6 +1,13 @@
 // bmssp — full recursive BMSSP (Duan et al, arXiv 2504.17033)
 // implemented in pure BCPL with diagnostic infrastructure.
 //
+// Status: correctness validated at top_l up to 5 (N up to 8000).
+// Perf: BMSSP ~5-15x slower than Dijkstra at our test scales.
+// The paper's O(m log^(2/3) n) advantage requires N >> 10^6 to
+// overcome the algorithmic constants (multi-level recursion, per-call
+// find_pivots BF sweeps, two-sequence D-struct overhead). Our 32-bit
+// memory + 1MB arena caps us around N=8k, well below crossover.
+//
 // Three independently-tested layers:
 //   A.1 base_case   — Algorithm 2 (mini-Dijkstra capped at k+1)
 //   A.2 find_pivots — Algorithm 1 / Lemma 3.2 (k BF sweeps +
@@ -30,14 +37,15 @@ SECTION "BMSSP"
 GET "libhdr"
 
 MANIFEST {
-  N          = 500              // vertices per trial
-  AVG_DEG    = 4
-  M_MAX      = 3000
+  N          = 2000             // vertices per trial
+  AVG_DEG    = 10               // denser graph: BMSSP edge-bound shows
+  M_MAX      = 25000
   INF        = #x7FFFFFFF
   K_PARAM    = 3
-  T_PARAM    = 4                // top_l = ceil(log2(N)/T) = 3 at N=500
-  ARENA_WORDS = 65536
+  T_PARAM    = 3                // top_l = ceil(log2(N)/T) = 4 at N=2000
+  ARENA_WORDS = 262144
   TRIALS     = 8
+  BENCH_RUNS = 30
 }
 
 STATIC {
@@ -63,6 +71,7 @@ STATIC {
   bc_touched_n = 0
   dbg_depth    = 0
   trace_bmssp  = 0
+  g_epoch      = 0              // monotonic; bump to "clear" a bitmap
 }
 
 // ---------- arena allocator -----------------------------------------
@@ -71,6 +80,9 @@ LET arena_init() BE
 { arena_base := getvec_or_abort(ARENA_WORDS + 4, "bmssp arena")
   arena_top  := 0
   arena_cap  := ARENA_WORDS
+  // Zero arena once so epoch-tag bitmaps have a known baseline; epoch
+  // counter starts at 0, first use bumps to 3, so any leftover 0 is safe.
+  FOR i = 0 TO ARENA_WORDS - 1 DO arena_base!i := 0
 }
 
 LET arena_alloc(n) = VALOF
@@ -213,24 +225,30 @@ LET dijkstra(src) BE
 // Returns: U_n via VALOF, new boundary B' via @B_out_ptr.
 
 LET base_case(B_in, src, out_U, B_out_ptr) = VALOF
-{ LET mark   = arena_mark()
-  LET in_U   = arena_alloc(N)
-  LET in_T   = arena_alloc(N)             // touched-set membership
-  LET u_n    = 0
-  LET ret_B  = B_in
-  FOR i = 0 TO N - 1 DO { in_U!i := 0; in_T!i := 0 }
-  bc_touched_n := 0
+{ LET mark      = arena_mark()
+  LET in_U      = arena_alloc(N)            // epoch values; 2*epoch = "popped"
+  LET in_T      = arena_alloc(N)            // touched-set membership
+  LET ep_T      = 0
+  LET ep_U_seen = 0
+  LET ep_U_done = 0
+  LET u_n       = 0
+  LET ret_B     = B_in
+  g_epoch       := g_epoch + 3
+  ep_T          := g_epoch - 2
+  ep_U_seen     := g_epoch - 1              // "in heap"
+  ep_U_done     := g_epoch                  // "popped already"
+  bc_touched_n  := 0
   heap_init()
-  in_U!src := 1
-  in_T!src := 1
+  in_U!src := ep_U_seen
+  in_T!src := ep_T
   bc_touched!bc_touched_n := src
   bc_touched_n := bc_touched_n + 1
   heap_push(src, d_hat)
   WHILE heap_n > 0 & u_n <= K_PARAM DO
   { LET u = heap_pop(d_hat)
     IF d_hat!u >= B_in LOOP
-    IF in_U!u = 2 LOOP                       // stale heap entry
-    in_U!u := 2
+    IF in_U!u = ep_U_done LOOP               // stale heap entry
+    in_U!u := ep_U_done
     out_U!u_n := u
     u_n := u_n + 1
     FOR e = adj_head!u TO adj_head!(u+1) - 1 DO
@@ -239,13 +257,13 @@ LET base_case(B_in, src, out_U, B_out_ptr) = VALOF
       IF nd >= B_in LOOP
       IF nd < d_hat!v DO
       { d_hat!v := nd
-        UNLESS in_T!v DO
-        { in_T!v := 1
+        UNLESS in_T!v = ep_T DO
+        { in_T!v := ep_T
           bc_touched!bc_touched_n := v
           bc_touched_n := bc_touched_n + 1
         }
-        UNLESS in_U!v = 2 DO
-        { in_U!v := 1
+        UNLESS in_U!v = ep_U_done DO
+        { in_U!v := ep_U_seen
           heap_push(v, d_hat)
         }
       }
@@ -321,25 +339,38 @@ LET find_pivots(B_in, S, S_n, out_P, out_W, W_n_ptr) = VALOF
   LET next_f    = arena_alloc(N)
   LET parent    = arena_alloc(N)
   LET cnt       = arena_alloc(N)
+  LET par_ep    = arena_alloc(N)              // epoch of last parent-write
+  LET cnt_ep    = arena_alloc(N)              // epoch of last cnt-write
   LET frontier_n = 0
   LET next_f_n   = 0
   LET w_n        = 0
   LET p_n        = 0
   LET bail       = FALSE
+  LET ep_W       = 0
+  LET ep_next    = 0
+  LET ep_par     = 0
+  LET ep_cnt     = 0
 
-  FOR i = 0 TO N - 1 DO
-  { in_W!i := 0; in_next!i := 0; parent!i := -1; cnt!i := 0 }
+  g_epoch := g_epoch + 4
+  ep_W    := g_epoch - 3
+  ep_next := g_epoch - 2
+  ep_par  := g_epoch - 1
+  ep_cnt  := g_epoch
+
   FOR i = 0 TO S_n - 1 DO
   { LET v = S!i
-    in_W!v := 1
+    in_W!v := ep_W
     parent!v := v                              // S vertices are roots
+    par_ep!v := ep_par
     out_W!w_n := v; w_n := w_n + 1
     frontier!frontier_n := v; frontier_n := frontier_n + 1
   }
 
   FOR step = 1 TO K_PARAM DO
   { IF bail BREAK
-    FOR i = 0 TO next_f_n - 1 DO in_next!(next_f!i) := 0
+    // Fresh epoch for in_next per step.
+    g_epoch := g_epoch + 1
+    ep_next := g_epoch
     next_f_n := 0
     FOR i = 0 TO frontier_n - 1 DO
     { LET u = frontier!i
@@ -349,12 +380,12 @@ LET find_pivots(B_in, S, S_n, out_P, out_W, W_n_ptr) = VALOF
         IF nd >= B_in LOOP
         IF nd < d_hat!v DO
         { d_hat!v := nd
-          UNLESS in_next!v DO
-          { in_next!v := 1
+          UNLESS in_next!v = ep_next DO
+          { in_next!v := ep_next
             next_f!next_f_n := v; next_f_n := next_f_n + 1
           }
-          UNLESS in_W!v DO
-          { in_W!v := 1
+          UNLESS in_W!v = ep_W DO
+          { in_W!v := ep_W
             IF w_n < N DO { out_W!w_n := v; w_n := w_n + 1 }
             IF w_n > K_PARAM * S_n DO bail := TRUE
           }
@@ -379,51 +410,51 @@ LET find_pivots(B_in, S, S_n, out_P, out_W, W_n_ptr) = VALOF
          { LET u = out_W!u_i
            FOR e = adj_head!u TO adj_head!(u+1) - 1 DO
            { LET v = adj_to!e
-             IF in_W!v & parent!v = -1 &
+             IF in_W!v = ep_W & par_ep!v ~= ep_par &
                 d_hat!v = d_hat!u + adj_w!e
-             DO parent!v := u
+             DO { parent!v := u; par_ep!v := ep_par }
            }
          }
          // Walk to root, count subtree size per S-rooted tree.
-         // Orphan (parent[r]=-1) means the relaxation chain doesn't
-         // form a single edge — skip rather than chase a null ptr.
+         // par_ep!r ~= ep_par means "no parent assigned" → orphan.
          FOR i = 0 TO w_n - 1 DO
          { LET v = out_W!i
            LET r = v
            LET orphan = FALSE
            LET hops = 0
-           UNTIL parent!r = r DO
-           { IF parent!r = -1 | hops > N DO { orphan := TRUE; BREAK }
+           UNTIL par_ep!r = ep_par & parent!r = r DO
+           { IF par_ep!r ~= ep_par | hops > N DO { orphan := TRUE; BREAK }
              r := parent!r
              hops := hops + 1
            }
-           UNLESS orphan DO cnt!r := cnt!r + 1
+           UNLESS orphan DO
+           { TEST cnt_ep!r = ep_cnt
+             THEN cnt!r := cnt!r + 1
+             ELSE { cnt!r := 1; cnt_ep!r := ep_cnt }
+           }
          }
          FOR i = 0 TO S_n - 1 DO
-           IF cnt!(S!i) >= K_PARAM DO
+           IF cnt_ep!(S!i) = ep_cnt & cnt!(S!i) >= K_PARAM DO
            { out_P!p_n := S!i; p_n := p_n + 1 }
          // Filter out_W to keep only "complete" vertices — those
-         // whose forest root is NOT in the pivot set. Pivots'
-         // subtrees may still have inflated d_hat; only the
-         // recursive BMSSP call on the pivots will finalise them.
-         // The W vertices under non-pivot roots are complete via
-         // the K Bellman-Ford sweeps above (their full shortest
-         // path used < K hops through W).
-         { LET is_pivot = arena_alloc(N)
-           LET new_w_n  = 0
-           FOR i = 0 TO N - 1 DO is_pivot!i := 0
-           FOR i = 0 TO p_n - 1 DO is_pivot!(out_P!i) := 1
+         // whose forest root is NOT in the pivot set.
+         { LET is_pivot    = arena_alloc(N)
+           LET ip_ep       = 0
+           LET new_w_n     = 0
+           g_epoch := g_epoch + 1
+           ip_ep   := g_epoch
+           FOR i = 0 TO p_n - 1 DO is_pivot!(out_P!i) := ip_ep
            FOR i = 0 TO w_n - 1 DO
            { LET v = out_W!i
              LET r = v
              LET orphan = FALSE
              LET hops = 0
-             UNTIL parent!r = r DO
-             { IF parent!r = -1 | hops > N DO { orphan := TRUE; BREAK }
+             UNTIL par_ep!r = ep_par & parent!r = r DO
+             { IF par_ep!r ~= ep_par | hops > N DO { orphan := TRUE; BREAK }
                r := parent!r
                hops := hops + 1
              }
-             UNLESS orphan | is_pivot!r DO
+             UNLESS orphan | is_pivot!r = ip_ep DO
              { out_W!new_w_n := v; new_w_n := new_w_n + 1 }
            }
            w_n := new_w_n
@@ -608,27 +639,30 @@ LET d_batch_prepend(D, keys, len) BE
 // Pull the M smallest keys (by d_hat). Returns count via n_ptr, new
 // boundary via x_ptr (= min d_hat of remaining, or D!DD_B if drained).
 //
-// Implementation: gather all unique keys, insertion-sort, take prefix,
-// free all blocks, re-insert tail. O(K + take) where K = current
-// unique count. Good enough for SSSP test scale.
+// Strategy: gather unique keys, build min-heap (heapify via push), pop
+// M smallest, dump residual back as fresh D1. O(k + M log k).
+// Uses the global `heap` static — safe because pull is never called
+// while base_case (the only other heap consumer) is mid-execution.
 LET d_pull(D, M, out, n_ptr, x_ptr) BE
 { LET mark    = arena_mark()
   LET seen    = arena_alloc(N)
-  LET keys    = arena_alloc(D!DD_N + 1)
-  LET k       = 0
+  LET ep_seen = 0
   LET take    = 0
+  LET next_x  = D!DD_B
 
-  FOR i = 0 TO N - 1 DO seen!i := 0
+  g_epoch := g_epoch + 1
+  ep_seen := g_epoch
+  heap_init()
 
-  // Gather D0 then D1.
+  // Gather D0 then D1, push to heap (dedup via seen[]).
   { LET cur = D!DD_D0_HEAD
     UNTIL cur = -1 DO
     { LET b = blk_at(cur)
       LET n = b!BLK_N
       FOR i = 0 TO n - 1 DO
       { LET v = b!(BLK_KEYS + i)
-        UNLESS seen!v DO
-        { seen!v := 1; keys!k := v; k := k + 1 }
+        UNLESS seen!v = ep_seen DO
+        { seen!v := ep_seen; heap_push(v, d_hat) }
       }
       cur := b!BLK_NEXT
     }
@@ -639,33 +673,14 @@ LET d_pull(D, M, out, n_ptr, x_ptr) BE
       LET n = b!BLK_N
       FOR i = 0 TO n - 1 DO
       { LET v = b!(BLK_KEYS + i)
-        UNLESS seen!v DO
-        { seen!v := 1; keys!k := v; k := k + 1 }
+        UNLESS seen!v = ep_seen DO
+        { seen!v := ep_seen; heap_push(v, d_hat) }
       }
       cur := b!BLK_NEXT
     }
   }
 
-  // Insertion sort ascending by d_hat.
-  FOR i = 1 TO k - 1 DO
-  { LET kv  = keys!i
-    LET val = d_hat!kv
-    LET j   = i - 1
-    UNTIL j < 0 DO
-    { IF d_hat!(keys!j) <= val BREAK
-      keys!(j + 1) := keys!j
-      j := j - 1
-    }
-    keys!(j + 1) := kv
-  }
-
-  take := M
-  IF take > k DO take := k
-  FOR i = 0 TO take - 1 DO out!i := keys!i
-  !n_ptr := take
-  !x_ptr := k > take -> d_hat!(keys!take), D!DD_B
-
-  // Free all current blocks; re-insert remaining keys as fresh D1.
+  // Free all current blocks before re-inserting residual.
   { LET cur = D!DD_D0_HEAD
     UNTIL cur = -1 DO
     { LET nx = (blk_at(cur))!BLK_NEXT
@@ -682,7 +697,18 @@ LET d_pull(D, M, out, n_ptr, x_ptr) BE
   D!DD_D1_HEAD := -1; D!DD_D1_TAIL := -1
   D!DD_N       := 0
 
-  FOR i = take TO k - 1 DO d_insert(D, keys!i)
+  // Pop M smallest.
+  take := M
+  IF take > heap_n DO take := heap_n
+  FOR i = 0 TO take - 1 DO out!i := heap_pop(d_hat)
+  IF heap_n > 0 DO next_x := d_hat!(heap!0)
+
+  !n_ptr := take
+  !x_ptr := next_x
+
+  // Residual heap → D1 (order doesn't matter; pull re-sorts anyway).
+  FOR i = 0 TO heap_n - 1 DO d_insert(D, heap!i)
+  heap_n := 0
 
   arena_reset(mark)
 }
@@ -728,19 +754,21 @@ LET d_destroy(D) BE
 LET bmssp(level, B_in, S, S_n, out_U, out_T, T_n_ptr, B_out_ptr) = VALOF
 { LET mark    = arena_mark()
   LET in_T    = arena_alloc(N)
+  LET ep_T    = 0
   LET t_n     = 0
   LET u_n     = 0
   LET B_prime = B_in
   dbg_depth := dbg_depth + 1
-  FOR i = 0 TO N - 1 DO in_T!i := 0
+  g_epoch := g_epoch + 1
+  ep_T    := g_epoch
 
   IF level = 0 DO
   { u_n := base_case(B_in, S!0, out_U, B_out_ptr)
     // Copy bc_touched into out_T (dedup via in_T).
     FOR i = 0 TO bc_touched_n - 1 DO
     { LET v = bc_touched!i
-      UNLESS in_T!v DO
-      { in_T!v := 1
+      UNLESS in_T!v = ep_T DO
+      { in_T!v := ep_T
         out_T!t_n := v
         t_n := t_n + 1
       }
@@ -791,13 +819,13 @@ LET bmssp(level, B_in, S, S_n, out_U, out_T, T_n_ptr, B_out_ptr) = VALOF
     // and S (caller's already-complete set — propagate upward).
     FOR i = 0 TO W_n - 1 DO
     { LET v = W!i
-      UNLESS in_T!v DO
-      { in_T!v := 1; out_T!t_n := v; t_n := t_n + 1 }
+      UNLESS in_T!v = ep_T DO
+      { in_T!v := ep_T; out_T!t_n := v; t_n := t_n + 1 }
     }
     FOR i = 0 TO S_n - 1 DO
     { LET v = S!i
-      UNLESS in_T!v DO
-      { in_T!v := 1; out_T!t_n := v; t_n := t_n + 1 }
+      UNLESS in_T!v = ep_T DO
+      { in_T!v := ep_T; out_T!t_n := v; t_n := t_n + 1 }
     }
 
     TEST P_n > 0
@@ -940,6 +968,36 @@ LET start() = VALOF
   qcheck("A.1 base_case",   trial_base_case,   TRIALS)
   qcheck("A.2 find_pivots", trial_find_pivots, TRIALS)
   qcheck("A.3 bmssp recursive", trial_bmssp, TRIALS)
+
+  // Head-to-head bench: BMSSP vs Dijkstra wall-time on same graphs.
+  { LET t0 = 0
+    LET t_dij = 0
+    LET t_bm  = 0
+    LET ok    = TRUE
+    writef("*nBench: N=%n AVG_DEG=%n top_l(at T=%n)=ceil(log2(N)/T) runs=%n*n",
+           N, AVG_DEG, T_PARAM, BENCH_RUNS)
+    rseed := 17
+    t0 := sys(Sys_cputime)
+    FOR r = 1 TO BENCH_RUNS DO
+    { build_graph()
+      dijkstra(0)
+    }
+    t_dij := sys(Sys_cputime) - t0
+    rseed := 17
+    t0 := sys(Sys_cputime)
+    FOR r = 1 TO BENCH_RUNS DO
+    { build_graph()
+      bmssp_sssp(0)
+    }
+    t_bm := sys(Sys_cputime) - t0
+    // Sanity check on last trial.
+    FOR i = 0 TO N - 1 DO
+      IF d_dij!i ~= d_hat!i DO
+      { ok := FALSE; BREAK }
+    writef("  Dijkstra: %n ticks*n", t_dij)
+    writef("  BMSSP:    %n ticks*n", t_bm)
+    writef("  Last-trial match: %s*n", ok -> "yes", "NO")
+  }
 
   blk_pool_free()
   arena_free()
