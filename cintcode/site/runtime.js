@@ -1485,7 +1485,10 @@ export class BcplRuntime {
       }
       case 28: return 0;                                // Sys_intflag FALSE
       case 29: return 0;                                // Sys_setraster NOOP
-      case 30: return 0;                                // Sys_cputime stub
+      case 30:                                          // Sys_cputime: high-res ms (i32)
+        return (typeof performance !== "undefined")
+          ? (performance.now() | 0)
+          : ((Date.now() & 0x7fffffff));
       case 31: return 0;                                // Sys_filemodtime NOOP
 
       // ---- prefix (currentdir) ----
