@@ -2758,6 +2758,85 @@ export class BcplRuntime {
     return 0;
   }
 
+  // ---- diagnostic helpers (mirror of sysb/blib.b additions) --------
+  //
+  // BcplHalt thrown with `isAbort: true` reaches the playground crash
+  // handler the same way a Sys_quit abort does — user gets the message
+  // in the Output pane and the Diag tab gets the assert site.
+
+  // assert(cond, msg_bstr) — cond=FALSE → abort with the BCPL string.
+  imp_assert() {
+    const cond = this.arg(0);
+    const msgPtr = this.arg(1);
+    this.restoreP();
+    if (cond) return 0;
+    const msg = this.readBcplString(msgPtr);
+    this.writeOut("\nASSERT FAIL: " + msg + "\n");
+    throw new BcplHalt(901, /*isAbort*/ true);
+  }
+
+  // getvec_or_abort(n, msg_bstr) — getvec with a labelled OOM abort.
+  // Wraps the existing getvec path. Caller still gets a BCPL word
+  // address on success; failure throws instead of silently returning 0.
+  imp_getvec_or_abort() {
+    const n = this.arg(0) | 0;
+    const msgPtr = this.arg(1);
+    // Inline of imp_getvec's body so we can throw without restoreP
+    // racing with the freelist scan.
+    let prev = 0, cur = this.freeList;
+    while (cur !== 0) {
+      const blockSize = this.loadWord(cur + 1);
+      const next = this.loadWord(cur);
+      if (blockSize >= n + 1) {
+        if (prev === 0) this.freeList = next;
+        else this.storeWord(prev, next);
+        this.restoreP();
+        return cur;
+      }
+      prev = cur; cur = next;
+    }
+    this.heapTop -= (n + 2);
+    if (this.heapTop <= 0) {
+      this.restoreP();
+      const msg = this.readBcplString(msgPtr);
+      this.writeOut("\nGETVEC OOM: " + msg + " (requested " + n + " words)\n");
+      throw new BcplHalt(901, /*isAbort*/ true);
+    }
+    const p = this.heapTop;
+    this.storeWord(p + 1, n + 1);
+    this.restoreP();
+    return p;
+  }
+
+  // vsafe_get(v, i, msg_bstr) — v!i with bounds check.
+  //
+  // Playground getvec stores its size header at v!+1 (see
+  // imp_getvec line ~1204) rather than cintsys's v!-1 convention,
+  // so the read site differs from the BLIB BCPL impl.  Both runtimes
+  // present the same `vsafe_get(v, i, msg)` user-facing API.
+  //
+  // size header = N+1 (allocation includes the header word). Valid
+  // user indices: 0..N-1 = 0..(size-2). Allow up to size-2 inclusive.
+  imp_vsafe_get() {
+    const v = this.arg(0) | 0;
+    const i = this.arg(1) | 0;
+    const msgPtr = this.arg(2);
+    this.restoreP();
+    if (v === 0) {
+      const msg = this.readBcplString(msgPtr);
+      this.writeOut("\nVSAFE OOB: " + msg + " (v=NULL)\n");
+      throw new BcplHalt(901, /*isAbort*/ true);
+    }
+    const sizeHdr = this.loadWord(v + 1);  // playground convention
+    const upb     = sizeHdr - 2;            // size = n+1, upb = n
+    if (i < 0 || i > upb) {
+      const msg = this.readBcplString(msgPtr);
+      this.writeOut("\nVSAFE OOB: " + msg + " (i=" + i + " upb=" + upb + ")\n");
+      throw new BcplHalt(901, /*isAbort*/ true);
+    }
+    return this.loadWord(v + i);
+  }
+
   // delayuntil(days, msecs) — sleep until the wall clock reaches the
   // given (days since 1 Jan 1978, ms since midnight) point. Computes
   // the wait in ms and reuses the asyncify-based delay path. If the
@@ -4070,6 +4149,9 @@ export class BcplRuntime {
         bcpl_recordpoint:     () => this.imp_recordpoint(),
         bcpl_recordnote:      () => this.imp_recordnote(),
         bcpl_get_record:      () => this.imp_get_record(),
+        bcpl_assert:          () => this.imp_assert(),
+        bcpl_getvec_or_abort: () => this.imp_getvec_or_abort(),
+        bcpl_vsafe_get:       () => this.imp_vsafe_get(),
         bcpl_put_record:      () => this.imp_put_record(),
         // Debug-mode breakpoint hook. Always present so wasm with
         // (call $__break) instantiates either way; behavior depends
@@ -4086,7 +4168,7 @@ export class BcplRuntime {
   // table_base) and export register()/stat_words()/fn_count(). The
   // loader two-pass-instantiates each program: probe sizes, bump-
   // allocate bases, then real instantiate + register.
-  static STDLIB_TABLE_SLOTS = 89;
+  static STDLIB_TABLE_SLOTS = 92;
   static STATIC_WORD_BASE   = 1001;  // first word past G
 
   async loadMaster(url = "master.wasm") {

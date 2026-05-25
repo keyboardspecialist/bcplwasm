@@ -121,6 +121,13 @@ export const slots = [
   { tidx: 86, name: "recordnote",     impl: "imp_recordnote"        },
   { tidx: 87, name: "get_record",     impl: "imp_get_record"        },
   { tidx: 88, name: "put_record",     impl: "imp_put_record"        },
+
+  // Phase K — Diagnostic helpers (mirror of sysb/blib.b additions).
+  // Cheap pure-BCPL safety nets that abort with a labelled message
+  // rather than letting silent corruption / null deref hit later.
+  { tidx: 89, name: "assert",          impl: "imp_assert"           },
+  { tidx: 90, name: "getvec_or_abort", impl: "imp_getvec_or_abort"  },
+  { tidx: 91, name: "vsafe_get",       impl: "imp_vsafe_get"        },
 ];
 
 // Extra BCPL globals that share a table slot with another entry.

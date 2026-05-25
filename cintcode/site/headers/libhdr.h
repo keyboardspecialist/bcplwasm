@@ -175,6 +175,13 @@ memoryfree:        131  // Returns the amount of free and used memory.
 // CLI / Cintpos / user globals (starting 132+ / 200+) aren't affected.
 writebin:          196  // Playground: write unsigned binary, d-char field
 
+// Diagnostic helpers (mirror of sysb/blib.b additions). Cheap
+// pure-BCPL safety nets that abort with a labelled message rather
+// than letting silent corruption / null-deref hit later.
+assert:            197  // (cond, msg_bstr) — abort(901) if cond=FALSE
+getvec_or_abort:   198  // (n, msg_bstr) — getvec + abort on OOM
+vsafe_get:         199  // (v, i, msg_bstr) — v!i bounds-checked
+
 //##### CLI uses globals 132 - 149 #####
 
 cli_tallyflag:     132
