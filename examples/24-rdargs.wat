@@ -80,6 +80,14 @@
     (local $t60 i32)
     (local $t61 i32)
     (local $t62 i32)
+    (local $t63 i32)
+    (local $t64 i32)
+    (local $t65 i32)
+    (local $t66 i32)
+    (local $t67 i32)
+    (local $t68 i32)
+    (local $t69 i32)
+    (local $t70 i32)
     (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
       (block $__default

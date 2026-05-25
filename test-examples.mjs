@@ -69,6 +69,7 @@ const RUN_SKIP = new Set([
   "65-bench",           // long-running benchmark — skipped in CI
   "70-heli",            // SDL game loop — only ends on Esc
   "71-websocket",       // needs browser WebSocket API + network
+  "73-diagnostics",     // aborts intentionally to demo the helpers
   "stdlib",             // pure library — no start()
 ]);
 
