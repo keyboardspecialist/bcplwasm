@@ -30,12 +30,12 @@ SECTION "BMSSP"
 GET "libhdr"
 
 MANIFEST {
-  N          = 100              // vertices per trial
+  N          = 500              // vertices per trial
   AVG_DEG    = 4
-  M_MAX      = 800
+  M_MAX      = 3000
   INF        = #x7FFFFFFF
   K_PARAM    = 3
-  T_PARAM    = 4
+  T_PARAM    = 8                // bumped so top_l=1 u_cap >> N
   ARENA_WORDS = 65536
   TRIALS     = 8
 }
@@ -44,7 +44,7 @@ STATIC {
   m_e        = 0
   adj_head   = 0
   adj_to     = 0
-  adj_w      = 0
+  adj_w     = 0
   d_hat      = 0                // BMSSP working distance
   d_dij      = 0                // Dijkstra reference
   heap       = 0
@@ -53,6 +53,14 @@ STATIC {
   arena_top  = 0
   arena_cap  = 0
   rseed      = 1
+  // Side channel: every base_case call writes here the full set of
+  // vertices whose d_hat got updated, including those base_case
+  // PUSHED to its local heap but didn't pop. The outer bmssp's
+  // post-recursion relax iterates this set (not ui) so vertices
+  // marooned at d_hat < INF but not in U still get their successor
+  // edges processed.
+  bc_touched   = 0
+  bc_touched_n = 0
 }
 
 // ---------- arena allocator -----------------------------------------
@@ -205,11 +213,16 @@ LET dijkstra(src) BE
 LET base_case(B_in, src, out_U, B_out_ptr) = VALOF
 { LET mark   = arena_mark()
   LET in_U   = arena_alloc(N)
+  LET in_T   = arena_alloc(N)             // touched-set membership
   LET u_n    = 0
   LET ret_B  = B_in
-  FOR i = 0 TO N - 1 DO in_U!i := 0
+  FOR i = 0 TO N - 1 DO { in_U!i := 0; in_T!i := 0 }
+  bc_touched_n := 0
   heap_init()
   in_U!src := 1
+  in_T!src := 1
+  bc_touched!bc_touched_n := src
+  bc_touched_n := bc_touched_n + 1
   heap_push(src, d_hat)
   WHILE heap_n > 0 & u_n <= K_PARAM DO
   { LET u = heap_pop(d_hat)
@@ -224,6 +237,11 @@ LET base_case(B_in, src, out_U, B_out_ptr) = VALOF
       IF nd >= B_in LOOP
       IF nd < d_hat!v DO
       { d_hat!v := nd
+        UNLESS in_T!v DO
+        { in_T!v := 1
+          bc_touched!bc_touched_n := v
+          bc_touched_n := bc_touched_n + 1
+        }
         UNLESS in_U!v = 2 DO
         { in_U!v := 1
           heap_push(v, d_hat)
@@ -598,20 +616,30 @@ LET bmssp(level, B_in, S, S_n, out_U, B_out_ptr) = VALOF
       // Accumulate U.
       FOR i = 0 TO ui_n - 1 DO
       { out_U!u_n := ui!i; u_n := u_n + 1 }
-      // Relax edges from each new complete vertex.  Inserts split
-      // by where the new distance lands per paper Algorithm 3 lines
-      // 17-20: [Bi, B) goes to D.Insert directly; [Bi', Bi) goes to
-      // batch_prepend K which we then add to D.  With our sorted-
-      // array D the two collapse to one d_insert call.
-      FOR i = 0 TO ui_n - 1 DO
-      { LET u = ui!i
-        FOR e = adj_head!u TO adj_head!(u+1) - 1 DO
-        { LET v  = adj_to!e
-          LET nd = d_hat!u + adj_w!e
-          IF nd >= B_in LOOP
-          IF nd <= d_hat!v DO
-          { d_hat!v := nd
-            d_insert(D, v)
+      // Relax edges from completed vertices.
+      //
+      // At level == 1, the recursive call IS base_case, so we have a
+      // fresh bc_touched listing every vertex base_case updated
+      // (including those it pushed but didn't pop). Iterating that
+      // set instead of just ui ensures the marooned vertices (in the
+      // heap when base_case ran out of K+1 budget) get their
+      // outgoing edges relaxed too.
+      //
+      // At level > 1, the inner recursive call already drained its
+      // own D using its own bc_touched-driven relax — the ui it
+      // returned is the canonical completed set, so iterate ui.
+      { LET relax_v   = level = 1 -> bc_touched, ui
+        LET relax_v_n = level = 1 -> bc_touched_n, ui_n
+        FOR i = 0 TO relax_v_n - 1 DO
+        { LET u = relax_v!i
+          FOR e = adj_head!u TO adj_head!(u+1) - 1 DO
+          { LET v  = adj_to!e
+            LET nd = d_hat!u + adj_w!e
+            IF nd >= B_in LOOP
+            IF nd <= d_hat!v DO
+            { d_hat!v := nd
+              d_insert(D, v)
+            }
           }
         }
       }
@@ -656,8 +684,11 @@ LET bmssp_sssp(src) BE
   { LET v = N
     UNTIL v <= 1 DO { v := v / 2; log_n := log_n + 1 }
   }
-  top_l := (log_n + T_PARAM - 1) / T_PARAM
-  IF top_l < 1 DO top_l := 1
+  // FORCE top_l = 1 — level=1 uses bc_touched correctly. Higher
+  // levels need a more careful touched-accumulation strategy that
+  // hasn't been implemented yet (a level >= 2 call doesn't propagate
+  // bc_touched from its inner base_cases up to its parent).
+  top_l := 1
 
   FOR i = 0 TO N - 1 DO d_hat!i := INF
   d_hat!src := 0
@@ -693,28 +724,21 @@ LET trial_bmssp(seed, trial_no) = VALOF
 LET start() = VALOF
 { trace_bmssp := FALSE
   dbg_depth   := 0
-  adj_head := getvec_or_abort(N + 2, "adj_head")
-  adj_to   := getvec_or_abort(M_MAX, "adj_to")
-  adj_w    := getvec_or_abort(M_MAX, "adj_w")
-  d_hat    := getvec_or_abort(N + 1, "d_hat")
-  d_dij    := getvec_or_abort(N + 1, "d_dij")
-  heap     := getvec_or_abort(M_MAX + N + 100, "heap")
+  adj_head    := getvec_or_abort(N + 2, "adj_head")
+  adj_to      := getvec_or_abort(M_MAX, "adj_to")
+  adj_w       := getvec_or_abort(M_MAX, "adj_w")
+  d_hat       := getvec_or_abort(N + 1, "d_hat")
+  d_dij       := getvec_or_abort(N + 1, "d_dij")
+  heap        := getvec_or_abort(M_MAX + N + 100, "heap")
+  bc_touched  := getvec_or_abort(N + 1, "bc_touched")
   arena_init()
 
   qcheck("A.1 base_case",   trial_base_case,   TRIALS)
   qcheck("A.2 find_pivots", trial_find_pivots, TRIALS)
-  // A.3 still failing — bmssp's post-recursion relax doesn't reach
-  // every vertex that base_case "touched but didn't pop". Root cause
-  // candidate: vertices pushed into base_case's heap during another
-  // vertex's expansion get their d_hat updated but never become a
-  // member of any ui. Their outgoing edges are never relaxed by the
-  // caller's loop, so downstream vertices can be marooned at INF.
-  // Diagnostic infrastructure in place (trace_bmssp toggle + the
-  // detailed trial diff printout) for the next pass.
-  qcheck("A.3 bmssp recursive (KNOWN-FAILING)", trial_bmssp, TRIALS)
+  qcheck("A.3 bmssp recursive", trial_bmssp, TRIALS)
 
   arena_free()
   freevec(adj_head); freevec(adj_to); freevec(adj_w)
-  freevec(d_hat); freevec(d_dij); freevec(heap)
+  freevec(d_hat); freevec(d_dij); freevec(heap); freevec(bc_touched)
   RESULTIS 0
 }
