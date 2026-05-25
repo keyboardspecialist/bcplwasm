@@ -278,14 +278,26 @@ AND emit_pb_refresh() BE
   writef("    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))*n")
 
 // is_promotable(n) — TRUE iff BCPL slot N can live entirely in the
-// wasm local $tN, with no memory backing. Two conditions:
-//   (a) N is in the "stable" range [3..fn_save). Slots in this range
-//       are never reused as FNAP arg-staging targets (FNAP picks
-//       k >= cssp >= fn_save).
-//   (b) The OCODE never emits s_llp N — i.e. no @-of-P!N is taken.
-//       If the address were taken, indirect stores could write
-//       through it and our wasm-local copy would go stale.
-AND is_promotable(n) = n >= 3 & n < fn_save &
+// wasm local $tN, with no memory backing.
+//   (a) N >= 3 (slots 0..2 hold the frame save area written by every
+//       FNAP/RTAP setup; can't promote because their value is the
+//       *new* P/PC pair, not the caller's slot value).
+//   (b) N < fn_peak — the slot is actually used by the body.
+//   (c) The OCODE never emits s_llp N — i.e. no @-of-P!N is taken.
+//       Address-taken slots need memory backing because indirect
+//       stores through the pointer would not update $tN.
+//
+// Previously we restricted promotion to [3..fn_save) on the theory
+// that FNAP arg-staging slots (n >= fn_save) shouldn't be promoted.
+// In practice the BCPL frontend assigns LET bindings to slots inside
+// the FNAP-staging range (when the value-producing expression is a
+// function call, e.g. `LET v = rng() REM N` puts v at the same slot
+// the FNAP frame used). With the old rule, push_load_p for those
+// slots emitted i32.load against P!n — which still held the pre-REM
+// FNAP-flushed result, not the actual post-expression value in $tN.
+// Extending promotion through fn_peak makes $tN the single source of
+// truth for the slot's live value across the whole expression chain.
+AND is_promotable(n) = n >= 3 & n < fn_peak &
                        n < slot_addr_max &
                        slot_addr_taken!n = 0
 
@@ -1233,13 +1245,13 @@ prescan_done:
         // Prime $Pb once at function entry. Re-primed after every
         // (call_indirect ...) since callees restore $P via RTRN/FNRN.
         emit_pb_refresh()
-        // Promoted-slot init: for every BCPL slot N in the stable
-        // range [3..fn_save) that isn't address-taken (no s_llp N),
-        // copy its incoming memory value (placed there by the caller's
-        // FNAP) into the corresponding wasm local $tN. Subsequent
-        // reads of P!N skip the i32.load; subsequent writes skip the
-        // i32.store. Slots ARE addressable (s_llp seen) fall through
-        // to the original memory-backed emit path.
+        // Promoted-slot init: for every BCPL slot N in [3..fn_save)
+        // that isn't address-taken, seed the wasm local $tN from the
+        // incoming memory value (placed there by the caller's FNAP).
+        // Slots in [fn_save..fn_peak) are FNAP staging / LET-from-call
+        // results — their initial memory value is meaningless, so we
+        // skip the load. The first write into them (FNAP result, push,
+        // store_p) primes $tN before any read.
         FOR i = 3 TO fn_save - 1 DO
           IF is_promotable(i) DO
             writef("    (local.set $t%n (i32.load (i32.add (local.get $Pb) (i32.const %n)))) ;; init promoted P!%n*n",

@@ -1025,6 +1025,21 @@ export const TRACK = [
     ],
     prereqs: ["20-stdin-echo"],
   },
+  {
+    slug: "72-sssp-bmssp",
+    title: "Breaking Dijkstra's sorting barrier (Duan et al 2025)",
+    level: 6,
+    topic: "advanced",
+    summary: "Side-by-side implementation of Dijkstra and the BMSSP (Bounded Multi-Source Shortest Path) algorithm from arXiv 2504.17033 — the first deterministic O(m * log^{2/3} n) algorithm for directed real-weighted SSSP. Generates a random sparse graph, runs both, verifies distances match exactly, prints timings. Pedagogical: shows the frontier-shrinking + pivot + divide-and-conquer structure, not the asymptotic constant-factor win (that needs huge n).",
+    goals: [
+      "BaseCase: mini-Dijkstra capped at k+1 hits",
+      "FindPivots: k Bellman-Ford sweeps + subtree-size filter on the relaxed-edge forest",
+      "BMSSP: divide-and-conquer over log(n)/t levels; Pull batches of M=2^{(l-1)t} pivots per phase",
+      "Simple sorted-array D struct (Lemma 3.3 stand-in); correctness without the block-LL optimisation",
+      "Verify against Dijkstra: distances must match exactly on every vertex",
+    ],
+    prereqs: ["65-bench"],
+  },
 ];
 
 // Quick-lookup helpers used by the UI.
