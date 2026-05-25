@@ -1040,6 +1040,21 @@ export const TRACK = [
     ],
     prereqs: ["65-bench"],
   },
+  {
+    slug: "73-diagnostics",
+    title: "Diagnostic helpers (assert / vsafe_get / getvec_or_abort)",
+    level: 6,
+    topic: "advanced",
+    summary: "Three BLIB additions that catch silent-corruption and null-deref bugs at their source instead of via a downstream SIGSEGV. assert(cond, msg), getvec_or_abort(n, msg), vsafe_get(v, i, msg) — each aborts with code 901 and a labelled message. Same API on cintsys and the wasm playground.",
+    goals: [
+      "Use assert() to nail invariants at the failing line",
+      "Use getvec_or_abort() instead of `IF p=0 ...` boilerplate every caller forgets",
+      "Use vsafe_get() for bounds-checked vector reads — catches OOB before it scribbles adjacent memory",
+      "Recognise abort code 901 in the fault prompt: 'Diagnostic abort (assert/vsafe/OOM)'",
+      "Cintsys also dumps a BCPL call chain on SIGSEGV (segvhandler in cintmain.c) — read entry+ret_pc per frame to locate the crash site",
+    ],
+    prereqs: ["15-vectors"],
+  },
 ];
 
 // Quick-lookup helpers used by the UI.

@@ -260,3 +260,15 @@ Named streams persist across page loads via `localStorage` (keys prefixed `bcpl:
 ### Playground
 
 `site/index.html` + `site/runtime.js` run compiled `.wasm` in-browser with the stdlib. `site/build.sh` rebuilds all examples (`site/examples/*.b`). See `site/README.md`.
+
+### Diagnostic helpers (BLIB)
+
+Three pure-BCPL safety nets added to `sysb/blib.b` + `site/runtime.js`. Same surface on cintsys and the playground:
+
+- `assert(cond, "msg")` — abort(901) if cond=FALSE, prints `ASSERT FAIL: <msg>`
+- `getvec_or_abort(n, "msg") → ptr` — getvec with a labelled OOM abort instead of silent NULL
+- `vsafe_get(v, i, "msg") → v!i` — bounds-checked read against BLIB's size header
+
+Code 901 in the bootsys fault table = "Diagnostic abort (assert/vsafe/OOM)". Cintsys's `segvhandler` (in `sysc/cintmain.c`) also dumps a BCPL call chain (entry+ret_pc per frame, up to 20) on SIGSEGV — `lastWp` is refreshed at every `F_k*` interpreter op so the chain reflects the live state at crash time. See `site/examples/73-diagnostics.b` for usage.
+
+When adding new stdlib globals to the playground: update `g/libhdr.h` slot number, `site/headers/libhdr.h` (separate playground copy), `site/stdlib-manifest.mjs` tidx, `site/runtime.js` imp_* + env binding, and **bump `BcplRuntime.STDLIB_TABLE_SLOTS`** in runtime.js to the new total. Programs allocate their fn table starting at that slot; if it's stale, new stdlib entries collide with program functions and start() runs in an infinite loop (silent symptom). Then regenerate `site/master.wat` via `node site/gen-master.mjs > site/master.wat`.

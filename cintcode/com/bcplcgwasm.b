@@ -35,6 +35,13 @@ MANIFEST {
   glob_base_bytes = wasm_glob_base * 4  // = 4 (Wasm byte addr of G!0)
 
   maxstack = 40    // max expression depth ($t0..$t39)
+  // Defensive bounds for fn_peak. Wasm engines elide unused locals,
+  // so over-declaring is essentially free. The prescan can undercount
+  // in some opcode patterns (d_insert in the BMSSP example was the
+  // historic reproducer); the margin keeps us safe while the prescan
+  // tightens up.
+  FN_PEAK_MIN     = 16
+  FN_PEAK_MARGIN  = 8
   maxlabs  = 16384 // max BCPL labels per section. bcpltrn.b itself uses
                    // ~1500 labels; 16384 gives 10x headroom. Direct-indexed
                    // labmap — must exceed the highest label number emitted.
@@ -548,6 +555,7 @@ AND push_rv() BE
          cssp, cssp)
   cssp := cssp + 1
 }
+
 
 AND binop(wasm_op) BE
 { cssp := cssp - 2
@@ -1232,8 +1240,17 @@ prescan_done:
         }
 
         // Emit function header. Locals: one i32 per expression-stack
-        // slot the body actually uses — fn_peak was computed by the
-        // prescan above.
+        // slot the body might use. fn_peak comes from the prescan
+        // above; some opcode combinations have been observed to
+        // undercount it (chained address arithmetic with multiple
+        // static-label loads in a single expression — d_insert in the
+        // BMSSP example was the original reproducer). We add a
+        // safety margin so over-declared locals are cheap (wasm
+        // engines elide unused ones) and miscounts no longer trap.
+        // Real fix is a tighter prescan; the margin is defence in
+        // depth, not a substitute.
+        IF fn_peak < FN_PEAK_MIN DO fn_peak := FN_PEAK_MIN
+        fn_peak := fn_peak + FN_PEAK_MARGIN
         selectoutput(tostream)
         // Debug-friendly comment: BCPL function name next to label.
         writef("  ;; BCPL fn %s (L%n)*n", nam, l)

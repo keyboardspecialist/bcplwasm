@@ -104,6 +104,32 @@ export const API_DOCS = {
   level:      { sig: "level() → P",           cat: "system", desc: "Capture current stack frame pointer. Use with longjump." },
   longjump:   { sig: "longjump(p, l)",        cat: "system", desc: "Non-local jump. In playground, halts." },
 
+  // ---- Diagnostic helpers (BLIB additions). Cheap safety nets that
+  // catch common BCPL bugs at their source instead of via a downstream
+  // SIGSEGV. All abort with code 901 and a labelled message.
+  assert: {
+    sig: "assert(cond, msg)",
+    cat: "debug",
+    desc: "Aborts (code 901) if cond is FALSE, printing `ASSERT FAIL: <msg>`. " +
+          "msg is a BCPL string. Use to nail invariants at the failing line " +
+          "instead of chasing a downstream crash."
+  },
+  getvec_or_abort: {
+    sig: "getvec_or_abort(n, msg) → ptr",
+    cat: "debug",
+    desc: "Like getvec(n) but aborts with `GETVEC OOM: <msg> (requested N words)` " +
+          "instead of returning 0 silently. Eliminates the `IF p=0 ...` " +
+          "boilerplate every caller forgets."
+  },
+  vsafe_get: {
+    sig: "vsafe_get(v, i, msg) → v!i",
+    cat: "debug",
+    desc: "Bounds-checked v!i. Reads the size header BLIB stores with " +
+          "every getvec allocation; aborts with `VSAFE OOB: <msg> " +
+          "(i=N upb=N)` on out-of-range index instead of silently reading " +
+          "adjacent memory. NULL pointer also aborts cleanly."
+  },
+
   // ---- Coroutines (Asyncify-backed) ----
   createco: {
     sig: "createco(fn, size) → handle",
