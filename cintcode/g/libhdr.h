@@ -262,11 +262,17 @@ getvec_or_abort:   198  // (n, msg_bstr) — like getvec but aborts with
 vsafe_get:         199  // (v, i, msg_bstr) — v!i with a bounds check.
                         //   Aborts on OOB rather than silently reading/
                         //   writing past the vector's allocated size.
+qcheck:            200  // (label_bstr, trial_fn, n_trials) → failures
+                        //   Property-test runner. Runs trial_fn(seed,
+                        //   trial_no) n_trials times with deterministic
+                        //   seeds. trial_fn returns 0 on pass, non-zero
+                        //   on fail. Prints pass/fail count and the
+                        //   first failing seed for repro.
 }
 
 MANIFEST {
 
-tg = 200   // First user global not reset between CLI commands
+tg = 201   // First user global not reset between CLI commands
 ug = 210   // First user global
            // Note that the CLI initialises all globals from ug
 	   // upwards

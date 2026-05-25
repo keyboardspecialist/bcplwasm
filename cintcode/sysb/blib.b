@@ -2643,3 +2643,37 @@ AND vsafe_get(v, i, msg) = VALOF
   RESULTIS v!i
 }
 
+AND qcheck(label, trial_fn, n_trials) = VALOF
+{ // Property-test runner. Pairs with assert: trial_fn does the
+  // setup + invariant check (using assert/vsafe_get internally),
+  // returns 0 on pass or a small non-zero code on detected failure.
+  // qcheck reports pass/fail counts and the first failing seed so
+  // repro is one tweak away.
+  //
+  // Seed is i * 7919 (large prime) — deterministic + spread across
+  // trial space without trivially coinciding with i. Trial number i
+  // is passed alongside for log readability.
+  LET passes = 0
+  LET fails  = 0
+  LET first_fail_seed = 0
+  LET first_fail_code = 0
+  sawritef("qcheck %s: %n trials*n", label, n_trials)
+  FOR i = 1 TO n_trials DO
+  { LET seed = i * 7919
+    LET rc   = trial_fn(seed, i)
+    TEST rc = 0
+    THEN passes := passes + 1
+    ELSE { fails := fails + 1
+           IF first_fail_seed = 0 DO
+           { first_fail_seed := seed
+             first_fail_code := rc
+           }
+         }
+  }
+  TEST fails = 0
+  THEN sawritef("  PASS %n/%n*n", passes, n_trials)
+  ELSE sawritef("  FAIL %n/%n  first fail: seed=%n rc=%n*n",
+                fails, n_trials, first_fail_seed, first_fail_code)
+  RESULTIS fails
+}
+
