@@ -106,8 +106,8 @@
     (global.set $__line (i32.const 21))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t59 (i32.load (i32.add (local.get $Pb) (i32.const 220))))
-    (local.set $t60 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t59 (local.get $t55)) ;; LP promoted P!55
+    (local.set $t60 (local.get $t3)) ;; LP promoted P!3
     (local.set $t61 (i32.const 50))
     (local.set $t62 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 408))))
     (i32.store (i32.add (local.get $Pb) (i32.const 236)) (local.get $t59))
@@ -129,7 +129,7 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t59 (i32.add (global.get $SB) (i32.const 8))) ;; LSTR
-    (local.set $t60 (i32.load (i32.add (local.get $Pb) (i32.const 220))))
+    (local.set $t60 (local.get $t55)) ;; LP promoted P!55
     (local.set $t61 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (local.get $Pb) (i32.const 236)) (local.get $t59))
     (i32.store (i32.add (local.get $Pb) (i32.const 240)) (local.get $t60))
@@ -155,7 +155,7 @@
         (then (call $__break)))
     (local.set $t59 (i32.add (global.get $SB) (i32.const 17))) ;; LSTR
     (local.set $t60 (i32.const 0))
-    (local.set $t61 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t61 (local.get $t3)) ;; LP promoted P!3
     (local.set $t60 (i32.add (local.get $t60) (local.get $t61)))
     (local.set $t60 (i32.load (i32.shl (local.get $t60) (i32.const 2))))
     (local.set $t61 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
@@ -173,14 +173,14 @@
         (then (call $__break)))
     (local.set $t59 (i32.add (global.get $SB) (i32.const 21))) ;; LSTR
     (local.set $t60 (i32.const 1))
-    (local.set $t61 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t61 (local.get $t3)) ;; LP promoted P!3
     (local.set $t60 (i32.add (local.get $t60) (local.get $t61)))
     (local.set $t60 (i32.load (i32.shl (local.get $t60) (i32.const 2))))
     (if (i32.eqz (local.get $t60)) (then
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     ))
     (local.set $t60 (i32.const 1))
-    (local.set $t61 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t61 (local.get $t3)) ;; LP promoted P!3
     (local.set $t60 (i32.add (local.get $t60) (local.get $t61)))
     (local.set $t60 (i32.load (i32.shl (local.get $t60) (i32.const 2))))
     ;; RES L12: save result, jump to RSTACK
@@ -209,7 +209,7 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t56 (i32.const 2))
-    (local.set $t57 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t57 (local.get $t3)) ;; LP promoted P!3
     (local.set $t56 (i32.add (local.get $t56) (local.get $t57)))
     (local.set $t56 (i32.load (i32.shl (local.get $t56) (i32.const 2))))
     (if (i32.eqz (local.get $t56)) (then
@@ -221,7 +221,7 @@
         (then (call $__break)))
     (local.set $t59 (i32.add (global.get $SB) (i32.const 27))) ;; LSTR
     (local.set $t60 (i32.const 2))
-    (local.set $t61 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t61 (local.get $t3)) ;; LP promoted P!3
     (local.set $t60 (i32.add (local.get $t60) (local.get $t61)))
     (local.set $t60 (i32.load (i32.shl (local.get $t60) (i32.const 2))))
     (local.set $t60 (i32.load (i32.shl (local.get $t60) (i32.const 2))))
@@ -238,7 +238,7 @@
       ) ;; close $__case_4 — LAB L14
     (local.set $t59 (i32.add (global.get $SB) (i32.const 31))) ;; LSTR
     (local.set $t60 (i32.const 3))
-    (local.set $t61 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t61 (local.get $t3)) ;; LP promoted P!3
     (local.set $t60 (i32.add (local.get $t60) (local.get $t61)))
     (local.set $t60 (i32.load (i32.shl (local.get $t60) (i32.const 2))))
     (local.set $t61 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))

@@ -75,7 +75,7 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t5 (local.get $t3)) ;; LP promoted P!3
-    (local.set $t6 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
+    (local.set $t6 (local.get $t4)) ;; LP promoted P!4
     (local.set $t5 (i32.mul (local.get $t5) (local.get $t6)))
     ;; FNRN
     (local.set $__res (local.get $t5))

@@ -72,7 +72,7 @@
     (local.set $t4 (local.get $__res)) ;; restore RES result
     (i32.store (i32.add (local.get $Pb) (i32.const 16)) (local.get $t4)) ;; STORE slot 4
     (local.set $t5 (i32.const 7))
-    (local.set $t6 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
+    (local.set $t6 (local.get $t4)) ;; LP promoted P!4
     (local.set $t5 (i32.add (local.get $t5) (local.get $t6)))
     ;; RES L12: save result, jump to RSTACK
     (local.set $__res (local.get $t5))
@@ -87,10 +87,10 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t8 (i32.add (global.get $SB) (i32.const 0))) ;; LSTR
-    (local.set $t9 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
-    (local.set $t10 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
-    (local.set $t11 (i32.load (i32.add (local.get $Pb) (i32.const 16))))
-    (local.set $t12 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t9 (local.get $t3)) ;; LP promoted P!3
+    (local.set $t10 (local.get $t4)) ;; LP promoted P!4
+    (local.set $t11 (local.get $t4)) ;; LP promoted P!4
+    (local.set $t12 (local.get $t3)) ;; LP promoted P!3
     (local.set $t11 (i32.add (local.get $t11) (local.get $t12)))
     (local.set $t12 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
     (i32.store (i32.add (local.get $Pb) (i32.const 32)) (local.get $t8))

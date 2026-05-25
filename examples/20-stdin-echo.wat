@@ -51,13 +51,13 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t4 (i32.const -1))
-    (local.set $t5 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t5 (local.get $t3)) ;; LP promoted P!3
     (if (i32.eq  (local.get $t4) (local.get $t5)) (then
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     ))
       (local.set $__lab (i32.const 1)) (br $__dispatch)
       ) ;; close $__case_1 — LAB L11
-    (local.set $t7 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t7 (local.get $t3)) ;; LP promoted P!3
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 164))))
     (i32.store (i32.add (local.get $Pb) (i32.const 28)) (local.get $t7))
     (i32.store (i32.add (local.get $Pb) (i32.const 16)) (global.get $P)) ;; save P
@@ -78,10 +78,9 @@
     (local.set $t4 (call_indirect $ftable (type $bcpl_fn) (local.get $t7)))
     (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (i32.store (i32.add (local.get $Pb) (i32.const 16)) (local.get $t4)) ;; flush FNAP result
-    (i32.store (i32.add (local.get $Pb) (i32.const 12)) (local.get $t4))
-    (local.set $t3 (local.get $t4))
+    (local.set $t3 (local.get $t4)) ;; SP promoted P!3
     (local.set $t4 (i32.const -1))
-    (local.set $t5 (i32.load (i32.add (local.get $Pb) (i32.const 12))))
+    (local.set $t5 (local.get $t3)) ;; LP promoted P!3
     (if (i32.ne  (local.get $t4) (local.get $t5)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     ))
