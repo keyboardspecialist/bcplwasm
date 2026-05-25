@@ -2604,3 +2604,42 @@ AND sxpushval(sxv, val) = VALOF
   RESULTIS p
 }
 
+// ---------- diagnostic helpers --------------------------------------
+//
+// Three small helpers that catch common BCPL bugs at their source
+// rather than via a downstream SIGSEGV. Each follows the standard
+// BLIB abort path (abort 901), so the existing bootsys fault prompt
+// still gives you P / G inspection on entry.
+
+AND assert(cond, msg) BE
+{ // Standard assertion: cond = FALSE aborts after printing msg.
+  // msg is a BCPL string (length byte at slot 0).
+  IF cond RETURN
+  sawritef("*nASSERT FAIL: %s*n", msg)
+  abort(901)
+}
+
+AND getvec_or_abort(n, msg) = VALOF
+{ // Like getvec(n) but aborts with a labelled OOM message instead
+  // of returning 0 silently. Eliminates the `IF p=0 ...` boilerplate
+  // every caller is supposed to write but rarely does.
+  LET p = getvec(n)
+  IF p = 0 DO
+  { sawritef("*nGETVEC OOM: %s (requested %n words)*n", msg, n)
+    abort(901)
+  }
+  RESULTIS p
+}
+
+AND vsafe_get(v, i, msg) = VALOF
+{ // Bounds-checked v!i. BLIB's getvec stores the allocation size
+  // at v!-1, so we can validate against the live capacity. Aborts
+  // on OOB instead of silently reading adjacent memory.
+  LET upb = v!-1
+  IF i < 0 | i > upb DO
+  { sawritef("*nVSAFE OOB: %s (i=%n upb=%n)*n", msg, i, upb)
+    abort(901)
+  }
+  RESULTIS v!i
+}
+

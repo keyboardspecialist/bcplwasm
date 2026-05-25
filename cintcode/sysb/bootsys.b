@@ -632,6 +632,7 @@ AND sadebug(code) = VALOF
                   CASE 190: RESULTIS "Endread fault"
                   CASE 191: RESULTIS "Endwrite fault"
                   CASE 197: RESULTIS "Store chain fault"
+                  CASE 901: RESULTIS "Diagnostic abort (assert/vsafe/OOM)"
                   DEFAULT:  RESULTIS "Unknown fault"
                 }
     sawritef("*n!! ABORT %n: ", code)

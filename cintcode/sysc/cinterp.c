@@ -299,6 +299,9 @@ pending interrupts can be dealt with.
 
 // Variables defined in cintsys or cintpos
 extern BCPLWORD  result2;
+extern BCPLWORD *lastWp;       /* refreshed at every Cintcode call so the
+                                  SIGSEGV backtrace can walk the live frame
+                                  chain (see cintmain.c segvhandler). */
 extern int       tracing;
 extern BCPLWORD  memupb;
 extern BCPLWORD *tallyv;
@@ -1925,6 +1928,7 @@ switch(B[pc++])
 		 Rw(p+k);
 		 Wp[k] = p<<B2Wsh; p +=  k;
                  Wp    = W+p;
+                 lastWp = Wp;        /* refresh for SIGSEGV backtrace */
                  Rw(p+1);
 		 Wp[1] = pc + 1;
                  pc    = a;
@@ -1940,6 +1944,7 @@ switch(B[pc++])
 		 Wp[k] = p<<B2Wsh;
 		 p +=  k;
                  Wp = W+p;
+                 lastWp = Wp;        /* refresh for SIGSEGV backtrace */
                  Rw(p+1);
 		 Wp[1] = pc + 2;
                  pc = a;
@@ -1958,6 +1963,7 @@ switch(B[pc++])
                  Rw(p+k);
                  Wp[k] = p<<B2Wsh; p += k;
                  Wp    = W+p;
+                 lastWp = Wp;        /* refresh for SIGSEGV backtrace */
                  Rb(p+1);
                  Wp[1] = pc + 4;
                  pc    = a;

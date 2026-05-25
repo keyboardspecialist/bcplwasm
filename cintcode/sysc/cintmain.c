@@ -812,12 +812,37 @@ void inthandler(int sig)
   exit(128 + SIGINT);  // Replacing: exit(0);
 }
 
+// Walk the BCPL call chain backwards from the current $P, printing
+// up to MAX_BT frames. Each Cintcode call saves P!0=caller_P,
+// P!1=return_PC, P!2=entry_addr; following P!0 climbs to caller.
+// Bail on out-of-range / cycle / zero pointer.
+#define BT_MAX_FRAMES 20
+static void print_bcpl_backtrace(void) {
+  BCPLWORD *p = lastWp;
+  int frame = 0;
+  printf("\nBCPL call chain (most recent first):\n");
+  while (p && p >= W && p < W + memupb && frame < BT_MAX_FRAMES) {
+    BCPLWORD ret_pc = p[1];
+    BCPLWORD entry  = p[2];
+    BCPLWORD *next  = W + (size_t)p[0];
+    printf("  #%2d  P=0x%llx  entry=0x%llx  ret_pc=0x%llx\n",
+           frame, (long long)(p - W),
+           (long long)entry, (long long)ret_pc);
+    if (next == p) break;            // self-loop guard
+    if (p[0] == 0) break;            // root frame
+    p = next;
+    frame++;
+  }
+  if (frame == BT_MAX_FRAMES) printf("  ... (truncated at %d)\n", BT_MAX_FRAMES);
+}
+
 void segvhandler(int sig)
-{ 
+{
   printf("\nSIGSEGV received\n");
   old_segvhandler  = signal(SIGSEGV,  old_segvhandler);
   SIGSEGVoccurred = 1;  // This idea does not work yet.
   close_keyb();
+  print_bcpl_backtrace();
 
 #ifdef TARGET64
 

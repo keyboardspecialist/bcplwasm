@@ -247,6 +247,21 @@ errwritef:         192 // Use writef to to stderr
 // The wasm playground exposes it directly via this slot so user code
 // can call writebin(n, d) without indirecting through writef("%b").
 writebin:          196
+
+// Diagnostic helpers (BLIB additions). Pure-BCPL — no compiler
+// change required, just calls into blib.b. Useful for catching the
+// usual silent-corruption / null-deref bugs at their source rather
+// than via a downstream SIGSEGV.
+assert:            197  // (cond, msg_bstr) — abort(901) if cond=FALSE.
+                        //   Prints `ASSERT FAIL: <msg>` then enters
+                        //   bootsys's standard debug prompt.
+getvec_or_abort:   198  // (n, msg_bstr) — like getvec but aborts with
+                        //   a labelled OOM message instead of returning
+                        //   0 silently. Saves every caller from
+                        //   `IF p=0 ...` boilerplate they always forget.
+vsafe_get:         199  // (v, i, msg_bstr) — v!i with a bounds check.
+                        //   Aborts on OOB rather than silently reading/
+                        //   writing past the vector's allocated size.
 }
 
 MANIFEST {
