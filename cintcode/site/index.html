@@ -3995,11 +3995,35 @@ LET start() = VALOF
       }
       if (p.example) await openExamplePreview(p.example);
     }
+    // Check whether a workspace file's content matches the shipped
+    // example bytes exactly. If so, the share link can use the compact
+    // #example=<slug> form instead of b64-packing the source.
+    async function fileMatchesShippedExample(file) {
+      if (!file.name.endsWith(".b")) return null;
+      const slug = file.name.slice(0, -2);
+      if (!BY_SLUG.has(slug)) return null;
+      try {
+        const shipped = await fetchText(`examples/${slug}.b?v=${V}`, null);
+        if (shipped !== null && shipped === file.content) return slug;
+      } catch { /* fall through */ }
+      return null;
+    }
     async function buildShareUrl() {
       // Preview tab: share the example slug.
       const t = sourceTabs[activeTab];
       if (t?.kind === "preview" && BY_SLUG.has(t.name)) {
         return `${location.origin}${location.pathname}#example=${encodeURIComponent(t.name)}`;
+      }
+      // Active editable file that's a pristine copy of a shipped
+      // example: same compact #example= URL, no b64 payload needed.
+      if (t?.kind === "file") {
+        const f = files[t.fileIdx];
+        if (f) {
+          const slug = await fileMatchesShippedExample(f);
+          if (slug) {
+            return `${location.origin}${location.pathname}#example=${encodeURIComponent(slug)}`;
+          }
+        }
       }
       // Single editable file: use the compact src= form.
       if (files.length === 1) {
