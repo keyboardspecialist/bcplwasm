@@ -7573,6 +7573,31 @@
     (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
     (loop $__dispatch
       (block $__default
+      (block $__case_353
+      (block $__case_352
+      (block $__case_351
+      (block $__case_350
+      (block $__case_349
+      (block $__case_348
+      (block $__case_347
+      (block $__case_346
+      (block $__case_345
+      (block $__case_344
+      (block $__case_343
+      (block $__case_342
+      (block $__case_341
+      (block $__case_340
+      (block $__case_339
+      (block $__case_338
+      (block $__case_337
+      (block $__case_336
+      (block $__case_335
+      (block $__case_334
+      (block $__case_333
+      (block $__case_332
+      (block $__case_331
+      (block $__case_330
+      (block $__case_329
       (block $__case_328
       (block $__case_327
       (block $__case_326
@@ -7902,7 +7927,7 @@
       (block $__case_2
       (block $__case_1
       (block $__case_0
-        (br_table $__case_0 $__case_1 $__case_2 $__case_3 $__case_4 $__case_5 $__case_6 $__case_7 $__case_8 $__case_9 $__case_10 $__case_11 $__case_12 $__case_13 $__case_14 $__case_15 $__case_16 $__case_17 $__case_18 $__case_19 $__case_20 $__case_21 $__case_22 $__case_23 $__case_24 $__case_25 $__case_26 $__case_27 $__case_28 $__case_29 $__case_30 $__case_31 $__case_32 $__case_33 $__case_34 $__case_35 $__case_36 $__case_37 $__case_38 $__case_39 $__case_40 $__case_41 $__case_42 $__case_43 $__case_44 $__case_45 $__case_46 $__case_47 $__case_48 $__case_49 $__case_50 $__case_51 $__case_52 $__case_53 $__case_54 $__case_55 $__case_56 $__case_57 $__case_58 $__case_59 $__case_60 $__case_61 $__case_62 $__case_63 $__case_64 $__case_65 $__case_66 $__case_67 $__case_68 $__case_69 $__case_70 $__case_71 $__case_72 $__case_73 $__case_74 $__case_75 $__case_76 $__case_77 $__case_78 $__case_79 $__case_80 $__case_81 $__case_82 $__case_83 $__case_84 $__case_85 $__case_86 $__case_87 $__case_88 $__case_89 $__case_90 $__case_91 $__case_92 $__case_93 $__case_94 $__case_95 $__case_96 $__case_97 $__case_98 $__case_99 $__case_100 $__case_101 $__case_102 $__case_103 $__case_104 $__case_105 $__case_106 $__case_107 $__case_108 $__case_109 $__case_110 $__case_111 $__case_112 $__case_113 $__case_114 $__case_115 $__case_116 $__case_117 $__case_118 $__case_119 $__case_120 $__case_121 $__case_122 $__case_123 $__case_124 $__case_125 $__case_126 $__case_127 $__case_128 $__case_129 $__case_130 $__case_131 $__case_132 $__case_133 $__case_134 $__case_135 $__case_136 $__case_137 $__case_138 $__case_139 $__case_140 $__case_141 $__case_142 $__case_143 $__case_144 $__case_145 $__case_146 $__case_147 $__case_148 $__case_149 $__case_150 $__case_151 $__case_152 $__case_153 $__case_154 $__case_155 $__case_156 $__case_157 $__case_158 $__case_159 $__case_160 $__case_161 $__case_162 $__case_163 $__case_164 $__case_165 $__case_166 $__case_167 $__case_168 $__case_169 $__case_170 $__case_171 $__case_172 $__case_173 $__case_174 $__case_175 $__case_176 $__case_177 $__case_178 $__case_179 $__case_180 $__case_181 $__case_182 $__case_183 $__case_184 $__case_185 $__case_186 $__case_187 $__case_188 $__case_189 $__case_190 $__case_191 $__case_192 $__case_193 $__case_194 $__case_195 $__case_196 $__case_197 $__case_198 $__case_199 $__case_200 $__case_201 $__case_202 $__case_203 $__case_204 $__case_205 $__case_206 $__case_207 $__case_208 $__case_209 $__case_210 $__case_211 $__case_212 $__case_213 $__case_214 $__case_215 $__case_216 $__case_217 $__case_218 $__case_219 $__case_220 $__case_221 $__case_222 $__case_223 $__case_224 $__case_225 $__case_226 $__case_227 $__case_228 $__case_229 $__case_230 $__case_231 $__case_232 $__case_233 $__case_234 $__case_235 $__case_236 $__case_237 $__case_238 $__case_239 $__case_240 $__case_241 $__case_242 $__case_243 $__case_244 $__case_245 $__case_246 $__case_247 $__case_248 $__case_249 $__case_250 $__case_251 $__case_252 $__case_253 $__case_254 $__case_255 $__case_256 $__case_257 $__case_258 $__case_259 $__case_260 $__case_261 $__case_262 $__case_263 $__case_264 $__case_265 $__case_266 $__case_267 $__case_268 $__case_269 $__case_270 $__case_271 $__case_272 $__case_273 $__case_274 $__case_275 $__case_276 $__case_277 $__case_278 $__case_279 $__case_280 $__case_281 $__case_282 $__case_283 $__case_284 $__case_285 $__case_286 $__case_287 $__case_288 $__case_289 $__case_290 $__case_291 $__case_292 $__case_293 $__case_294 $__case_295 $__case_296 $__case_297 $__case_298 $__case_299 $__case_300 $__case_301 $__case_302 $__case_303 $__case_304 $__case_305 $__case_306 $__case_307 $__case_308 $__case_309 $__case_310 $__case_311 $__case_312 $__case_313 $__case_314 $__case_315 $__case_316 $__case_317 $__case_318 $__case_319 $__case_320 $__case_321 $__case_322 $__case_323 $__case_324 $__case_325 $__case_326 $__case_327 $__case_328 $__default (local.get $__lab))
+        (br_table $__case_0 $__case_1 $__case_2 $__case_3 $__case_4 $__case_5 $__case_6 $__case_7 $__case_8 $__case_9 $__case_10 $__case_11 $__case_12 $__case_13 $__case_14 $__case_15 $__case_16 $__case_17 $__case_18 $__case_19 $__case_20 $__case_21 $__case_22 $__case_23 $__case_24 $__case_25 $__case_26 $__case_27 $__case_28 $__case_29 $__case_30 $__case_31 $__case_32 $__case_33 $__case_34 $__case_35 $__case_36 $__case_37 $__case_38 $__case_39 $__case_40 $__case_41 $__case_42 $__case_43 $__case_44 $__case_45 $__case_46 $__case_47 $__case_48 $__case_49 $__case_50 $__case_51 $__case_52 $__case_53 $__case_54 $__case_55 $__case_56 $__case_57 $__case_58 $__case_59 $__case_60 $__case_61 $__case_62 $__case_63 $__case_64 $__case_65 $__case_66 $__case_67 $__case_68 $__case_69 $__case_70 $__case_71 $__case_72 $__case_73 $__case_74 $__case_75 $__case_76 $__case_77 $__case_78 $__case_79 $__case_80 $__case_81 $__case_82 $__case_83 $__case_84 $__case_85 $__case_86 $__case_87 $__case_88 $__case_89 $__case_90 $__case_91 $__case_92 $__case_93 $__case_94 $__case_95 $__case_96 $__case_97 $__case_98 $__case_99 $__case_100 $__case_101 $__case_102 $__case_103 $__case_104 $__case_105 $__case_106 $__case_107 $__case_108 $__case_109 $__case_110 $__case_111 $__case_112 $__case_113 $__case_114 $__case_115 $__case_116 $__case_117 $__case_118 $__case_119 $__case_120 $__case_121 $__case_122 $__case_123 $__case_124 $__case_125 $__case_126 $__case_127 $__case_128 $__case_129 $__case_130 $__case_131 $__case_132 $__case_133 $__case_134 $__case_135 $__case_136 $__case_137 $__case_138 $__case_139 $__case_140 $__case_141 $__case_142 $__case_143 $__case_144 $__case_145 $__case_146 $__case_147 $__case_148 $__case_149 $__case_150 $__case_151 $__case_152 $__case_153 $__case_154 $__case_155 $__case_156 $__case_157 $__case_158 $__case_159 $__case_160 $__case_161 $__case_162 $__case_163 $__case_164 $__case_165 $__case_166 $__case_167 $__case_168 $__case_169 $__case_170 $__case_171 $__case_172 $__case_173 $__case_174 $__case_175 $__case_176 $__case_177 $__case_178 $__case_179 $__case_180 $__case_181 $__case_182 $__case_183 $__case_184 $__case_185 $__case_186 $__case_187 $__case_188 $__case_189 $__case_190 $__case_191 $__case_192 $__case_193 $__case_194 $__case_195 $__case_196 $__case_197 $__case_198 $__case_199 $__case_200 $__case_201 $__case_202 $__case_203 $__case_204 $__case_205 $__case_206 $__case_207 $__case_208 $__case_209 $__case_210 $__case_211 $__case_212 $__case_213 $__case_214 $__case_215 $__case_216 $__case_217 $__case_218 $__case_219 $__case_220 $__case_221 $__case_222 $__case_223 $__case_224 $__case_225 $__case_226 $__case_227 $__case_228 $__case_229 $__case_230 $__case_231 $__case_232 $__case_233 $__case_234 $__case_235 $__case_236 $__case_237 $__case_238 $__case_239 $__case_240 $__case_241 $__case_242 $__case_243 $__case_244 $__case_245 $__case_246 $__case_247 $__case_248 $__case_249 $__case_250 $__case_251 $__case_252 $__case_253 $__case_254 $__case_255 $__case_256 $__case_257 $__case_258 $__case_259 $__case_260 $__case_261 $__case_262 $__case_263 $__case_264 $__case_265 $__case_266 $__case_267 $__case_268 $__case_269 $__case_270 $__case_271 $__case_272 $__case_273 $__case_274 $__case_275 $__case_276 $__case_277 $__case_278 $__case_279 $__case_280 $__case_281 $__case_282 $__case_283 $__case_284 $__case_285 $__case_286 $__case_287 $__case_288 $__case_289 $__case_290 $__case_291 $__case_292 $__case_293 $__case_294 $__case_295 $__case_296 $__case_297 $__case_298 $__case_299 $__case_300 $__case_301 $__case_302 $__case_303 $__case_304 $__case_305 $__case_306 $__case_307 $__case_308 $__case_309 $__case_310 $__case_311 $__case_312 $__case_313 $__case_314 $__case_315 $__case_316 $__case_317 $__case_318 $__case_319 $__case_320 $__case_321 $__case_322 $__case_323 $__case_324 $__case_325 $__case_326 $__case_327 $__case_328 $__case_329 $__case_330 $__case_331 $__case_332 $__case_333 $__case_334 $__case_335 $__case_336 $__case_337 $__case_338 $__case_339 $__case_340 $__case_341 $__case_342 $__case_343 $__case_344 $__case_345 $__case_346 $__case_347 $__case_348 $__case_349 $__case_350 $__case_351 $__case_352 $__case_353 $__default (local.get $__lab))
       ) ;; close $__case_0 — entry-block body follows
     ;; line 7:912
     (global.set $__line (i32.const 912))
@@ -8004,7 +8029,7 @@
     (local.set $t3 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1976))))
     ;; RES L292: save result, jump to RSTACK
     (local.set $__res (local.get $t3))
-      (local.set $__lab (i32.const 325)) (br $__dispatch)
+      (local.set $__lab (i32.const 350)) (br $__dispatch)
     ;; line 7:930
     (global.set $__line (i32.const 930))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -8070,7 +8095,7 @@
     (global.set $__line (i32.const 939))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:940
     (global.set $__line (i32.const 940))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -8207,7 +8232,7 @@
     (global.set $__line (i32.const 965))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:967
     (global.set $__line (i32.const 967))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -8218,7 +8243,7 @@
     (global.set $__line (i32.const 970))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
       ) ;; close $__case_12 — LAB L302
     ;; line 7:972
     (global.set $__line (i32.const 972))
@@ -8650,7 +8675,7 @@
     (global.set $__line (i32.const 1015))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1016
     (global.set $__line (i32.const 1016))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -8708,7 +8733,7 @@
     ))
       (local.set $__lab (i32.const 28)) (br $__dispatch)
       ) ;; close $__case_28 — LAB L318
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1022
     (global.set $__line (i32.const 1022))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -8809,7 +8834,7 @@
     (global.set $__line (i32.const 1035))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
       (local.set $__lab (i32.const 30)) (br $__dispatch)
       ) ;; close $__case_30 — LAB L320
     ;; line 7:1036
@@ -11304,7 +11329,7 @@
     (global.set $__line (i32.const 1418))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1420
     (global.set $__line (i32.const 1420))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -11333,7 +11358,7 @@
     (global.set $__line (i32.const 1425))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1426
     (global.set $__line (i32.const 1426))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -11600,7 +11625,7 @@
     (global.set $__line (i32.const 1465))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1466
     (global.set $__line (i32.const 1466))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -11721,7 +11746,7 @@
     (global.set $__line (i32.const 1484))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1485
     (global.set $__line (i32.const 1485))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -11800,7 +11825,7 @@
     (global.set $__line (i32.const 1494))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1495
     (global.set $__line (i32.const 1495))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -11879,7 +11904,7 @@
     (global.set $__line (i32.const 1504))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1505
     (global.set $__line (i32.const 1505))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -12102,7 +12127,7 @@
     (global.set $__line (i32.const 1529))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1530
     (global.set $__line (i32.const 1530))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -12245,7 +12270,7 @@
     (global.set $__line (i32.const 1551))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1552
     (global.set $__line (i32.const 1552))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -12336,7 +12361,7 @@
     (global.set $__line (i32.const 1563))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1564
     (global.set $__line (i32.const 1564))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -12427,7 +12452,7 @@
     (global.set $__line (i32.const 1575))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1576
     (global.set $__line (i32.const 1576))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -12570,7 +12595,7 @@
     (global.set $__line (i32.const 1593))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1594
     (global.set $__line (i32.const 1594))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -12649,7 +12674,7 @@
     (global.set $__line (i32.const 1603))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1604
     (global.set $__line (i32.const 1604))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -12728,7 +12753,7 @@
     (global.set $__line (i32.const 1613))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1614
     (global.set $__line (i32.const 1614))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -12795,7 +12820,7 @@
     (global.set $__line (i32.const 1622))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1623
     (global.set $__line (i32.const 1623))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -12861,7 +12886,7 @@
     (global.set $__line (i32.const 1630))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1631
     (global.set $__line (i32.const 1631))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -12937,7 +12962,7 @@
     (global.set $__line (i32.const 1639))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1640
     (global.set $__line (i32.const 1640))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -13015,7 +13040,7 @@
     (global.set $__line (i32.const 1649))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1650
     (global.set $__line (i32.const 1650))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -13094,7 +13119,7 @@
     (global.set $__line (i32.const 1659))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1660
     (global.set $__line (i32.const 1660))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -13274,7 +13299,7 @@
     (global.set $__line (i32.const 1680))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1681
     (global.set $__line (i32.const 1681))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -13339,7 +13364,7 @@
     (global.set $__line (i32.const 1689))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1690
     (global.set $__line (i32.const 1690))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -13403,7 +13428,7 @@
     (global.set $__line (i32.const 1697))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1698
     (global.set $__line (i32.const 1698))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -13538,7 +13563,7 @@
     (global.set $__line (i32.const 1713))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1714
     (global.set $__line (i32.const 1714))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -13607,7 +13632,7 @@
     (global.set $__line (i32.const 1721))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1722
     (global.set $__line (i32.const 1722))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -13677,7 +13702,7 @@
     (global.set $__line (i32.const 1730))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1731
     (global.set $__line (i32.const 1731))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -13770,7 +13795,7 @@
     (global.set $__line (i32.const 1741))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1742
     (global.set $__line (i32.const 1742))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -13873,7 +13898,7 @@
     (global.set $__line (i32.const 1756))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1757
     (global.set $__line (i32.const 1757))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -13965,7 +13990,7 @@
     (global.set $__line (i32.const 1767))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1768
     (global.set $__line (i32.const 1768))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -14101,7 +14126,7 @@
     (global.set $__line (i32.const 1786))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1787
     (global.set $__line (i32.const 1787))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -14232,7 +14257,7 @@
     (global.set $__line (i32.const 1800))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1802
     (global.set $__line (i32.const 1802))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -14325,7 +14350,7 @@
     (global.set $__line (i32.const 1812))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1813
     (global.set $__line (i32.const 1813))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -14361,7 +14386,7 @@
     (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1984)) (local.get $t4))
     (local.set $t4 (local.get $t3)) ;; LP promoted P!3
     (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1988)) (local.get $t4))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
       ) ;; close $__case_273 — LAB L566
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1828))))
     (i32.store (i32.add (local.get $Pb) (i32.const 16)) (global.get $P)) ;; save P
@@ -14584,7 +14609,7 @@
     (global.set $__line (i32.const 1846))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1847
     (global.set $__line (i32.const 1847))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -14598,7 +14623,7 @@
     (local.set $t3 (i32.const 0))
     (local.set $t4 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1952))))
     (if (i32.eq  (local.get $t3) (local.get $t4)) (then
-      (local.set $__lab (i32.const 326)) (br $__dispatch)
+      (local.set $__lab (i32.const 351)) (br $__dispatch)
     ))
     ;; line 7:1851
     (global.set $__line (i32.const 1851))
@@ -14732,7 +14757,7 @@
     (global.set $__line (i32.const 1867))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1868
     (global.set $__line (i32.const 1868))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -14814,7 +14839,7 @@
     (global.set $__line (i32.const 1877))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1878
     (global.set $__line (i32.const 1878))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -14881,7 +14906,7 @@
     (global.set $__line (i32.const 1886))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1887
     (global.set $__line (i32.const 1887))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -15350,7 +15375,7 @@
     (global.set $__line (i32.const 1944))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1945
     (global.set $__line (i32.const 1945))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -15455,7 +15480,7 @@
     (global.set $__line (i32.const 1959))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1960
     (global.set $__line (i32.const 1960))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -15572,7 +15597,7 @@
     (global.set $__line (i32.const 1981))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:1982
     (global.set $__line (i32.const 1982))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -15795,7 +15820,7 @@
     (global.set $__line (i32.const 2001))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:2003
     (global.set $__line (i32.const 2003))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -15839,7 +15864,7 @@
     (i32.store (i32.shl (local.get $t5) (i32.const 2)) (local.get $t4))
       (local.set $__lab (i32.const 314)) (br $__dispatch)
       ) ;; close $__case_314 — LAB L607
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:2013
     (global.set $__line (i32.const 2013))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -15877,7 +15902,7 @@
     (global.set $__line (i32.const 2018))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:2019
     (global.set $__line (i32.const 2019))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -15915,7 +15940,7 @@
     (global.set $__line (i32.const 2024))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:2025
     (global.set $__line (i32.const 2025))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -16086,7 +16111,7 @@
     (global.set $__line (i32.const 2044))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
     ;; line 7:2045
     (global.set $__line (i32.const 2045))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -16165,22 +16190,18 @@
     (global.set $__line (i32.const 2057))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t8 (local.get $t4)) ;; LP promoted P!4
-    (local.set $t9 (i32.const 32))
-    (if (i32.lt_s (local.get $t8) (local.get $t9)) (then
+    (local.set $t8 (i32.const 0))
+    (local.set $t9 (local.get $t4)) ;; LP promoted P!4
+    (if (i32.ne  (local.get $t8) (local.get $t9)) (then
       (local.set $__lab (i32.const 321)) (br $__dispatch)
     ))
-    (local.set $t8 (i32.const -1))
+    (local.set $t8 (i32.const 32))
     ;; RES L614: save result, jump to RSTACK
     (local.set $__res (local.get $t8))
       (local.set $__lab (i32.const 322)) (br $__dispatch)
       (local.set $__lab (i32.const 321)) (br $__dispatch)
       ) ;; close $__case_321 — LAB L615
-    (local.set $t8 (i32.const 1))
-    (local.set $t9 (local.get $t4)) ;; LP promoted P!4
-    (local.set $t8 (i32.shl (local.get $t8) (local.get $t9)))
-    (local.set $t9 (i32.const 1))
-    (local.set $t8 (i32.sub (local.get $t8) (local.get $t9)))
+    (local.set $t8 (local.get $t4)) ;; LP promoted P!4
     ;; RES L614: save result, jump to RSTACK
     (local.set $__res (local.get $t8))
       (local.set $__lab (i32.const 322)) (br $__dispatch)
@@ -16193,190 +16214,641 @@
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t9 (local.get $t8)) ;; LP promoted P!8
-    (local.set $t10 (local.get $t5)) ;; LP promoted P!5
-    (local.set $t9 (i32.shl (local.get $t9) (local.get $t10)))
-    (local.set $t9 (i32.xor (local.get $t9) (i32.const -1)))
+    (local.set $t10 (i32.const 32))
+    (local.set $t9 (i32.sub (i32.const 0) (i32.ge_s (local.get $t9) (local.get $t10))))
+    (local.set $t10 (i32.const 0))
+    (local.set $t11 (local.get $t5)) ;; LP promoted P!5
+    (local.set $t10 (i32.sub (i32.const 0) (i32.eq (local.get $t10) (local.get $t11))))
+    (local.set $t9 (i32.and (local.get $t9) (local.get $t10)))
     (i32.store (i32.add (local.get $Pb) (i32.const 36)) (local.get $t9)) ;; STORE slot 9
     ;; line 7:2059
     (global.set $__line (i32.const 2059))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t10 (i32.const 0))
-    (local.set $t11 (local.get $t3)) ;; LP promoted P!3
-    (if (i32.eq  (local.get $t10) (local.get $t11)) (then
+    (local.set $t10 (local.get $t8)) ;; LP promoted P!8
+    (local.set $t11 (i32.const 32))
+    (if (i32.lt_s (local.get $t10) (local.get $t11)) (then
       (local.set $__lab (i32.const 323)) (br $__dispatch)
     ))
+    (local.set $t10 (i32.const -1))
+    ;; RES L616: save result, jump to RSTACK
+    (local.set $__res (local.get $t10))
+      (local.set $__lab (i32.const 324)) (br $__dispatch)
+      (local.set $__lab (i32.const 323)) (br $__dispatch)
+      ) ;; close $__case_323 — LAB L617
+    (local.set $t10 (i32.const 1))
+    (local.set $t11 (local.get $t8)) ;; LP promoted P!8
+    (local.set $t10 (i32.shl (local.get $t10) (local.get $t11)))
+    (local.set $t11 (i32.const 1))
+    (local.set $t10 (i32.sub (local.get $t10) (local.get $t11)))
+    ;; RES L616: save result, jump to RSTACK
+    (local.set $__res (local.get $t10))
+      (local.set $__lab (i32.const 324)) (br $__dispatch)
+      ) ;; close $__case_324 — LAB L616
+    ;; RSTACK 10
+    (local.set $t10 (local.get $__res)) ;; restore RES result
+    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (local.get $t10)) ;; STORE slot 10
     ;; line 7:2060
     (global.set $__line (i32.const 2060))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t13 (i32.add (global.get $SB) (i32.const 1900))) ;; LSTR
-    (local.set $t14 (local.get $t3)) ;; LP promoted P!3
-    (local.set $t15 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
-    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (local.get $t13))
-    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (local.get $t14))
-    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (global.get $P)) ;; save P
-    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t15)) ;; entry fn_idx
-    (global.set $P (i32.add (global.get $P) (i32.const 10)))
-    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t15)))
-    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
-      (local.set $__lab (i32.const 323)) (br $__dispatch)
-      ) ;; close $__case_323 — LAB L616
+    (local.set $t11 (local.get $t10)) ;; LP promoted P!10
+    (local.set $t12 (local.get $t5)) ;; LP promoted P!5
+    (local.set $t11 (i32.shl (local.get $t11) (local.get $t12)))
+    (local.set $t11 (i32.xor (local.get $t11) (i32.const -1)))
+    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (local.get $t11)) ;; STORE slot 11
     ;; line 7:2061
     (global.set $__line (i32.const 2061))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t13 (i32.add (global.get $SB) (i32.const 1577))) ;; LSTR
-    (local.set $t14 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
-    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (local.get $t13))
-    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (global.get $P)) ;; save P
-    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t14)) ;; entry fn_idx
-    (global.set $P (i32.add (global.get $P) (i32.const 10)))
-    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t14)))
-    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
-    ;; line 7:2062
-    (global.set $__line (i32.const 2062))
-    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
-        (then (call $__break)))
-    (local.set $t13 (i32.add (global.get $SB) (i32.const 1912))) ;; LSTR
-    (local.set $t14 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
-    (local.set $t15 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
-    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (local.get $t13))
-    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (local.get $t14))
-    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (global.get $P)) ;; save P
-    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t15)) ;; entry fn_idx
-    (global.set $P (i32.add (global.get $P) (i32.const 10)))
-    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t15)))
-    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
-    ;; line 7:2063
-    (global.set $__line (i32.const 2063))
-    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
-        (then (call $__break)))
-    (local.set $t13 (i32.add (global.get $SB) (i32.const 1924))) ;; LSTR
-    (local.set $t14 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
-    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (local.get $t13))
-    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (global.get $P)) ;; save P
-    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t14)) ;; entry fn_idx
-    (global.set $P (i32.add (global.get $P) (i32.const 10)))
-    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t14)))
-    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (local.set $t12 (i32.const 0)) ;; QUERY (undefined)
+    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t12)) ;; STORE slot 12
     ;; line 7:2064
     (global.set $__line (i32.const 2064))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t13 (i32.add (global.get $SB) (i32.const 1928))) ;; LSTR
-    (local.set $t14 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
-    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (local.get $t13))
-    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (global.get $P)) ;; save P
-    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t14)) ;; entry fn_idx
-    (global.set $P (i32.add (global.get $P) (i32.const 10)))
-    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t14)))
-    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (local.set $t13 (local.get $t3)) ;; LP promoted P!3
+    ;; RES L618: save result, jump to RSTACK
+    (local.set $__res (local.get $t13))
+      (local.set $__lab (i32.const 338)) (br $__dispatch)
     ;; line 7:2065
     (global.set $__line (i32.const 2065))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t13 (i32.add (global.get $SB) (i32.const 1933))) ;; LSTR
-    (local.set $t14 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
-    (local.set $t15 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
-    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (local.get $t13))
-    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (local.get $t14))
-    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (global.get $P)) ;; save P
-    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t15)) ;; entry fn_idx
-    (global.set $P (i32.add (global.get $P) (i32.const 10)))
-    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t15)))
-    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+      ) ;; close $__case_325 — LAB L620
     ;; line 7:2066
     (global.set $__line (i32.const 2066))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t13 (i32.add (global.get $SB) (i32.const 1949))) ;; LSTR
-    (local.set $t14 (local.get $t9)) ;; LP promoted P!9
-    (local.set $t15 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
-    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (local.get $t13))
-    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (local.get $t14))
-    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (global.get $P)) ;; save P
-    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t15)) ;; entry fn_idx
-    (global.set $P (i32.add (global.get $P) (i32.const 10)))
-    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t15)))
-    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (local.set $t13 (i32.const 0))
+    (local.set $t12 (local.get $t13)) ;; SP promoted P!12
+      (local.set $__lab (i32.const 339)) (br $__dispatch) ;; JUMP L619
+      ) ;; close $__case_326 — LAB L621
     ;; line 7:2067
     (global.set $__line (i32.const 2067))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t13 (i32.add (global.get $SB) (i32.const 1956))) ;; LSTR
-    (local.set $t14 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
-    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (local.get $t13))
-    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (global.get $P)) ;; save P
-    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t14)) ;; entry fn_idx
-    (global.set $P (i32.add (global.get $P) (i32.const 10)))
-    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t14)))
-    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (local.set $t13 (i32.add (global.get $SB) (i32.const 973))) ;; LSTR
+    (local.set $t12 (local.get $t13)) ;; SP promoted P!12
+      (local.set $__lab (i32.const 339)) (br $__dispatch) ;; JUMP L619
+      ) ;; close $__case_327 — LAB L622
     ;; line 7:2068
     (global.set $__line (i32.const 2068))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t13 (i32.add (global.get $SB) (i32.const 1961))) ;; LSTR
-    (local.set $t14 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
-    (local.set $t15 (local.get $t8)) ;; LP promoted P!8
-    (local.set $t16 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
-    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (local.get $t13))
-    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (local.get $t14))
-    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t15))
-    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (global.get $P)) ;; save P
-    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t16)) ;; entry fn_idx
-    (global.set $P (i32.add (global.get $P) (i32.const 10)))
-    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t16)))
-    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (local.set $t13 (i32.add (global.get $SB) (i32.const 975))) ;; LSTR
+    (local.set $t12 (local.get $t13)) ;; SP promoted P!12
+      (local.set $__lab (i32.const 339)) (br $__dispatch) ;; JUMP L619
+      ) ;; close $__case_328 — LAB L623
     ;; line 7:2069
     (global.set $__line (i32.const 2069))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t13 (i32.add (global.get $SB) (i32.const 1975))) ;; LSTR
-    (local.set $t14 (local.get $t5)) ;; LP promoted P!5
-    (local.set $t15 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
-    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (local.get $t13))
-    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (local.get $t14))
-    (i32.store (i32.add (local.get $Pb) (i32.const 40)) (global.get $P)) ;; save P
-    (i32.store (i32.add (local.get $Pb) (i32.const 44)) (i32.const 0)) ;; return addr placeholder
-    (i32.store (i32.add (local.get $Pb) (i32.const 48)) (local.get $t15)) ;; entry fn_idx
-    (global.set $P (i32.add (global.get $P) (i32.const 10)))
-    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t15)))
-    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    (local.set $t13 (i32.add (global.get $SB) (i32.const 977))) ;; LSTR
+    (local.set $t12 (local.get $t13)) ;; SP promoted P!12
+      (local.set $__lab (i32.const 339)) (br $__dispatch) ;; JUMP L619
+      ) ;; close $__case_329 — LAB L624
     ;; line 7:2070
     (global.set $__line (i32.const 2070))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t13 (i32.add (global.get $SB) (i32.const 979))) ;; LSTR
+    (local.set $t12 (local.get $t13)) ;; SP promoted P!12
+      (local.set $__lab (i32.const 339)) (br $__dispatch) ;; JUMP L619
+      ) ;; close $__case_330 — LAB L625
+    ;; line 7:2071
+    (global.set $__line (i32.const 2071))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t13 (i32.add (global.get $SB) (i32.const 982))) ;; LSTR
+    (local.set $t12 (local.get $t13)) ;; SP promoted P!12
+      (local.set $__lab (i32.const 339)) (br $__dispatch) ;; JUMP L619
+      ) ;; close $__case_331 — LAB L626
+    ;; line 7:2072
+    (global.set $__line (i32.const 2072))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t13 (i32.add (global.get $SB) (i32.const 985))) ;; LSTR
+    (local.set $t12 (local.get $t13)) ;; SP promoted P!12
+      (local.set $__lab (i32.const 339)) (br $__dispatch) ;; JUMP L619
+      ) ;; close $__case_332 — LAB L627
+    ;; line 7:2073
+    (global.set $__line (i32.const 2073))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t13 (i32.add (global.get $SB) (i32.const 1900))) ;; LSTR
+    (local.set $t12 (local.get $t13)) ;; SP promoted P!12
+      (local.set $__lab (i32.const 339)) (br $__dispatch) ;; JUMP L619
+      ) ;; close $__case_333 — LAB L628
+    ;; line 7:2074
+    (global.set $__line (i32.const 2074))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t13 (i32.add (global.get $SB) (i32.const 990))) ;; LSTR
+    (local.set $t12 (local.get $t13)) ;; SP promoted P!12
+      (local.set $__lab (i32.const 339)) (br $__dispatch) ;; JUMP L619
+      ) ;; close $__case_334 — LAB L629
+    ;; line 7:2075
+    (global.set $__line (i32.const 2075))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t13 (i32.add (global.get $SB) (i32.const 992))) ;; LSTR
+    (local.set $t12 (local.get $t13)) ;; SP promoted P!12
+      (local.set $__lab (i32.const 339)) (br $__dispatch) ;; JUMP L619
+      ) ;; close $__case_335 — LAB L630
+    ;; line 7:2076
+    (global.set $__line (i32.const 2076))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t13 (i32.add (global.get $SB) (i32.const 994))) ;; LSTR
+    (local.set $t12 (local.get $t13)) ;; SP promoted P!12
+      (local.set $__lab (i32.const 339)) (br $__dispatch) ;; JUMP L619
+      ) ;; close $__case_336 — LAB L631
+    ;; line 7:2077
+    (global.set $__line (i32.const 2077))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t13 (i32.const 0))
+    (local.set $t12 (local.get $t13)) ;; SP promoted P!12
+      (local.set $__lab (i32.const 339)) (br $__dispatch) ;; JUMP L619
+      ) ;; close $__case_337 — LAB L632
+    ;; line 7:2078
+    (global.set $__line (i32.const 2078))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t13 (i32.const 0))
+    (local.set $t12 (local.get $t13)) ;; SP promoted P!12
+      (local.set $__lab (i32.const 339)) (br $__dispatch) ;; JUMP L619
+      ) ;; close $__case_338 — LAB L618
+    ;; RSTACK 13
+    (local.set $t13 (local.get $__res)) ;; restore RES result
+    ;; SWITCHON 12 cases default L632
+    (if (i32.eq (local.get $t13) (i32.const 16)) (then
+      (local.set $__lab (i32.const 336)) (br $__dispatch)))
+    (if (i32.eq (local.get $t13) (i32.const 17)) (then
+      (local.set $__lab (i32.const 335)) (br $__dispatch)))
+    (if (i32.eq (local.get $t13) (i32.const 15)) (then
+      (local.set $__lab (i32.const 334)) (br $__dispatch)))
+    (if (i32.eq (local.get $t13) (i32.const 14)) (then
+      (local.set $__lab (i32.const 333)) (br $__dispatch)))
+    (if (i32.eq (local.get $t13) (i32.const 13)) (then
+      (local.set $__lab (i32.const 332)) (br $__dispatch)))
+    (if (i32.eq (local.get $t13) (i32.const 12)) (then
+      (local.set $__lab (i32.const 331)) (br $__dispatch)))
+    (if (i32.eq (local.get $t13) (i32.const 9)) (then
+      (local.set $__lab (i32.const 330)) (br $__dispatch)))
+    (if (i32.eq (local.get $t13) (i32.const 8)) (then
+      (local.set $__lab (i32.const 329)) (br $__dispatch)))
+    (if (i32.eq (local.get $t13) (i32.const 7)) (then
+      (local.set $__lab (i32.const 328)) (br $__dispatch)))
+    (if (i32.eq (local.get $t13) (i32.const 11)) (then
+      (local.set $__lab (i32.const 327)) (br $__dispatch)))
+    (if (i32.eq (local.get $t13) (i32.const 10)) (then
+      (local.set $__lab (i32.const 326)) (br $__dispatch)))
+    (if (i32.eq (local.get $t13) (i32.const 0)) (then
+      (local.set $__lab (i32.const 325)) (br $__dispatch)))
+      (local.set $__lab (i32.const 337)) (br $__dispatch)
+      ) ;; close $__case_339 — LAB L619
+    ;; line 7:2065
+    (global.set $__line (i32.const 2065))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t13 (i32.const 0))
+    (local.set $t14 (local.get $t12)) ;; LP promoted P!12
+    (if (i32.eq  (local.get $t13) (local.get $t14)) (then
+      (local.set $__lab (i32.const 340)) (br $__dispatch)
+    ))
+    (local.set $t13 (i32.const 0))
+    (local.set $t14 (local.get $t3)) ;; LP promoted P!3
+    (if (i32.eq  (local.get $t13) (local.get $t14)) (then
+      (local.set $__lab (i32.const 340)) (br $__dispatch)
+    ))
+    ;; line 7:2080
+    (global.set $__line (i32.const 2080))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t13 (local.get $t12)) ;; LP promoted P!12
+    (local.set $t12 (local.get $t13)) ;; SP promoted P!12
+      (local.set $__lab (i32.const 340)) (br $__dispatch)
+      ) ;; close $__case_340 — LAB L633
+    (local.set $t13 (i32.const 0))
+    (local.set $t14 (local.get $t12)) ;; LP promoted P!12
+    (if (i32.ne  (local.get $t13) (local.get $t14)) (then
+      (local.set $__lab (i32.const 341)) (br $__dispatch)
+    ))
+    (local.set $t13 (i32.const 0))
+    (local.set $t14 (local.get $t3)) ;; LP promoted P!3
+    (if (i32.eq  (local.get $t13) (local.get $t14)) (then
+      (local.set $__lab (i32.const 341)) (br $__dispatch)
+    ))
+    ;; line 7:2081
+    (global.set $__line (i32.const 2081))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t16 (i32.add (global.get $SB) (i32.const 1903))) ;; LSTR
+    (local.set $t17 (local.get $t3)) ;; LP promoted P!3
+    (local.set $t18 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16))
+    (i32.store (i32.add (local.get $Pb) (i32.const 68)) (local.get $t17))
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t18)) ;; entry fn_idx
+    (global.set $P (i32.add (global.get $P) (i32.const 13)))
+    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t18)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+      (local.set $__lab (i32.const 341)) (br $__dispatch)
+      ) ;; close $__case_341 — LAB L634
+    ;; line 7:2082
+    (global.set $__line (i32.const 2082))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t16 (i32.add (global.get $SB) (i32.const 1577))) ;; LSTR
+    (local.set $t17 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16))
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t17)) ;; entry fn_idx
+    (global.set $P (i32.add (global.get $P) (i32.const 13)))
+    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t17)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    ;; line 7:2088
+    (global.set $__line (i32.const 2088))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t16 (i32.add (global.get $SB) (i32.const 1916))) ;; LSTR
+    (local.set $t17 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
+    (local.set $t18 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16))
+    (i32.store (i32.add (local.get $Pb) (i32.const 68)) (local.get $t17))
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t18)) ;; entry fn_idx
+    (global.set $P (i32.add (global.get $P) (i32.const 13)))
+    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t18)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    ;; line 7:2089
+    (global.set $__line (i32.const 2089))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t13 (local.get $t9)) ;; LP promoted P!9
+    (if (i32.eqz (local.get $t13)) (then
+      (local.set $__lab (i32.const 344)) (br $__dispatch)
+    ))
+    ;; line 7:2090
+    (global.set $__line (i32.const 2090))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t13 (i32.const 0))
+    (local.set $t14 (local.get $t12)) ;; LP promoted P!12
+    (if (i32.eq  (local.get $t13) (local.get $t14)) (then
+      (local.set $__lab (i32.const 342)) (br $__dispatch)
+    ))
+    (local.set $t13 (i32.const 0))
+    (local.set $t14 (local.get $t3)) ;; LP promoted P!3
+    (if (i32.ne  (local.get $t13) (local.get $t14)) (then
+      (local.set $__lab (i32.const 343)) (br $__dispatch)
+    ))
+      (local.set $__lab (i32.const 342)) (br $__dispatch)
+      ) ;; close $__case_342 — LAB L639
+    ;; line 7:2092
+    (global.set $__line (i32.const 2092))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t16 (i32.add (global.get $SB) (i32.const 1600))) ;; LSTR
+    (local.set $t17 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
+    (local.set $t18 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16))
+    (i32.store (i32.add (local.get $Pb) (i32.const 68)) (local.get $t17))
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t18)) ;; entry fn_idx
+    (global.set $P (i32.add (global.get $P) (i32.const 13)))
+    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t18)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+      (local.set $__lab (i32.const 348)) (br $__dispatch) ;; JUMP L637
+      ) ;; close $__case_343 — LAB L638
+    ;; line 7:2093
+    (global.set $__line (i32.const 2093))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t16 (i32.add (global.get $SB) (i32.const 1928))) ;; LSTR
+    (local.set $t17 (local.get $t12)) ;; LP promoted P!12
+    (local.set $t18 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16))
+    (i32.store (i32.add (local.get $Pb) (i32.const 68)) (local.get $t17))
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t18)) ;; entry fn_idx
+    (global.set $P (i32.add (global.get $P) (i32.const 13)))
+    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t18)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    ;; line 7:2094
+    (global.set $__line (i32.const 2094))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t16 (i32.add (global.get $SB) (i32.const 1931))) ;; LSTR
+    (local.set $t17 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
+    (local.set $t18 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16))
+    (i32.store (i32.add (local.get $Pb) (i32.const 68)) (local.get $t17))
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t18)) ;; entry fn_idx
+    (global.set $P (i32.add (global.get $P) (i32.const 13)))
+    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t18)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    ;; line 7:2095
+    (global.set $__line (i32.const 2095))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t16 (i32.add (global.get $SB) (i32.const 1947))) ;; LSTR
+    (local.set $t17 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
+    (local.set $t18 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16))
+    (i32.store (i32.add (local.get $Pb) (i32.const 68)) (local.get $t17))
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t18)) ;; entry fn_idx
+    (global.set $P (i32.add (global.get $P) (i32.const 13)))
+    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t18)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+      (local.set $__lab (i32.const 348)) (br $__dispatch) ;; JUMP L637
+      ) ;; close $__case_344 — LAB L635
+    ;; line 7:2096
+    (global.set $__line (i32.const 2096))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t16 (i32.add (global.get $SB) (i32.const 1954))) ;; LSTR
+    (local.set $t17 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16))
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t17)) ;; entry fn_idx
+    (global.set $P (i32.add (global.get $P) (i32.const 13)))
+    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t17)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    ;; line 7:2100
+    (global.set $__line (i32.const 2100))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t16 (i32.add (global.get $SB) (i32.const 1958))) ;; LSTR
+    (local.set $t17 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16))
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t17)) ;; entry fn_idx
+    (global.set $P (i32.add (global.get $P) (i32.const 13)))
+    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t17)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    ;; line 7:2101
+    (global.set $__line (i32.const 2101))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t16 (i32.add (global.get $SB) (i32.const 1963))) ;; LSTR
+    (local.set $t17 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
+    (local.set $t18 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16))
+    (i32.store (i32.add (local.get $Pb) (i32.const 68)) (local.get $t17))
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t18)) ;; entry fn_idx
+    (global.set $P (i32.add (global.get $P) (i32.const 13)))
+    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t18)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    ;; line 7:2102
+    (global.set $__line (i32.const 2102))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t16 (i32.add (global.get $SB) (i32.const 1979))) ;; LSTR
+    (local.set $t17 (local.get $t11)) ;; LP promoted P!11
+    (local.set $t18 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16))
+    (i32.store (i32.add (local.get $Pb) (i32.const 68)) (local.get $t17))
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t18)) ;; entry fn_idx
+    (global.set $P (i32.add (global.get $P) (i32.const 13)))
+    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t18)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    ;; line 7:2103
+    (global.set $__line (i32.const 2103))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t16 (i32.add (global.get $SB) (i32.const 1986))) ;; LSTR
+    (local.set $t17 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16))
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t17)) ;; entry fn_idx
+    (global.set $P (i32.add (global.get $P) (i32.const 13)))
+    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t17)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    ;; line 7:2104
+    (global.set $__line (i32.const 2104))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t16 (i32.add (global.get $SB) (i32.const 1991))) ;; LSTR
+    (local.set $t17 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16))
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t17)) ;; entry fn_idx
+    (global.set $P (i32.add (global.get $P) (i32.const 13)))
+    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t17)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    ;; line 7:2105
+    (global.set $__line (i32.const 2105))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t13 (i32.const 0))
+    (local.set $t14 (local.get $t12)) ;; LP promoted P!12
+    (if (i32.eq  (local.get $t13) (local.get $t14)) (then
+      (local.set $__lab (i32.const 345)) (br $__dispatch)
+    ))
+    (local.set $t13 (i32.const 0))
+    (local.set $t14 (local.get $t3)) ;; LP promoted P!3
+    (if (i32.ne  (local.get $t13) (local.get $t14)) (then
+      (local.set $__lab (i32.const 346)) (br $__dispatch)
+    ))
+      (local.set $__lab (i32.const 345)) (br $__dispatch)
+      ) ;; close $__case_345 — LAB L642
+    ;; line 7:2106
+    (global.set $__line (i32.const 2106))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t16 (i32.add (global.get $SB) (i32.const 1996))) ;; LSTR
+    (local.set $t17 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
+    (local.set $t18 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16))
+    (i32.store (i32.add (local.get $Pb) (i32.const 68)) (local.get $t17))
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t18)) ;; entry fn_idx
+    (global.set $P (i32.add (global.get $P) (i32.const 13)))
+    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t18)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+      (local.set $__lab (i32.const 347)) (br $__dispatch) ;; JUMP L643
+      ) ;; close $__case_346 — LAB L640
+    ;; line 7:2107
+    (global.set $__line (i32.const 2107))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t16 (i32.add (global.get $SB) (i32.const 2004))) ;; LSTR
+    (local.set $t17 (local.get $t12)) ;; LP promoted P!12
+    (local.set $t18 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16))
+    (i32.store (i32.add (local.get $Pb) (i32.const 68)) (local.get $t17))
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t18)) ;; entry fn_idx
+    (global.set $P (i32.add (global.get $P) (i32.const 13)))
+    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t18)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    ;; line 7:2108
+    (global.set $__line (i32.const 2108))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t16 (i32.add (global.get $SB) (i32.const 2009))) ;; LSTR
+    (local.set $t17 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16))
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t17)) ;; entry fn_idx
+    (global.set $P (i32.add (global.get $P) (i32.const 13)))
+    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t17)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    ;; line 7:2109
+    (global.set $__line (i32.const 2109))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t16 (i32.add (global.get $SB) (i32.const 2015))) ;; LSTR
+    (local.set $t17 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16))
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t17)) ;; entry fn_idx
+    (global.set $P (i32.add (global.get $P) (i32.const 13)))
+    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t17)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    ;; line 7:2110
+    (global.set $__line (i32.const 2110))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t16 (i32.add (global.get $SB) (i32.const 2022))) ;; LSTR
+    (local.set $t17 (i32.load (i32.add (local.get $Pb) (i32.const 28))))
+    (local.set $t18 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16))
+    (i32.store (i32.add (local.get $Pb) (i32.const 68)) (local.get $t17))
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t18)) ;; entry fn_idx
+    (global.set $P (i32.add (global.get $P) (i32.const 13)))
+    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t18)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    ;; line 7:2111
+    (global.set $__line (i32.const 2111))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t16 (i32.add (global.get $SB) (i32.const 2040))) ;; LSTR
+    (local.set $t17 (local.get $t5)) ;; LP promoted P!5
+    (local.set $t18 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16))
+    (i32.store (i32.add (local.get $Pb) (i32.const 68)) (local.get $t17))
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t18)) ;; entry fn_idx
+    (global.set $P (i32.add (global.get $P) (i32.const 13)))
+    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t18)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    ;; line 7:2112
+    (global.set $__line (i32.const 2112))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t16 (i32.add (global.get $SB) (i32.const 2049))) ;; LSTR
+    (local.set $t17 (local.get $t10)) ;; LP promoted P!10
+    (local.set $t18 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16))
+    (i32.store (i32.add (local.get $Pb) (i32.const 68)) (local.get $t17))
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t18)) ;; entry fn_idx
+    (global.set $P (i32.add (global.get $P) (i32.const 13)))
+    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t18)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    ;; line 7:2113
+    (global.set $__line (i32.const 2113))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t16 (i32.add (global.get $SB) (i32.const 2058))) ;; LSTR
+    (local.set $t17 (i32.load (i32.add (local.get $Pb) (i32.const 24))))
+    (local.set $t18 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16))
+    (i32.store (i32.add (local.get $Pb) (i32.const 68)) (local.get $t17))
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t18)) ;; entry fn_idx
+    (global.set $P (i32.add (global.get $P) (i32.const 13)))
+    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t18)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+      (local.set $__lab (i32.const 347)) (br $__dispatch)
+      ) ;; close $__case_347 — LAB L643
+    ;; line 7:2114
+    (global.set $__line (i32.const 2114))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t16 (i32.add (global.get $SB) (i32.const 2067))) ;; LSTR
+    (local.set $t17 (local.get $t10)) ;; LP promoted P!10
+    (local.set $t18 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16))
+    (i32.store (i32.add (local.get $Pb) (i32.const 68)) (local.get $t17))
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t18)) ;; entry fn_idx
+    (global.set $P (i32.add (global.get $P) (i32.const 13)))
+    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t18)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+    ;; line 7:2116
+    (global.set $__line (i32.const 2116))
+    (if (i32.ne (global.get $__bp_armed) (i32.const 0))
+        (then (call $__break)))
+    (local.set $t16 (i32.add (global.get $SB) (i32.const 2075))) ;; LSTR
+    (local.set $t17 (local.get $t5)) ;; LP promoted P!5
+    (local.set $t18 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 376))))
+    (i32.store (i32.add (local.get $Pb) (i32.const 64)) (local.get $t16))
+    (i32.store (i32.add (local.get $Pb) (i32.const 68)) (local.get $t17))
+    (i32.store (i32.add (local.get $Pb) (i32.const 52)) (global.get $P)) ;; save P
+    (i32.store (i32.add (local.get $Pb) (i32.const 56)) (i32.const 0)) ;; return addr placeholder
+    (i32.store (i32.add (local.get $Pb) (i32.const 60)) (local.get $t18)) ;; entry fn_idx
+    (global.set $P (i32.add (global.get $P) (i32.const 13)))
+    (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t18)))
+    (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
+      (local.set $__lab (i32.const 348)) (br $__dispatch)
+      ) ;; close $__case_348 — LAB L637
+    ;; line 7:2117
+    (global.set $__line (i32.const 2117))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1984))))
     (local.set $t7 (i32.const 2))
     (local.set $t6 (i32.sub (local.get $t6) (local.get $t7)))
     (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1984)) (local.get $t6))
-    ;; line 7:2072
-    (global.set $__line (i32.const 2072))
+    ;; line 7:2120
+    (global.set $__line (i32.const 2120))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1988))))
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1984))))
     (if (i32.le_s (local.get $t6) (local.get $t7)) (then
-      (local.set $__lab (i32.const 324)) (br $__dispatch)
+      (local.set $__lab (i32.const 349)) (br $__dispatch)
     ))
-    ;; line 7:2073
-    (global.set $__line (i32.const 2073))
+    ;; line 7:2121
+    (global.set $__line (i32.const 2121))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1984))))
     (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1988)) (local.get $t6))
-      (local.set $__lab (i32.const 324)) (br $__dispatch)
-      ) ;; close $__case_324 — LAB L617
+      (local.set $__lab (i32.const 349)) (br $__dispatch)
+      ) ;; close $__case_349 — LAB L644
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1080))))
     (local.set $t10 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 228))))
     (i32.store (i32.add (local.get $Pb) (i32.const 36)) (local.get $t9))
@@ -16386,19 +16858,19 @@
     (global.set $P (i32.add (global.get $P) (i32.const 6)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t10)))
     (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
-    ;; line 7:2074
-    (global.set $__line (i32.const 2074))
+    ;; line 7:2122
+    (global.set $__line (i32.const 2122))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t6 (i32.const 0))
     (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 2008)) (local.get $t6))
-    ;; line 7:2075
-    (global.set $__line (i32.const 2075))
+    ;; line 7:2123
+    (global.set $__line (i32.const 2123))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-      (local.set $__lab (i32.const 326)) (br $__dispatch) ;; JUMP L293
-      (local.set $__lab (i32.const 325)) (br $__dispatch)
-      ) ;; close $__case_325 — LAB L292
+      (local.set $__lab (i32.const 351)) (br $__dispatch) ;; JUMP L293
+      (local.set $__lab (i32.const 350)) (br $__dispatch)
+      ) ;; close $__case_350 — LAB L292
     ;; RSTACK 3
     (local.set $t3 (local.get $__res)) ;; restore RES result
     ;; SWITCHON 85 cases default L294
@@ -16573,7 +17045,7 @@
     (if (i32.eq (local.get $t3) (i32.const 0)) (then
       (local.set $__lab (i32.const 8)) (br $__dispatch)))
       (local.set $__lab (i32.const 5)) (br $__dispatch)
-      ) ;; close $__case_326 — LAB L293
+      ) ;; close $__case_351 — LAB L293
     ;; line 7:930
     (global.set $__line (i32.const 930))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
@@ -16581,40 +17053,40 @@
     (local.set $t3 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1984))))
     (local.set $t4 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1996))))
     (if (i32.le_s (local.get $t3) (local.get $t4)) (then
-      (local.set $__lab (i32.const 327)) (br $__dispatch)
+      (local.set $__lab (i32.const 352)) (br $__dispatch)
     ))
-    ;; line 7:2082
-    (global.set $__line (i32.const 2082))
+    ;; line 7:2130
+    (global.set $__line (i32.const 2130))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t3 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1984))))
     (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1996)) (local.get $t3))
-    ;; line 7:2083
-    (global.set $__line (i32.const 2083))
+    ;; line 7:2131
+    (global.set $__line (i32.const 2131))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t3 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1976))))
     (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 2000)) (local.get $t3))
-      (local.set $__lab (i32.const 327)) (br $__dispatch)
-      ) ;; close $__case_327 — LAB L618
-    ;; line 7:2084
-    (global.set $__line (i32.const 2084))
+      (local.set $__lab (i32.const 352)) (br $__dispatch)
+      ) ;; close $__case_352 — LAB L645
+    ;; line 7:2132
+    (global.set $__line (i32.const 2132))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t3 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 2004))))
     (if (i32.eqz (local.get $t3)) (then
-      (local.set $__lab (i32.const 328)) (br $__dispatch)
+      (local.set $__lab (i32.const 353)) (br $__dispatch)
     ))
     (local.set $t3 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1952))))
     (local.set $t4 (i32.const 0))
     (if (i32.le_s (local.get $t3) (local.get $t4)) (then
-      (local.set $__lab (i32.const 328)) (br $__dispatch)
+      (local.set $__lab (i32.const 353)) (br $__dispatch)
     ))
-    ;; line 7:2086
-    (global.set $__line (i32.const 2086))
+    ;; line 7:2134
+    (global.set $__line (i32.const 2134))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
-    (local.set $t6 (i32.add (global.get $SB) (i32.const 1983))) ;; LSTR
+    (local.set $t6 (i32.add (global.get $SB) (i32.const 2083))) ;; LSTR
     (local.set $t7 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1976))))
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1984))))
     (local.set $t9 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 1980))))
@@ -16629,10 +17101,10 @@
     (global.set $P (i32.add (global.get $P) (i32.const 3)))
     (drop (call_indirect $ftable (type $bcpl_fn) (local.get $t10)))
     (local.set $Pb (i32.shl (global.get $P) (i32.const 2)))
-      (local.set $__lab (i32.const 328)) (br $__dispatch)
-      ) ;; close $__case_328 — LAB L619
-    ;; line 7:2087
-    (global.set $__line (i32.const 2087))
+      (local.set $__lab (i32.const 353)) (br $__dispatch)
+      ) ;; close $__case_353 — LAB L646
+    ;; line 7:2135
+    (global.set $__line (i32.const 2135))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 936))))
@@ -16681,14 +17153,14 @@
       (block $__case_0
         (br_table $__case_0 $__case_1 $__case_2 $__default (local.get $__lab))
       ) ;; close $__case_0 — entry-block body follows
-    ;; line 7:2094
-    (global.set $__line (i32.const 2094))
+    ;; line 7:2142
+    (global.set $__line (i32.const 2142))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t5 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 2016))))
     (i32.store (i32.add (local.get $Pb) (i32.const 20)) (local.get $t5)) ;; STORE slot 5
-    ;; line 7:2095
-    (global.set $__line (i32.const 2095))
+    ;; line 7:2143
+    (global.set $__line (i32.const 2143))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t6 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 2016))))
@@ -16696,8 +17168,8 @@
     (if (i32.ge_s (local.get $t6) (local.get $t7)) (then
       (local.set $__lab (i32.const 1)) (br $__dispatch)
     ))
-    ;; line 7:2096
-    (global.set $__line (i32.const 2096))
+    ;; line 7:2144
+    (global.set $__line (i32.const 2144))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t6 (local.get $t4)) ;; LP promoted P!4
@@ -16705,8 +17177,8 @@
     (local.set $t8 (i32.load (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 2012))))
     (local.set $t7 (i32.add (local.get $t7) (local.get $t8)))
     (i32.store (i32.shl (local.get $t7) (i32.const 2)) (local.get $t6))
-    ;; line 7:2097
-    (global.set $__line (i32.const 2097))
+    ;; line 7:2145
+    (global.set $__line (i32.const 2145))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t6 (i32.const 1))
@@ -16714,9 +17186,9 @@
     (local.set $t6 (i32.add (local.get $t6) (local.get $t7)))
     (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 2016)) (local.get $t6))
       (local.set $__lab (i32.const 1)) (br $__dispatch)
-      ) ;; close $__case_1 — LAB L620
-    ;; line 7:2098
-    (global.set $__line (i32.const 2098))
+      ) ;; close $__case_1 — LAB L647
+    ;; line 7:2146
+    (global.set $__line (i32.const 2146))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t6 (local.get $t3)) ;; LP promoted P!3
@@ -16729,8 +17201,8 @@
     (if (i32.ge_s (local.get $t6) (local.get $t7)) (then
       (local.set $__lab (i32.const 2)) (br $__dispatch)
     ))
-    ;; line 7:2102
-    (global.set $__line (i32.const 2102))
+    ;; line 7:2150
+    (global.set $__line (i32.const 2150))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t6 (local.get $t5)) ;; LP promoted P!5
@@ -16739,9 +17211,9 @@
     (local.set $t7 (i32.add (local.get $t7) (local.get $t8)))
     (i32.store (i32.shl (local.get $t7) (i32.const 2)) (local.get $t6))
       (local.set $__lab (i32.const 2)) (br $__dispatch)
-      ) ;; close $__case_2 — LAB L621
-    ;; line 7:2103
-    (global.set $__line (i32.const 2103))
+      ) ;; close $__case_2 — LAB L648
+    ;; line 7:2151
+    (global.set $__line (i32.const 2151))
     (if (i32.ne (global.get $__bp_armed) (i32.const 0))
         (then (call $__break)))
     (local.set $t6 (local.get $t5)) ;; LP promoted P!5
@@ -16763,14 +17235,14 @@
   ;; --- function table slice (passive) ---
   (elem $ftab funcref (ref.func $fn_L10) (ref.func $fn_L11) (ref.func $fn_L12) (ref.func $fn_L13) (ref.func $fn_L14) (ref.func $fn_L15) (ref.func $fn_L16) (ref.func $fn_L17) (ref.func $fn_L18) (ref.func $fn_L19) (ref.func $fn_L20) (ref.func $fn_L21) (ref.func $fn_L22) (ref.func $fn_L23) (ref.func $fn_L24) (ref.func $fn_L25) (ref.func $fn_L26) (ref.func $fn_L27) (ref.func $fn_L28) (ref.func $fn_L29) (ref.func $fn_L30) (ref.func $fn_L31) (ref.func $fn_L32) (ref.func $fn_L33) (ref.func $fn_L34) (ref.func $fn_L35) (ref.func $fn_L36) (ref.func $fn_L37) (ref.func $fn_L38) (ref.func $fn_L39) (ref.func $fn_L40) (ref.func $fn_L41) (ref.func $fn_L42) (ref.func $fn_L43) (ref.func $fn_L44) (ref.func $fn_L45) (ref.func $fn_L46) (ref.func $fn_L47) (ref.func $fn_L48) (ref.func $fn_L49) (ref.func $fn_L50) (ref.func $fn_L51))
 
-  ;; static data — passive segment (1993 words)
-  (data $stat "\1E\57\41\53\4D\20\43\47\3A\20\54\6F\6F\20\6C\69\74\74\6C\65\20\77\6F\72\6B\73\70\61\63\65\0A\00\32\57\41\53\4D\20\43\47\3A\20\74\61\72\67\65\74\20\77\6F\72\64\20\73\69\7A\65\20\25\6E\20\62\79\74\65\73\20\6E\6F\74\20\73\75\70\70\6F\72\74\65\64\2E\0A\00\31\20\20\20\20\20\20\20\20\20\52\65\2D\69\6E\76\6F\6B\65\20\62\63\70\6C\77\61\73\6D\20\77\69\74\68\20\74\68\65\20\54\33\32\20\6F\70\74\69\6F\6E\2E\0A\00\00\0E\20\20\3B\3B\20\53\45\43\54\49\4F\4E\3A\20\00\28\28\69\33\32\2E\61\64\64\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\50\62\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\00\00\00\3C\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\50\62\20\28\69\33\32\2E\73\68\6C\20\28\67\6C\6F\62\61\6C\2E\67\65\74\20\24\50\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\32\29\29\29\0A\00\00\00\40\28\69\33\32\2E\61\64\64\20\28\69\33\32\2E\73\68\6C\20\28\67\6C\6F\62\61\6C\2E\67\65\74\20\24\47\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\32\29\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\00\00\00\15\57\41\53\4D\20\43\47\3A\20\70\65\6E\64\5F\76\20\66\75\6C\6C\0A\00\00\08\28\6D\6F\64\75\6C\65\0A\00\00\00\26\20\20\28\74\79\70\65\20\24\62\63\70\6C\5F\66\6E\20\28\66\75\6E\63\20\28\72\65\73\75\6C\74\20\69\33\32\29\29\29\0A\00\19\20\20\28\74\79\70\65\20\24\76\6F\69\64\5F\66\6E\20\28\66\75\6E\63\29\29\0A\00\00\25\20\20\28\69\6D\70\6F\72\74\20\22\65\6E\76\22\20\22\6D\65\6D\22\20\20\20\20\28\6D\65\6D\6F\72\79\20\34\29\29\0A\00\00\36\20\20\28\69\6D\70\6F\72\74\20\22\65\6E\76\22\20\22\66\74\61\62\6C\65\22\20\28\74\61\62\6C\65\20\24\66\74\61\62\6C\65\20\32\35\36\20\66\75\6E\63\72\65\66\29\29\0A\00\2B\20\20\28\69\6D\70\6F\72\74\20\22\65\6E\76\22\20\22\50\22\20\28\67\6C\6F\62\61\6C\20\24\50\20\28\6D\75\74\20\69\33\32\29\29\29\0A\25\20\20\28\69\6D\70\6F\72\74\20\22\65\6E\76\22\20\22\47\22\20\28\67\6C\6F\62\61\6C\20\24\47\20\69\33\32\29\29\0A\00\00\30\20\20\28\69\6D\70\6F\72\74\20\22\65\6E\76\22\20\22\73\74\61\74\69\63\5F\62\61\73\65\22\20\28\67\6C\6F\62\61\6C\20\24\53\42\20\69\33\32\29\29\0A\00\00\00\30\20\20\28\69\6D\70\6F\72\74\20\22\65\6E\76\22\20\22\74\61\62\6C\65\5F\62\61\73\65\22\20\20\28\67\6C\6F\62\61\6C\20\24\54\42\20\69\33\32\29\29\0A\00\00\00\35\20\20\28\69\6D\70\6F\72\74\20\22\65\6E\76\22\20\22\5F\5F\6C\69\6E\65\22\20\28\67\6C\6F\62\61\6C\20\24\5F\5F\6C\69\6E\65\20\28\6D\75\74\20\69\33\32\29\29\29\0A\00\00\3D\20\20\28\69\6D\70\6F\72\74\20\22\65\6E\76\22\20\22\5F\5F\62\70\5F\61\72\6D\65\64\22\20\28\67\6C\6F\62\61\6C\20\24\5F\5F\62\70\5F\61\72\6D\65\64\20\28\6D\75\74\20\69\33\32\29\29\29\0A\00\00\3F\20\20\28\69\6D\70\6F\72\74\20\22\65\6E\76\22\20\22\62\63\70\6C\5F\62\72\65\61\6B\22\20\28\66\75\6E\63\20\24\5F\5F\62\72\65\61\6B\20\28\74\79\70\65\20\24\76\6F\69\64\5F\66\6E\29\29\29\0A\0A\2C\20\20\3B\3B\20\2D\2D\2D\20\66\75\6E\63\74\69\6F\6E\20\74\61\62\6C\65\20\73\6C\69\63\65\20\28\70\61\73\73\69\76\65\29\20\2D\2D\2D\0A\00\00\00\15\20\20\28\65\6C\65\6D\20\24\66\74\61\62\20\66\75\6E\63\72\65\66\00\00\13\20\28\72\65\66\2E\66\75\6E\63\20\24\66\6E\5F\4C\25\6E\29\03\29\0A\0A\30\20\20\3B\3B\20\73\74\61\74\69\63\20\64\61\74\61\20\E2\80\94\20\70\61\73\73\69\76\65\20\73\65\67\6D\65\6E\74\20\28\25\6E\20\77\6F\72\64\73\29\0A\00\00\00\0F\20\20\28\64\61\74\61\20\24\73\74\61\74\20\22\10\5C\25\58\32\5C\25\58\32\5C\25\58\32\5C\25\58\32\00\00\00\04\22\29\0A\0A\00\00\00\26\20\20\28\66\75\6E\63\20\24\72\65\67\69\73\74\65\72\20\28\65\78\70\6F\72\74\20\22\72\65\67\69\73\74\65\72\22\29\0A\00\17\20\20\20\20\28\6D\65\6D\6F\72\79\2E\69\6E\69\74\20\24\73\74\61\74\0A\2F\20\20\20\20\20\20\28\69\33\32\2E\73\68\6C\20\28\67\6C\6F\62\61\6C\2E\67\65\74\20\24\53\42\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\32\29\29\0A\14\20\20\20\20\20\20\28\69\33\32\2E\63\6F\6E\73\74\20\30\29\0A\00\00\00\16\20\20\20\20\20\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\0A\00\16\20\20\20\20\28\64\61\74\61\2E\64\72\6F\70\20\24\73\74\61\74\29\0A\00\1E\20\20\20\20\28\74\61\62\6C\65\2E\69\6E\69\74\20\24\66\74\61\62\6C\65\20\24\66\74\61\62\0A\00\17\20\20\20\20\20\20\28\67\6C\6F\62\61\6C\2E\67\65\74\20\24\54\42\29\0A\16\20\20\20\20\28\65\6C\65\6D\2E\64\72\6F\70\20\24\66\74\61\62\29\0A\00\0F\20\20\20\20\28\69\33\32\2E\73\74\6F\72\65\20\34\20\28\69\33\32\2E\61\64\64\20\28\67\6C\6F\62\61\6C\2E\67\65\74\20\24\54\42\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\29\20\3B\3B\20\47\21\25\6E\0A\00\00\00\04\20\20\29\0A\00\00\00\37\20\20\28\66\75\6E\63\20\24\73\74\61\74\5F\77\6F\72\64\73\20\28\65\78\70\6F\72\74\20\22\73\74\61\74\5F\77\6F\72\64\73\22\29\20\28\72\65\73\75\6C\74\20\69\33\32\29\0A\14\20\20\20\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\0A\00\00\00\33\20\20\28\66\75\6E\63\20\24\66\6E\5F\63\6F\75\6E\74\20\28\65\78\70\6F\72\74\20\22\66\6E\5F\63\6F\75\6E\74\22\29\20\28\72\65\73\75\6C\74\20\69\33\32\29\0A\11\29\0A\20\3B\3B\20\65\6E\64\20\6D\6F\64\75\6C\65\0A\00\00\24\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\0A\00\00\00\3A\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\3B\3B\20\4C\50\20\70\72\6F\6D\6F\74\65\64\20\50\21\25\6E\0A\00\1E\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\6C\6F\61\64\20\00\03\29\29\0A\49\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\6C\6F\61\64\20\28\69\33\32\2E\73\68\6C\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\32\29\29\29\29\0A\00\00\3C\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\25\73\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\29\0A\00\00\00\7E\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\72\65\69\6E\74\65\72\70\72\65\74\5F\66\33\32\20\28\25\73\20\28\66\33\32\2E\72\65\69\6E\74\65\72\70\72\65\74\5F\69\33\32\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\28\66\33\32\2E\72\65\69\6E\74\65\72\70\72\65\74\5F\69\33\32\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\29\29\29\0A\00\80\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\73\75\62\20\28\69\33\32\2E\63\6F\6E\73\74\20\30\29\20\28\25\73\20\28\66\33\32\2E\72\65\69\6E\74\65\72\70\72\65\74\5F\69\33\32\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\28\66\33\32\2E\72\65\69\6E\74\65\72\70\72\65\74\5F\69\33\32\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\29\29\29\0A\00\00\00\3E\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\73\75\62\20\28\69\33\32\2E\63\6F\6E\73\74\20\30\29\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\29\0A\00\3F\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\78\6F\72\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\2D\31\29\29\29\0A\14\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\0A\00\00\00\41\20\20\20\20\20\20\28\69\66\20\28\72\65\73\75\6C\74\20\69\33\32\29\20\28\69\33\32\2E\67\65\5F\73\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\30\29\29\0A\00\00\20\20\20\20\20\20\20\20\20\28\74\68\65\6E\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\0A\00\00\00\3A\20\20\20\20\20\20\20\20\28\65\6C\73\65\20\28\69\33\32\2E\73\75\62\20\28\69\33\32\2E\63\6F\6E\73\74\20\30\29\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\29\29\29\0A\00\3F\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\78\6F\72\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\29\0A\3F\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\61\6E\64\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\29\0A\50\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\72\65\69\6E\74\65\72\70\72\65\74\5F\66\33\32\20\28\66\33\32\2E\63\6F\6E\76\65\72\74\5F\69\33\32\5F\73\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\29\29\0A\00\00\00\4E\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\74\72\75\6E\63\5F\66\33\32\5F\73\20\28\66\33\32\2E\72\65\69\6E\74\65\72\70\72\65\74\5F\69\33\32\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\29\29\0A\00\54\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\73\75\62\20\28\69\33\32\2E\63\6F\6E\73\74\20\30\29\20\28\25\73\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\29\29\0A\00\00\00\3A\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\3B\3B\20\53\50\20\70\72\6F\6D\6F\74\65\64\20\50\21\25\6E\0A\00\13\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\0A\26\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\0A\00\4A\20\20\20\20\28\69\33\32\2E\73\74\6F\72\65\20\28\69\33\32\2E\73\68\6C\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\32\29\29\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\0A\00\39\20\20\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\5F\5F\6C\61\62\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\20\28\62\72\20\24\5F\5F\64\69\73\70\61\74\63\68\29\0A\00\00\1F\20\20\20\20\28\69\66\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\74\68\65\6E\0A\29\20\20\20\20\28\69\66\20\28\69\33\32\2E\65\71\7A\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\28\74\68\65\6E\0A\00\00\3A\20\20\20\20\28\69\66\20\28\69\33\32\2E\65\71\20\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\28\74\68\65\6E\0A\00\3A\20\20\20\20\28\69\66\20\28\69\33\32\2E\6E\65\20\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\28\74\68\65\6E\0A\00\3B\20\20\20\20\28\69\66\20\28\69\33\32\2E\6C\74\5F\73\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\28\74\68\65\6E\0A\3B\20\20\20\20\28\69\66\20\28\69\33\32\2E\67\65\5F\73\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\28\74\68\65\6E\0A\3B\20\20\20\20\28\69\66\20\28\69\33\32\2E\67\74\5F\73\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\28\74\68\65\6E\0A\3B\20\20\20\20\28\69\66\20\28\69\33\32\2E\6C\65\5F\73\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\28\74\68\65\6E\0A\07\20\20\20\20\29\29\0A\1C\20\28\67\6C\6F\62\61\6C\2E\67\65\74\20\24\50\29\29\20\3B\3B\20\73\61\76\65\20\50\0A\00\00\00\2B\20\28\69\33\32\2E\63\6F\6E\73\74\20\30\29\29\20\3B\3B\20\72\65\74\75\72\6E\20\61\64\64\72\20\70\6C\61\63\65\68\6F\6C\64\65\72\0A\23\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\3B\3B\20\65\6E\74\72\79\20\66\6E\5F\69\64\78\0A\3D\20\20\20\20\28\67\6C\6F\62\61\6C\2E\73\65\74\20\24\50\20\28\69\33\32\2E\61\64\64\20\28\67\6C\6F\62\61\6C\2E\67\65\74\20\24\50\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\29\0A\00\00\4E\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\63\61\6C\6C\5F\69\6E\64\69\72\65\63\74\20\24\66\74\61\62\6C\65\20\28\74\79\70\65\20\24\62\63\70\6C\5F\66\6E\29\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\29\0A\00\28\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\3B\3B\20\66\6C\75\73\68\20\46\4E\41\50\20\72\65\73\75\6C\74\0A\00\00\00\44\20\20\20\20\28\64\72\6F\70\20\28\63\61\6C\6C\5F\69\6E\64\69\72\65\63\74\20\24\66\74\61\62\6C\65\20\28\74\79\70\65\20\24\62\63\70\6C\5F\66\6E\29\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\29\0A\00\00\00\07\69\33\32\2E\61\64\64\07\69\33\32\2E\73\75\62\07\69\33\32\2E\6D\75\6C\09\69\33\32\2E\64\69\76\5F\73\00\00\09\69\33\32\2E\72\65\6D\5F\73\00\00\07\69\33\32\2E\73\68\6C\09\69\33\32\2E\73\68\72\5F\75\00\00\07\69\33\32\2E\61\6E\64\06\69\33\32\2E\6F\72\00\07\69\33\32\2E\78\6F\72\07\66\33\32\2E\61\64\64\07\66\33\32\2E\73\75\62\07\66\33\32\2E\6D\75\6C\07\66\33\32\2E\64\69\76\29\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\72\65\69\6E\74\65\72\70\72\65\74\5F\66\33\32\0A\00\00\0F\20\20\20\20\20\20\28\66\33\32\2E\73\75\62\0A\2F\20\20\20\20\20\20\20\20\28\66\33\32\2E\72\65\69\6E\74\65\72\70\72\65\74\5F\69\33\32\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\0A\11\20\20\20\20\20\20\20\20\28\66\33\32\2E\6D\75\6C\0A\00\00\15\20\20\20\20\20\20\20\20\20\20\28\66\33\32\2E\74\72\75\6E\63\0A\00\00\15\20\20\20\20\20\20\20\20\20\20\20\20\28\66\33\32\2E\64\69\76\0A\00\00\35\20\20\20\20\20\20\20\20\20\20\20\20\20\20\28\66\33\32\2E\72\65\69\6E\74\65\72\70\72\65\74\5F\69\33\32\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\0A\00\00\37\20\20\20\20\20\20\20\20\20\20\20\20\20\20\28\66\33\32\2E\72\65\69\6E\74\65\72\70\72\65\74\5F\69\33\32\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\29\29\0A\35\20\20\20\20\20\20\20\20\20\20\28\66\33\32\2E\72\65\69\6E\74\65\72\70\72\65\74\5F\69\33\32\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\29\29\29\29\0A\00\00\06\69\33\32\2E\65\71\00\06\69\33\32\2E\6E\65\00\08\69\33\32\2E\6C\74\5F\73\00\00\00\08\69\33\32\2E\67\74\5F\73\00\00\00\08\69\33\32\2E\6C\65\5F\73\00\00\00\08\69\33\32\2E\67\65\5F\73\00\00\00\06\66\33\32\2E\65\71\00\06\66\33\32\2E\6E\65\00\06\66\33\32\2E\6C\74\00\06\66\33\32\2E\67\74\00\06\66\33\32\2E\6C\65\00\06\66\33\32\2E\67\65\00\3B\0A\57\41\53\4D\20\43\47\3A\20\74\72\65\65\2D\6F\6E\6C\79\20\6F\70\20\25\6E\20\6C\65\61\6B\65\64\20\69\6E\74\6F\20\4F\43\4F\44\45\20\28\66\72\6F\6E\74\65\6E\64\20\62\75\67\29\0A\1A\0A\57\41\53\4D\20\43\47\3A\20\75\6E\68\61\6E\64\6C\65\64\20\6F\70\20\25\6E\0A\00\12\20\20\20\20\3B\3B\20\6C\69\6E\65\20\25\6E\3A\25\6E\0A\00\28\20\20\20\20\28\67\6C\6F\62\61\6C\2E\73\65\74\20\24\5F\5F\6C\69\6E\65\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\0A\00\00\00\38\20\20\20\20\28\69\66\20\28\69\33\32\2E\6E\65\20\28\67\6C\6F\62\61\6C\2E\67\65\74\20\24\5F\5F\62\70\5F\61\72\6D\65\64\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\30\29\29\0A\00\00\00\20\20\20\20\20\20\20\20\20\28\74\68\65\6E\20\28\63\61\6C\6C\20\24\5F\5F\62\72\65\61\6B\29\29\29\0A\00\00\00\16\20\20\20\20\20\20\3B\3B\20\69\6D\70\6C\69\63\69\74\20\65\6E\64\0A\00\1D\20\20\20\20\20\20\28\72\65\74\75\72\6E\20\28\69\33\32\2E\63\6F\6E\73\74\20\30\29\29\0A\00\00\19\20\20\20\20\29\29\20\3B\3B\20\65\6E\64\20\6C\61\73\74\20\62\6C\6F\63\6B\0A\00\00\19\20\20\20\20\29\20\3B\3B\20\65\6E\64\20\24\5F\5F\64\69\73\70\61\74\63\68\0A\00\00\12\20\20\20\20\28\69\33\32\2E\63\6F\6E\73\74\20\30\29\0A\00\19\20\20\29\20\3B\3B\20\65\6E\64\20\66\75\6E\63\20\24\66\6E\5F\4C\25\6E\0A\0A\00\00\07\20\20\20\20\3B\3B\20\3D\20\20\20\20\5B\70\73\63\61\6E\20\6F\70\3D\25\6E\20\64\65\70\74\68\3D\25\6E\20\73\69\6D\5F\63\73\73\70\3D\25\6E\20\70\65\6E\64\69\6E\67\3D\25\6E\20\66\6E\5F\70\65\61\6B\3D\25\6E\5D\0A\00\00\16\20\20\3B\3B\20\42\43\50\4C\20\66\6E\20\25\73\20\28\4C\25\6E\29\0A\00\32\20\20\28\66\75\6E\63\20\24\66\6E\5F\4C\25\6E\20\28\65\78\70\6F\72\74\20\22\66\6E\5F\4C\25\6E\22\29\20\28\74\79\70\65\20\24\62\63\70\6C\5F\66\6E\29\0A\00\17\20\20\20\20\28\6C\6F\63\61\6C\20\24\5F\5F\6C\61\62\20\69\33\32\29\0A\17\20\20\20\20\28\6C\6F\63\61\6C\20\24\5F\5F\72\65\73\20\69\33\32\29\0A\14\20\20\20\20\28\6C\6F\63\61\6C\20\24\50\62\20\69\33\32\29\0A\00\00\00\15\20\20\20\20\28\6C\6F\63\61\6C\20\24\74\25\6E\20\69\33\32\29\0A\00\00\5F\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\6C\6F\61\64\20\28\69\33\32\2E\61\64\64\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\50\62\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\29\29\20\3B\3B\20\69\6E\69\74\20\70\72\6F\6D\6F\74\65\64\20\50\21\25\6E\0A\16\20\20\20\20\28\6C\6F\6F\70\20\24\5F\5F\64\69\73\70\61\74\63\68\0A\00\18\20\20\20\20\20\20\28\62\6C\6F\63\6B\20\24\5F\5F\64\65\66\61\75\6C\74\0A\00\00\00\18\20\20\20\20\20\20\28\62\6C\6F\63\6B\20\24\5F\5F\63\61\73\65\5F\25\6E\0A\00\00\00\11\20\20\20\20\20\20\20\20\28\62\72\5F\74\61\62\6C\65\00\00\0B\20\24\5F\5F\63\61\73\65\5F\25\6E\20\20\24\5F\5F\64\65\66\61\75\6C\74\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\5F\5F\6C\61\62\29\29\0A\00\00\00\38\20\20\20\20\20\20\29\20\3B\3B\20\63\6C\6F\73\65\20\24\5F\5F\63\61\73\65\5F\30\20\E2\80\94\20\65\6E\74\72\79\2D\62\6C\6F\63\6B\20\62\6F\64\79\20\66\6F\6C\6C\6F\77\73\0A\00\00\00\1D\20\20\20\20\20\20\3B\3B\20\65\6E\64\70\72\6F\63\20\66\61\6C\6C\74\68\72\6F\75\67\68\0A\00\00\1C\20\20\20\20\20\20\29\20\3B\3B\20\63\6C\6F\73\65\20\24\5F\5F\64\65\66\61\75\6C\74\0A\00\00\00\14\20\20\20\20\20\20\28\75\6E\72\65\61\63\68\61\62\6C\65\29\0A\00\00\00\30\20\20\20\20\3B\3B\20\2A\50\52\45\53\43\41\4E\20\55\4E\44\45\52\43\4F\55\4E\54\2A\20\64\65\63\6C\61\72\65\64\20\24\74\30\2E\2E\24\74\25\6E\2C\0A\00\00\00\31\20\20\20\20\3B\3B\20\20\20\62\75\74\20\65\6D\69\74\20\72\65\61\63\68\65\64\20\63\73\73\70\3D\25\6E\20\6F\6E\20\4F\43\4F\44\45\20\6F\70\3D\25\6E\0A\00\00\39\57\41\52\4E\3A\20\70\72\65\73\63\61\6E\20\75\6E\64\65\72\63\6F\75\6E\74\20\69\6E\20\66\6E\20\4C\25\6E\3A\20\64\65\63\6C\61\72\65\64\20\66\6E\5F\70\65\61\6B\3D\25\6E\2C\20\00\00\1D\65\6D\69\74\20\72\65\61\63\68\65\64\20\25\6E\20\28\6C\61\73\74\20\6F\70\3D\25\6E\29\0A\00\00\28\20\20\20\20\28\69\33\32\2E\63\6F\6E\73\74\20\30\29\20\3B\3B\20\75\6E\72\65\61\63\68\61\62\6C\65\20\72\65\74\75\72\6E\0A\00\00\00\28\20\20\20\20\20\20\29\20\3B\3B\20\63\6C\6F\73\65\20\24\5F\5F\63\61\73\65\5F\25\6E\20\E2\80\94\20\4C\41\42\20\4C\25\6E\0A\00\00\00\49\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\61\64\64\20\28\67\6C\6F\62\61\6C\2E\67\65\74\20\24\54\42\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\29\20\3B\3B\20\4C\46\20\4C\25\6E\0A\00\00\35\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\20\3B\3B\20\4C\46\20\4C\25\6E\20\28\64\69\73\70\29\0A\00\00\6C\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\6C\6F\61\64\20\28\69\33\32\2E\73\68\6C\20\28\69\33\32\2E\61\64\64\20\28\67\6C\6F\62\61\6C\2E\67\65\74\20\24\53\42\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\32\29\29\29\29\20\3B\3B\20\4C\4C\20\4C\25\6E\0A\00\00\00\3E\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\61\64\64\20\28\67\6C\6F\62\61\6C\2E\67\65\74\20\24\50\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\29\0A\00\3E\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\61\64\64\20\28\67\6C\6F\62\61\6C\2E\67\65\74\20\24\47\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\29\0A\00\4A\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\61\64\64\20\28\67\6C\6F\62\61\6C\2E\67\65\74\20\24\53\42\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\29\20\3B\3B\20\4C\4C\4C\20\4C\25\6E\0A\00\38\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\63\6F\6E\73\74\20\30\29\29\20\3B\3B\20\51\55\45\52\59\20\28\75\6E\64\65\66\69\6E\65\64\29\0A\00\00\00\0F\20\20\20\20\28\69\33\32\2E\73\74\6F\72\65\0A\48\20\20\20\20\20\20\28\69\33\32\2E\73\68\6C\20\28\69\33\32\2E\61\64\64\20\28\67\6C\6F\62\61\6C\2E\67\65\74\20\24\53\42\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\32\29\29\0A\00\00\00\18\20\20\20\20\20\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\0A\00\00\00\45\20\20\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\5F\5F\6C\61\62\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\20\28\62\72\20\24\5F\5F\64\69\73\70\61\74\63\68\29\20\3B\3B\20\4A\55\4D\50\20\4C\25\6E\0A\00\00\2A\20\20\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\5F\5F\6C\61\62\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\0A\00\2A\20\20\20\20\20\20\28\62\72\20\24\5F\5F\64\69\73\70\61\74\63\68\29\20\3B\3B\20\47\4F\54\4F\20\28\63\6F\6D\70\75\74\65\64\29\0A\00\0C\20\20\20\20\3B\3B\20\52\54\52\4E\0A\00\00\00\47\20\20\20\20\28\67\6C\6F\62\61\6C\2E\73\65\74\20\24\50\20\28\69\33\32\2E\6C\6F\61\64\20\28\69\33\32\2E\73\68\6C\20\28\67\6C\6F\62\61\6C\2E\67\65\74\20\24\50\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\32\29\29\29\29\0A\1B\20\20\20\20\28\72\65\74\75\72\6E\20\28\69\33\32\2E\63\6F\6E\73\74\20\30\29\29\0A\0C\20\20\20\20\3B\3B\20\46\4E\52\4E\0A\00\00\00\28\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\5F\5F\72\65\73\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\0A\00\00\00\20\20\20\20\20\28\72\65\74\75\72\6E\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\5F\5F\72\65\73\29\29\0A\00\00\00\2C\20\20\20\20\3B\3B\20\52\45\53\20\4C\25\6E\3A\20\73\61\76\65\20\72\65\73\75\6C\74\2C\20\6A\75\6D\70\20\74\6F\20\52\53\54\41\43\4B\0A\00\00\00\11\20\20\20\20\3B\3B\20\52\53\54\41\43\4B\20\25\6E\0A\00\00\3E\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\5F\5F\72\65\73\29\29\20\3B\3B\20\72\65\73\74\6F\72\65\20\52\45\53\20\72\65\73\75\6C\74\0A\00\20\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\3B\3B\20\66\6C\75\73\68\20\74\25\6E\0A\00\00\00\2F\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\3B\3B\20\66\6C\75\73\68\20\74\25\6E\20\28\70\72\65\2D\73\74\61\63\6B\2D\75\70\29\0A\24\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\3B\3B\20\53\54\4F\52\45\20\73\6C\6F\74\20\25\6E\0A\00\00\00\25\20\20\20\20\28\72\65\74\75\72\6E\20\28\69\33\32\2E\63\6F\6E\73\74\20\30\29\29\20\3B\3B\20\46\49\4E\49\53\48\0A\00\00\47\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\61\64\64\20\28\67\6C\6F\62\61\6C\2E\67\65\74\20\24\53\42\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\29\20\3B\3B\20\4C\53\54\52\0A\67\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\6C\6F\61\64\38\5F\75\20\28\69\33\32\2E\61\64\64\20\28\69\33\32\2E\73\68\6C\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\32\29\29\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\29\29\0A\66\20\20\20\20\28\69\33\32\2E\73\74\6F\72\65\38\20\28\69\33\32\2E\61\64\64\20\28\69\33\32\2E\73\68\6C\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\32\29\29\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\0A\00\25\20\20\20\20\3B\3B\20\53\57\49\54\43\48\4F\4E\20\25\6E\20\63\61\73\65\73\20\64\65\66\61\75\6C\74\20\4C\25\6E\0A\00\00\37\20\20\20\20\28\69\66\20\28\69\33\32\2E\65\71\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\20\28\74\68\65\6E\0A\3B\20\20\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\5F\5F\6C\61\62\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\20\28\62\72\20\24\5F\5F\64\69\73\70\61\74\63\68\29\29\29\0A\41\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\73\68\72\5F\75\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\29\0A\00\00\2E\20\20\20\20\3B\3B\20\53\45\4C\53\54\3A\20\73\66\6F\70\20\25\6E\20\6E\6F\74\20\73\75\70\70\6F\72\74\65\64\2C\20\75\73\69\6E\67\20\3A\3D\0A\00\2F\20\20\20\20\20\20\28\69\33\32\2E\73\68\6C\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\32\29\29\0A\0E\20\20\20\20\20\20\28\69\33\32\2E\6F\72\0A\00\11\20\20\20\20\20\20\20\20\28\69\33\32\2E\61\6E\64\0A\00\00\3E\20\20\20\20\20\20\20\20\20\20\28\69\33\32\2E\6C\6F\61\64\20\28\69\33\32\2E\73\68\6C\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\32\29\29\29\0A\00\1A\20\20\20\20\20\20\20\20\20\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\0A\00\11\20\20\20\20\20\20\20\20\28\69\33\32\2E\73\68\6C\0A\00\00\34\20\20\20\20\20\20\20\20\20\20\28\69\33\32\2E\61\6E\64\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\0A\00\00\00\1C\20\20\20\20\20\20\20\20\20\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\29\29\0A\00\00\00\27\20\20\20\20\5B\65\6D\69\74\20\20\6F\70\3D\25\6E\20\63\73\73\70\3D\25\6E\20\70\65\6E\64\69\6E\67\6F\70\3D\25\6E\5D\0A")
+  ;; static data — passive segment (2093 words)
+  (data $stat "\1E\57\41\53\4D\20\43\47\3A\20\54\6F\6F\20\6C\69\74\74\6C\65\20\77\6F\72\6B\73\70\61\63\65\0A\00\32\57\41\53\4D\20\43\47\3A\20\74\61\72\67\65\74\20\77\6F\72\64\20\73\69\7A\65\20\25\6E\20\62\79\74\65\73\20\6E\6F\74\20\73\75\70\70\6F\72\74\65\64\2E\0A\00\31\20\20\20\20\20\20\20\20\20\52\65\2D\69\6E\76\6F\6B\65\20\62\63\70\6C\77\61\73\6D\20\77\69\74\68\20\74\68\65\20\54\33\32\20\6F\70\74\69\6F\6E\2E\0A\00\00\0E\20\20\3B\3B\20\53\45\43\54\49\4F\4E\3A\20\00\28\28\69\33\32\2E\61\64\64\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\50\62\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\00\00\00\3C\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\50\62\20\28\69\33\32\2E\73\68\6C\20\28\67\6C\6F\62\61\6C\2E\67\65\74\20\24\50\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\32\29\29\29\0A\00\00\00\40\28\69\33\32\2E\61\64\64\20\28\69\33\32\2E\73\68\6C\20\28\67\6C\6F\62\61\6C\2E\67\65\74\20\24\47\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\32\29\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\00\00\00\15\57\41\53\4D\20\43\47\3A\20\70\65\6E\64\5F\76\20\66\75\6C\6C\0A\00\00\08\28\6D\6F\64\75\6C\65\0A\00\00\00\26\20\20\28\74\79\70\65\20\24\62\63\70\6C\5F\66\6E\20\28\66\75\6E\63\20\28\72\65\73\75\6C\74\20\69\33\32\29\29\29\0A\00\19\20\20\28\74\79\70\65\20\24\76\6F\69\64\5F\66\6E\20\28\66\75\6E\63\29\29\0A\00\00\25\20\20\28\69\6D\70\6F\72\74\20\22\65\6E\76\22\20\22\6D\65\6D\22\20\20\20\20\28\6D\65\6D\6F\72\79\20\34\29\29\0A\00\00\36\20\20\28\69\6D\70\6F\72\74\20\22\65\6E\76\22\20\22\66\74\61\62\6C\65\22\20\28\74\61\62\6C\65\20\24\66\74\61\62\6C\65\20\32\35\36\20\66\75\6E\63\72\65\66\29\29\0A\00\2B\20\20\28\69\6D\70\6F\72\74\20\22\65\6E\76\22\20\22\50\22\20\28\67\6C\6F\62\61\6C\20\24\50\20\28\6D\75\74\20\69\33\32\29\29\29\0A\25\20\20\28\69\6D\70\6F\72\74\20\22\65\6E\76\22\20\22\47\22\20\28\67\6C\6F\62\61\6C\20\24\47\20\69\33\32\29\29\0A\00\00\30\20\20\28\69\6D\70\6F\72\74\20\22\65\6E\76\22\20\22\73\74\61\74\69\63\5F\62\61\73\65\22\20\28\67\6C\6F\62\61\6C\20\24\53\42\20\69\33\32\29\29\0A\00\00\00\30\20\20\28\69\6D\70\6F\72\74\20\22\65\6E\76\22\20\22\74\61\62\6C\65\5F\62\61\73\65\22\20\20\28\67\6C\6F\62\61\6C\20\24\54\42\20\69\33\32\29\29\0A\00\00\00\35\20\20\28\69\6D\70\6F\72\74\20\22\65\6E\76\22\20\22\5F\5F\6C\69\6E\65\22\20\28\67\6C\6F\62\61\6C\20\24\5F\5F\6C\69\6E\65\20\28\6D\75\74\20\69\33\32\29\29\29\0A\00\00\3D\20\20\28\69\6D\70\6F\72\74\20\22\65\6E\76\22\20\22\5F\5F\62\70\5F\61\72\6D\65\64\22\20\28\67\6C\6F\62\61\6C\20\24\5F\5F\62\70\5F\61\72\6D\65\64\20\28\6D\75\74\20\69\33\32\29\29\29\0A\00\00\3F\20\20\28\69\6D\70\6F\72\74\20\22\65\6E\76\22\20\22\62\63\70\6C\5F\62\72\65\61\6B\22\20\28\66\75\6E\63\20\24\5F\5F\62\72\65\61\6B\20\28\74\79\70\65\20\24\76\6F\69\64\5F\66\6E\29\29\29\0A\0A\2C\20\20\3B\3B\20\2D\2D\2D\20\66\75\6E\63\74\69\6F\6E\20\74\61\62\6C\65\20\73\6C\69\63\65\20\28\70\61\73\73\69\76\65\29\20\2D\2D\2D\0A\00\00\00\15\20\20\28\65\6C\65\6D\20\24\66\74\61\62\20\66\75\6E\63\72\65\66\00\00\13\20\28\72\65\66\2E\66\75\6E\63\20\24\66\6E\5F\4C\25\6E\29\03\29\0A\0A\30\20\20\3B\3B\20\73\74\61\74\69\63\20\64\61\74\61\20\E2\80\94\20\70\61\73\73\69\76\65\20\73\65\67\6D\65\6E\74\20\28\25\6E\20\77\6F\72\64\73\29\0A\00\00\00\0F\20\20\28\64\61\74\61\20\24\73\74\61\74\20\22\10\5C\25\58\32\5C\25\58\32\5C\25\58\32\5C\25\58\32\00\00\00\04\22\29\0A\0A\00\00\00\26\20\20\28\66\75\6E\63\20\24\72\65\67\69\73\74\65\72\20\28\65\78\70\6F\72\74\20\22\72\65\67\69\73\74\65\72\22\29\0A\00\17\20\20\20\20\28\6D\65\6D\6F\72\79\2E\69\6E\69\74\20\24\73\74\61\74\0A\2F\20\20\20\20\20\20\28\69\33\32\2E\73\68\6C\20\28\67\6C\6F\62\61\6C\2E\67\65\74\20\24\53\42\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\32\29\29\0A\14\20\20\20\20\20\20\28\69\33\32\2E\63\6F\6E\73\74\20\30\29\0A\00\00\00\16\20\20\20\20\20\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\0A\00\16\20\20\20\20\28\64\61\74\61\2E\64\72\6F\70\20\24\73\74\61\74\29\0A\00\1E\20\20\20\20\28\74\61\62\6C\65\2E\69\6E\69\74\20\24\66\74\61\62\6C\65\20\24\66\74\61\62\0A\00\17\20\20\20\20\20\20\28\67\6C\6F\62\61\6C\2E\67\65\74\20\24\54\42\29\0A\16\20\20\20\20\28\65\6C\65\6D\2E\64\72\6F\70\20\24\66\74\61\62\29\0A\00\0F\20\20\20\20\28\69\33\32\2E\73\74\6F\72\65\20\34\20\28\69\33\32\2E\61\64\64\20\28\67\6C\6F\62\61\6C\2E\67\65\74\20\24\54\42\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\29\20\3B\3B\20\47\21\25\6E\0A\00\00\00\04\20\20\29\0A\00\00\00\37\20\20\28\66\75\6E\63\20\24\73\74\61\74\5F\77\6F\72\64\73\20\28\65\78\70\6F\72\74\20\22\73\74\61\74\5F\77\6F\72\64\73\22\29\20\28\72\65\73\75\6C\74\20\69\33\32\29\0A\14\20\20\20\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\0A\00\00\00\33\20\20\28\66\75\6E\63\20\24\66\6E\5F\63\6F\75\6E\74\20\28\65\78\70\6F\72\74\20\22\66\6E\5F\63\6F\75\6E\74\22\29\20\28\72\65\73\75\6C\74\20\69\33\32\29\0A\11\29\0A\20\3B\3B\20\65\6E\64\20\6D\6F\64\75\6C\65\0A\00\00\24\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\0A\00\00\00\3A\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\3B\3B\20\4C\50\20\70\72\6F\6D\6F\74\65\64\20\50\21\25\6E\0A\00\1E\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\6C\6F\61\64\20\00\03\29\29\0A\49\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\6C\6F\61\64\20\28\69\33\32\2E\73\68\6C\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\32\29\29\29\29\0A\00\00\3C\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\25\73\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\29\0A\00\00\00\7E\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\72\65\69\6E\74\65\72\70\72\65\74\5F\66\33\32\20\28\25\73\20\28\66\33\32\2E\72\65\69\6E\74\65\72\70\72\65\74\5F\69\33\32\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\28\66\33\32\2E\72\65\69\6E\74\65\72\70\72\65\74\5F\69\33\32\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\29\29\29\0A\00\80\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\73\75\62\20\28\69\33\32\2E\63\6F\6E\73\74\20\30\29\20\28\25\73\20\28\66\33\32\2E\72\65\69\6E\74\65\72\70\72\65\74\5F\69\33\32\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\28\66\33\32\2E\72\65\69\6E\74\65\72\70\72\65\74\5F\69\33\32\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\29\29\29\0A\00\00\00\3E\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\73\75\62\20\28\69\33\32\2E\63\6F\6E\73\74\20\30\29\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\29\0A\00\3F\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\78\6F\72\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\2D\31\29\29\29\0A\14\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\0A\00\00\00\41\20\20\20\20\20\20\28\69\66\20\28\72\65\73\75\6C\74\20\69\33\32\29\20\28\69\33\32\2E\67\65\5F\73\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\30\29\29\0A\00\00\20\20\20\20\20\20\20\20\20\28\74\68\65\6E\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\0A\00\00\00\3A\20\20\20\20\20\20\20\20\28\65\6C\73\65\20\28\69\33\32\2E\73\75\62\20\28\69\33\32\2E\63\6F\6E\73\74\20\30\29\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\29\29\29\0A\00\3F\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\78\6F\72\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\29\0A\3F\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\61\6E\64\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\29\0A\50\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\72\65\69\6E\74\65\72\70\72\65\74\5F\66\33\32\20\28\66\33\32\2E\63\6F\6E\76\65\72\74\5F\69\33\32\5F\73\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\29\29\0A\00\00\00\4E\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\74\72\75\6E\63\5F\66\33\32\5F\73\20\28\66\33\32\2E\72\65\69\6E\74\65\72\70\72\65\74\5F\69\33\32\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\29\29\0A\00\54\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\73\75\62\20\28\69\33\32\2E\63\6F\6E\73\74\20\30\29\20\28\25\73\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\29\29\0A\00\00\00\3A\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\3B\3B\20\53\50\20\70\72\6F\6D\6F\74\65\64\20\50\21\25\6E\0A\00\13\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\0A\26\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\0A\00\4A\20\20\20\20\28\69\33\32\2E\73\74\6F\72\65\20\28\69\33\32\2E\73\68\6C\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\32\29\29\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\0A\00\39\20\20\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\5F\5F\6C\61\62\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\20\28\62\72\20\24\5F\5F\64\69\73\70\61\74\63\68\29\0A\00\00\1F\20\20\20\20\28\69\66\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\74\68\65\6E\0A\29\20\20\20\20\28\69\66\20\28\69\33\32\2E\65\71\7A\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\28\74\68\65\6E\0A\00\00\3A\20\20\20\20\28\69\66\20\28\69\33\32\2E\65\71\20\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\28\74\68\65\6E\0A\00\3A\20\20\20\20\28\69\66\20\28\69\33\32\2E\6E\65\20\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\28\74\68\65\6E\0A\00\3B\20\20\20\20\28\69\66\20\28\69\33\32\2E\6C\74\5F\73\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\28\74\68\65\6E\0A\3B\20\20\20\20\28\69\66\20\28\69\33\32\2E\67\65\5F\73\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\28\74\68\65\6E\0A\3B\20\20\20\20\28\69\66\20\28\69\33\32\2E\67\74\5F\73\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\28\74\68\65\6E\0A\3B\20\20\20\20\28\69\66\20\28\69\33\32\2E\6C\65\5F\73\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\28\74\68\65\6E\0A\07\20\20\20\20\29\29\0A\1C\20\28\67\6C\6F\62\61\6C\2E\67\65\74\20\24\50\29\29\20\3B\3B\20\73\61\76\65\20\50\0A\00\00\00\2B\20\28\69\33\32\2E\63\6F\6E\73\74\20\30\29\29\20\3B\3B\20\72\65\74\75\72\6E\20\61\64\64\72\20\70\6C\61\63\65\68\6F\6C\64\65\72\0A\23\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\3B\3B\20\65\6E\74\72\79\20\66\6E\5F\69\64\78\0A\3D\20\20\20\20\28\67\6C\6F\62\61\6C\2E\73\65\74\20\24\50\20\28\69\33\32\2E\61\64\64\20\28\67\6C\6F\62\61\6C\2E\67\65\74\20\24\50\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\29\0A\00\00\4E\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\63\61\6C\6C\5F\69\6E\64\69\72\65\63\74\20\24\66\74\61\62\6C\65\20\28\74\79\70\65\20\24\62\63\70\6C\5F\66\6E\29\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\29\0A\00\28\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\3B\3B\20\66\6C\75\73\68\20\46\4E\41\50\20\72\65\73\75\6C\74\0A\00\00\00\44\20\20\20\20\28\64\72\6F\70\20\28\63\61\6C\6C\5F\69\6E\64\69\72\65\63\74\20\24\66\74\61\62\6C\65\20\28\74\79\70\65\20\24\62\63\70\6C\5F\66\6E\29\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\29\0A\00\00\00\07\69\33\32\2E\61\64\64\07\69\33\32\2E\73\75\62\07\69\33\32\2E\6D\75\6C\09\69\33\32\2E\64\69\76\5F\73\00\00\09\69\33\32\2E\72\65\6D\5F\73\00\00\07\69\33\32\2E\73\68\6C\09\69\33\32\2E\73\68\72\5F\75\00\00\07\69\33\32\2E\61\6E\64\06\69\33\32\2E\6F\72\00\07\69\33\32\2E\78\6F\72\07\66\33\32\2E\61\64\64\07\66\33\32\2E\73\75\62\07\66\33\32\2E\6D\75\6C\07\66\33\32\2E\64\69\76\29\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\72\65\69\6E\74\65\72\70\72\65\74\5F\66\33\32\0A\00\00\0F\20\20\20\20\20\20\28\66\33\32\2E\73\75\62\0A\2F\20\20\20\20\20\20\20\20\28\66\33\32\2E\72\65\69\6E\74\65\72\70\72\65\74\5F\69\33\32\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\0A\11\20\20\20\20\20\20\20\20\28\66\33\32\2E\6D\75\6C\0A\00\00\15\20\20\20\20\20\20\20\20\20\20\28\66\33\32\2E\74\72\75\6E\63\0A\00\00\15\20\20\20\20\20\20\20\20\20\20\20\20\28\66\33\32\2E\64\69\76\0A\00\00\35\20\20\20\20\20\20\20\20\20\20\20\20\20\20\28\66\33\32\2E\72\65\69\6E\74\65\72\70\72\65\74\5F\69\33\32\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\0A\00\00\37\20\20\20\20\20\20\20\20\20\20\20\20\20\20\28\66\33\32\2E\72\65\69\6E\74\65\72\70\72\65\74\5F\69\33\32\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\29\29\0A\35\20\20\20\20\20\20\20\20\20\20\28\66\33\32\2E\72\65\69\6E\74\65\72\70\72\65\74\5F\69\33\32\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\29\29\29\29\0A\00\00\06\69\33\32\2E\65\71\00\06\69\33\32\2E\6E\65\00\08\69\33\32\2E\6C\74\5F\73\00\00\00\08\69\33\32\2E\67\74\5F\73\00\00\00\08\69\33\32\2E\6C\65\5F\73\00\00\00\08\69\33\32\2E\67\65\5F\73\00\00\00\06\66\33\32\2E\65\71\00\06\66\33\32\2E\6E\65\00\06\66\33\32\2E\6C\74\00\06\66\33\32\2E\67\74\00\06\66\33\32\2E\6C\65\00\06\66\33\32\2E\67\65\00\3B\0A\57\41\53\4D\20\43\47\3A\20\74\72\65\65\2D\6F\6E\6C\79\20\6F\70\20\25\6E\20\6C\65\61\6B\65\64\20\69\6E\74\6F\20\4F\43\4F\44\45\20\28\66\72\6F\6E\74\65\6E\64\20\62\75\67\29\0A\1A\0A\57\41\53\4D\20\43\47\3A\20\75\6E\68\61\6E\64\6C\65\64\20\6F\70\20\25\6E\0A\00\12\20\20\20\20\3B\3B\20\6C\69\6E\65\20\25\6E\3A\25\6E\0A\00\28\20\20\20\20\28\67\6C\6F\62\61\6C\2E\73\65\74\20\24\5F\5F\6C\69\6E\65\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\0A\00\00\00\38\20\20\20\20\28\69\66\20\28\69\33\32\2E\6E\65\20\28\67\6C\6F\62\61\6C\2E\67\65\74\20\24\5F\5F\62\70\5F\61\72\6D\65\64\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\30\29\29\0A\00\00\00\20\20\20\20\20\20\20\20\20\28\74\68\65\6E\20\28\63\61\6C\6C\20\24\5F\5F\62\72\65\61\6B\29\29\29\0A\00\00\00\16\20\20\20\20\20\20\3B\3B\20\69\6D\70\6C\69\63\69\74\20\65\6E\64\0A\00\1D\20\20\20\20\20\20\28\72\65\74\75\72\6E\20\28\69\33\32\2E\63\6F\6E\73\74\20\30\29\29\0A\00\00\19\20\20\20\20\29\29\20\3B\3B\20\65\6E\64\20\6C\61\73\74\20\62\6C\6F\63\6B\0A\00\00\19\20\20\20\20\29\20\3B\3B\20\65\6E\64\20\24\5F\5F\64\69\73\70\61\74\63\68\0A\00\00\12\20\20\20\20\28\69\33\32\2E\63\6F\6E\73\74\20\30\29\0A\00\19\20\20\29\20\3B\3B\20\65\6E\64\20\66\75\6E\63\20\24\66\6E\5F\4C\25\6E\0A\0A\00\00\07\20\20\20\20\3B\3B\20\3D\20\20\20\20\5B\70\73\63\61\6E\20\6F\70\3D\25\6E\20\64\65\70\74\68\3D\25\6E\20\73\69\6D\5F\63\73\73\70\3D\25\6E\20\70\65\6E\64\69\6E\67\3D\25\6E\20\66\6E\5F\70\65\61\6B\3D\25\6E\5D\0A\00\00\16\20\20\3B\3B\20\42\43\50\4C\20\66\6E\20\25\73\20\28\4C\25\6E\29\0A\00\32\20\20\28\66\75\6E\63\20\24\66\6E\5F\4C\25\6E\20\28\65\78\70\6F\72\74\20\22\66\6E\5F\4C\25\6E\22\29\20\28\74\79\70\65\20\24\62\63\70\6C\5F\66\6E\29\0A\00\17\20\20\20\20\28\6C\6F\63\61\6C\20\24\5F\5F\6C\61\62\20\69\33\32\29\0A\17\20\20\20\20\28\6C\6F\63\61\6C\20\24\5F\5F\72\65\73\20\69\33\32\29\0A\14\20\20\20\20\28\6C\6F\63\61\6C\20\24\50\62\20\69\33\32\29\0A\00\00\00\15\20\20\20\20\28\6C\6F\63\61\6C\20\24\74\25\6E\20\69\33\32\29\0A\00\00\5F\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\6C\6F\61\64\20\28\69\33\32\2E\61\64\64\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\50\62\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\29\29\20\3B\3B\20\69\6E\69\74\20\70\72\6F\6D\6F\74\65\64\20\50\21\25\6E\0A\16\20\20\20\20\28\6C\6F\6F\70\20\24\5F\5F\64\69\73\70\61\74\63\68\0A\00\18\20\20\20\20\20\20\28\62\6C\6F\63\6B\20\24\5F\5F\64\65\66\61\75\6C\74\0A\00\00\00\18\20\20\20\20\20\20\28\62\6C\6F\63\6B\20\24\5F\5F\63\61\73\65\5F\25\6E\0A\00\00\00\11\20\20\20\20\20\20\20\20\28\62\72\5F\74\61\62\6C\65\00\00\0B\20\24\5F\5F\63\61\73\65\5F\25\6E\20\20\24\5F\5F\64\65\66\61\75\6C\74\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\5F\5F\6C\61\62\29\29\0A\00\00\00\38\20\20\20\20\20\20\29\20\3B\3B\20\63\6C\6F\73\65\20\24\5F\5F\63\61\73\65\5F\30\20\E2\80\94\20\65\6E\74\72\79\2D\62\6C\6F\63\6B\20\62\6F\64\79\20\66\6F\6C\6C\6F\77\73\0A\00\00\00\1D\20\20\20\20\20\20\3B\3B\20\65\6E\64\70\72\6F\63\20\66\61\6C\6C\74\68\72\6F\75\67\68\0A\00\00\1C\20\20\20\20\20\20\29\20\3B\3B\20\63\6C\6F\73\65\20\24\5F\5F\64\65\66\61\75\6C\74\0A\00\00\00\14\20\20\20\20\20\20\28\75\6E\72\65\61\63\68\61\62\6C\65\29\0A\00\00\00\30\20\20\20\20\3B\3B\20\2A\50\52\45\53\43\41\4E\20\55\4E\44\45\52\43\4F\55\4E\54\2A\20\64\65\63\6C\61\72\65\64\20\24\74\30\2E\2E\24\74\25\6E\2C\0A\00\00\00\31\20\20\20\20\3B\3B\20\20\20\62\75\74\20\65\6D\69\74\20\72\65\61\63\68\65\64\20\63\73\73\70\3D\25\6E\20\6F\6E\20\4F\43\4F\44\45\20\6F\70\3D\25\6E\0A\00\00\39\57\41\52\4E\3A\20\70\72\65\73\63\61\6E\20\75\6E\64\65\72\63\6F\75\6E\74\20\69\6E\20\66\6E\20\4C\25\6E\3A\20\64\65\63\6C\61\72\65\64\20\66\6E\5F\70\65\61\6B\3D\25\6E\2C\20\00\00\1D\65\6D\69\74\20\72\65\61\63\68\65\64\20\25\6E\20\28\6C\61\73\74\20\6F\70\3D\25\6E\29\0A\00\00\28\20\20\20\20\28\69\33\32\2E\63\6F\6E\73\74\20\30\29\20\3B\3B\20\75\6E\72\65\61\63\68\61\62\6C\65\20\72\65\74\75\72\6E\0A\00\00\00\28\20\20\20\20\20\20\29\20\3B\3B\20\63\6C\6F\73\65\20\24\5F\5F\63\61\73\65\5F\25\6E\20\E2\80\94\20\4C\41\42\20\4C\25\6E\0A\00\00\00\49\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\61\64\64\20\28\67\6C\6F\62\61\6C\2E\67\65\74\20\24\54\42\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\29\20\3B\3B\20\4C\46\20\4C\25\6E\0A\00\00\35\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\20\3B\3B\20\4C\46\20\4C\25\6E\20\28\64\69\73\70\29\0A\00\00\6C\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\6C\6F\61\64\20\28\69\33\32\2E\73\68\6C\20\28\69\33\32\2E\61\64\64\20\28\67\6C\6F\62\61\6C\2E\67\65\74\20\24\53\42\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\32\29\29\29\29\20\3B\3B\20\4C\4C\20\4C\25\6E\0A\00\00\00\3E\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\61\64\64\20\28\67\6C\6F\62\61\6C\2E\67\65\74\20\24\50\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\29\0A\00\3E\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\61\64\64\20\28\67\6C\6F\62\61\6C\2E\67\65\74\20\24\47\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\29\0A\00\4A\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\61\64\64\20\28\67\6C\6F\62\61\6C\2E\67\65\74\20\24\53\42\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\29\20\3B\3B\20\4C\4C\4C\20\4C\25\6E\0A\00\38\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\63\6F\6E\73\74\20\30\29\29\20\3B\3B\20\51\55\45\52\59\20\28\75\6E\64\65\66\69\6E\65\64\29\0A\00\00\00\0F\20\20\20\20\28\69\33\32\2E\73\74\6F\72\65\0A\48\20\20\20\20\20\20\28\69\33\32\2E\73\68\6C\20\28\69\33\32\2E\61\64\64\20\28\67\6C\6F\62\61\6C\2E\67\65\74\20\24\53\42\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\32\29\29\0A\00\00\00\18\20\20\20\20\20\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\0A\00\00\00\45\20\20\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\5F\5F\6C\61\62\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\20\28\62\72\20\24\5F\5F\64\69\73\70\61\74\63\68\29\20\3B\3B\20\4A\55\4D\50\20\4C\25\6E\0A\00\00\2A\20\20\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\5F\5F\6C\61\62\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\0A\00\2A\20\20\20\20\20\20\28\62\72\20\24\5F\5F\64\69\73\70\61\74\63\68\29\20\3B\3B\20\47\4F\54\4F\20\28\63\6F\6D\70\75\74\65\64\29\0A\00\0C\20\20\20\20\3B\3B\20\52\54\52\4E\0A\00\00\00\47\20\20\20\20\28\67\6C\6F\62\61\6C\2E\73\65\74\20\24\50\20\28\69\33\32\2E\6C\6F\61\64\20\28\69\33\32\2E\73\68\6C\20\28\67\6C\6F\62\61\6C\2E\67\65\74\20\24\50\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\32\29\29\29\29\0A\1B\20\20\20\20\28\72\65\74\75\72\6E\20\28\69\33\32\2E\63\6F\6E\73\74\20\30\29\29\0A\0C\20\20\20\20\3B\3B\20\46\4E\52\4E\0A\00\00\00\28\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\5F\5F\72\65\73\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\0A\00\00\00\20\20\20\20\20\28\72\65\74\75\72\6E\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\5F\5F\72\65\73\29\29\0A\00\00\00\2C\20\20\20\20\3B\3B\20\52\45\53\20\4C\25\6E\3A\20\73\61\76\65\20\72\65\73\75\6C\74\2C\20\6A\75\6D\70\20\74\6F\20\52\53\54\41\43\4B\0A\00\00\00\11\20\20\20\20\3B\3B\20\52\53\54\41\43\4B\20\25\6E\0A\00\00\3E\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\5F\5F\72\65\73\29\29\20\3B\3B\20\72\65\73\74\6F\72\65\20\52\45\53\20\72\65\73\75\6C\74\0A\00\20\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\3B\3B\20\66\6C\75\73\68\20\74\25\6E\0A\00\00\00\2F\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\3B\3B\20\66\6C\75\73\68\20\74\25\6E\20\28\70\72\65\2D\73\74\61\63\6B\2D\75\70\29\0A\24\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\3B\3B\20\53\54\4F\52\45\20\73\6C\6F\74\20\25\6E\0A\00\00\00\25\20\20\20\20\28\72\65\74\75\72\6E\20\28\69\33\32\2E\63\6F\6E\73\74\20\30\29\29\20\3B\3B\20\46\49\4E\49\53\48\0A\00\00\47\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\61\64\64\20\28\67\6C\6F\62\61\6C\2E\67\65\74\20\24\53\42\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\29\20\3B\3B\20\4C\53\54\52\0A\67\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\6C\6F\61\64\38\5F\75\20\28\69\33\32\2E\61\64\64\20\28\69\33\32\2E\73\68\6C\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\32\29\29\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\29\29\0A\66\20\20\20\20\28\69\33\32\2E\73\74\6F\72\65\38\20\28\69\33\32\2E\61\64\64\20\28\69\33\32\2E\73\68\6C\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\32\29\29\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\0A\00\25\20\20\20\20\3B\3B\20\53\57\49\54\43\48\4F\4E\20\25\6E\20\63\61\73\65\73\20\64\65\66\61\75\6C\74\20\4C\25\6E\0A\00\00\37\20\20\20\20\28\69\66\20\28\69\33\32\2E\65\71\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\20\28\74\68\65\6E\0A\3B\20\20\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\5F\5F\6C\61\62\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\20\28\62\72\20\24\5F\5F\64\69\73\70\61\74\63\68\29\29\29\0A\41\20\20\20\20\28\6C\6F\63\61\6C\2E\73\65\74\20\24\74\25\6E\20\28\69\33\32\2E\73\68\72\5F\75\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\29\0A\00\00\09\69\33\32\2E\73\68\72\5F\73\00\00\32\20\20\20\20\3B\3B\20\53\45\4C\53\54\3A\20\73\66\6F\70\20\25\6E\20\75\6E\73\75\70\70\6F\72\74\65\64\2C\20\74\72\65\61\74\69\6E\67\20\61\73\20\3A\3D\0A\00\2F\20\20\20\20\20\20\28\69\33\32\2E\73\68\6C\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\32\29\29\0A\0A\20\20\20\20\20\20\28\25\73\0A\00\3C\20\20\20\20\20\20\20\20\28\69\33\32\2E\6C\6F\61\64\20\28\69\33\32\2E\73\68\6C\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\32\29\29\29\0A\00\00\00\1B\20\20\20\20\20\20\20\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\29\0A\0E\20\20\20\20\20\20\28\69\33\32\2E\6F\72\0A\00\11\20\20\20\20\20\20\20\20\28\69\33\32\2E\61\6E\64\0A\00\00\3E\20\20\20\20\20\20\20\20\20\20\28\69\33\32\2E\6C\6F\61\64\20\28\69\33\32\2E\73\68\6C\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\32\29\29\29\0A\00\1A\20\20\20\20\20\20\20\20\20\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\0A\00\11\20\20\20\20\20\20\20\20\28\69\33\32\2E\73\68\6C\0A\00\00\13\20\20\20\20\20\20\20\20\20\20\28\69\33\32\2E\61\6E\64\0A\1D\20\20\20\20\20\20\20\20\20\20\20\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\0A\00\00\10\20\20\20\20\20\20\20\20\20\20\20\20\28\25\73\0A\00\00\00\17\20\20\20\20\20\20\20\20\20\20\20\20\20\20\28\69\33\32\2E\61\6E\64\0A\1B\20\20\20\20\20\20\20\20\20\20\20\20\20\20\20\20\28\69\33\32\2E\73\68\72\5F\75\0A\46\20\20\20\20\20\20\20\20\20\20\20\20\20\20\20\20\20\20\28\69\33\32\2E\6C\6F\61\64\20\28\69\33\32\2E\73\68\6C\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\20\28\69\33\32\2E\63\6F\6E\73\74\20\32\29\29\29\0A\00\22\20\20\20\20\20\20\20\20\20\20\20\20\20\20\20\20\20\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\0A\00\20\20\20\20\20\20\20\20\20\20\20\20\20\20\20\20\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\0A\00\00\00\20\20\20\20\20\20\20\20\20\20\20\20\20\20\20\28\6C\6F\63\61\6C\2E\67\65\74\20\24\74\25\6E\29\29\0A\00\00\00\1C\20\20\20\20\20\20\20\20\20\20\20\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\0A\00\00\00\1C\20\20\20\20\20\20\20\20\20\20\28\69\33\32\2E\63\6F\6E\73\74\20\25\6E\29\29\29\29\0A\00\00\00\27\20\20\20\20\5B\65\6D\69\74\20\20\6F\70\3D\25\6E\20\63\73\73\70\3D\25\6E\20\70\65\6E\64\69\6E\67\6F\70\3D\25\6E\5D\0A")
 
   (func $register (export "register")
     (memory.init $stat
       (i32.shl (global.get $SB) (i32.const 2))
       (i32.const 0)
-      (i32.const 7972))
+      (i32.const 8372))
     (data.drop $stat)
     (table.init $ftable $ftab
       (global.get $TB)
@@ -16818,7 +17290,7 @@
     (i32.store (i32.add (i32.shl (global.get $G) (i32.const 2)) (i32.const 952)) (i32.add (global.get $TB) (i32.const 0))) ;; G!238
   )
   (func $stat_words (export "stat_words") (result i32)
-    (i32.const 1993))
+    (i32.const 2093))
   (func $fn_count (export "fn_count") (result i32)
     (i32.const 42))
 )

@@ -2050,24 +2050,72 @@ prescan_done:
         cgpendingop_wasm()
         selectoutput(tostream)
         // Stack: $t{cssp-2}=value, $t{cssp-1}=word-addr.
-        // Semantics: mem[addr]{sh..sh+len-1} := value{0..len-1}
-        //   (for sf_none). Other sfops apply the op between old
-        //   field value and new value first.
-        { LET va = cssp - 2
-          LET ad = cssp - 1
-          LET fmask = len >= 32 -> -1, (1 << len) - 1
+        // Semantics: mem[addr]{sh..sh+len-1} := (existing-field) sfop value.
+        // len=0 means "full word" (BCPL convention emitted by trn for
+        // op:= on vector elements).
+        { LET va  = cssp - 2
+          LET ad  = cssp - 1
+          LET fwl = len = 0 -> 32, len
+          LET full_word = fwl >= 32 & sh = 0
+          LET fmask = fwl >= 32 -> -1, (1 << fwl) - 1
           LET cmask = ~(fmask << sh)
-          UNLESS sfop = sf_none DO
-            writef("    ;; SELST: sfop %n not supported, using :=*n", sfop)
+          // Map sfop to wasm op snippet for `(opname existing value)`.
+          // sf_none means assignment (no combine).
+          LET op_str = ?
+          SWITCHON sfop INTO
+          { CASE sf_none:   op_str := 0;            ENDCASE
+            CASE sf_add:    op_str := "i32.add";    ENDCASE
+            CASE sf_sub:    op_str := "i32.sub";    ENDCASE
+            CASE sf_mul:    op_str := "i32.mul";    ENDCASE
+            CASE sf_div:    op_str := "i32.div_s";  ENDCASE
+            CASE sf_mod:    op_str := "i32.rem_s";  ENDCASE
+            CASE sf_lshift: op_str := "i32.shl";    ENDCASE
+            CASE sf_rshift: op_str := "i32.shr_s";  ENDCASE
+            CASE sf_logand: op_str := "i32.and";    ENDCASE
+            CASE sf_logor:  op_str := "i32.or";     ENDCASE
+            CASE sf_xor:    op_str := "i32.xor";    ENDCASE
+            CASE sf_eqv:    op_str := 0;            ENDCASE
+            DEFAULT:        op_str := 0;            ENDCASE
+          }
+          UNLESS op_str = 0 | sfop = sf_none DO op_str := op_str // keep
+          IF op_str = 0 & sfop ~= sf_none DO
+            writef("    ;; SELST: sfop %n unsupported, treating as :=*n", sfop)
+          // For the assignment path the operand is `value`. For an
+          // op:= path it's `existing_field OP value` — and for a
+          // partial field we extract `existing_field` from `old_word`.
+          // Generate the source value first, then splice into the
+          // word and store.
           writef("    (i32.store*n")
           writef("      (i32.shl (local.get $t%n) (i32.const 2))*n", ad)
-          writef("      (i32.or*n")
-          writef("        (i32.and*n")
-          writef("          (i32.load (i32.shl (local.get $t%n) (i32.const 2)))*n", ad)
-          writef("          (i32.const %n))*n", cmask)
-          writef("        (i32.shl*n")
-          writef("          (i32.and (local.get $t%n) (i32.const %n))*n", va, fmask)
-          writef("          (i32.const %n))))*n", sh)
+          TEST full_word
+          THEN { // Full-word path: just compute (sfop) and store the result.
+                 TEST op_str = 0 | sfop = sf_none
+                 THEN writef("      (local.get $t%n))*n", va)
+                 ELSE { writef("      (%s*n", op_str)
+                        writef("        (i32.load (i32.shl (local.get $t%n) (i32.const 2)))*n", ad)
+                        writef("        (local.get $t%n)))*n", va)
+                      }
+               }
+          ELSE { // Partial field: read-modify-write.
+                 writef("      (i32.or*n")
+                 writef("        (i32.and*n")
+                 writef("          (i32.load (i32.shl (local.get $t%n) (i32.const 2)))*n", ad)
+                 writef("          (i32.const %n))*n", cmask)
+                 writef("        (i32.shl*n")
+                 writef("          (i32.and*n")
+                 TEST op_str = 0 | sfop = sf_none
+                 THEN writef("            (local.get $t%n)*n", va)
+                 ELSE { writef("            (%s*n", op_str)
+                        writef("              (i32.and*n")
+                        writef("                (i32.shr_u*n")
+                        writef("                  (i32.load (i32.shl (local.get $t%n) (i32.const 2)))*n", ad)
+                        writef("                  (i32.const %n))*n", sh)
+                        writef("                (i32.const %n))*n", fmask)
+                        writef("              (local.get $t%n))*n", va)
+                      }
+                 writef("            (i32.const %n))*n", fmask)
+                 writef("          (i32.const %n))))*n", sh)
+               }
         }
         cssp := cssp - 2
         IF cssp_sync > cssp DO cssp_sync := cssp
