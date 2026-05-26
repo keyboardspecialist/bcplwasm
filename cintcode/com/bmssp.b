@@ -848,8 +848,8 @@ LET bmssp(level, B_in, S, S_n, out_U, out_T, T_n_ptr, B_out_ptr) = VALOF
       // Merge inner_T into our touched set.
       FOR i = 0 TO inner_Tn - 1 DO
       { LET v = inner_T!i
-        UNLESS in_T!v DO
-        { in_T!v := 1; out_T!t_n := v; t_n := t_n + 1 }
+        UNLESS in_T!v = ep_T DO
+        { in_T!v := ep_T; out_T!t_n := v; t_n := t_n + 1 }
       }
       // Relax edges from every touched vertex the child surfaced
       // (covers marooned vertices at every level, not just level=1).
@@ -862,22 +862,26 @@ LET bmssp(level, B_in, S, S_n, out_U, out_T, T_n_ptr, B_out_ptr) = VALOF
           IF nd <= d_hat!v DO
           { d_hat!v := nd
             d_insert(D, v)
-            UNLESS in_T!v DO
-            { in_T!v := 1; out_T!t_n := v; t_n := t_n + 1 }
+            UNLESS in_T!v = ep_T DO
+            { in_T!v := ep_T; out_T!t_n := v; t_n := t_n + 1 }
           }
         }
       }
       // Si entries whose d_hat fell into [Bi', Bi) get batch_prepended.
       // Collect into a buffer, then prepend in one shot — guaranteed
       // smaller than current D contents (their d_hat < Bi <= D's min).
-      { LET prep_buf = arena_alloc(Si_n + 1)
-        LET prep_n   = 0
+      // mark/reset bracket prevents this scratch buffer from drifting
+      // arena_top each loop iteration.
+      { LET prep_mark = arena_mark()
+        LET prep_buf  = arena_alloc(Si_n + 1)
+        LET prep_n    = 0
         FOR i = 0 TO Si_n - 1 DO
         { LET x = Si!i
           IF d_hat!x >= Bi_prime & d_hat!x < Bi DO
           { prep_buf!prep_n := x; prep_n := prep_n + 1 }
         }
         IF prep_n > 0 DO d_batch_prepend(D, prep_buf, prep_n)
+        arena_reset(prep_mark)
       }
       IF d_empty(D) DO
       { B_prime := B_in
