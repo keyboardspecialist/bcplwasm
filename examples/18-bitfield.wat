@@ -58,7 +58,9 @@
           (i32.load (i32.shl (local.get $t7) (i32.const 2)))
           (i32.const -256))
         (i32.shl
-          (i32.and (local.get $t6) (i32.const 255))
+          (i32.and
+            (local.get $t6)
+            (i32.const 255))
           (i32.const 0))))
     ;; line 0:22
     (global.set $__line (i32.const 22))
@@ -73,7 +75,9 @@
           (i32.load (i32.shl (local.get $t7) (i32.const 2)))
           (i32.const -65281))
         (i32.shl
-          (i32.and (local.get $t6) (i32.const 255))
+          (i32.and
+            (local.get $t6)
+            (i32.const 255))
           (i32.const 8))))
     ;; line 0:23
     (global.set $__line (i32.const 23))
@@ -88,7 +92,9 @@
           (i32.load (i32.shl (local.get $t7) (i32.const 2)))
           (i32.const 65535))
         (i32.shl
-          (i32.and (local.get $t6) (i32.const 65535))
+          (i32.and
+            (local.get $t6)
+            (i32.const 65535))
           (i32.const 16))))
     ;; line 0:24
     (global.set $__line (i32.const 24))
