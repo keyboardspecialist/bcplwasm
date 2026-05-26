@@ -502,6 +502,12 @@ export class BcplRuntime {
     // Heap grows downward from top of linear memory.
     this.heapTop = 0;
     this.freeList = 0;
+    // Side table for getvec block sizes. Was stored at memory word
+    // (p+1), but that's INSIDE the user-allocated range — programs that
+    // write to vec!1 (very common) corrupted the size header, which
+    // broke freelist scans after the second getvec/freevec cycle.
+    // Side-table keeps user memory pristine.
+    this.vecSizes = new Map();
     // Streams. Handles passed back to BCPL are POINTERS to SCB
     // structs allocated in linear memory (so user code can read
     // s!scb_pos / s!scb_end / s!scb_id directly, matching cintsys
@@ -1181,27 +1187,35 @@ export class BcplRuntime {
   imp_getvec() {
     const n = this.arg(0);
     const size = n + 1;   // BCPL vectors are 0..n inclusive
-    // First-fit on free list.
+    // Best-fit on free list. Sizes live in vecSizes side-table — user
+    // memory isn't safe to use as a header (user code writes to vec!1
+    // routinely and would clobber it).
     let prev = 0, cur = this.freeList;
+    let bestPrev = 0, best = 0, bestSize = 0x7fffffff;
     while (cur !== 0) {
-      const blockSize = this.loadWord(cur + 1);  // stored at p!1
-      const next = this.loadWord(cur);           // stored at p!0
-      if (blockSize >= size) {
-        if (prev === 0) this.freeList = next;
-        else this.storeWord(prev, next);
-        this.restoreP();
-        return cur;
+      const blockSize = this.vecSizes.get(cur) | 0;
+      const next = this.loadWord(cur);
+      if (blockSize >= size && blockSize < bestSize) {
+        bestPrev = prev; best = cur; bestSize = blockSize;
+        if (blockSize === size) break;
       }
       prev = cur; cur = next;
     }
+    if (best !== 0) {
+      const next = this.loadWord(best);
+      if (bestPrev === 0) this.freeList = next;
+      else this.storeWord(bestPrev, next);
+      this.restoreP();
+      return best;
+    }
     // Bump.
-    this.heapTop -= (size + 1);  // reserve 1 extra word for size header
+    this.heapTop -= size;
     if (this.heapTop <= 0) {
       this.restoreP();
       return 0;
     }
     const p = this.heapTop;
-    this.storeWord(p + 1, size);  // remember size for freevec/freelist
+    this.vecSizes.set(p, size);
     this.restoreP();
     return p;
   }
@@ -1209,7 +1223,8 @@ export class BcplRuntime {
   imp_freevec() {
     const p = this.arg(0);
     if (p === 0) { this.restoreP(); return 0; }
-    // Link block onto free list. Size already stored at p!1.
+    // Prepend block to free list. Link goes in user word 0 (which the
+    // user has now relinquished). Size persists in vecSizes side-table.
     this.storeWord(p, this.freeList);
     this.freeList = p;
     this.restoreP();
@@ -2784,21 +2799,26 @@ export class BcplRuntime {
   imp_getvec_or_abort() {
     const n = this.arg(0) | 0;
     const msgPtr = this.arg(1);
-    // Inline of imp_getvec's body so we can throw without restoreP
-    // racing with the freelist scan.
+    const size = n + 1;
     let prev = 0, cur = this.freeList;
+    let bestPrev = 0, best = 0, bestSize = 0x7fffffff;
     while (cur !== 0) {
-      const blockSize = this.loadWord(cur + 1);
+      const blockSize = this.vecSizes.get(cur) | 0;
       const next = this.loadWord(cur);
-      if (blockSize >= n + 1) {
-        if (prev === 0) this.freeList = next;
-        else this.storeWord(prev, next);
-        this.restoreP();
-        return cur;
+      if (blockSize >= size && blockSize < bestSize) {
+        bestPrev = prev; best = cur; bestSize = blockSize;
+        if (blockSize === size) break;
       }
       prev = cur; cur = next;
     }
-    this.heapTop -= (n + 2);
+    if (best !== 0) {
+      const next = this.loadWord(best);
+      if (bestPrev === 0) this.freeList = next;
+      else this.storeWord(bestPrev, next);
+      this.restoreP();
+      return best;
+    }
+    this.heapTop -= size;
     if (this.heapTop <= 0) {
       this.restoreP();
       const msg = this.readBcplString(msgPtr);
@@ -2806,7 +2826,7 @@ export class BcplRuntime {
       throw new BcplHalt(901, /*isAbort*/ true);
     }
     const p = this.heapTop;
-    this.storeWord(p + 1, n + 1);
+    this.vecSizes.set(p, size);
     this.restoreP();
     return p;
   }
@@ -2830,9 +2850,9 @@ export class BcplRuntime {
       this.writeOut("\nVSAFE OOB: " + msg + " (v=NULL)\n");
       throw new BcplHalt(901, /*isAbort*/ true);
     }
-    const sizeHdr = this.loadWord(v + 1);  // playground convention
-    const upb     = sizeHdr - 2;            // size = n+1, upb = n
-    if (i < 0 || i > upb) {
+    const sizeHdr = this.vecSizes.get(v) | 0;  // side-table lookup
+    const upb     = sizeHdr - 1;                // size = n+1, upb = n
+    if (sizeHdr === 0 || i < 0 || i > upb) {
       const msg = this.readBcplString(msgPtr);
       this.writeOut("\nVSAFE OOB: " + msg + " (i=" + i + " upb=" + upb + ")\n");
       throw new BcplHalt(901, /*isAbort*/ true);
