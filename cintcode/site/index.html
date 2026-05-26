@@ -2678,7 +2678,7 @@ LET start() = VALOF
     // user source GETs one of these names and no matching .b lives in
     // their files[] yet, fetch from site/examples/ and add it as a
     // companion file so resolveDeps can pick it up.
-    const SHIPPED_LIBS = new Set(["doomengine"]);
+    const SHIPPED_LIBS = new Set(["doomengine", "stdlib"]);
 
     async function attachShippedDeps() {
       const namesPresent = new Set(files.map(f => f.name));
@@ -3863,13 +3863,21 @@ LET start() = VALOF
     // the recipient's playground auto-attaches them from site/examples/
     // via attachShippedDeps(), so re-shipping their bytes just bloats
     // the URL (doomengine.b is ~70KB). Same for files whose content
-    // is byte-identical to a shipped tutorial example.
+    // is byte-identical to a shipped tutorial example — the recipient
+    // can re-fetch from examples/ via the slug, no need to ship bytes.
     async function packBundle(files) {
       const slim = [];
       for (const f of files) {
         if (f.name.endsWith(".b")) {
           const base = f.name.slice(0, -2);
-          if (SHIPPED_LIBS.has(base)) continue;  // recipient re-fetches
+          if (SHIPPED_LIBS.has(base)) continue;          // shipped lib
+          const pristineSlug = await fileMatchesShippedExample(f);
+          if (pristineSlug) {
+            // Ship only the (name, slug, entry) tuple — recipient
+            // refetches content from examples/<slug>.b.
+            slim.push({ name: f.name, entry: !!f.entry, slug: pristineSlug });
+            continue;
+          }
         }
         slim.push({ name: f.name, entry: !!f.entry, content: f.content ?? "" });
       }
@@ -3914,12 +3922,22 @@ LET start() = VALOF
       try {
         const arr = JSON.parse(jsonText);
         if (!Array.isArray(arr)) return null;
-        return arr.filter(o => o && typeof o.name === "string")
-                  .map(o => ({
-                    name: sanitizeName(o.name),
-                    entry: !!o.entry,
-                    content: typeof o.content === "string" ? o.content : "",
-                  }));
+        const filtered = arr.filter(o => o && typeof o.name === "string");
+        // Resolve any `slug` entries (pristine shipped examples that
+        // were omitted from the bundle) by fetching from examples/.
+        // Run in parallel so a multi-slug bundle isn't serialized.
+        const resolved = await Promise.all(filtered.map(async (o) => {
+          if (typeof o.slug === "string" && BY_SLUG.has(o.slug)) {
+            const content = await fetchText(`examples/${o.slug}.b?v=${V}`, "");
+            return { name: sanitizeName(o.name), entry: !!o.entry, content };
+          }
+          return {
+            name: sanitizeName(o.name),
+            entry: !!o.entry,
+            content: typeof o.content === "string" ? o.content : "",
+          };
+        }));
+        return resolved;
       } catch { return null; }
     }
     function sanitizeName(raw, fallback = "shared.b") {
